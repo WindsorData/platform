@@ -1,4 +1,4 @@
-package windsor.input
+package util
 import java.io.Closeable
 
 object Closeables {

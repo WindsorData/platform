@@ -1,4 +1,4 @@
-package windsor.util
+package util
 
 object IndexedTraversables {
   implicit def traversable2WithIndex[A](traversable: Traversable[A]) = new {

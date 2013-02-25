@@ -1,4 +1,4 @@
-package windsor.util
+package util
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.fixture.FlatSpec

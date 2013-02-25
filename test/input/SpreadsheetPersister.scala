@@ -1,6 +1,6 @@
-package windsor.input
+package input
 
-import windsor._
+import model._
 import util.IndexedTraversables._
 import java.io.FileOutputStream
 import org.apache.poi.ss.util.WorkbookUtil
