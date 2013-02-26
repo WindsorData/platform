@@ -12,7 +12,7 @@ object ApplicationBuild extends Build {
      "org.apache.poi" % "poi-ooxml" % "3.9",
      "org.apache.poi" % "poi-ooxml-schemas" % "3.9",
      "junit" % "junit" % "4.8.1" % "test",
-     "org.scalatest" % "scalatest_2.9.1" % "1.8" % "test",
+     "org.scalatest" % "scalatest_2.10.0-RC5" % "2.0.M5-B1",
     jdbc,
     anorm
   )
