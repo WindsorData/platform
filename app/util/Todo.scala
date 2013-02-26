@@ -1,4 +1,4 @@
-package windsor.util
+package util
 
 object Todo {
   

@@ -1,4 +1,4 @@
-package windsor.input
+package input
 import java.io.FileOutputStream
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
@@ -8,6 +8,7 @@ import java.io.FileInputStream
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import scala.collection.JavaConversions._
+import model.Company
 object SpreadsheetLoader {
 
   def load(in: InputStream) = {

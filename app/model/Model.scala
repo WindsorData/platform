@@ -1,5 +1,4 @@
-package windsor.model
-import windsor._
+package model
 import util.Todo._
 
 case class CarriedInterest(

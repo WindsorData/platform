@@ -1,4 +1,4 @@
-package windsor.input
+package model
 
 case class Company(name: String, peerGroup: Double, foundingYear: Int)
 

@@ -1,4 +1,6 @@
-package windsor.input
+package input
+import util._
+import model._
 import org.scalatest.path.FunSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
