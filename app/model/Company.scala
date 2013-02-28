@@ -1,6 +1,8 @@
 package model
 
-case class Company(name: String, peerGroup: Double, foundingYear: Int)
+import util.persistence.LongKeyedEntity
+
+case class Company(name: String, peerGroup: Double, foundingYear: Int) extends LongKeyedEntity
 
 //TODO
 //Ticker
