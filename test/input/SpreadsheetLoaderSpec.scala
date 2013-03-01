@@ -11,6 +11,9 @@ import java.io.InputStream
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Row
 import scala.collection.mutable.ListBuffer
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.util.CellUtil
+import org.apache.poi.ss.usermodel.Cell
 
 @RunWith(classOf[JUnitRunner])
 class SpreadsheetLoaderSpec extends FunSpec {
@@ -100,46 +103,26 @@ class SpreadsheetLoaderSpec extends FunSpec {
 //                executives = Seq())))
 //        }
 
-    it("should ommit blanks") {
-      load("Empty.xls") {
-        x =>   {
-          import util.poi.Cells._
-          val wb = WorkbookFactory.create(x)
-          val wbIterator = wb.getSheetAt(0).rowIterator
-          wbIterator.next
-          val cellIter = wbIterator.next.cellIterator
-          cellIter.next
-          val cell = cellIter.next
-          assert( blankToNone(cell) === None)
-        }
-      }
-    }
-
     it("should not ommit blanks") {
       load("Empty.xlsx") {
         x =>
           {
             import util.poi.Cells._
-            import scala.collection.JavaConversions._
             val wb = WorkbookFactory.create(x)
-            var r = ListBuffer[String]()
             val sheet = wb.getSheetAt(0)
-            for (rowIndex <- 0 to sheet.getLastRowNum() - 1) {
-              val row = sheet.getRow(rowIndex)
-              if (row != null) {
-                for (cellIndex <- 0 to row.getLastCellNum() - 1) {
-                  val cell = row.getCell(cellIndex)
-                  if (cell != null) {
-                    if (cell.getCellType() == 3)
-                      r += "_"
-                    else
-                      r += cell.getStringCellValue()
-                  }
-                }
-              }
-            }
 
-            assert(r.toSeq === List("_", "a", "b", "c", "_", "d", "e", "_", "f", "g", "_", "h", "i", "j", "_", "k", "_", "l", "_", "_", "_", "_", "_", "_", "m", "n", "_", "_", "_", "o"))
+            val r =
+              for (
+                row <- rows(sheet);
+                cell <- cells(row).take(6)
+              ) yield blankToNone(cell).map(_.getStringCellValue).getOrElse("_")
+              
+            assert(r.toSeq === 
+              List("_", "a", "b", "c", "_", "d", 
+                   "e", "_", "f", "g", "_", "h", 
+                   "I", "j", "_", "k", "_", "l", 
+                   "_", "_", "_", "_", "_", "_",
+                   "m", "n", "_", "_", "_", "o"))
           }
       }
     }

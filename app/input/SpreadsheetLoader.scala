@@ -20,33 +20,28 @@ object SpreadsheetLoader {
 
   def load(in: InputStream) :Seq[Executive] = {
     val wb = WorkbookFactory.create(in)
-    wb.setMissingCellPolicy(Row.RETURN_BLANK_AS_NULL)
     val sheet: Sheet = wb.getSheetAt(1)
 
-    sheet.rowIterator.drop(3).grouped(6).map(toExecutive).toSeq
+    rows(sheet).drop(3).grouped(6).map(toExecutive).toSeq
   }
-
+  
   class ColumnOrientedReader(rows: Seq[Row]) {
-    val valueIterator = rows(0).iterator
-    val metadataIterators = rows.drop(1).map(_.iterator.drop(1))
+    private val cellIterators = rows.map(cells).map(_.iterator)
     
     def string = createInput(_.getStringCellValue)
     def boolean = createInput(_.getBooleanCellValue)
     def numeric = createInput(_.getNumericCellValue: BigDecimal)
-    def skip(offset: Int) = for (_ <- 1 to offset) next
+    def skip(offset: Int) = for (_ <- 1 to offset) cellIterators.foreach(_.next)
     
-    private def next = blankToNone(valueIterator.next)
-    private def nextMetadataStringValue(rowIndex : Int) = 
-      blankToNone(metadataIterators(rowIndex).next).map(_.getStringCellValue)
-      
     private def createInput[T](valueMapper: Cell => T)  =  {
-      Input(next.map(valueMapper), 
-        nextMetadataStringValue(0), 
-        nextMetadataStringValue(1), 
-        nextMetadataStringValue(2), 
-        nextMetadataStringValue(3))
+      val nextCells = cellIterators.map(_.next).map(blankToNone)
+	  def nextStringValue(index:Int) = nextCells(index).map(_.getStringCellValue)
+      Input(nextCells(0).map(valueMapper), 
+        nextStringValue(1), 
+        nextStringValue(2), 
+        nextStringValue(3),
+        nextStringValue(4))
     }
-    
   }
 
   def toExecutive(rows: Seq[Row]) = {
