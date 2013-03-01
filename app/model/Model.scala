@@ -1,5 +1,4 @@
 package model
-import util.Todo._
 import java.util.Date
 
 case class Executive(
