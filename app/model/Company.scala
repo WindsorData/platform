@@ -1,7 +1,6 @@
 package model
 
-import util.persistence.LongKeyedEntity
-import java.sql.Date
+import java.util.Date
 
 case class Company(
   ticker: String,
@@ -13,7 +12,8 @@ case class Company(
   /**In $M*/
   marketCapital: BigDecimal,
   proxyShares: BigDecimal,
-  executives: Traversable[Executive]) extends LongKeyedEntity
+  executives: Traversable[Executive]) 
+
 
 //TODO
 //Ticker

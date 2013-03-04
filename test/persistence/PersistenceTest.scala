@@ -1,34 +1,112 @@
 package persistence
 
-import org.scalatest.FunSuite
-import model.Company
+import scala.math.BigDecimal
 import org.junit.runner.RunWith
+import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-import model.Company
-import play.api.test._
+import com.mongodb.DBObject
+import com.mongodb.casbah.Imports._
+import model._
+import model.CarriedInterest
+import model.Executive
+import model.Input
+import play.api.Play.current
 import play.api.test.Helpers._
-import org.squeryl.PrimitiveTypeMode._
+import java.util.Date
 
 @RunWith(classOf[JUnitRunner])
 class PersistenceTest extends FunSuite {
-  test("can persist") {
 
-    inFakeTransaction {
-//      val company = DB.companies.insert(Company("foo", 2, 3))
-//      assert(company.id != 0)
-    }
+  import util.persistence._
+  registerBigDecimalConverter()
 
-    inFakeTransaction {
-//      import DB._
-//      val company = DB.companies.insert(Company("foo", 2, 3))
-//      DB.companies.get(1L)
-    }
+  val db = MongoClient()("test")
+  val companies = db("companies")
+  val interests = db("carriedInterests")
 
+  val executiveNoCashCompensations = Executive(Some("name"),
+    Some("title"),
+    Some("short"),
+    Some("functional"),
+    Some("founder"),
+    Seq(),
+    EquityCompanyValue(
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal)),
+    CarriedInterest(
+      ownedShares = Some(4: BigDecimal),
+      vestedOptions = Some(43: BigDecimal),
+      unvestedOptions = None,
+      tineVest = None,
+      perfVest = Some(2: BigDecimal)))
+  val executiveWithCashCompensation = Executive(Some("name"),
+    Some("title"),
+    Some("short"),
+    Some("functional"),
+    Some("founder"),
+    Seq(
+      AnualCashCompensation(
+        Some(1: BigDecimal),
+        Some(1: BigDecimal),
+        Some(1: BigDecimal),
+        Some(1: BigDecimal),
+        Some(1: BigDecimal),
+        New8KData(
+          Some(1: BigDecimal),
+          Some(1: BigDecimal)))),
+    EquityCompanyValue(
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal),
+      Some(1: BigDecimal)),
+    CarriedInterest(
+      ownedShares = Some(4: BigDecimal),
+      vestedOptions = Some(43: BigDecimal),
+      unvestedOptions = None,
+      tineVest = None,
+      perfVest = Some(2: BigDecimal)))
+
+  test("can persist executives") {
+    interests.insert(executiveNoCashCompensations)
   }
 
-  def inFakeTransaction(action: => Unit) = running(FakeApplication(additionalConfiguration = inMemoryDatabase())) {
-    inTransaction {
-      action
-    }
+  test("can persist executives with cash compensations") {
+    interests.insert(executiveWithCashCompensation)
   }
+
+  test("can persist companies") {
+    companies.insert(Company(
+      "ticker",
+      "name",
+      new Date(),
+      "gicsIndustry",
+      2: BigDecimal,
+      2: BigDecimal,
+      2: BigDecimal,
+      Seq(executiveNoCashCompensations)))
+  }
+
+  test("can serialize input") {
+    val input = (Some(2): Input[Int]): DBO
+    assert(input.toString === """{ "value" : 2}""")
+  }
+
 }
