@@ -6,6 +6,7 @@ import org.junit.runner.RunWith
 import java.io.FileInputStream
 import scala.math.BigDecimal.int2bigDecimal
 import util.Closeables.closeable2RichCloseable
+import util.FileManager
 import org.scalatest.junit.JUnitRunner
 import java.io.InputStream
 import org.apache.poi.ss.usermodel.WorkbookFactory
@@ -218,7 +219,7 @@ class SpreadsheetLoaderSpec extends FunSpec {
     }
 
     it("should not ommit blanks") {
-      load("MatrixWithBlanks.xlsx") {
+      FileManager.load("test/input/MatrixWithBlanks.xlsx") {
         x =>
           {
             import util.poi.Cells._
@@ -243,17 +244,8 @@ class SpreadsheetLoaderSpec extends FunSpec {
 
   }
 
-  def load[T](name: String)(action: InputStream => T) = {
-    import Closeables._
-    new FileInputStream("test/input/" + name).processWith {
-      x => action(x)
-    }
-  }
-
   def loadSpreadsheet(name: String) = {
-    load(name) { x =>
-      SpreadsheetLoader.load(x)
-    }
+    FileManager.loadSpreadsheet("test/input/" + name)
   }
 
 }
