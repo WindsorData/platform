@@ -28,9 +28,13 @@ case class EquityCompanyValue(
   exPrice: Input[BigDecimal],
   bsPercentage: Input[BigDecimal],
   timeVest: Input[BigDecimal],
+  rsValue: Input[BigDecimal],
   shares: Input[BigDecimal],
   price: Input[BigDecimal],
-  perf: Input[BigDecimal])
+  perfRSValue: Input[BigDecimal],
+  shares2: Input[BigDecimal],
+  price2: Input[BigDecimal],
+  perfCash: Input[BigDecimal])
 
 case class CarriedInterest(
   ownedShares: Input[BigDecimal],
@@ -44,7 +48,13 @@ case class AnualCashCompensation(
   actualBonus: Input[BigDecimal],
   targetBonus: Input[BigDecimal],
   thresholdBonus: Input[BigDecimal],
-  maxBonus: Input[BigDecimal])
+  maxBonus: Input[BigDecimal],
+  new8KData: New8KData)
+  
+  
+case class New8KData(
+    baseSalary: Input[BigDecimal],
+    targetBonus: Input[BigDecimal])  
 
 //case class CashCompensation(anualRecords: Seq[AnualRecord]) {
 //  def currentTtdc = ???
