@@ -1,8 +1,19 @@
 package model
 
 import util.persistence.LongKeyedEntity
+import java.sql.Date
 
-case class Company(name: String, peerGroup: Double, foundingYear: Int) extends LongKeyedEntity
+case class Company(
+  ticker: String,
+  name: String,
+  disclosureFiscalYear: Date,
+  gicsIndustry: String,
+  /**Annual revenue in $M*/
+  annualRevenue: BigDecimal,
+  /**In $M*/
+  marketCapital: BigDecimal,
+  proxyShares: BigDecimal,
+  executives: Traversable[Executive]) extends LongKeyedEntity
 
 //TODO
 //Ticker
