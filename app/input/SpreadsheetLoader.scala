@@ -87,26 +87,3 @@ object SpreadsheetLoader {
   }
 
 }
-
-		
-		
-//Cash Compensation ($000)	Current Year	Base Salary
-//Cash Compensation ($000)	Current Year	Actual Bonus
-//Cash Compensation ($000)	Current Year	Target Bonus
-//Cash Compensation ($000)	Current Year	Threshold Bonus
-//Cash Compensation ($000)	Current Year	Max Bonus
-//Cash Compensation ($000)	New 8-K Data	Base Salary
-//Cash Compensation ($000)	New 8-K Data	Target Bonus
-//		
-//Equity Comp Value ($000)	Current Year	Options Value
-//Equity Comp Value ($000)	Current Year	Options
-//Equity Comp Value ($000)	Current Year	Ex. Price
-//Equity Comp Value ($000)	Current Year	BS%
-//Equity Comp Value ($000)	Current Year	Time-Vest RS Value
-//Equity Comp Value ($000)	Current Year	Shares
-//Equity Comp Value ($000)	Current Year	Price
-//Equity Comp Value ($000)	Current Year	Perf RS Value
-//Equity Comp Value ($000)	Current Year	Shares
-//Equity Comp Value ($000)	Current Year	Price
-//Equity Comp Value ($000)	Current Year	Perf Cash
-//		

@@ -60,8 +60,4 @@ case class New8KData(
 //  def currentTtdc = ???
 //}
 
-//TODO
-//New 8-K Data	Base Salary
-//	Target Bonus
-
 
