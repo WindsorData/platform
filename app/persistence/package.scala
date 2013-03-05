@@ -23,7 +23,7 @@ package object persistence {
 
   implicit def executive2DbObject(executive: Executive): DBO =
     MongoDBObject(
-      "title" -> (executive.title: DBO),
+      "title" -> (executive.title : DBO),
       "shortTitle" -> (executive.shortTitle: DBO),
       "functionalMatch" -> (executive.functionalMatch: DBO),
       "founder" -> (executive.founder: DBO),

@@ -21,7 +21,7 @@ object SpreadsheetLoader {
 
   def load(in: InputStream): Company = {
     val wb = WorkbookFactory.create(in)
-    
+
     val executivesSheet: Sheet = wb.getSheetAt(1)
     val executives = rows(executivesSheet).drop(3).grouped(6).map(toExecutive).toSeq
 
@@ -29,34 +29,17 @@ object SpreadsheetLoader {
     toCompany(executives)(rows(companiesSheet).drop(1))
   }
 
-  class ColumnOrientedReader(rows: Seq[Row]) {
-    private val cellIterators = rows.map(cells).map(_.iterator)
-
-    def string = createInput(_.getStringCellValue)
-    def boolean = createInput(_.getBooleanCellValue)
-    def numeric = createInput(_.getNumericCellValue: BigDecimal)
-    def skip(offset: Int) = for (_ <- 1 to offset) cellIterators.foreach(_.next)
-
-    private def createInput[T](valueMapper: Cell => T) = {
-      val nextCells = cellIterators.map(_.next).map(blankToNone)
-      def nextStringValue(index: Int) = nextCells(index).map(_.getStringCellValue)
-      Input(nextCells(0).map(valueMapper),
-        nextStringValue(1),
-        nextStringValue(2),
-        nextStringValue(3),
-        nextStringValue(4))
-    }
+  def toCompany(executives: Seq[Executive])(rows: Seq[Row]) = {
+    Company(
+      ticker = None,
+      name = None,
+      disclosureFiscalYear = None,
+      gicsIndustry = None,
+      annualRevenue = None,
+      marketCapital = None,
+      proxyShares = None,
+      executives = executives)
   }
-  
-  def toCompany(executives: Seq[Executive])(rows: Seq[Row]) =  Company(
-        ticker = None,
-        name = None,
-        disclosureFiscalYear = None,
-        gicsIndustry = None,
-        annualRevenue = None,
-        marketCapital = None,
-        proxyShares = None,
-        executives = executives)
 
   def toExecutive(rows: Seq[Row]) = {
     val reader = new ColumnOrientedReader(rows)
