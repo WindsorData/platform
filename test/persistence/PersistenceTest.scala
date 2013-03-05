@@ -7,6 +7,7 @@ import org.scalatest.junit.JUnitRunner
 import com.mongodb.DBObject
 import com.mongodb.casbah.Imports._
 import model._
+import persistence._
 import model.CarriedInterest
 import model.Executive
 import model.Input
@@ -24,7 +25,8 @@ class PersistenceTest extends FunSuite {
   val companies = db("companies")
   val interests = db("carriedInterests")
 
-  val executiveNoCashCompensations = Executive(Some("name"),
+  val executiveNoCashCompensations = Executive(
+    Some("name"),
     Some("title"),
     Some("short"),
     Some("CEO"),
@@ -97,15 +99,16 @@ class PersistenceTest extends FunSuite {
   }
 
   test("can persist companies") {
-    companies.insert(Company(
-      "ticker",
-      "name",
-      new Date(),
-      "gicsIndustry",
-      2: BigDecimal,
-      2: BigDecimal,
-      2: BigDecimal,
-      Seq(executiveNoCashCompensations)))
+    companies.insert(
+      Company(
+        Some("ticker"),
+        Some("name"),
+        Some(new Date()),
+        Some("gicsIndustry"),
+        Some(2: BigDecimal),
+        Some(2: BigDecimal),
+        Some(2: BigDecimal),
+        Seq(executiveNoCashCompensations)))
   }
 
   test("can serialize input") {
