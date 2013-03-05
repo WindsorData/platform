@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 
 @RunWith(classOf[JUnitRunner])
 class CellsParsingSpec extends FunSpec with TestSpreadsheetLoader {
-  
+
   describe("cells parsing") {
     it("should not ommit blanks") {
       load("MatrixWithBlanks.xlsx") {

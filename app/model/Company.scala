@@ -3,15 +3,15 @@ package model
 import java.util.Date
 
 case class Company(
-  ticker: String,
-  name: String,
-  disclosureFiscalYear: Date,
-  gicsIndustry: String,
+  ticker: Input[String],
+  name: Input[String],
+  disclosureFiscalYear: Input[Date],
+  gicsIndustry: Input[String],
   /**Annual revenue in $M*/
-  annualRevenue: BigDecimal,
+  annualRevenue: Input[BigDecimal],
   /**In $M*/
-  marketCapital: BigDecimal,
-  proxyShares: BigDecimal,
+  marketCapital: Input[BigDecimal],
+  proxyShares: Input[BigDecimal],
   executives: Traversable[Executive]) 
 
 

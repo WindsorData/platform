@@ -19,11 +19,14 @@ import model.AnualCashCompensation
 import model.New8KData
 object SpreadsheetLoader {
 
-  def load(in: InputStream): Seq[Executive] = {
+  def load(in: InputStream): Company = {
     val wb = WorkbookFactory.create(in)
-    val sheet: Sheet = wb.getSheetAt(1)
+    
+    val executivesSheet: Sheet = wb.getSheetAt(1)
+    val executives = rows(executivesSheet).drop(3).grouped(6).map(toExecutive).toSeq
 
-    rows(sheet).drop(3).grouped(6).map(toExecutive).toSeq
+    val companiesSheet = wb.getSheetAt(0)
+    toCompany(executives)(rows(companiesSheet).drop(1))
   }
 
   class ColumnOrientedReader(rows: Seq[Row]) {
@@ -44,6 +47,16 @@ object SpreadsheetLoader {
         nextStringValue(4))
     }
   }
+  
+  def toCompany(executives: Seq[Executive])(rows: Seq[Row]) =  Company(
+        ticker = None,
+        name = None,
+        disclosureFiscalYear = None,
+        gicsIndustry = None,
+        annualRevenue = None,
+        marketCapital = None,
+        proxyShares = None,
+        executives = executives)
 
   def toExecutive(rows: Seq[Row]) = {
     val reader = new ColumnOrientedReader(rows)

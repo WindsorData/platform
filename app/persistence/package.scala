@@ -23,24 +23,23 @@ package object persistence {
 
   implicit def executive2DbObject(executive: Executive): DBO =
     MongoDBObject(
-      "title" -> (executive.title : DBO),
-      "shortTitle" -> (executive.shortTitle : DBO),
+      "title" -> (executive.title: DBO),
+      "shortTitle" -> (executive.shortTitle: DBO),
       "functionalMatch" -> (executive.functionalMatch: DBO),
-      "founder" -> (executive.founder : DBO),
+      "founder" -> (executive.founder: DBO),
       "carriedInterest" -> (executive.carriedInterest: DBO),
       "equityCompanyValue" -> (executive.equityCompanyValue: DBO))
 
   implicit def company2DbObject(company: Company) =
     MongoDBObject(
-      "ticker" -> company.ticker,
-      "name" -> company.name,
-      "disclosureFiscalYear" -> company.disclosureFiscalYear,
-      "gicsIndustry" -> company.gicsIndustry,
-      "annualRevenue" -> company.annualRevenue,
-      "marketCapital" -> company.marketCapital,
-      "proxyShares" -> company.proxyShares,
-      "executives" -> company.executives.map { x => x : DBO })
-      
+      "ticker" -> (company.ticker: DBO),
+      "name" -> (company.name: DBO),
+      "disclosureFiscalYear" -> (company.disclosureFiscalYear: DBO),
+      "gicsIndustry" -> (company.gicsIndustry: DBO),
+      "annualRevenue" -> (company.annualRevenue: DBO),
+      "marketCapital" -> (company.marketCapital: DBO),
+      "proxyShares" -> (company.proxyShares: DBO),
+      "executives" -> company.executives.map { x => x: DBO })
 
   implicit def company2DbObject(interest: CarriedInterest): DBO =
     MongoDBObject(

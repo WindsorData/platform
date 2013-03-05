@@ -22,12 +22,21 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
   describe("An importer") {
 
     it("should be able to import a company") {
-    	fail("not ready yet")
+      assert(loadSpreadsheet("CompanyValuesOnly.xlsx") ===
+        Company(
+          ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
+          name = Input(Some("coname"), Some("note coname"), None, None, None),
+          disclosureFiscalYear = Input(None, None, Some("http://google.com"), None, None),
+          gicsIndustry = None,
+          annualRevenue = None,
+          marketCapital = None,
+          proxyShares = None,
+          executives = Seq()))
     }
 
     it("should be able to import a single executive") {
       Assert.assertEquals(
-        loadSpreadsheet("FullValuesOnly.xlsx").take(1),
+        loadSpreadsheet("FullValuesOnly.xlsx").executives.take(1),
         Seq(
           Executive(
             name = Input(Some("ExecutiveName1"), None, None, None, None),
@@ -69,7 +78,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
     }
 
     it("should import Executives") {
-      assert(loadSpreadsheet("FullValuesOnly.xlsx") ===
+      assert(loadSpreadsheet("FullValuesOnly.xlsx").executives ===
         Seq(
           Executive(
             name = Input(Some("ExecutiveName1"), None, None, None, None),
@@ -149,8 +158,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
     }
 
     it("should import Executives with comments") {
-      val executives = loadSpreadsheet("FullValuesAndComments.xlsx")
-      assert(executives.take(1) ===
+      assert(loadSpreadsheet("FullValuesAndComments.xlsx").executives.take(1) ===
         Seq(
           Executive(
             name = Input(Some("ExecutiveName1"), None, Some("C1"), None, None),
@@ -198,7 +206,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
     }
 
     it("should import Executives with extra information") {
-      assert(loadSpreadsheet("FullValuesAndExtraInfo.xls").take(1) === Seq(
+      assert(loadSpreadsheet("FullValuesAndExtraInfo.xls").executives.take(1) === Seq(
         Executive(
           name = Input(Some("ExecutiveName1"), None, None, None, None),
           title = Input(Some("ExecutiveTitle1"), None, None, None, None),
