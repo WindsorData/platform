@@ -18,10 +18,14 @@ import org.apache.poi.ss.usermodel.Cell
 import org.junit.Assert
 
 @RunWith(classOf[JUnitRunner])
-class SpreadsheetLoaderSpec extends FunSpec {
+class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
   describe("An importer") {
 
-    it("should import a single executive") {
+    it("should be able to import a company") {
+    	fail("not ready yet")
+    }
+
+    it("should be able to import a single executive") {
       Assert.assertEquals(
         loadSpreadsheet("FullValuesOnly.xlsx").take(1),
         Seq(
@@ -230,38 +234,9 @@ class SpreadsheetLoaderSpec extends FunSpec {
               thresholdBonus = Input(Some(1.0), None, None, None, None),
               maxBonus = Input(Some(1.0), None, None, None, None),
               New8KData(
-                  Input(Some(1.0), None, None, None, None),
-                  Input(Some(1.0), None, None, None, None)))))))
+                Input(Some(1.0), None, None, None, None),
+                Input(Some(1.0), None, None, None, None)))))))
     }
-
-    it("should not ommit blanks") {
-      FileManager.load("test/input/MatrixWithBlanks.xlsx") {
-        x =>
-          {
-            import util.poi.Cells._
-            val wb = WorkbookFactory.create(x)
-            val sheet = wb.getSheetAt(0)
-
-            val r =
-              for (
-                row <- rows(sheet);
-                cell <- cells(row).take(6)
-              ) yield blankToNone(cell).map(_.getStringCellValue).getOrElse("_")
-
-            assert(r.toSeq ===
-              List("_", "a", "b", "c", "_", "d",
-                "e", "_", "f", "g", "_", "h",
-                "I", "j", "_", "k", "_", "l",
-                "_", "_", "_", "_", "_", "_",
-                "m", "n", "_", "_", "_", "o"))
-          }
-      }
-    }
-
-  }
-
-  def loadSpreadsheet(name: String) = {
-    FileManager.loadSpreadsheet("test/input/" + name)
   }
 
 }
