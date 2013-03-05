@@ -22,18 +22,24 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
   describe("An importer") {
 
     it("should be able to import a company") {
-      assert(loadSpreadsheet("CompanyValuesOnly.xlsx") ===
+      assert(
+        loadSpreadsheet("CompanyValuesAndNotes.xlsx") ===
         Company(
           ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
           name = Input(Some("coname"), Some("note coname"), None, None, None),
-          disclosureFiscalYear = Input(None, None, Some("http://google.com"), None, None),
+          disclosureFiscalYear = None,
           gicsIndustry = None,
           annualRevenue = None,
           marketCapital = None,
           proxyShares = None,
           executives = Seq()))
     }
-
+    
+    ignore("should be able to import links in companies values") {
+    	//Input(None, None, None, None, Some("http://google.com")
+      fail()
+    }
+    
     it("should be able to import a single executive") {
       Assert.assertEquals(
         loadSpreadsheet("FullValuesOnly.xlsx").executives.take(1),

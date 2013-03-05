@@ -9,6 +9,10 @@ import com.mongodb.casbah.Imports._
 
 package object persistence {
   type DBO = DBObject
+  
+//  implicit def any2MongoArrow(any: AnyRef) = new {
+//    def ~>[A <% DBO](other:A) = any -> (other : DBO)
+//  }
 
   implicit def input2DbObject[A](input: Input[A]): DBO =
     MongoDBObject(

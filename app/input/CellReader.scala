@@ -13,6 +13,7 @@ trait CellReader {
   def string = createInput(_.getStringCellValue)
   def boolean = createInput(_.getBooleanCellValue)
   def numeric = createInput(_.getNumericCellValue: BigDecimal)
+  def date = createInput(_.getDateCellValue)
   def skip(offset: Int) = for (_ <- 1 to offset) skip1
   def skip1: Unit
   def next: Seq[Cell]
@@ -48,6 +49,6 @@ class RowOrientedReader(rows: Seq[Row]) extends CellReader {
   private val rowIterator = rows.iterator
 
   override def skip1 = rowIterator.next
-  override def next = cells(rowIterator.next)
+  override def next = cells(rowIterator.next).drop(2) //harcoded offset
 
 }

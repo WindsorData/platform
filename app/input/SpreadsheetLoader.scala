@@ -30,10 +30,13 @@ object SpreadsheetLoader {
   }
 
   def toCompany(executives: Seq[Executive])(rows: Seq[Row]) = {
+    val reader = new RowOrientedReader(rows)
+    import reader._
+ 
     Company(
-      ticker = None,
-      name = None,
-      disclosureFiscalYear = None,
+      ticker = {skip(1); string},
+      name = string,
+      disclosureFiscalYear = date,
       gicsIndustry = None,
       annualRevenue = None,
       marketCapital = None,
