@@ -27,7 +27,9 @@ class PersistenceTest extends FunSuite {
   val executiveNoCashCompensations = Executive(Some("name"),
     Some("title"),
     Some("short"),
-    Some("functional"),
+    Some("CEO"),
+    None,
+    None,
     Some("founder"),
     Seq(),
     EquityCompanyValue(
@@ -52,7 +54,9 @@ class PersistenceTest extends FunSuite {
   val executiveWithCashCompensation = Executive(Some("name"),
     Some("title"),
     Some("short"),
-    Some("functional"),
+    Some("CEO"),
+    None,
+    None,
     Some("founder"),
     Seq(
       AnualCashCompensation(
