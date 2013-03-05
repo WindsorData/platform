@@ -5,22 +5,35 @@ case class Executive(
   /*Exec data*/
   name: Input[String],
   title: Input[String],
-  shortTitle: Input[String], 
+  shortTitle: Input[String],
   functionalMatch: Input[String],
+  functionalMatch1: Input[String],
+  functionalMatch2: Input[String],
   founder: Input[String],
-  cashCompensations : Seq[AnualCashCompensation],
+  cashCompensations: Seq[AnualCashCompensation],
   equityCompanyValue: EquityCompanyValue,
   carriedInterest: CarriedInterest) {
 
+  require(validFunctionalMatch,"Invalid Functional Match")
   def tdcPayRank: BigDecimal = ???
+  
+  def validFunctionalMatch =
+    functionalMatches.flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
+
+  def functionalMatches = Set(functionalMatch, functionalMatch1, functionalMatch2) 
+}
+
+object Executive {
+  val functionalMatchValues = Set("Bus Dev", "CAO", "CEO", "CFO", "Chmn", "CIO", "COO", "CSO",
+    "EVP", "GC", "GM", "Pres", "Sales", "SVP", "Treasr", "VP", "Other")
 }
 
 case class Input[T](
-    value: Option[T],
-    calc: Option[String],
-    comment: Option[String],
-    note: Option[String],
-    link: Option[String])
+  value: Option[T],
+  calc: Option[String],
+  comment: Option[String],
+  note: Option[String],
+  link: Option[String])
 
 case class EquityCompanyValue(
   optionsValue: Input[BigDecimal],
@@ -50,11 +63,10 @@ case class AnualCashCompensation(
   thresholdBonus: Input[BigDecimal],
   maxBonus: Input[BigDecimal],
   new8KData: New8KData)
-  
-  
+
 case class New8KData(
-    baseSalary: Input[BigDecimal],
-    targetBonus: Input[BigDecimal])  
+  baseSalary: Input[BigDecimal],
+  targetBonus: Input[BigDecimal])  
 
 //case class CashCompensation(anualRecords: Seq[AnualRecord]) {
 //  def currentTtdc = ???

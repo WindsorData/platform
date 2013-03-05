@@ -54,6 +54,8 @@ object SpreadsheetLoader {
       title = string,
       shortTitle = string,
       functionalMatch = string,
+      functionalMatch1 = string,
+      functionalMatch2 = string,
       founder = string,
       cashCompensations = Seq(
         AnualCashCompensation(

@@ -29,7 +29,9 @@ class SpreadsheetLoaderSpec extends FunSpec {
             name = Input(Some("ExecutiveName1"), None, None, None, None),
             title = Input(Some("ExecutiveTitle1"), None, None, None, None),
             shortTitle = Input(Some("ExTi1"), None, None, None, None),
-            functionalMatch = Input(Some("lala"), None, None, None, None),
+            functionalMatch = Input(Some("CAO"), None, None, None, None),
+            functionalMatch1 = Input(Some("COO"), None, None, None, None),
+            functionalMatch2 = Input(Some("CEO"), None, None, None, None),
             founder = Input(Some("lala"), None, None, None, None),
             carriedInterest = CarriedInterest(
               ownedShares = Input(Some(100), None, None, None, None),
@@ -69,7 +71,9 @@ class SpreadsheetLoaderSpec extends FunSpec {
             name = Input(Some("ExecutiveName1"), None, None, None, None),
             title = Input(Some("ExecutiveTitle1"), None, None, None, None),
             shortTitle = Input(Some("ExTi1"), None, None, None, None),
-            functionalMatch = Input(Some("lala"), None, None, None, None),
+            functionalMatch = Input(Some("CAO"), None, None, None, None),
+            functionalMatch1 = Input(Some("COO"), None, None, None, None),
+            functionalMatch2 = Input(Some("CEO"), None, None, None, None),
             founder = Input(Some("lala"), None, None, None, None),
             carriedInterest = CarriedInterest(
               ownedShares = Input(Some(100), None, None, None, None),
@@ -105,7 +109,9 @@ class SpreadsheetLoaderSpec extends FunSpec {
             name = Input(Some("ExecutiveName2"), None, None, None, None),
             title = Input(Some("ExecutiveTitle2"), None, None, None, None),
             shortTitle = Input(Some("ExTi2"), None, None, None, None),
-            functionalMatch = Input(Some("lala"), None, None, None, None),
+            functionalMatch = Input(Some("CEO"), None, None, None, None),
+            functionalMatch1 = Input(Some("COO"), None, None, None, None),
+            functionalMatch2 = Input(Some("CAO"), None, None, None, None),
             founder = Input(Some("lala"), None, None, None, None),
             carriedInterest = CarriedInterest(
               ownedShares = Input(Some(100), None, None, None, None),
@@ -146,7 +152,9 @@ class SpreadsheetLoaderSpec extends FunSpec {
             name = Input(Some("ExecutiveName1"), None, Some("C1"), None, None),
             title = Input(Some("ExecutiveTitle1"), None, Some("C2"), None, None),
             shortTitle = Input(Some("ExTi1"), None, Some("C3"), None, None),
-            functionalMatch = Input(Some("lala"), None, Some("C4"), None, None),
+            functionalMatch = Input(Some("CAO"), None, Some("C4"), None, None),
+            functionalMatch1 = Input(Some("CEO"), None, Some("fm1com"), None, None),
+            functionalMatch2 = Input(Some("COO"), None, Some("fm2com"), None, None),
             founder = Input(Some("lala"), None, Some("C5"), None, None),
             cashCompensations = Seq(
               AnualCashCompensation(
@@ -178,6 +186,12 @@ class SpreadsheetLoaderSpec extends FunSpec {
               tineVest = Input(Some(400), None, None, None, None),
               perfVest = Input(Some(500), None, None, None, None)))))
     }
+    
+    it("should throw IllegalArgumentException when there's an invalid functional value") {
+      intercept[IllegalArgumentException] {
+        loadSpreadsheet("InvalidFunctionalValue.xlsx")
+      }
+    }
 
     it("should import Executives with extra information") {
       assert(loadSpreadsheet("FullValuesAndExtraInfo.xls").take(1) === Seq(
@@ -185,7 +199,9 @@ class SpreadsheetLoaderSpec extends FunSpec {
           name = Input(Some("ExecutiveName1"), None, None, None, None),
           title = Input(Some("ExecutiveTitle1"), None, None, None, None),
           shortTitle = Input(Some("ExTi1"), None, None, None, None),
-          functionalMatch = Input(Some("lala"), None, None, None, None),
+          functionalMatch = Input(Some("CAO"), None, None, None, None),
+          functionalMatch1 = Input(Some("CEO"), None, None, None, None),
+          functionalMatch2 = Input(Some("COO"), None, None, None, None),
           founder = Input(Some("lala"), None, None, None, None),
           carriedInterest = CarriedInterest(
             ownedShares = Input(Some(100), None, None, None, None),
