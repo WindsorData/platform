@@ -8,6 +8,7 @@ import util.Closeables
 import util.FileManager
 import java.io.FileInputStream
 import com.mongodb.casbah.MongoClient
+import input.SpreadsheetWriter
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {

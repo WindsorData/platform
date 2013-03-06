@@ -14,13 +14,13 @@ case class Executive(
   equityCompanyValue: EquityCompanyValue,
   carriedInterest: CarriedInterest) {
 
-  require(validFunctionalMatch,"Invalid Functional Match")
+  require(validFunctionalMatch, "Invalid Functional Match")
   def tdcPayRank: BigDecimal = ???
-  
+
   def validFunctionalMatch =
     functionalMatches.flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
 
-  def functionalMatches = Set(functionalMatch, functionalMatch1, functionalMatch2) 
+  def functionalMatches = Set(functionalMatch, functionalMatch1, functionalMatch2)
 }
 
 object Executive {
@@ -34,8 +34,8 @@ case class Input[A](
   comment: Option[String],
   note: Option[String],
   link: Option[String]) {
-  
-  def map[B](f: A => B) = 
+
+  def map[B](f: A => B) =
     Input(value.map(f), calc, comment, note, link)
 }
 

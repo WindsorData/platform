@@ -62,6 +62,7 @@ package object persistence {
 
   implicit def company2DbObject(interest: CarriedInterest): DBO =
     MongoDBObject(
+//      'ownedShares ~> interest.ownedShares,
       'perfVest ~> interest.perfVest,
       'tineVest ~> interest.tineVest,
       'unvestedOptions ~> interest.unvestedOptions,

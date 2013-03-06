@@ -19,6 +19,7 @@ import model.New8KData
 import model.CompanyFiscalYear
 import java.util.GregorianCalendar
 import org.joda.time.DateTime
+
 object SpreadsheetLoader {
 
   def load(in: InputStream): Seq[CompanyFiscalYear] = {
