@@ -7,9 +7,16 @@ import java.io.InputStream
 import util.Closeables
 import util.FileManager
 import java.io.FileInputStream
+import com.mongodb.casbah.MongoClient
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
+  
+  import persistence._
+  import util.persistence._
+  registerBigDecimalConverter()
+
+  implicit val companiesCollection = MongoClient()("windsor")("companies")
 
   def index = Action {
     Ok(views.html.index())
@@ -18,7 +25,8 @@ object Application extends Controller {
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
       val executives = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
-      Ok("File uploaded at " + dataset.ref.file.getAbsolutePath + "\n\n with content: " + executives.toString)
+      executives.save()
+      Ok("File uploaded successfully")
     }.getOrElse {
       Redirect(routes.Application.index).flashing("error" -> "Missing file")
     }

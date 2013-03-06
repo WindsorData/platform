@@ -22,8 +22,7 @@ class PersistenceTest extends FunSuite {
   registerBigDecimalConverter()
 
   val db = MongoClient()("test")
-  val companies = db("companies")
-  val interests = db("carriedInterests")
+  implicit val testCollection = db("test")
 
   val executiveNoCashCompensations = Executive(
     Some("name"),
@@ -91,15 +90,14 @@ class PersistenceTest extends FunSuite {
       perfVest = Some(2: BigDecimal)))
 
   test("can persist executives") {
-    interests.insert(executiveNoCashCompensations)
+    executiveNoCashCompensations.save()
   }
 
   test("can persist executives with cash compensations") {
-    interests.insert(executiveWithCashCompensation)
+    executiveWithCashCompensation.save()
   }
 
   test("can persist companies") {
-    companies.insert(
       Company(
         Some("ticker"),
         Some("name"),
@@ -108,7 +106,7 @@ class PersistenceTest extends FunSuite {
         Some(2: BigDecimal),
         Some(2: BigDecimal),
         Some(2: BigDecimal),
-        Seq(executiveNoCashCompensations)))
+        Seq(executiveNoCashCompensations)).save()
   }
 
   test("can serialize input") {
