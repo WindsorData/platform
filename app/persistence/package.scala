@@ -9,6 +9,16 @@ import com.mongodb.casbah.Imports._
 
 package object persistence {
   type DBO = DBObject
+
+  implicit def company2RichCompany[A <% DBObject](company: A)(implicit collection: MongoCollection) =
+    new {
+      def save() {
+        collection.insert(company)
+      }
+    }
+
+
+  
   
   /**Conversions for creating mappings to mongo*/
   implicit def string2MongoArrow(key: Symbol) = new {
