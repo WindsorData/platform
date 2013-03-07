@@ -2,7 +2,7 @@ package model
 
 import java.util.Date
 
-case class Company(
+case class CompanyFiscalYear(
   ticker: Input[String],
   name: Input[String],
   disclosureFiscalYear: Input[Date],

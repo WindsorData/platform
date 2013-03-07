@@ -1,11 +1,11 @@
 import com.mongodb.DBObject
-import model.Company
 import model.CarriedInterest
 import model.EquityCompanyValue
 import com.mongodb.casbah.commons.MongoDBObject
 import model.Input
 import model.Executive
 import com.mongodb.casbah.Imports._
+import model.CompanyFiscalYear
 
 package object persistence {
   type DBO = DBObject
@@ -49,7 +49,7 @@ package object persistence {
       'carriedInterest ~> executive.carriedInterest,
       'equityCompanyValue ~> executive.equityCompanyValue)
   }
-  implicit def company2DbObject(company: Company) =
+  implicit def company2DbObject(company: CompanyFiscalYear) =
     MongoDBObject(
       'ticker ~> company.ticker,
       'name ~> company.name,
@@ -62,7 +62,6 @@ package object persistence {
 
   implicit def company2DbObject(interest: CarriedInterest): DBO =
     MongoDBObject(
-      'ownedShares ~> interest.ownedShares,
       'perfVest ~> interest.perfVest,
       'tineVest ~> interest.tineVest,
       'unvestedOptions ~> interest.unvestedOptions,

@@ -24,7 +24,7 @@ object Application extends Controller {
 
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
-      val executives = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
+      val executives = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath).head
       executives.save()
       Ok("File uploaded successfully")
     }.getOrElse {
