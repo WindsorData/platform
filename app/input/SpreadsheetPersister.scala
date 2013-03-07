@@ -8,7 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.OutputStream
 object SpreadsheetPersister {
  
-  def persist(companies: Traversable[Company], out: OutputStream) {
+  def persist(companies: Traversable[CompanyFiscalYear], out: OutputStream) {
 //    val wb = new XSSFWorkbook()
 //    val sheet = wb.createSheet("Report")
 //    companies.foreachWithIndex { (company, index) =>

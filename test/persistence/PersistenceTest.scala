@@ -24,34 +24,6 @@ class PersistenceTest extends FunSuite {
   val db = MongoClient()("test")
   implicit val testCollection = db("test")
 
-  val executiveNoCashCompensations = Executive(
-    Some("name"),
-    Some("title"),
-    Some("short"),
-    Some("CEO"),
-    None,
-    None,
-    Some("founder"),
-    Seq(),
-    EquityCompanyValue(
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal),
-      Some(1: BigDecimal)),
-    CarriedInterest(
-      ownedShares = Some(4: BigDecimal),
-      vestedOptions = Some(43: BigDecimal),
-      unvestedOptions = None,
-      tineVest = None,
-      perfVest = Some(2: BigDecimal)))
   val executiveWithCashCompensation = Executive(Some("name"),
     Some("title"),
     Some("short"),
@@ -59,7 +31,6 @@ class PersistenceTest extends FunSuite {
     None,
     None,
     Some("founder"),
-    Seq(
       AnualCashCompensation(
         Some(1: BigDecimal),
         Some(1: BigDecimal),
@@ -68,7 +39,7 @@ class PersistenceTest extends FunSuite {
         Some(1: BigDecimal),
         New8KData(
           Some(1: BigDecimal),
-          Some(1: BigDecimal)))),
+          Some(1: BigDecimal))),
     EquityCompanyValue(
       Some(1: BigDecimal),
       Some(1: BigDecimal),
@@ -89,16 +60,14 @@ class PersistenceTest extends FunSuite {
       tineVest = None,
       perfVest = Some(2: BigDecimal)))
 
-  test("can persist executives") {
-    executiveNoCashCompensations.save()
-  }
+
 
   test("can persist executives with cash compensations") {
     executiveWithCashCompensation.save()
   }
 
   test("can persist companies") {
-      Company(
+      CompanyFiscalYear(
         Some("ticker"),
         Some("name"),
         Some(new Date()),
@@ -106,7 +75,7 @@ class PersistenceTest extends FunSuite {
         Some(2: BigDecimal),
         Some(2: BigDecimal),
         Some(2: BigDecimal),
-        Seq(executiveNoCashCompensations)).save()
+        Seq(executiveWithCashCompensation)).save()
   }
 
   test("can serialize input") {

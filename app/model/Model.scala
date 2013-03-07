@@ -10,7 +10,7 @@ case class Executive(
   functionalMatch1: Input[String],
   functionalMatch2: Input[String],
   founder: Input[String],
-  cashCompensations: Seq[AnualCashCompensation],
+  cashCompensations: AnualCashCompensation,
   equityCompanyValue: EquityCompanyValue,
   carriedInterest: CarriedInterest) {
 
@@ -28,12 +28,16 @@ object Executive {
     "EVP", "GC", "GM", "Pres", "Sales", "SVP", "Treasr", "VP", "Other")
 }
 
-case class Input[T](
-  value: Option[T],
+case class Input[A](
+  value: Option[A],
   calc: Option[String],
   comment: Option[String],
   note: Option[String],
-  link: Option[String])
+  link: Option[String]) {
+  
+  def map[B](f: A => B) = 
+    Input(value.map(f), calc, comment, note, link)
+}
 
 case class EquityCompanyValue(
   optionsValue: Input[BigDecimal],
