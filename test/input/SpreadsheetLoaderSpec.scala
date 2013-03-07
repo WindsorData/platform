@@ -16,6 +16,9 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.ss.usermodel.Cell
 import org.junit.Assert
+import java.util.Date
+import java.text.SimpleDateFormat
+import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
 class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
@@ -334,13 +337,13 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
               Input(Some(1.0), None, None, None, None))))))))
     }
 
-    ignore("should import 2 companiesFiscalYears with multiple executives") {
-      Assert.assertEquals(loadSpreadsheet("MultipleSheets.xls").toString,
+    it("should import 2 companiesFiscalYears with multiple executives") {
+      assert(loadSpreadsheet("MultipleSheets.xls").init ===
         Seq(
           CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
             name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = None,
+            disclosureFiscalYear = Some(new DateTime(2011, 12, 31, 0, 0, 0, 0).toDate()),
             gicsIndustry = None,
             annualRevenue = None,
             marketCapital = None,
@@ -423,7 +426,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
           CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
             name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = None,
+            disclosureFiscalYear = Some(new DateTime(2010, 12, 31, 0, 0, 0, 0).toDate()),
             gicsIndustry = None,
             annualRevenue = None,
             marketCapital = None,
@@ -438,11 +441,11 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                 functionalMatch2 = Input(Some("CEO"), None, None, None, None),
                 founder = Input(Some("lala"), None, None, None, None),
                 carriedInterest = CarriedInterest(
-                  ownedShares = Input(Some(500), None, None, None, None),
-                  vestedOptions = Input(Some(600), None, None, None, None),
-                  unvestedOptions = Input(Some(700), None, None, None, None),
-                  tineVest = Input(Some(800), None, None, None, None),
-                  perfVest = Input(Some(900), None, None, None, None)),
+                  ownedShares = Input(Some(600), None, None, None, None),
+                  vestedOptions = Input(Some(700), None, None, None, None),
+                  unvestedOptions = Input(Some(800), None, None, None, None),
+                  tineVest = Input(Some(900), None, None, None, None),
+                  perfVest = Input(Some(1000), None, None, None, None)),
                 equityCompanyValue = EquityCompanyValue(
                   optionsValue = Input(Some(1), None, None, None, None),
                   options = Input(Some(1), None, None, None, None),
@@ -475,11 +478,11 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                 functionalMatch2 = Input(Some("CAO"), None, None, None, None),
                 founder = Input(Some("lala"), None, None, None, None),
                 carriedInterest = CarriedInterest(
-                  ownedShares = Input(Some(500), None, None, None, None),
-                  vestedOptions = Input(Some(600), None, None, None, None),
-                  unvestedOptions = Input(Some(700), None, None, None, None),
-                  tineVest = Input(Some(800), None, None, None, None),
-                  perfVest = Input(Some(900), None, None, None, None)),
+                  ownedShares = Input(Some(600), None, None, None, None),
+                  vestedOptions = Input(Some(700), None, None, None, None),
+                  unvestedOptions = Input(Some(800), None, None, None, None),
+                  tineVest = Input(Some(900), None, None, None, None),
+                  perfVest = Input(Some(1000), None, None, None, None)),
                 equityCompanyValue = EquityCompanyValue(
                   optionsValue = Input(Some(1), None, None, None, None),
                   options = Input(Some(1), None, None, None, None),
@@ -506,7 +509,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
           CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
             name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = None,
+            disclosureFiscalYear = Some(new DateTime(2009, 12, 31, 0, 0, 0, 0).toDate()),
             gicsIndustry = None,
             annualRevenue = None,
             marketCapital = None,
@@ -521,11 +524,11 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                 functionalMatch2 = Input(Some("CEO"), None, None, None, None),
                 founder = Input(Some("lala"), None, None, None, None),
                 carriedInterest = CarriedInterest(
-                  ownedShares = Input(Some(500), None, None, None, None),
-                  vestedOptions = Input(Some(600), None, None, None, None),
-                  unvestedOptions = Input(Some(700), None, None, None, None),
-                  tineVest = Input(Some(800), None, None, None, None),
-                  perfVest = Input(Some(900), None, None, None, None)),
+                  ownedShares = Input(Some(1100), None, None, None, None),
+                  vestedOptions = Input(Some(1200), None, None, None, None),
+                  unvestedOptions = Input(Some(1300), None, None, None, None),
+                  tineVest = Input(Some(1400), None, None, None, None),
+                  perfVest = Input(Some(1500), None, None, None, None)),
                 equityCompanyValue = EquityCompanyValue(
                   optionsValue = Input(Some(1), None, None, None, None),
                   options = Input(Some(1), None, None, None, None),
@@ -558,11 +561,11 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                 functionalMatch2 = Input(Some("CAO"), None, None, None, None),
                 founder = Input(Some("lala"), None, None, None, None),
                 carriedInterest = CarriedInterest(
-                  ownedShares = Input(Some(500), None, None, None, None),
-                  vestedOptions = Input(Some(600), None, None, None, None),
-                  unvestedOptions = Input(Some(700), None, None, None, None),
-                  tineVest = Input(Some(800), None, None, None, None),
-                  perfVest = Input(Some(900), None, None, None, None)),
+                  ownedShares = Input(Some(1100), None, None, None, None),
+                  vestedOptions = Input(Some(1200), None, None, None, None),
+                  unvestedOptions = Input(Some(1300), None, None, None, None),
+                  tineVest = Input(Some(1400), None, None, None, None),
+                  perfVest = Input(Some(1500), None, None, None, None)),
                 equityCompanyValue = EquityCompanyValue(
                   optionsValue = Input(Some(1), None, None, None, None),
                   options = Input(Some(1), None, None, None, None),
@@ -584,7 +587,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                   Input(Some(1.0), None, None, None, None),
                   New8KData(
                     Input(Some(1.0), None, None, None, None),
-                    Input(Some(1.0), None, None, None, None))))))).toString)
+                    Input(Some(1.0), None, None, None, None))))))))
     }
   }
 
