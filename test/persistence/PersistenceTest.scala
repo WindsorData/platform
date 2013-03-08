@@ -70,7 +70,7 @@ class PersistenceTest extends FunSuite {
       CompanyFiscalYear(
         Some("ticker"),
         Some("name"),
-        Some(new Date()),
+        Some(1),
         Some("gicsIndustry"),
         Some(2: BigDecimal),
         Some(2: BigDecimal),

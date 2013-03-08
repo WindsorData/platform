@@ -343,7 +343,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
           CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
             name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = Some(new DateTime(2011, 12, 31, 0, 0, 0, 0).toDate()),
+            disclosureFiscalYear = Some(2011),
             gicsIndustry = None,
             annualRevenue = None,
             marketCapital = None,
@@ -426,7 +426,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
           CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
             name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = Some(new DateTime(2010, 12, 31, 0, 0, 0, 0).toDate()),
+            disclosureFiscalYear = Some(2010),
             gicsIndustry = None,
             annualRevenue = None,
             marketCapital = None,
@@ -509,7 +509,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
           CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
             name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = Some(new DateTime(2009, 12, 31, 0, 0, 0, 0).toDate()),
+            disclosureFiscalYear = Some(2009),
             gicsIndustry = None,
             annualRevenue = None,
             marketCapital = None,

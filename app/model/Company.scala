@@ -5,14 +5,14 @@ import java.util.Date
 case class CompanyFiscalYear(
   ticker: Input[String],
   name: Input[String],
-  disclosureFiscalYear: Input[Date],
+  disclosureFiscalYear: Input[Int],
   gicsIndustry: Input[String],
   /**Annual revenue in $M*/
   annualRevenue: Input[BigDecimal],
   /**In $M*/
   marketCapital: Input[BigDecimal],
   proxyShares: Input[BigDecimal],
-  executives: Traversable[Executive]) 
+  executives: Traversable[Executive])
 
 
 //TODO
