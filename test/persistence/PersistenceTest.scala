@@ -64,7 +64,11 @@ class PersistenceTest extends FunSuite {
   }
 
   test("can persist companies") {
-      CompanyFiscalYear(None,None,None, Seq(executiveWithCashCompensation)).save()
+      CompanyFiscalYear(
+        SimpleInput(Some("ticker"), None, None),
+        SimpleInput(Some("name"), None, None),
+        SimpleInput(Some(1), None, None),
+        Seq(executiveWithCashCompensation)).save()
   }
 
   test("can serialize input") {

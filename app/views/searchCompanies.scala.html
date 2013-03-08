@@ -1,0 +1,17 @@
+@(companyForm: Form[(String,String)])
+@import helper._
+
+@main("Search Companies") {
+    
+    @form(routes.Application.doSearch) {
+        
+        @inputText(companyForm("Company Name"))
+        @inputText(companyForm("Company Fiscal Year")) 
+        
+        <input type="submit" value="Search">
+        
+    }
+    
+    <a href="/companies">Home</a>
+    
+}

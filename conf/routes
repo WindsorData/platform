@@ -3,14 +3,21 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                                       controllers.Application.index
 
 #REST API
 ##Company
 
-GET     /companies                  controllers.Application.companies
-POST    /companies                  controllers.Application.newCompany
-POST    /company                    controllers.Application.company
+##Main page
+GET     /companies                              controllers.Application.companies
+
+##Upload Companies
+GET     /companies/reports                      controllers.Application.reports
+POST    /companies/reports                      controllers.Application.newCompany
+
+##Query a Company
+GET     /companies/search                       controllers.Application.searchCompany
+POST    /companies/search                       controllers.Application.doSearch
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
