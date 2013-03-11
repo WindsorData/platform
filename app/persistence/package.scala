@@ -9,6 +9,7 @@ import model.CompanyFiscalYear
 
 package object persistence {
   type DBO = DBObject
+  val windsorDB = MongoClient()("windsor")
 
   implicit def company2RichCompany[A <% DBObject](company: A)(implicit collection: MongoCollection) =
     new {
@@ -17,16 +18,24 @@ package object persistence {
       }
     }
 
-
+  def findAllCompanies = windsorDB("companies")
+  
+  def findCompanyBy(name: String) = windsorDB("companies").find(MongoDBObject("ticker.value" -> name))
+//    windsorDB("companies").find({"ticker.value":  "ticker", "disclosureFiscalYear.value": 2011})
+  def findCompanyBy(name: String, year: Int) = 
+    windsorDB("companies").findOne(MongoDBObject("ticker.value" -> name, "disclosureFiscalYear.value" -> year))
+  
   
   
   /**Conversions for creating mappings to mongo*/
   implicit def string2MongoArrow(key: Symbol) = new {
     
-    def ~>[A <% DBO](value:A) : (String, DBO) = (key.toString, value : DBO)
+    def ~>[A <% DBO](value:A) : (String, DBO) = (toString(key), value : DBO)
     
     def ~>[A <% DBO](value:Traversable[A]) : (String, Traversable[DBO]) = 
-      	(key.toString, value.map { x => (x : DBO) } )
+      	(toString(key), value.map { x => (x : DBO) } )
+      	
+    def toString(s: Symbol) = s.toString.drop(1)   	
   }
   
   implicit def input2DbObject[A](input: Input[A]): DBO =

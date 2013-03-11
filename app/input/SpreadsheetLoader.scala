@@ -42,7 +42,7 @@ object SpreadsheetLoader {
     CompanyFiscalYear(
       ticker = {skip(1); string},
       name = string,
-      disclosureFiscalYear = date.map(new DateTime(_).minusYears(fiscalYearOffest).toDate()),
+      disclosureFiscalYear = date.map(new DateTime(_).minusYears(fiscalYearOffest).getYear()),
       gicsIndustry = None,
       annualRevenue = None,
       marketCapital = None,
