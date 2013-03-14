@@ -27,9 +27,7 @@ class PersistenceTest extends FunSuite {
   val executiveWithCashCompensation = Executive(Some("name"),
     Some("title"),
     Some("short"),
-    Some("CEO"),
-    None,
-    None,
+    Traversable(Some("CEO"),None,None),
     Some("founder"),
       AnualCashCompensation(
         Some(1: BigDecimal),

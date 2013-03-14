@@ -6,9 +6,7 @@ case class Executive(
   name: Input[String],
   title: Input[String],
   shortTitle: Input[String],
-  functionalMatch: Input[String],
-  functionalMatch1: Input[String],
-  functionalMatch2: Input[String],
+  functionalMatches: Traversable[Input[String]],
   founder: Input[String],
   cashCompensations: AnualCashCompensation,
   equityCompanyValue: EquityCompanyValue,
@@ -18,9 +16,13 @@ case class Executive(
   def tdcPayRank: BigDecimal = ???
 
   def validFunctionalMatch =
-    functionalMatches.flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
+    functionalMatches.toSet[Input[String]].flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
 
-  def functionalMatches = Set(functionalMatch, functionalMatch1, functionalMatch2)
+  def functionalMatch(n: Int, fmatches: Traversable[Input[String]] = functionalMatches): Input[String] =
+    n match {
+      case 1 => fmatches.head
+      case x => if (x < 0) throw new IllegalArgumentException else functionalMatch(n - 1, fmatches.tail)
+    }
 }
 
 object Executive {
@@ -37,7 +39,7 @@ case class Input[A](
 
   def map[B](f: A => B) =
     Input(value.map(f), calc, comment, note, link)
-    
+
   def toSimpleInput = SimpleInput(value = value, note = note, link = link)
 }
 
@@ -49,7 +51,6 @@ object SimpleInput {
     link: Option[String]) = Input(value, None, None, note, link)
 
 }
-
 
 case class EquityCompanyValue(
   optionsValue: Input[BigDecimal],

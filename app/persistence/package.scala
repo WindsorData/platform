@@ -51,9 +51,7 @@ package object persistence {
       'name ~> executive.name,
       'title ~> executive.title,
       'shortTitle ~> executive.shortTitle,
-      'functionalMatch ~> executive.functionalMatch,
-      'functionalMatch1 ~> executive.functionalMatch1,
-      'functionalMatch2 ~> executive.functionalMatch2,
+      'functionalMatches ~> executive.functionalMatches,
       'founder ~> executive.founder,
       'carriedInterest ~> executive.carriedInterest,
       'equityCompanyValue ~> executive.equityCompanyValue,
@@ -102,18 +100,27 @@ package object persistence {
       'price2 ~> value.price2,
       'perfCash ~> value.perfCash)
 
-  def fetch[A](key: String)(implicit executive: DBO): Input[A] =
+  def makeInput[A](it: DBO) = Input(
+      Option(it.get("value").asInstanceOf[A]),
+      Option(it.get("calc").asInstanceOf[String]),
+      Option(it.get("comment").asInstanceOf[String]),
+      Option(it.get("note").asInstanceOf[String]),
+      Option(it.get("link").asInstanceOf[String]))
+      
+  def fetch[A](key: String)(implicit executive: DBO): Input[A] = {
+
     executive.get(key) match {
       case null => None
-      case it: DBO =>
-        Input(
-          Option(it.get("value").asInstanceOf[A]),
-          Option(it.get("calc").asInstanceOf[String]),
-          Option(it.get("comment").asInstanceOf[String]),          
-          Option(it.get("note").asInstanceOf[String]),
-          Option(it.get("link").asInstanceOf[String]))
+      case it: DBO => makeInput(it)
     }
+  }
 
+  def fetchDBList[A](key: String)(implicit executive: DBO): Traversable[Input[A]] = 
+    executive.get(key) match {
+    	case Nil => List(None, None, None)
+    	case its: BasicDBList => its.map[Input[A],Traversable[Input[A]]](x => makeInput(x.asInstanceOf[DBO]))
+  }
+  
   implicit def dbObject2CarriedInteres(interest: DBO): CarriedInterest = {
     implicit val dbo = interest
     CarriedInterest(
@@ -129,9 +136,7 @@ package object persistence {
       name = fetch("name"),
       title = fetch("title"),
       shortTitle = fetch("shortTitle"),
-      functionalMatch = fetch("functionalMatch"),
-      functionalMatch1 = fetch("functionalMatch1"),
-      functionalMatch2 = fetch("functionalMatch2"),
+      functionalMatches = fetchDBList("functionalMatches"),
       founder = fetch("founder"),
       carriedInterest = executive.get("carriedInterest").asInstanceOf[DBO],
       equityCompanyValue = executive.get("equityCompanyValue").asInstanceOf[DBO],

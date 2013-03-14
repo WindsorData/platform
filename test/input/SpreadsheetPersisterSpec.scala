@@ -45,9 +45,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input(Some("ExecutiveName23"), None, None, None, None),
                   title = Input(Some("ExecutiveTitle23"), None, None, None, None),
                   shortTitle = Input(Some("ExTi23"), None, None, None, None),
-                  functionalMatch = Input(Some("CAO"), None, None, None, None),
-                  functionalMatch1 = Input(Some("COO"), None, None, None, None),
-                  functionalMatch2 = Input(Some("CEO"), None, None, None, None),
+                  functionalMatches = ArrayBuffer(Some("CAO"),Some("COO"),Some("CEO")),
                   founder = Input(Some("lala"), None, None, None, None),
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(Some(100.0), None, None, None, None),
@@ -86,9 +84,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input(Some("ExecutiveName12"), None, None, None, None),
                   title = Input(Some("ExecutiveTitle12"), None, None, None, None),
                   shortTitle = Input(Some("ExTi12"), None, None, None, None),
-                  functionalMatch = Input(Some("CAO"), None, None, None, None),
-                  functionalMatch1 = Input(Some("COO"), None, None, None, None),
-                  functionalMatch2 = Input(Some("CEO"), None, None, None, None),
+                  functionalMatches = ArrayBuffer(Some("CAO"),Some("COO"),Some("CEO")),
                   founder = Input(Some("lala"), None, None, None, None),
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(Some(100.0), None, None, None, None),
@@ -136,9 +132,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input(Some("ExecutiveName1"), None, None, None, None),
                   title = Input(Some("ExecutiveTitle1"), None, None, None, None),
                   shortTitle = Input(Some("ExTi1"), None, None, None, None),
-                  functionalMatch = Input(Some("CAO"), None, None, None, None),
-                  functionalMatch1 = Input(Some("COO"), None, None, None, None),
-                  functionalMatch2 = Input(Some("CEO"), None, None, None, None),
+                  functionalMatches = ArrayBuffer(Some("CAO"),Some("COO"),Some("CEO")),
                   founder = Input(Some("lala"), None, None, None, None),
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(Some(100), None, None, None, None),
@@ -171,9 +165,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
           name = Input(Some("ExecutiveName2"), None, None, None, None),
           title = Input(Some("ExecutiveTitle2"), None, None, None, None),
           shortTitle = Input(Some("ExTi2"), None, None, None, None),
-          functionalMatch = Input(Some("CEO"), None, None, None, None),
-          functionalMatch1 = Input(Some("COO"), None, None, None, None),
-          functionalMatch2 = Input(Some("CAO"), None, None, None, None),
+          functionalMatches = ArrayBuffer(Some("CEO"),Some("COO"),Some("CAO")),
           founder = Input(Some("lala"), None, None, None, None),
           carriedInterest = CarriedInterest(
             ownedShares = Input(Some(100), None, None, None, None),
