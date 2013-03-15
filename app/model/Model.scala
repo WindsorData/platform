@@ -15,19 +15,36 @@ case class Executive(
   require(validFunctionalMatch, "Invalid Functional Match")
   def tdcPayRank: BigDecimal = ???
 
+  def functionalMatch(n: Int): Input[String] =
+    try {
+      functionalMatches.toList(n - 1)
+    } catch {
+      case e: IndexOutOfBoundsException => None
+    }
+
   def validFunctionalMatch =
     functionalMatches.toSet[Input[String]].flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
 
-  def functionalMatch(n: Int, fmatches: Traversable[Input[String]] = functionalMatches): Input[String] =
-    n match {
-      case 1 => fmatches.head
-      case x => if (x < 0) throw new IllegalArgumentException else functionalMatch(n - 1, fmatches.tail)
-    }
 }
 
 object Executive {
-  val functionalMatchValues = Set("Bus Dev", "CAO", "CEO", "CFO", "Chmn", "CIO", "COO", "CSO",
-    "EVP", "GC", "GM", "Pres", "Sales", "SVP", "Treasr", "VP", "Other")
+  val functionalMatchValues = Set("Bus Dev (Business Development)",
+    "CAO (Chief Admin Officer)",
+    "CEO (Chief Executive Officer)",
+    "CFO (Chief Financial Officer)",
+    "Chmn (Chairman)",
+    "CIO (Chief Investment Officer)",
+    "COO (Chief Operating Officer)",
+    "CSO (Chief Science Officer)",
+    "EVP (Executive Vice President)",
+    "GC (General Counsel)",
+    "GM (General Manager)",
+    "Pres (President)",
+    "Sales",
+    "SVP (Senior Vice President)",
+    "Treasr (Treasurer)",
+    "VP (Vice President)",
+    "Other")
 }
 
 case class Input[A](
