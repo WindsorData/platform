@@ -28,19 +28,10 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
       assert(
         loadSpreadsheet("CompanyValuesAndNotes.xlsx") ===
           Seq(CompanyFiscalYear(
-            ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
-            name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = None,
-            gicsIndustry = None,
-            annualRevenue = None,
-            marketCapital = None,
-            proxyShares = None,
+            ticker = SimpleInput(Some("ticker"), Some("note ticker"), Some("http://alink.com")),
+            name = SimpleInput(Some("coname"), Some("note coname"), Some("http://anotherlink.com")),
+            disclosureFiscalYear = SimpleInput(None, None, None),
             executives = Seq())))
-    }
-
-    ignore("should be able to import links in companies values") {
-      //Input(None, None, None, None, Some("http://google.com")
-      fail()
     }
 
     it("should be able to import a single executive") {
@@ -56,7 +47,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
             functionalMatch2 = Some("CEO"),
             founder = Some("lala"),
             carriedInterest = CarriedInterest(
-              ownedShares = Input(Some(100), None, None, None, None),
+              ownedShares = Some(100: BigDecimal),
               vestedOptions = Input(Some(200), None, None, None, None),
               unvestedOptions = Input(Some(300), None, None, None, None),
               tineVest = Input(Some(400), None, None, None, None),
@@ -66,8 +57,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
               options = Input(Some(1), None, None, None, None),
               exPrice = Input(Some(1), None, None, None, None),
               bsPercentage = Input(Some(1), None, None, None, None),
-              timeVest = Input(Some(1), None, None, None, None),
-              rsValue = Input(Some(1), None, None, None, None),
+              timeVestRsValue = Input(Some(1), None, None, None, None),
               shares = Input(Some(1), None, None, None, None),
               price = Input(Some(1), None, None, None, None),
               perfRSValue = Input(Some(1), None, None, None, None),
@@ -107,8 +97,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
               options = Input(Some(1), None, None, None, None),
               exPrice = Input(Some(1), None, None, None, None),
               bsPercentage = Input(Some(1), None, None, None, None),
-              timeVest = Input(Some(1), None, None, None, None),
-              rsValue = Input(Some(1), None, None, None, None),
+              timeVestRsValue = Input(Some(1), None, None, None, None),
               shares = Input(Some(1), None, None, None, None),
               price = Input(Some(1), None, None, None, None),
               perfRSValue = Input(Some(1), None, None, None, None),
@@ -144,8 +133,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
               options = Input(Some(1), None, None, None, None),
               exPrice = Input(Some(1), None, None, None, None),
               bsPercentage = Input(Some(1), None, None, None, None),
-              timeVest = Input(Some(1), None, None, None, None),
-              rsValue = Input(Some(1), None, None, None, None),
+              timeVestRsValue = Input(Some(1), None, None, None, None),
               shares = Input(Some(1), None, None, None, None),
               price = Input(Some(1), None, None, None, None),
               perfRSValue = Input(Some(1), None, None, None, None),
@@ -188,8 +176,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
               options = Input(Some(1), None, Some("C14"), None, None),
               exPrice = Input(Some(1), None, Some("C15"), None, None),
               bsPercentage = Input(Some(1), None, None, None, None),
-              timeVest = Input(Some(1), None, None, None, None),
-              rsValue = Input(Some(1), None, None, None, None),
+              timeVestRsValue = Input(Some(1), None, None, None, None),
               shares = Input(Some(1), None, None, None, None),
               price = Input(Some(1), None, None, None, None),
               perfRSValue = Input(Some(1), None, None, None, None),
@@ -231,8 +218,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
             options = Input(Some(1), None, None, None, None),
             exPrice = Input(Some(1), None, None, None, None),
             bsPercentage = Input(Some(1), None, None, None, None),
-            timeVest = Input(Some(1), None, None, None, None),
-            rsValue = Input(Some(1), None, None, None, None),
+            timeVestRsValue = Input(Some(1), None, None, None, None),
             shares = Input(Some(1), None, None, None, None),
             price = Input(Some(1), None, None, None, None),
             perfRSValue = Input(Some(1), None, None, None, None),
@@ -254,13 +240,9 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
       assert(loadSpreadsheet("CompanyFiscalYearAndOneSheet.xlsx") ===
         Seq(
           CompanyFiscalYear(
-            ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
-            name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = None,
-            gicsIndustry = None,
-            annualRevenue = None,
-            marketCapital = None,
-            proxyShares = None,
+            ticker = SimpleInput(Some("ticker"), Some("note ticker"), None),
+            name = SimpleInput(Some("coname"), Some("note coname"), None),
+            disclosureFiscalYear = SimpleInput(Some(2012), None, None),
             executives =
               Seq(
                 Executive(
@@ -282,8 +264,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                     options = Input(Some(1), None, None, None, None),
                     exPrice = Input(Some(1), None, None, None, None),
                     bsPercentage = Input(Some(1), None, None, None, None),
-                    timeVest = Input(Some(1), None, None, None, None),
-                    rsValue = Input(Some(1), None, None, None, None),
+                    timeVestRsValue = Input(Some(1), None, None, None, None),
                     shares = Input(Some(1), None, None, None, None),
                     price = Input(Some(1), None, None, None, None),
                     perfRSValue = Input(Some(1), None, None, None, None),
@@ -318,8 +299,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
             options = Input(Some(1), None, None, None, None),
             exPrice = Input(Some(1), None, None, None, None),
             bsPercentage = Input(Some(1), None, None, None, None),
-            timeVest = Input(Some(1), None, None, None, None),
-            rsValue = Input(Some(1), None, None, None, None),
+            timeVestRsValue = Input(Some(1), None, None, None, None),
             shares = Input(Some(1), None, None, None, None),
             price = Input(Some(1), None, None, None, None),
             perfRSValue = Input(Some(1), None, None, None, None),
@@ -341,13 +321,9 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
       assert(loadSpreadsheet("MultipleSheets.xls").init ===
         Seq(
           CompanyFiscalYear(
-            ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
-            name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = Some(2011),
-            gicsIndustry = None,
-            annualRevenue = None,
-            marketCapital = None,
-            proxyShares = None,
+            ticker = SimpleInput(Some("ticker"), Some("note ticker"), None),
+            name = SimpleInput(Some("coname"), Some("note coname"), None),
+            disclosureFiscalYear = SimpleInput(Some(2011), None, None),
             executives =
               Seq(
                 Executive(
@@ -369,8 +345,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                     options = Input(Some(1), None, None, None, None),
                     exPrice = Input(Some(1), None, None, None, None),
                     bsPercentage = Input(Some(1), None, None, None, None),
-                    timeVest = Input(Some(1), None, None, None, None),
-                    rsValue = Input(Some(1), None, None, None, None),
+                    timeVestRsValue = Input(Some(1), None, None, None, None),
                     shares = Input(Some(1), None, None, None, None),
                     price = Input(Some(1), None, None, None, None),
                     perfRSValue = Input(Some(1), None, None, None, None),
@@ -406,8 +381,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                     options = Input(Some(1), None, None, None, None),
                     exPrice = Input(Some(1), None, None, None, None),
                     bsPercentage = Input(Some(1), None, None, None, None),
-                    timeVest = Input(Some(1), None, None, None, None),
-                    rsValue = Input(Some(1), None, None, None, None),
+                    timeVestRsValue = Input(Some(1), None, None, None, None),
                     shares = Input(Some(1), None, None, None, None),
                     price = Input(Some(1), None, None, None, None),
                     perfRSValue = Input(Some(1), None, None, None, None),
@@ -424,13 +398,9 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                       Input(Some(1.0), None, None, None, None),
                       Input(Some(1.0), None, None, None, None)))))),
           CompanyFiscalYear(
-            ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
-            name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = Some(2010),
-            gicsIndustry = None,
-            annualRevenue = None,
-            marketCapital = None,
-            proxyShares = None,
+            ticker = SimpleInput(Some("ticker"), Some("note ticker"), None),
+            name = SimpleInput(Some("coname"), Some("note coname"), None),
+            disclosureFiscalYear = SimpleInput(Some(2010),None, None),
             executives = Seq(
               Executive(
                 name = Input(Some("ExecutiveName1"), None, None, None, None),
@@ -451,8 +421,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                   options = Input(Some(1), None, None, None, None),
                   exPrice = Input(Some(1), None, None, None, None),
                   bsPercentage = Input(Some(1), None, None, None, None),
-                  timeVest = Input(Some(1), None, None, None, None),
-                  rsValue = Input(Some(1), None, None, None, None),
+                  timeVestRsValue = Input(Some(1), None, None, None, None),
                   shares = Input(Some(1), None, None, None, None),
                   price = Input(Some(1), None, None, None, None),
                   perfRSValue = Input(Some(1), None, None, None, None),
@@ -488,8 +457,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                   options = Input(Some(1), None, None, None, None),
                   exPrice = Input(Some(1), None, None, None, None),
                   bsPercentage = Input(Some(1), None, None, None, None),
-                  timeVest = Input(Some(1), None, None, None, None),
-                  rsValue = Input(Some(1), None, None, None, None),
+                  timeVestRsValue = Input(Some(1), None, None, None, None),
                   shares = Input(Some(1), None, None, None, None),
                   price = Input(Some(1), None, None, None, None),
                   perfRSValue = Input(Some(1), None, None, None, None),
@@ -507,13 +475,9 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                     Input(Some(1.0), None, None, None, None)))))),
 
           CompanyFiscalYear(
-            ticker = Input(Some("ticker"), Some("note ticker"), None, None, None),
-            name = Input(Some("coname"), Some("note coname"), None, None, None),
-            disclosureFiscalYear = Some(2009),
-            gicsIndustry = None,
-            annualRevenue = None,
-            marketCapital = None,
-            proxyShares = None,
+            ticker = SimpleInput(Some("ticker"), Some("note ticker"), None),
+            name = SimpleInput(Some("coname"), Some("note coname"), None),
+            disclosureFiscalYear = SimpleInput(Some(2009), None, None),
             executives = Seq(
               Executive(
                 name = Input(Some("ExecutiveName1"), None, None, None, None),
@@ -534,8 +498,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                   options = Input(Some(1), None, None, None, None),
                   exPrice = Input(Some(1), None, None, None, None),
                   bsPercentage = Input(Some(1), None, None, None, None),
-                  timeVest = Input(Some(1), None, None, None, None),
-                  rsValue = Input(Some(1), None, None, None, None),
+                  timeVestRsValue = Input(Some(1), None, None, None, None),
                   shares = Input(Some(1), None, None, None, None),
                   price = Input(Some(1), None, None, None, None),
                   perfRSValue = Input(Some(1), None, None, None, None),
@@ -571,8 +534,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
                   options = Input(Some(1), None, None, None, None),
                   exPrice = Input(Some(1), None, None, None, None),
                   bsPercentage = Input(Some(1), None, None, None, None),
-                  timeVest = Input(Some(1), None, None, None, None),
-                  rsValue = Input(Some(1), None, None, None, None),
+                  timeVestRsValue = Input(Some(1), None, None, None, None),
                   shares = Input(Some(1), None, None, None, None),
                   price = Input(Some(1), None, None, None, None),
                   perfRSValue = Input(Some(1), None, None, None, None),

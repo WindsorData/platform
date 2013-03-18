@@ -51,7 +51,6 @@ class PersistenceTest extends FunSuite {
       Some(1: BigDecimal),
       Some(1: BigDecimal),
       Some(1: BigDecimal),
-      Some(1: BigDecimal),
       Some(1: BigDecimal)),
     CarriedInterest(
       ownedShares = Some(4: BigDecimal),
@@ -67,15 +66,7 @@ class PersistenceTest extends FunSuite {
   }
 
   test("can persist companies") {
-      CompanyFiscalYear(
-        Some("ticker"),
-        Some("name"),
-        Some(1),
-        Some("gicsIndustry"),
-        Some(2: BigDecimal),
-        Some(2: BigDecimal),
-        Some(2: BigDecimal),
-        Seq(executiveWithCashCompensation)).save()
+      CompanyFiscalYear(None,None,None, Seq(executiveWithCashCompensation)).save()
   }
 
   test("can serialize input") {

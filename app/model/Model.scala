@@ -37,15 +37,26 @@ case class Input[A](
 
   def map[B](f: A => B) =
     Input(value.map(f), calc, comment, note, link)
+    
+  def toSimpleInput = SimpleInput(value = value, note = note, link = link)
 }
+
+object SimpleInput {
+
+  def apply[A](
+    value: Option[A],
+    note: Option[String],
+    link: Option[String]) = Input(value, None, None, note, link)
+
+}
+
 
 case class EquityCompanyValue(
   optionsValue: Input[BigDecimal],
   options: Input[BigDecimal],
   exPrice: Input[BigDecimal],
   bsPercentage: Input[BigDecimal],
-  timeVest: Input[BigDecimal],
-  rsValue: Input[BigDecimal],
+  timeVestRsValue: Input[BigDecimal],
   shares: Input[BigDecimal],
   price: Input[BigDecimal],
   perfRSValue: Input[BigDecimal],
