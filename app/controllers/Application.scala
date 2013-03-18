@@ -37,10 +37,8 @@ object Application extends Controller {
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
       val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
-      companies.foreach { c =>
-        findCompanyBy(c.name.value.get, c.disclosureFiscalYear.value.get).getOrElse(c).update(c)
-      }
-      Ok("File uploaded successfully")
+      companies.foreach(_.update)
+      Ok(views.html.companyUploadSuccess())
     }.getOrElse {
       Redirect(routes.Application.companies).flashing("error" -> "Missing file")
     }
@@ -51,14 +49,18 @@ object Application extends Controller {
   }
 
   def searchCompany = Action {
-    Ok(views.html.searchCompanies(companyForm))
+    Ok(views.html.searchCompanies(companyForm, 
+        CompanyFiscalYear.getAllNames, 
+        CompanyFiscalYear.getAllFiscalYears.map(_.toString)))
   }
 
   def doSearch = Action { implicit request =>
 
     companyForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.searchCompanies(formWithErrors)),
+        BadRequest(views.html.searchCompanies(formWithErrors, 
+            CompanyFiscalYear.getAllNames, 
+            CompanyFiscalYear.getAllFiscalYears.map(_.toString))),
       values => {
         val name = values._1
         val year = values._2
@@ -69,7 +71,7 @@ object Application extends Controller {
             Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
               CONTENT_DISPOSITION -> "attachment; filename=company.xls")
           }
-          case None => Ok("No Results")
+          case None => Ok(views.html.searchWithoutResults())
         }
       })
   }

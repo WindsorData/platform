@@ -1,12 +1,21 @@
-@(companyForm: Form[(String,String)])
+@(companyForm: Form[(String,String)], companyNames: Seq[String], companyYears: Seq[String])
 @import helper._
 
 @main("Search Companies") {
     
     @form(routes.Application.doSearch) {
+
+         @select(
+            field = companyForm("Company Name"),
+            options = options(companyNames.toList),
+            args = '_label -> "Choose a company"
+        )
         
-        @inputText(companyForm("Company Name"))
-        @inputText(companyForm("Company Fiscal Year")) 
+        @select(
+            field = companyForm("Company Fiscal Year"),
+            options = options(companyYears.toList),
+            args = '_label -> "Choose a Year"
+        )
         
         <input type="submit" value="Search">
         

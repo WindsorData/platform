@@ -14,6 +14,10 @@ object CompanyFiscalYear{
   def all(): List[CompanyFiscalYear] = findAllCompanies()
   
   def find(name: String, year: Int) = findCompanyBy(name, year)
+  
+  def getAllNames: Seq[String] = findAllCompaniesNames()
+  
+  def getAllFiscalYears: Seq[Int] = findAllCompaniesFiscalYears()
 }
 
 

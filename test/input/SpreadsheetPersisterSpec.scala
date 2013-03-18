@@ -24,8 +24,6 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
   describe("SpreadsheetPersister") {
     
     it("should persist companyFiscalYears and its executives from excel") {
-      //TODO: next 3 lines should be in some "before" method. 
-      //Tried to use trait BeforeAndAfter but it has conflicts with sublcass of FunSpec 
       import persistence._
       implicit val companiesCollection = MongoClient()("test")("companies")
       MongoClient()("test")("companies").drop

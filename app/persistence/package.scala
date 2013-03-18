@@ -17,12 +17,11 @@ package object persistence {
       def save() {
         collection.insert(company)
       }
-
-      def update(c: CompanyFiscalYear) {
-        collection.update(
-          MongoDBObject("ticker.value" -> c.ticker.value.get, 
-        		  		"disclosureFiscalYear.value" -> c.disclosureFiscalYear.value.get), company2DbObject(c), true)
-      }
+      
+      def update = collection.update(
+          MongoDBObject("ticker.value" -> company.get("ticker").asInstanceOf[DBO].get("value"), 
+        		  		"disclosureFiscalYear.value" -> company.get("disclosureFiscalYear").asInstanceOf[DBO].get("value")), 
+        		  		company, true)
     }
 
   def findAllCompanies(db: MongoDB = MongoClient()("windsor")): List[CompanyFiscalYear] =
@@ -33,6 +32,13 @@ package object persistence {
       findOne(MongoDBObject("ticker.value" -> name, "disclosureFiscalYear.value" -> year)).
       map {dbObject2Company(_)}
   }
+  
+  //TODO: check if there's a way to do this better
+  def findAllCompaniesNames(db: MongoDB = MongoClient()("windsor")): Seq[String] =
+    db("companies").toSet[DBO].map(x => x.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
+    
+  def findAllCompaniesFiscalYears(db: MongoDB = MongoClient()("windsor")): Seq[Int] =
+    db("companies").toSet[DBO].map(x => x.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
 
   /**Conversions for creating mappings to mongo*/
   implicit def string2MongoArrow(key: Symbol) = new {
