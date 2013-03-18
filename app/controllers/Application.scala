@@ -11,13 +11,16 @@ import com.mongodb.casbah.MongoClient
 import input.SpreadsheetWriter
 import play.api.data._
 import play.api.data.Forms._
+import java.io.ByteArrayOutputStream
+import model.CompanyFiscalYear
+import com.mongodb.DBObject
+
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
 
   import persistence._
   import util.persistence._
-  registerBigDecimalConverter()
 
   implicit val companiesCollection = MongoClient()("windsor")("companies")
 
@@ -39,7 +42,16 @@ object Application extends Controller {
     //TODO: need to change this by using play.api.data.Forms
   	val name = request.body.asFormUrlEncoded.get("company-name")(0)
   	val year = request.body.asFormUrlEncoded.get("year")(0)
-  	Ok(findCompanyBy(name, year.toInt).toString)
+  	
+//  	Ok(findCompanyBy(name, year.toInt).toString)
+  	val out = new ByteArrayOutputStream()
+  	try{
+  		SpreadsheetWriter.write(out, findCompanyBy(name, year.toInt))
+  		Ok(out.toByteArray()).as("application/vnd.ms-excel")
+  	}
+  	catch {
+  		case e:RuntimeException => Ok("No Results")
+  	}
   }
 
   def companies = Action {

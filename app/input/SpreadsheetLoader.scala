@@ -26,7 +26,7 @@ object SpreadsheetLoader {
     val wb = WorkbookFactory.create(in)
     /**Answers the seq of executives given a fiscal year offest*/
 	def executivesByFiscalYear(fiscalYearOffest: Int) = 
-	  rows(wb.getSheetAt(fiscalYearOffest + 1)).drop(3).grouped(6).map(toExecutive).toList
+	  rows(wb.getSheetAt(fiscalYearOffest + 1)).drop(3).grouped(6).map(toExecutive).toSeq
 	  
 	val companiesSheet = wb.getSheetAt(0)
     
@@ -43,10 +43,6 @@ object SpreadsheetLoader {
       ticker = {skip(1); string},
       name = string,
       disclosureFiscalYear = date.map(new DateTime(_).minusYears(fiscalYearOffest).getYear()),
-      gicsIndustry = None,
-      annualRevenue = None,
-      marketCapital = None,
-      proxyShares = None,
       executives = executives)
   }
 
@@ -76,8 +72,7 @@ object SpreadsheetLoader {
         options = numeric,
         exPrice = numeric,
         bsPercentage = numeric,
-        timeVest = numeric,
-        rsValue = numeric,
+        timeVestRsValue = numeric,
         shares = numeric,
         price = numeric,
         perfRSValue = numeric,

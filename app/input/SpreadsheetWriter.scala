@@ -18,30 +18,45 @@ object SpreadsheetWriter {
 
   def write(out: OutputStream, company: CompanyFiscalYear) = {
     FileManager.load("docs/external/EmptyOutputTemplate.xls") {
-      x => writeCompany(x, out, company)
+      x => {
+        val wb = WorkbookFactory.create(x)
+        writeCompany(wb, company)
+        writeExecutives(wb, company)
+        wb.write(out)
+      }
     }
   }
 
-  def writeCompany(template: InputStream, out: OutputStream, company: CompanyFiscalYear) = {
-    val wb = WorkbookFactory.create(template)
-    val sheet = wb.getSheet("Executives")
+  def writeCompany(wb: Workbook, company: CompanyFiscalYear) = {
+    val companySheet = wb.getSheet("DOC_SRC")
+    
+    val rowsIter = rows(companySheet).drop(2).iterator
+    
+    rowsIter.next.getCell(2).setCellValue(company.ticker.value.get)
+    rowsIter.next.getCell(2).setCellValue(company.name.value.get)
+    rowsIter.next.getCell(2).setCellValue(company.disclosureFiscalYear.value.get)
+  }
+  
+  def writeExecutives(wb: Workbook, company: CompanyFiscalYear) = {
+    val executiveSheet = wb.getSheet("Executives")
 
-    val cellIterators = rows(sheet).drop(3).map(cells).map(_.iterator)
+    val cellIterators = rows(executiveSheet).drop(3).map(cells).map(_.iterator)
     //Skips first column
     cellIterators.map(_.next)
 
     //TODO: 
     // Put other input fields as comments for the value
-    def getInputValue[T](toSomeValue: Executive => Input[T]) = company.executives.map(toSomeValue).map(_.value)
+    def getInputValue[T](toSomeValue: Executive => Input[T]) = company.executives.map(toSomeValue).map(_.value).toList
 
     def writeValue[T](names: Traversable[Option[T]], cells: Seq[Cell]): Unit = {
       names match {
-        case Some(value) #:: xs => {
+        case Some(value) :: xs => {
           //TODO: don't convert every value toString
           cells.head.setCellValue(value.toString)
-          writeValue(xs, cells.tail.tail)
+          writeValue(xs, cells.drop(2))
         }
-        case _ => Unit
+        case None :: xs => writeValue(xs, cells.drop(2))
+        case Nil => Unit
       }
     }
 
@@ -64,15 +79,12 @@ object SpreadsheetWriter {
     writeCellWithExecutiveValue(_.cashCompensations.maxBonus)
     writeCellWithExecutiveValue(_.cashCompensations.new8KData.baseSalary)
     writeCellWithExecutiveValue(_.cashCompensations.new8KData.targetBonus)
-    
-    for (_ <- 1 to 14) cellIterators.map(_.next)
 
     writeCellWithExecutiveValue(_.equityCompanyValue.optionsValue)
     writeCellWithExecutiveValue(_.equityCompanyValue.options)
     writeCellWithExecutiveValue(_.equityCompanyValue.exPrice)
     writeCellWithExecutiveValue(_.equityCompanyValue.bsPercentage)
-    writeCellWithExecutiveValue(_.equityCompanyValue.timeVest)
-    writeCellWithExecutiveValue(_.equityCompanyValue.rsValue)
+    writeCellWithExecutiveValue(_.equityCompanyValue.timeVestRsValue)
     writeCellWithExecutiveValue(_.equityCompanyValue.shares)
     writeCellWithExecutiveValue(_.equityCompanyValue.price)
     writeCellWithExecutiveValue(_.equityCompanyValue.perfRSValue)
@@ -80,12 +92,11 @@ object SpreadsheetWriter {
     writeCellWithExecutiveValue(_.equityCompanyValue.price2)
     writeCellWithExecutiveValue(_.equityCompanyValue.perfCash)
 
+    writeCellWithExecutiveValue(_.carriedInterest.ownedShares)
     writeCellWithExecutiveValue(_.carriedInterest.vestedOptions)
     writeCellWithExecutiveValue(_.carriedInterest.unvestedOptions)
     writeCellWithExecutiveValue(_.carriedInterest.tineVest)
     writeCellWithExecutiveValue(_.carriedInterest.perfVest)
-
-    wb.write(out)
   }
 
   def loadTemplateInto(out: OutputStream) = {
