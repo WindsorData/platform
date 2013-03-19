@@ -6,9 +6,7 @@ case class Executive(
   name: Input[String],
   title: Input[String],
   shortTitle: Input[String],
-  functionalMatch: Input[String],
-  functionalMatch1: Input[String],
-  functionalMatch2: Input[String],
+  functionalMatches: Traversable[Input[String]],
   founder: Input[String],
   cashCompensations: AnualCashCompensation,
   equityCompanyValue: EquityCompanyValue,
@@ -17,15 +15,36 @@ case class Executive(
   require(validFunctionalMatch, "Invalid Functional Match")
   def tdcPayRank: BigDecimal = ???
 
-  def validFunctionalMatch =
-    functionalMatches.flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
+  def functionalMatch(n: Int): Input[String] =
+    try {
+      functionalMatches.toList(n - 1)
+    } catch {
+      case e: IndexOutOfBoundsException => None
+    }
 
-  def functionalMatches = Set(functionalMatch, functionalMatch1, functionalMatch2)
+  def validFunctionalMatch =
+    functionalMatches.toSet[Input[String]].flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
+
 }
 
 object Executive {
-  val functionalMatchValues = Set("Bus Dev", "CAO", "CEO", "CFO", "Chmn", "CIO", "COO", "CSO",
-    "EVP", "GC", "GM", "Pres", "Sales", "SVP", "Treasr", "VP", "Other")
+  val functionalMatchValues = Set("Bus Dev (Business Development)",
+    "CAO (Chief Admin Officer)",
+    "CEO (Chief Executive Officer)",
+    "CFO (Chief Financial Officer)",
+    "Chmn (Chairman)",
+    "CIO (Chief Investment Officer)",
+    "COO (Chief Operating Officer)",
+    "CSO (Chief Science Officer)",
+    "EVP (Executive Vice President)",
+    "GC (General Counsel)",
+    "GM (General Manager)",
+    "Pres (President)",
+    "Sales",
+    "SVP (Senior Vice President)",
+    "Treasr (Treasurer)",
+    "VP (Vice President)",
+    "Other")
 }
 
 case class Input[A](
@@ -37,7 +56,7 @@ case class Input[A](
 
   def map[B](f: A => B) =
     Input(value.map(f), calc, comment, note, link)
-    
+
   def toSimpleInput = SimpleInput(value = value, note = note, link = link)
 }
 
@@ -49,7 +68,6 @@ object SimpleInput {
     link: Option[String]) = Input(value, None, None, note, link)
 
 }
-
 
 case class EquityCompanyValue(
   optionsValue: Input[BigDecimal],

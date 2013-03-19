@@ -22,13 +22,6 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
   }
   
   describe("SpreadsheetPersister") {
-//    it("should output companies") {
-//      import Closeables._
-//      new ByteArrayOutputStream().processWith { out =>
-//      	SpreadsheetPersister.persist(Seq(Company("Z", 2.0, 2009)), out)
-//      	assert(out.size > 0)
-//      }
-//    }
     
     it("should persist companyFiscalYears and its executives from excel") {
       import persistence._
@@ -45,9 +38,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input(Some("ExecutiveName23"), None, None, None, None),
                   title = Input(Some("ExecutiveTitle23"), None, None, None, None),
                   shortTitle = Input(Some("ExTi23"), None, None, None, None),
-                  functionalMatch = Input(Some("CAO"), None, None, None, None),
-                  functionalMatch1 = Input(Some("COO"), None, None, None, None),
-                  functionalMatch2 = Input(Some("CEO"), None, None, None, None),
+                  functionalMatches = ArrayBuffer(Some("Other"),Some("Other"),Some("Other")),
                   founder = Input(Some("lala"), None, None, None, None),
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(Some(100.0), None, None, None, None),
@@ -86,9 +77,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input(Some("ExecutiveName12"), None, None, None, None),
                   title = Input(Some("ExecutiveTitle12"), None, None, None, None),
                   shortTitle = Input(Some("ExTi12"), None, None, None, None),
-                  functionalMatch = Input(Some("CAO"), None, None, None, None),
-                  functionalMatch1 = Input(Some("COO"), None, None, None, None),
-                  functionalMatch2 = Input(Some("CEO"), None, None, None, None),
+                  functionalMatches = ArrayBuffer(Some("Other"),Some("Other"),Some("Other")),
                   founder = Input(Some("lala"), None, None, None, None),
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(Some(100.0), None, None, None, None),
@@ -125,7 +114,6 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
     it("should persist a company and its executives") {
       import persistence._
       implicit val companiesCollection = MongoClient()("test")("companies")
-      
       val company = CompanyFiscalYear(
             ticker = SimpleInput(Some("ticker"), Some("note ticker"), None),
             name = SimpleInput(Some("coname"), Some("note coname"), None),
@@ -136,9 +124,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input(Some("ExecutiveName1"), None, None, None, None),
                   title = Input(Some("ExecutiveTitle1"), None, None, None, None),
                   shortTitle = Input(Some("ExTi1"), None, None, None, None),
-                  functionalMatch = Input(Some("CAO"), None, None, None, None),
-                  functionalMatch1 = Input(Some("COO"), None, None, None, None),
-                  functionalMatch2 = Input(Some("CEO"), None, None, None, None),
+                  functionalMatches = ArrayBuffer(Some("Other"),Some("Other"),Some("Other")),
                   founder = Input(Some("lala"), None, None, None, None),
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(Some(100), None, None, None, None),
@@ -171,9 +157,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
           name = Input(Some("ExecutiveName2"), None, None, None, None),
           title = Input(Some("ExecutiveTitle2"), None, None, None, None),
           shortTitle = Input(Some("ExTi2"), None, None, None, None),
-          functionalMatch = Input(Some("CEO"), None, None, None, None),
-          functionalMatch1 = Input(Some("COO"), None, None, None, None),
-          functionalMatch2 = Input(Some("CAO"), None, None, None, None),
+          functionalMatches = ArrayBuffer(Some("Other"),Some("Other"),Some("Other")),
           founder = Input(Some("lala"), None, None, None, None),
           carriedInterest = CarriedInterest(
             ownedShares = Input(Some(100), None, None, None, None),

@@ -23,19 +23,28 @@ import model.SimpleInput
 
 object SpreadsheetLoader {
 
+  def noFiscalYearErrorMessage(cell: Cell) = 
+    "No Fiscal Year provided at Sheet " + 
+    cell.getSheet().getSheetName() + 
+    " Column: " + cell.getColumnIndex() +
+    " Row: " + cell.getRowIndex()
+  
   def load(in: InputStream): Seq[CompanyFiscalYear] = {
     val wb = WorkbookFactory.create(in)
     /**Answers the seq of executives given a fiscal year offest*/
     def executivesByFiscalYear(fiscalYearOffest: Int) =
       rows(wb.getSheetAt(fiscalYearOffest)).drop(3).grouped(6).map(toExecutive).toSeq
 
-    def dateCellToYear(r: Seq[Row]) =
-      blankToNone(r.get(0).getCell(2)) match {
+    def dateCellToYear(r: Seq[Row]) = {
+      val dateCell = r.get(0).getCell(2)
+      
+      blankToNone(dateCell) match {
         case Some(cell) => Some(new DateTime(cell.getDateCellValue()).getYear())
-        case _ => None
+        case None => 
+          throw new RuntimeException(noFiscalYearErrorMessage(dateCell))
       }
-
-    new DateTime().getYear()
+    }
+      
 
     val companiesSheet = wb.getSheetAt(0)
 
@@ -68,9 +77,7 @@ object SpreadsheetLoader {
       name = { skip(1); string },
       title = string,
       shortTitle = string,
-      functionalMatch = string,
-      functionalMatch1 = string,
-      functionalMatch2 = string,
+      functionalMatches = Seq(string,string,string),
       founder = string,
       cashCompensations = AnualCashCompensation(
         baseSalary = numeric,
