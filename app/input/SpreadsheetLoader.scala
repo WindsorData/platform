@@ -19,30 +19,44 @@ import model.New8KData
 import model.CompanyFiscalYear
 import java.util.GregorianCalendar
 import org.joda.time.DateTime
+import model.SimpleInput
 
 object SpreadsheetLoader {
 
   def load(in: InputStream): Seq[CompanyFiscalYear] = {
     val wb = WorkbookFactory.create(in)
     /**Answers the seq of executives given a fiscal year offest*/
-	def executivesByFiscalYear(fiscalYearOffest: Int) = 
-	  rows(wb.getSheetAt(fiscalYearOffest + 1)).drop(3).grouped(6).map(toExecutive).toSeq
-	  
-	val companiesSheet = wb.getSheetAt(0)
-    
-    for(fiscalYearOffset <- 0 to wb.getNumberOfSheets() - 2)
-      yield toCompany(executivesByFiscalYear(fiscalYearOffset), rows(companiesSheet).drop(1), fiscalYearOffset)
-  }
-  
+    def executivesByFiscalYear(fiscalYearOffest: Int) =
+      rows(wb.getSheetAt(fiscalYearOffest)).drop(3).grouped(6).map(toExecutive).toSeq
 
-  def toCompany(executives: Seq[Executive], rows: Seq[Row], fiscalYearOffest: Int) = {
+    def dateCellToYear(r: Seq[Row]) =
+      blankToNone(r.get(0).getCell(2)) match {
+        case Some(cell) => Some(new DateTime(cell.getDateCellValue()).getYear())
+        case _ => None
+      }
+
+    new DateTime().getYear()
+
+    val companiesSheet = wb.getSheetAt(0)
+
+    val execDbYear = dateCellToYear(rows(companiesSheet).drop(8))
+    val execDbYearMinusOne = dateCellToYear(rows(companiesSheet).drop(25))
+    val execDbYearMinusTwo = dateCellToYear(rows(companiesSheet).drop(40))
+
+    val years = Seq(execDbYear, execDbYearMinusOne, execDbYearMinusTwo).iterator
+
+    for { fiscalYearOffset <- 2 to wb.getNumberOfSheets() - 1 }
+      yield toCompany(executivesByFiscalYear(fiscalYearOffset), rows(companiesSheet).drop(1), years.next)
+  }
+
+  def toCompany(executives: Seq[Executive], rows: Seq[Row], fiscalYearOption: Option[Int]) = {
     val reader = new RowOrientedReader(rows)
     import reader._
- 
+
     CompanyFiscalYear(
-      ticker = {skip(1); string},
+      ticker = { skip(1); string },
       name = string,
-      disclosureFiscalYear = date.map(new DateTime(_).minusYears(fiscalYearOffest).getYear()),
+      disclosureFiscalYear = SimpleInput(fiscalYearOption, None, None),
       executives = executives)
   }
 
@@ -59,14 +73,14 @@ object SpreadsheetLoader {
       functionalMatch2 = string,
       founder = string,
       cashCompensations = AnualCashCompensation(
+        baseSalary = numeric,
+        actualBonus = numeric,
+        targetBonus = numeric,
+        thresholdBonus = numeric,
+        maxBonus = numeric,
+        new8KData = New8KData(
           baseSalary = numeric,
-          actualBonus = numeric,
-          targetBonus = numeric,
-          thresholdBonus = numeric,
-          maxBonus = numeric,
-          new8KData = New8KData(
-            baseSalary = numeric,
-            targetBonus = numeric)),
+          targetBonus = numeric)),
       equityCompanyValue = EquityCompanyValue(
         optionsValue = numeric,
         options = numeric,
@@ -88,3 +102,4 @@ object SpreadsheetLoader {
   }
 
 }
+
