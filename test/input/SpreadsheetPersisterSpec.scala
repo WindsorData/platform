@@ -17,7 +17,8 @@ import org.scalatest.BeforeAndAfter
 @RunWith(classOf[JUnitRunner])
 class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with BeforeAndAfter {
   
-  before{
+  
+  before {
     MongoClient()("test")("companies").drop
   }
   
