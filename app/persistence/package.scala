@@ -5,6 +5,8 @@ import com.mongodb.casbah.Imports._
 import util.persistence._
 import com.mongodb.casbah.commons.MongoDBList
 import com.mongodb.casbah.commons.MongoDBListBuilder
+import util.persistence._
+import util._
 
 package object persistence {
   type DBO = DBObject
@@ -15,14 +17,28 @@ package object persistence {
       def save() {
         collection.insert(company)
       }
+      
+      def update = collection.update(
+          MongoDBObject("ticker.value" -> company.get("ticker").asInstanceOf[DBO].get("value"), 
+        		  		"disclosureFiscalYear.value" -> company.get("disclosureFiscalYear").asInstanceOf[DBO].get("value")), 
+        		  		company, true)
     }
 
-  def findCompanyBy(name: String, year: Int, db: MongoDB = MongoClient()("windsor")): CompanyFiscalYear = {
-    db("companies").findOne(MongoDBObject("ticker.value" -> name, "disclosureFiscalYear.value" -> year)) match {
-      case Some(c) => dbObject2Company(c)
-      case None => throw new RuntimeException
-    }
+  def findAllCompanies(db: MongoDB = MongoClient()("windsor")): List[CompanyFiscalYear] =
+    db("companies").toList.map(x => dbObject2Company(x.asInstanceOf[DBO]))
+
+ def findCompanyBy(name: String, year: Int, db: MongoDB = MongoClient()("windsor")): Option[CompanyFiscalYear] = {
+    db("companies").
+      findOne(MongoDBObject("ticker.value" -> name, "disclosureFiscalYear.value" -> year)).
+      map {dbObject2Company(_)}
   }
+  
+  //TODO: check if there's a way to do this better
+  def findAllCompaniesNames(db: MongoDB = MongoClient()("windsor")): Seq[String] =
+    db("companies").toSet[DBO].map(x => x.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
+    
+  def findAllCompaniesFiscalYears(db: MongoDB = MongoClient()("windsor")): Seq[Int] =
+    db("companies").toSet[DBO].map(x => x.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
 
   /**Conversions for creating mappings to mongo*/
   implicit def string2MongoArrow(key: Symbol) = new {
@@ -101,12 +117,12 @@ package object persistence {
       'perfCash ~> value.perfCash)
 
   def makeInput[A](it: DBO) = Input(
-      Option(it.get("value").asInstanceOf[A]),
-      Option(it.get("calc").asInstanceOf[String]),
-      Option(it.get("comment").asInstanceOf[String]),
-      Option(it.get("note").asInstanceOf[String]),
-      Option(it.get("link").asInstanceOf[String]))
-      
+    Option(it.get("value").asInstanceOf[A]),
+    Option(it.get("calc").asInstanceOf[String]),
+    Option(it.get("comment").asInstanceOf[String]),
+    Option(it.get("note").asInstanceOf[String]),
+    Option(it.get("link").asInstanceOf[String]))
+
   def fetch[A](key: String)(implicit executive: DBO): Input[A] = {
 
     executive.get(key) match {
@@ -115,12 +131,12 @@ package object persistence {
     }
   }
 
-  def fetchDBList[A](key: String)(implicit executive: DBO): Traversable[Input[A]] = 
+  def fetchDBList[A](key: String)(implicit executive: DBO): Traversable[Input[A]] =
     executive.get(key) match {
-    	case Nil => List(None, None, None)
-    	case its: BasicDBList => its.map[Input[A],Traversable[Input[A]]](x => makeInput(x.asInstanceOf[DBO]))
-  }
-  
+      case Nil => List(None, None, None)
+      case its: BasicDBList => its.map[Input[A], Traversable[Input[A]]](x => makeInput(x.asInstanceOf[DBO]))
+    }
+
   implicit def dbObject2CarriedInteres(interest: DBO): CarriedInterest = {
     implicit val dbo = interest
     CarriedInterest(

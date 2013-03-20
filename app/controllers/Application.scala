@@ -14,6 +14,8 @@ import play.api.data.Forms._
 import java.io.ByteArrayOutputStream
 import model.CompanyFiscalYear
 import com.mongodb.DBObject
+import persistence._
+import model._
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
@@ -23,38 +25,59 @@ object Application extends Controller {
 
   implicit val companiesCollection = MongoClient()("windsor")("companies")
 
+  val companyForm = Form(
+    tuple(
+      "Company Name" -> nonEmptyText,
+      "Company Fiscal Year" -> nonEmptyText))
+
   def index = Action {
-    Ok(views.html.index())
+    Redirect(routes.Application.companies)
   }
 
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
-      val executives = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
-      executives.foreach(_.save())
-      Ok("File uploaded successfully")
+      val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
+      companies.foreach(_.update)
+      Ok(views.html.companyUploadSuccess())
     }.getOrElse {
-      Redirect(routes.Application.index).flashing("error" -> "Missing file")
+      Redirect(routes.Application.companies).flashing("error" -> "Missing file")
     }
   }
 
-  def company = Action { request =>
-    //TODO: need to change this by using play.api.data.Forms
-    val name = request.body.asFormUrlEncoded.get("company-name")(0)
-    val year = request.body.asFormUrlEncoded.get("year")(0)
+  def reports = Action {
+    Ok(views.html.reports())
+  }
 
-    //  	Ok(findCompanyBy(name, year.toInt).toString)
-    val out = new ByteArrayOutputStream()
-    try {
-      SpreadsheetWriter.write(out, findCompanyBy(name, year.toInt))
-      Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
-    		  							CONTENT_DISPOSITION -> "attachment; filename=company.xls")
-    } catch {
-      case e: RuntimeException => Ok("No Results")
-    }
+  def searchCompany = Action {
+    Ok(views.html.searchCompanies(companyForm, 
+        CompanyFiscalYear.getAllNames, 
+        CompanyFiscalYear.getAllFiscalYears.map(_.toString)))
+  }
+
+  def doSearch = Action { implicit request =>
+
+    companyForm.bindFromRequest.fold(
+      formWithErrors =>
+        BadRequest(views.html.searchCompanies(formWithErrors, 
+            CompanyFiscalYear.getAllNames, 
+            CompanyFiscalYear.getAllFiscalYears.map(_.toString))),
+      values => {
+        val name = values._1
+        val year = values._2
+        val out = new ByteArrayOutputStream()
+        findCompanyBy(name, year.toInt) match {
+          case Some(founded) => {
+            SpreadsheetWriter.write(out, founded)
+            Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
+              CONTENT_DISPOSITION -> "attachment; filename=company.xls")
+          }
+          case None => Ok(views.html.searchWithoutResults())
+        }
+      })
   }
 
   def companies = Action {
-    Ok(views.html.companies())
+    Ok(views.html.companies(CompanyFiscalYear.all()))
   }
 
 }

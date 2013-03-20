@@ -39,12 +39,11 @@ object SpreadsheetLoader {
       val dateCell = r.get(0).getCell(2)
       
       blankToNone(dateCell) match {
-        case Some(cell) => Some(new DateTime(cell.getDateCellValue()).getYear())
+         case Some(cell) => Some(new DateTime(cell.getDateCellValue()).getYear())
         case None => 
           throw new RuntimeException(noFiscalYearErrorMessage(dateCell))
-      }
+       }
     }
-      
 
     val companiesSheet = wb.getSheetAt(0)
 

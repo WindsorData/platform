@@ -1,13 +1,11 @@
+@(x : List[model.CompanyFiscalYear])
+
 @import helper._
 
-<div>
-	<div>
-	   @form(action = routes.Application.company) {
-        Company Name: <input type="text" name="company-name"><br>
-        Year: <input type="text" name="year">
-        <p>
-            <input type="submit">
-        </p>
-        }
-	</div>
-</div>
+@main("Windsor Companies") {
+    
+    <h1>@x.size Company Fiscal Years</h1>
+    
+    <a href="/companies/search">Search Company</a><br>
+    <a href="/companies/reports">Upload Companies</a>
+}

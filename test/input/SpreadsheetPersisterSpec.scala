@@ -26,6 +26,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
     it("should persist companyFiscalYears and its executives from excel") {
       import persistence._
       implicit val companiesCollection = MongoClient()("test")("companies")
+      MongoClient()("test")("companies").drop
       
       loadSpreadsheet("3CompanyFiscalYearsWithExecutives.xls").foreach(_.save)
       
@@ -107,13 +108,15 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                       Input(Some(1.0), None, None, None, None),
                       Input(Some(1.0), None, None, None, None))))))
               
-         assert(findCompanyBy("IBM", 2010, MongoClient()("test")).toString() === company2010.toString())
-         assert(findCompanyBy("IBM", 2001, MongoClient()("test")).toString() === company2001.toString())
+         assert(findCompanyBy("IBM", 2010, MongoClient()("test")).get.toString() === company2010.toString())
+         assert(findCompanyBy("IBM", 2001, MongoClient()("test")).get.toString() === company2001.toString())
     }
     
     it("should persist a company and its executives") {
       import persistence._
       implicit val companiesCollection = MongoClient()("test")("companies")
+      MongoClient()("test")("companies").drop
+      
       val company = CompanyFiscalYear(
             ticker = SimpleInput(Some("ticker"), Some("note ticker"), None),
             name = SimpleInput(Some("coname"), Some("note coname"), None),
@@ -188,7 +191,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
               Input(Some(1.0), None, None, None, None))))))
         
         company.save              
-        assert(findCompanyBy("ticker", 2012, MongoClient()("test")).toString === company.toString)
+        assert(findCompanyBy("ticker", 2012, MongoClient()("test")).get.toString === company.toString)
     }
     
   } 

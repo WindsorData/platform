@@ -7,6 +7,18 @@ case class CompanyFiscalYear(
   name: Input[String],
   disclosureFiscalYear: Input[Int],
   executives: Traversable[Executive])
+  
+object CompanyFiscalYear{
+  import persistence._
+  
+  def all(): List[CompanyFiscalYear] = findAllCompanies()
+  
+  def find(name: String, year: Int) = findCompanyBy(name, year)
+  
+  def getAllNames: Seq[String] = findAllCompaniesNames()
+  
+  def getAllFiscalYears: Seq[Int] = findAllCompaniesFiscalYears()
+}
 
 
 

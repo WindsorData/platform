@@ -1,0 +1,18 @@
+@import helper._
+
+<div>
+    <div>
+        <p>Please upload your company TOP5 data set</p>
+    </div>
+    <div>
+        @form(action = routes.Application.newCompany, 'enctype -> "multipart/form-data") {
+        <!--  -->
+        <input type="file" name="dataset">
+        <p>
+            <input type="submit">
+        </p>
+        }
+    </div>
+    <a href="/companies">Home</a>
+
+</div>
