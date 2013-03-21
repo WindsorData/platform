@@ -13,30 +13,46 @@ import util.FileManager
 import org.apache.poi.ss.usermodel.Cell
 import model.Input
 import model._
+import org.apache.poi.ss.usermodel.Comment
+import org.apache.poi.xssf.usermodel.XSSFComment
+import org.apache.poi.hssf.usermodel.HSSFPatriarch
+import org.apache.poi.hssf.usermodel.HSSFCell
+import org.apache.poi.hssf.usermodel.HSSFComment
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor
+import org.apache.poi.hssf.usermodel.HSSFRichTextString
 
 object SpreadsheetWriter {
 
   def write(out: OutputStream, company: CompanyFiscalYear) = {
     FileManager.load("docs/external/EmptyOutputTemplate.xls") {
-      x => {
-        val wb = WorkbookFactory.create(x)
-        writeCompany(wb, company)
-        writeExecutives(wb, company)
-        wb.write(out)
-      }
+      x =>
+        {
+          val wb = WorkbookFactory.create(x)
+          writeCompany(wb, company)
+          writeExecutives(wb, company)
+          wb.write(out)
+        }
     }
+  }
+
+  def writeComment[T](sheet: Sheet, cell: Cell): Unit = {
+    val patr = sheet.createDrawingPatriarch();
+    //anchor defines size and position of the comment in worksheet
+    val comment1 = patr.createCellComment(new HSSFClientAnchor(100, 100, 100, 100, 1, 1, 6, 5))
+    comment1.setString(new HSSFRichTextString("FirstComments"));
+    cell.setCellComment(comment1);
   }
 
   def writeCompany(wb: Workbook, company: CompanyFiscalYear) = {
     val companySheet = wb.getSheet("DOC_SRC")
-    
+
     val rowsIter = rows(companySheet).drop(2).iterator
-    
+
     rowsIter.next.getCell(2).setCellValue(company.ticker.value.get)
     rowsIter.next.getCell(2).setCellValue(company.name.value.get)
     rowsIter.next.getCell(2).setCellValue(company.disclosureFiscalYear.value.get)
   }
-  
+
   def writeExecutives(wb: Workbook, company: CompanyFiscalYear) = {
     val executiveSheet = wb.getSheet("Executives")
 
@@ -44,24 +60,43 @@ object SpreadsheetWriter {
     //Skips first column
     cellIterators.map(_.next)
 
+    def writeValueAndComments[T](value: T, comments: Seq[(String,Option[String])], cell: Cell): Unit = {
+      //TODO: don't convert every value toString
+      cell.setCellValue(value.toString)
+      writeComments(comments, cell)
+    }
+
+    def writeComments(comments: Seq[(String, Option[String])], cell: Cell): Unit = {
+      val patr = executiveSheet.createDrawingPatriarch();
+      val comm = patr.createCellComment(new HSSFClientAnchor(100, 100, 100, 100, 1, 1, 6, 5));
+      val stringComment = comments.foldLeft("") { (acc, comment) =>
+        comment match {
+          case (name, Some(comment)) => acc + name + comment + "\n"
+          case (_,None) => acc
+        }
+      }
+
+      comm.setString(new HSSFRichTextString(stringComment));
+      cell.setCellComment(comm);
+    }
+
     //TODO: 
     // Put other input fields as comments for the value
-    def getInputValue[T](toSomeValue: Executive => Input[T]) = company.executives.map(toSomeValue).map(_.value).toList
+    def getInputValue[T](toSomeValue: Executive => Input[T]) = company.executives.map(toSomeValue).toList
 
-    def writeValue[T](names: Traversable[Option[T]], cells: Seq[Cell]): Unit = {
+    def writeInputValue[T](names: Traversable[Input[T]], cells: Seq[Cell]): Unit = {
       names match {
-        case Some(value) :: xs => {
-          //TODO: don't convert every value toString
-          cells.head.setCellValue(value.toString)
-          writeValue(xs, cells.drop(2))
+        case Input(Some(value), calc, comment, note, link) :: xs => {
+          writeValueAndComments(value, Seq(("Calc: ", calc), ("Comment: ", comment), ("Note: ", note), ("Link: ",link)), cells.head)
+          writeInputValue(xs, cells.drop(2))
         }
-        case None :: xs => writeValue(xs, cells.drop(2))
+        case Input(None, _, _, _, _) :: xs => writeInputValue(xs, cells.drop(2))
         case Nil => Unit
       }
     }
 
     def writeCellWithExecutiveValue[T](executive2Input: Executive => Input[T]) =
-      writeValue(getInputValue(executive2Input), cellIterators.map(_.next))
+      writeInputValue(getInputValue(executive2Input), cellIterators.map(_.next))
 
     writeCellWithExecutiveValue(_.name)
     writeCellWithExecutiveValue(_.title)
