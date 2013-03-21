@@ -4,7 +4,7 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import model.Input
 import util.poi.Cells._
-import model.SimpleInput
+import model.Input
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
  * The exact orientation of cells groups - columns or rows - depends on implementors

@@ -78,15 +78,18 @@ package object persistence {
       'ticker ~> company.ticker,
       'name ~> company.name,
       'disclosureFiscalYear ~> company.disclosureFiscalYear,
+      'originalCurrency ~> company.originalCurrency,
+      'currencyConversionDate ~> company.currencyConversionDate,
       'executives ~> company.executives)
 
   implicit def carried2DbObject(interest: CarriedInterest): DBO =
     MongoDBObject(
       'ownedShares ~> interest.ownedShares,
-      'perfVest ~> interest.perfVest,
-      'tineVest ~> interest.tineVest,
+      'vestedOptions ~> interest.vestedOptions,
       'unvestedOptions ~> interest.unvestedOptions,
-      'vestedOptions ~> interest.vestedOptions)
+      'tineVest ~> interest.tineVest,
+      'perfVest ~> interest.perfVest
+      )
 
   implicit def cashCompensation2DbObject(interest: AnualCashCompensation): DBO =
     MongoDBObject(
@@ -163,6 +166,8 @@ package object persistence {
       ticker = fetch("ticker"),
       name = fetch("name"),
       disclosureFiscalYear = fetch("disclosureFiscalYear"),
+      originalCurrency = fetch("originalCurrency"),
+      currencyConversionDate = fetch("currencyConversionDate"),
       executives = company.get("executives").asInstanceOf[BasicDBList].map(x => dbObject2Executive(x.asInstanceOf[DBO])))
 
   implicit def dbObject2Equity(value: DBO): EquityCompanyValue = {
