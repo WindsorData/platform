@@ -16,6 +16,7 @@ import model.CompanyFiscalYear
 import com.mongodb.DBObject
 import persistence._
 import model._
+import views.html.defaultpages.badRequest
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
@@ -36,9 +37,16 @@ object Application extends Controller {
 
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
-      val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
-      companies.foreach(_.update)
-      Ok(views.html.companyUploadSuccess())
+      try {
+        val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
+        companies.foreach(_.update)
+        Ok(views.html.companyUploadSuccess())
+      } catch {
+        case e: RuntimeException => {
+          Logger.error(e.getMessage)
+          BadRequest(e.getMessage())
+        }
+      }
     }.getOrElse {
       Redirect(routes.Application.companies).flashing("error" -> "Missing file")
     }
@@ -49,18 +57,18 @@ object Application extends Controller {
   }
 
   def searchCompany = Action {
-    Ok(views.html.searchCompanies(companyForm, 
-        CompanyFiscalYear.getAllNames, 
-        CompanyFiscalYear.getAllFiscalYears.map(_.toString)))
+    Ok(views.html.searchCompanies(companyForm,
+      CompanyFiscalYear.getAllNames,
+      CompanyFiscalYear.getAllFiscalYears.map(_.toString)))
   }
 
   def doSearch = Action { implicit request =>
 
     companyForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.searchCompanies(formWithErrors, 
-            CompanyFiscalYear.getAllNames, 
-            CompanyFiscalYear.getAllFiscalYears.map(_.toString))),
+        BadRequest(views.html.searchCompanies(formWithErrors,
+          CompanyFiscalYear.getAllNames,
+          CompanyFiscalYear.getAllFiscalYears.map(_.toString))),
       values => {
         val name = values._1
         val year = values._2

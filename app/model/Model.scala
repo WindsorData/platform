@@ -1,5 +1,6 @@
 package model
 import java.util.Date
+import play.Logger
 
 case class Executive(
   /*Exec data*/
@@ -12,7 +13,7 @@ case class Executive(
   equityCompanyValue: EquityCompanyValue,
   carriedInterest: CarriedInterest) {
 
-  require(validFunctionalMatch, "Invalid Functional Match")
+  require(validFunctionalMatch, Executive.invalidFunctionalMatchErrorMessage)
   def tdcPayRank: BigDecimal = ???
 
   def functionalMatch(n: Int): Input[String] =
@@ -45,6 +46,8 @@ object Executive {
     "Treasr (Treasurer)",
     "VP (Vice President)",
     "Other")
+    
+    val invalidFunctionalMatchErrorMessage = "Invalid Functional Match"
 }
 
 case class Input[A](
@@ -99,10 +102,6 @@ case class AnualCashCompensation(
 
 case class New8KData(
   baseSalary: Input[BigDecimal],
-  targetBonus: Input[BigDecimal])  
-
-//case class CashCompensation(anualRecords: Seq[AnualRecord]) {
-//  def currentTtdc = ???
-//}
+  targetBonus: Input[BigDecimal])
 
 

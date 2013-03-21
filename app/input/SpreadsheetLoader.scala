@@ -20,29 +20,26 @@ import model.CompanyFiscalYear
 import java.util.GregorianCalendar
 import org.joda.time.DateTime
 import model.SimpleInput
+import play.Logger
+import util.poi.Cells
 
 object SpreadsheetLoader {
-
-  def noFiscalYearErrorMessage(cell: Cell) = 
-    "No Fiscal Year provided at Sheet " + 
-    cell.getSheet().getSheetName() + 
-    " Column: " + cell.getColumnIndex() +
-    " Row: " + cell.getRowIndex()
   
   def load(in: InputStream): Seq[CompanyFiscalYear] = {
     val wb = WorkbookFactory.create(in)
     /**Answers the seq of executives given a fiscal year offest*/
     def executivesByFiscalYear(fiscalYearOffest: Int) =
       rows(wb.getSheetAt(fiscalYearOffest)).drop(3).grouped(6).map(toExecutive).toSeq
-
+      
     def dateCellToYear(r: Seq[Row]) = {
       val dateCell = r.get(0).getCell(2)
-      
-      blankToNone(dateCell) match {
-         case Some(cell) => Some(new DateTime(cell.getDateCellValue()).getYear())
-        case None => 
-          throw new RuntimeException(noFiscalYearErrorMessage(dateCell))
-       }
+      try{        
+    	Some(new DateTime(blankToNone(dateCell).get.getDateCellValue()).getYear())
+      }
+      catch{
+        case e: NoSuchElementException => throw new NoSuchElementException(noFiscalYearErrorMessage(dateCell))
+        case e: RuntimeException => throw new IllegalStateException(invalidCellTypeErrorMessage(e.getMessage(), dateCell))
+      }      
     }
 
     val companiesSheet = wb.getSheetAt(0)
@@ -76,7 +73,7 @@ object SpreadsheetLoader {
       name = { skip(1); string },
       title = string,
       shortTitle = string,
-      functionalMatches = Seq(string,string,string),
+      functionalMatches = Seq(string, string, string),
       founder = string,
       cashCompensations = AnualCashCompensation(
         baseSalary = numeric,

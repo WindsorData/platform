@@ -195,6 +195,18 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
         loadSpreadsheet("InvalidFunctionalValue.xlsx")
       }
     }
+    
+    it("should throw an Exception when there's a numeric value on string cell") {
+      intercept[IllegalStateException] {
+        loadSpreadsheet("ExpectedStringButWasNumeric.xlsx")
+      }
+    }
+    
+    it("should throw an Exception when there's no value on any fiscal year") {
+      intercept[NoSuchElementException] {
+        loadSpreadsheet("EmptyFiscalYear.xlsx")
+      }
+    }
 
     it("should import Executives with extra information") {
       assert(loadSpreadsheet("FullValuesAndExtraInfo.xls").head.executives.take(1) === Seq(
