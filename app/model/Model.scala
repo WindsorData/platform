@@ -56,19 +56,20 @@ case class Input[A](
   comment: Option[String],
   note: Option[String],
   link: Option[String]) {
-
+  
   def map[B](f: A => B) =
     Input(value.map(f), calc, comment, note, link)
 
-  def toSimpleInput = SimpleInput(value = value, note = note, link = link)
 }
 
-object SimpleInput {
+object Input {
 
   def apply[A](
     value: Option[A],
     note: Option[String],
-    link: Option[String]) = Input(value, None, None, note, link)
+    link: Option[String]) : Input[A] = Input(value, None, None, note, link)
+    
+  def apply[A](value: A) : Input[A] = Input(Some(value), None, None, None, None)
 
 }
 

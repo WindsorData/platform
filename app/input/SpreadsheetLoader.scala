@@ -19,11 +19,15 @@ import model.New8KData
 import model.CompanyFiscalYear
 import java.util.GregorianCalendar
 import org.joda.time.DateTime
-import model.SimpleInput
+import model.Input
 import play.Logger
 import util.poi.Cells
 
 object SpreadsheetLoader {
+  
+  val ROW_INDEX_FISCAL_YEAR = 27
+  val ROW_INDEX_FISCAL_YEAR_MINUS_ONE = 42
+  val ROW_INDEX_FISCAL_YEAR_MINUS_TWO = 57
   
   def load(in: InputStream): Seq[CompanyFiscalYear] = {
     val wb = WorkbookFactory.create(in)
@@ -44,9 +48,9 @@ object SpreadsheetLoader {
 
     val companiesSheet = wb.getSheetAt(0)
 
-    val execDbYear = dateCellToYear(rows(companiesSheet).drop(8))
-    val execDbYearMinusOne = dateCellToYear(rows(companiesSheet).drop(25))
-    val execDbYearMinusTwo = dateCellToYear(rows(companiesSheet).drop(40))
+    val execDbYear = dateCellToYear(rows(companiesSheet).drop(ROW_INDEX_FISCAL_YEAR))
+    val execDbYearMinusOne = dateCellToYear(rows(companiesSheet).drop(ROW_INDEX_FISCAL_YEAR_MINUS_ONE))
+    val execDbYearMinusTwo = dateCellToYear(rows(companiesSheet).drop(ROW_INDEX_FISCAL_YEAR_MINUS_TWO))
 
     val years = Seq(execDbYear, execDbYearMinusOne, execDbYearMinusTwo).iterator
 
@@ -61,7 +65,9 @@ object SpreadsheetLoader {
     CompanyFiscalYear(
       ticker = { skip(1); string },
       name = string,
-      disclosureFiscalYear = SimpleInput(fiscalYearOption, None, None),
+      disclosureFiscalYear = Input(fiscalYearOption, None, None),
+      originalCurrency = {skip(1); string},
+      currencyConversionDate = date,
       executives = executives)
   }
 

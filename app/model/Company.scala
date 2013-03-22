@@ -6,7 +6,10 @@ case class CompanyFiscalYear(
   ticker: Input[String],
   name: Input[String],
   disclosureFiscalYear: Input[Int],
+  originalCurrency: Input[String],
+  currencyConversionDate: Input[Date],
   executives: Traversable[Executive])
+  
   
 object CompanyFiscalYear{
   import persistence._
