@@ -7,11 +7,15 @@ import org.apache.poi.ss.usermodel.Row
 
 object Cells {
 
-  def blankToNone(cell: Cell) =
+  def blankToNone[T](mapper: Cell => T)(cell: Cell) =
     if (cell.getCellType() == Cell.CELL_TYPE_BLANK)
       None
     else
-      Some(cell)
+      Some(mapper(cell))
+
+  def blankToSome[T](mapper: Cell => T, defaultValue: T)(cell: Cell) =
+    Some(blankToNone(mapper)(cell).getOrElse(defaultValue))
+    
 
   def validValueMapper[T](valueMapper: Cell => T)(cell: Cell): T = {
     try {

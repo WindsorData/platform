@@ -39,7 +39,7 @@ object SpreadsheetLoader {
     def dateCellToYear(r: Seq[Row]) = {
       val dateCell = r.get(0).getCell(2)
       try{        
-    	Some(new DateTime(blankToNone(dateCell).get.getDateCellValue()).getYear())
+    	Some(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
       }
       catch{
         case e: NoSuchElementException => throw new NoSuchElementException(noFiscalYearErrorMessage(dateCell))

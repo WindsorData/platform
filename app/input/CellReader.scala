@@ -12,18 +12,26 @@ import model.Input
  */
 
 trait CellReader {
-  def string = createInput(_.getStringCellValue)
-  def boolean = createInput(_.getBooleanCellValue)
-  def numeric = createInput(_.getNumericCellValue: BigDecimal)
-  def date = createInput(_.getDateCellValue)
+  
+  def string = createInput(blankToNone(_.getStringCellValue))
+  def stringWithDefault(s: String = "BLANK") = createInput(blankToSome(_.getStringCellValue, s))
+    
+  def numeric = createInput(blankToNone(_.getNumericCellValue : BigDecimal))
+  def numericWithDefault(n: BigDecimal = 0.0) = createInput(blankToSome(_.getNumericCellValue : BigDecimal, n))
+  
+  def boolean = createInput(blankToNone(_.getBooleanCellValue))
+  def booleanWithDefault(b: Boolean = false) = createInput(blankToSome(_.getBooleanCellValue, b))
+  
+  def date = createInput(blankToNone(_.getDateCellValue))
+  
   def skip(offset: Int) = for (_ <- 1 to offset) skip1
   def skip1: Unit
   def next: Seq[Cell]
 
-  def createInput[T](valueMapper: Cell => T): Input[T] = {
-    val nextCells = next.map(blankToNone)
-    def nextStringValue(index: Int) = nextCells(index).map(_.getStringCellValue)
-    newInput(nextCells(0).map(validValueMapper(valueMapper)_), nextStringValue);
+  def createInput[T](valueMapper: Cell => Option[T]): Input[T] = {
+    val nextCells = next
+    def nextStringValue(index: Int) = blankToNone(_.getStringCellValue)(nextCells(index))
+    newInput(valueMapper(nextCells(0)), nextStringValue)
   }
 
   def newInput[T](value: Option[T], nextStringValue: Int => Option[String]) =
@@ -35,7 +43,7 @@ trait CellReader {
 }
 
 /**
- * {{CellReader}} that expects vertical cell groups, that is, data iems are found in columns
+ * {{CellReader}} that expects vertical cell groups, that is, data items are found in columns
  * @author flbulgarelli
  */
 class ColumnOrientedReader(rows: Seq[Row]) extends CellReader {
@@ -62,5 +70,4 @@ class RowOrientedReader(rows: Seq[Row]) extends CellReader {
       None,
       nextStringValue(1),
       nextStringValue(2))
-
 }
