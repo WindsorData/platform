@@ -21,19 +21,19 @@ import java.text.SimpleDateFormat
 import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
-class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
-  
+class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
+
   describe("An importer") {
 
     it("should be able to import a company") {
-    	
+
       assert(
         loadSpreadsheet("CompanyValuesAndNotes.xlsx") ===
           Seq(CompanyFiscalYear(
             ticker = Input(Some("ticker"), Some("note ticker"), Some("http://alink.com")),
             name = Input(Some("coname"), Some("note coname"), Some("http://anotherlink.com")),
-            disclosureFiscalYear = Some(2012), 
-            originalCurrency = None, 
+            disclosureFiscalYear = Some(2012),
+            originalCurrency = None,
             currencyConversionDate = None,
             executives = Seq())))
     }
@@ -46,8 +46,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             name = Some("ExecutiveName1"),
             title = Input("ExecutiveTitle1"),
             shortTitle = Some("ExTi1"),
-            functionalMatches = List(None, None, None),
-            founder = Some("lala"),
+            functionalMatches = FunctionalMatch(),
+            founder = Input("lala"), transitionPeriod = None,
             carriedInterest = CarriedInterest(
               ownedShares = Input(100),
               vestedOptions = Input(200),
@@ -84,8 +84,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             name = Input("ExecutiveName1"),
             title = Input("ExecutiveTitle1"),
             shortTitle = Input("ExTi1"),
-            functionalMatches = List(None, None, None),
-            founder = Input("lala"),
+            functionalMatches = FunctionalMatch(),
+            founder = Input("lala"), transitionPeriod = None,
             carriedInterest = CarriedInterest(
               ownedShares = Input(100),
               vestedOptions = Input(200),
@@ -118,8 +118,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             name = Input("ExecutiveName2"),
             title = Input("ExecutiveTitle2"),
             shortTitle = Input("ExTi2"),
-            functionalMatches = List(None, None, None),
-            founder = Input("lala"),
+            functionalMatches = FunctionalMatch(),
+            founder = Input("lala"), transitionPeriod = None,
             carriedInterest = CarriedInterest(
               ownedShares = Input(100),
               vestedOptions = Input(200),
@@ -156,10 +156,11 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             name = Input(Some("ExecutiveName1"), None, Some("C1"), None, None),
             title = Input(Some("ExecutiveTitle1"), None, Some("C2"), None, None),
             shortTitle = Input(Some("ExTi1"), None, Some("C3"), None, None),
-            functionalMatches = List(Input(Some("Other"), None, Some("C4"), None, None),
-              Input(Some("Other"), None, Some("fm1com"), None, None),
-              Input(Some("Other"), None, Some("fm2com"), None, None)),
-            founder = Input(Some("lala"), None, Some("C5"), None, None),
+            functionalMatches = FunctionalMatch(
+              	Input(Some("Other"), None, Some("C4"), None, None),
+                Input(Some("Other"), None, Some("fm1com"), None, None),
+                Input(Some("President"), None, Some("fm2com"), None, None), None, None),
+            founder = Input(Some("lala"), None, Some("C5"), None, None),transitionPeriod = None,
             cashCompensations = AnualCashCompensation(
               Input(Some(1000.0), None, Some("C6"), None, None),
               Input(Some(1.0), None, Some("C7"), None, None),
@@ -194,13 +195,13 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
         loadSpreadsheet("InvalidFunctionalValue.xlsx")
       }
     }
-    
+
     it("should throw an Exception when there's a numeric value on string cell") {
       intercept[IllegalStateException] {
         loadSpreadsheet("ExpectedStringButWasNumeric.xlsx")
       }
     }
-    
+
     it("should throw an Exception when there's no value on any fiscal year") {
       intercept[NoSuchElementException] {
         loadSpreadsheet("EmptyFiscalYear.xlsx")
@@ -213,8 +214,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
           name = Input("ExecutiveName1"),
           title = Input("ExecutiveTitle1"),
           shortTitle = Input("ExTi1"),
-          functionalMatches = List(None, None, None),
-          founder = Input("lala"),
+          functionalMatches = FunctionalMatch(),
+          founder = Input("lala"), transitionPeriod = None,
           carriedInterest = CarriedInterest(
             ownedShares = Input(100),
             vestedOptions = Input(200),
@@ -251,7 +252,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             ticker = Input(Some("ticker"), Some("note ticker"), None),
             name = Input(Some("coname"), Some("note coname"), None),
             disclosureFiscalYear = Input(Some(2012), None, None),
-            originalCurrency = None, 
+            originalCurrency = None,
             currencyConversionDate = None,
             executives =
               Seq(
@@ -259,8 +260,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
                   name = Input("ExecutiveName1"),
                   title = Input("ExecutiveTitle1"),
                   shortTitle = Input("ExTi1"),
-                  functionalMatches = List(None, None, None),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100),
                     vestedOptions = Input(200),
@@ -292,8 +293,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
                   name = Input("ExecutiveName2"),
                   title = Input("ExecutiveTitle2"),
                   shortTitle = Input("ExTi2"),
-                  functionalMatches = List(None, None, None),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100),
                     vestedOptions = Input(200),
@@ -330,7 +331,7 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             ticker = Input(Some("ticker"), Some("note ticker"), None),
             name = Input(Some("coname"), Some("note coname"), None),
             disclosureFiscalYear = Input(Some(2011), None, None),
-            originalCurrency = None, 
+            originalCurrency = None,
             currencyConversionDate = None,
             executives =
               Seq(
@@ -338,8 +339,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
                   name = Input("ExecutiveName1"),
                   title = Input("ExecutiveTitle1"),
                   shortTitle = Input("ExTi1"),
-                  functionalMatches = List(Input("CAO"), Input("COO"), Input("CEO")),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(Input("CAO"), Input("COO"), Input("CEO"), None, None),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100),
                     vestedOptions = Input(200),
@@ -372,8 +373,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
                   name = Input("ExecutiveName2"),
                   title = Input("ExecutiveTitle2"),
                   shortTitle = Input("ExTi2"),
-                  functionalMatches = List(Input("CEO"), Input("COO"), Input("CAO")),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(Input("CEO"), Input("COO"), Input("CAO"), None, None),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100),
                     vestedOptions = Input(200),
@@ -405,15 +406,15 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             ticker = Input(Some("ticker"), Some("note ticker"), None),
             name = Input(Some("coname"), Some("note coname"), None),
             disclosureFiscalYear = Input(Some(2010), None, None),
-            originalCurrency = None, 
+            originalCurrency = None,
             currencyConversionDate = None,
             executives = Seq(
               Executive(
                 name = Input("ExecutiveName1"),
                 title = Input("ExecutiveTitle1"),
                 shortTitle = Input("ExTi1"),
-                functionalMatches = List(Input("CAO"), Input("COO"), Input("CEO")),
-                founder = Input("lala"),
+                functionalMatches = FunctionalMatch(Input("CAO"), Input("COO"), Input("CEO"), None, None),
+                founder = Input("lala"), transitionPeriod = None,
                 carriedInterest = CarriedInterest(
                   ownedShares = Input(600),
                   vestedOptions = Input(700),
@@ -446,8 +447,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
                 name = Input("ExecutiveName2"),
                 title = Input("ExecutiveTitle2"),
                 shortTitle = Input("ExTi2"),
-                functionalMatches = List(Input("CEO"), Input("COO"), Input("CAO")),
-                founder = Input("lala"),
+                functionalMatches = FunctionalMatch(Input("CEO"), Input("COO"), Input("CAO"), None, None),
+                founder = Input("lala"), transitionPeriod = None,
                 carriedInterest = CarriedInterest(
                   ownedShares = Input(600),
                   vestedOptions = Input(700),
@@ -480,15 +481,15 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
             ticker = Input(Some("ticker"), Some("note ticker"), None),
             name = Input(Some("coname"), Some("note coname"), None),
             disclosureFiscalYear = Input(Some(2009), None, None),
-            originalCurrency = None, 
+            originalCurrency = None,
             currencyConversionDate = None,
             executives = Seq(
               Executive(
                 name = Input("ExecutiveName1"),
                 title = Input("ExecutiveTitle1"),
                 shortTitle = Input("ExTi1"),
-                functionalMatches = List(Input("CAO"), Input("COO"), Input("CEO")),
-                founder = Input("lala"),
+                functionalMatches = FunctionalMatch(Input("CAO"), Input("COO"), Input("CEO"), None, None),
+                founder = Input("lala"), transitionPeriod = None,
                 carriedInterest = CarriedInterest(
                   ownedShares = Input(1100),
                   vestedOptions = Input(1200),
@@ -521,8 +522,8 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader{
                 name = Input("ExecutiveName2"),
                 title = Input("ExecutiveTitle2"),
                 shortTitle = Input("ExTi2"),
-                functionalMatches = List(Input("CEO"), Input("COO"), Input("CAO")),
-                founder = Input("lala"),
+                functionalMatches = FunctionalMatch(Input("CEO"), Input("COO"), Input("CAO"), None, None),
+                founder = Input("lala"), transitionPeriod = None,
                 carriedInterest = CarriedInterest(
                   ownedShares = Input(1100),
                   vestedOptions = Input(1200),
