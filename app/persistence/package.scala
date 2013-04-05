@@ -17,26 +17,26 @@ package object persistence {
       def save() {
         collection.insert(company)
       }
-      
+
       def update = collection.update(
-          MongoDBObject("ticker.value" -> company.get("ticker").asInstanceOf[DBO].get("value"), 
-        		  		"disclosureFiscalYear.value" -> company.get("disclosureFiscalYear").asInstanceOf[DBO].get("value")), 
-        		  		company, true)
+        MongoDBObject("ticker.value" -> company.get("ticker").asInstanceOf[DBO].get("value"),
+          "disclosureFiscalYear.value" -> company.get("disclosureFiscalYear").asInstanceOf[DBO].get("value")),
+        company, true)
     }
 
   def findAllCompanies(db: MongoDB = MongoClient()("windsor")): List[CompanyFiscalYear] =
     db("companies").toList.map(x => dbObject2Company(x.asInstanceOf[DBO]))
 
- def findCompanyBy(name: String, year: Int, db: MongoDB = MongoClient()("windsor")): Option[CompanyFiscalYear] = {
+  def findCompanyBy(name: String, year: Int, db: MongoDB = MongoClient()("windsor")): Option[CompanyFiscalYear] = {
     db("companies").
       findOne(MongoDBObject("ticker.value" -> name, "disclosureFiscalYear.value" -> year)).
-      map {dbObject2Company(_)}
+      map { dbObject2Company(_) }
   }
-  
+
   //TODO: check if there's a way to do this better
   def findAllCompaniesNames(db: MongoDB = MongoClient()("windsor")): Seq[String] =
     db("companies").toSet[DBO].map(x => x.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
-    
+
   def findAllCompaniesFiscalYears(db: MongoDB = MongoClient()("windsor")): Seq[Int] =
     db("companies").toSet[DBO].map(x => x.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
 
@@ -69,10 +69,20 @@ package object persistence {
       'shortTitle ~> executive.shortTitle,
       'functionalMatches ~> executive.functionalMatches,
       'founder ~> executive.founder,
+      'transitionPeriod ~> executive.transitionPeriod,
       'carriedInterest ~> executive.carriedInterest,
       'equityCompanyValue ~> executive.equityCompanyValue,
       'cashCompensation ~> executive.cashCompensations)
   }
+
+  implicit def functionalMatches2DbObject(fMatches: FunctionalMatch): DBO =
+    MongoDBObject(
+      'primary ~> fMatches.primary,
+      'secondary ~> fMatches.secondary,
+      'level ~> fMatches.level,
+      'scope ~> fMatches.scope,
+      'pod ~> fMatches.bod)
+
   implicit def company2DbObject(company: CompanyFiscalYear): DBO =
     MongoDBObject(
       'ticker ~> company.ticker,
@@ -88,8 +98,7 @@ package object persistence {
       'vestedOptions ~> interest.vestedOptions,
       'unvestedOptions ~> interest.unvestedOptions,
       'tineVest ~> interest.tineVest,
-      'perfVest ~> interest.perfVest
-      )
+      'perfVest ~> interest.perfVest)
 
   implicit def cashCompensation2DbObject(interest: AnualCashCompensation): DBO =
     MongoDBObject(
@@ -155,8 +164,9 @@ package object persistence {
       name = fetch("name"),
       title = fetch("title"),
       shortTitle = fetch("shortTitle"),
-      functionalMatches = fetchDBList("functionalMatches"),
+      functionalMatches = executive.get("functionalMatches").asInstanceOf[DBO],
       founder = fetch("founder"),
+      transitionPeriod = fetch("transitionPeriod"),
       carriedInterest = executive.get("carriedInterest").asInstanceOf[DBO],
       equityCompanyValue = executive.get("equityCompanyValue").asInstanceOf[DBO],
       cashCompensations = executive.get("cashCompensation").asInstanceOf[DBO])
@@ -169,6 +179,16 @@ package object persistence {
       originalCurrency = fetch("originalCurrency"),
       currencyConversionDate = fetch("currencyConversionDate"),
       executives = company.get("executives").asInstanceOf[BasicDBList].map(x => dbObject2Executive(x.asInstanceOf[DBO])))
+
+  implicit def dbObject2FunctionalMatches(value: DBO): FunctionalMatch = {
+    implicit val dbo = value
+    FunctionalMatch(
+      primary = fetch("primary"),
+      secondary = fetch("secondary"),
+      level = fetch("level"),
+      scope = fetch("scope"),
+      bod = fetch("bod"))
+  }
 
   implicit def dbObject2Equity(value: DBO): EquityCompanyValue = {
     implicit val dbo = value

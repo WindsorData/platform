@@ -101,10 +101,11 @@ object SpreadsheetWriter {
     writeCellWithExecutiveValue(_.name)
     writeCellWithExecutiveValue(_.title)
     writeCellWithExecutiveValue(_.shortTitle)
-    writeCellWithExecutiveValue(_.functionalMatch(1))
-    writeCellWithExecutiveValue(_.functionalMatch(2))
-    writeCellWithExecutiveValue(_.functionalMatch(3))
-    writeCellWithExecutiveValue(_.founder)
+    writeCellWithExecutiveValue(_.functionalMatches.primary)
+    writeCellWithExecutiveValue(_.functionalMatches.secondary)
+    writeCellWithExecutiveValue(_.functionalMatches.level)
+    writeCellWithExecutiveValue(_.functionalMatches.scope)
+    writeCellWithExecutiveValue(_.functionalMatches.bod)
 
     //TODO: write all the 3 years, we are just creating the first one for now.
     writeCellWithExecutiveValue(_.cashCompensations.baseSalary)

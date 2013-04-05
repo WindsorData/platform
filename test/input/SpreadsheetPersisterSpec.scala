@@ -45,8 +45,8 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input("ExecutiveName23"),
                   title = Input("ExecutiveTitle23"),
                   shortTitle = Input("ExTi23"),
-                  functionalMatches = ArrayBuffer(Input("Other"), Input("Other"), Input("Other")),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(Input("Other"), Input("Other"), None, None, None),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100.0),
                     vestedOptions = Input(200.0),
@@ -86,8 +86,8 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input("ExecutiveName12"),
                   title = Input("ExecutiveTitle12"),
                   shortTitle = Input("ExTi12"),
-                  functionalMatches = ArrayBuffer(Input("Other"), Input("Other"), Input("Other")),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(Input("Other"), Input("Other"), None, None, None),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100.0),
                     vestedOptions = Input(200.0),
@@ -137,8 +137,8 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
                   name = Input("ExecutiveName1"),
                   title = Input("ExecutiveTitle1"),
                   shortTitle = Input("ExTi1"),
-                  functionalMatches = ArrayBuffer(Input("Other"), Input("Other"), Input("Other")),
-                  founder = Input("lala"),
+                  functionalMatches = FunctionalMatch(Input("Other"), Input("Other"), None, None, None),
+                  founder = Input("lala"), transitionPeriod = None,
                   carriedInterest = CarriedInterest(
                     ownedShares = Input(100),
                     vestedOptions = Input(200),
@@ -170,8 +170,8 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
           name = Input("ExecutiveName2"),
           title = Input("ExecutiveTitle2"),
           shortTitle = Input("ExTi2"),
-          functionalMatches = ArrayBuffer(Input("Other"), Input("Other"), Input("Other")),
-          founder = Input("lala"),
+          functionalMatches = FunctionalMatch(Input("Other"), Input("Other"), None, None, None),
+          founder = Input("lala"), transitionPeriod = None,
           carriedInterest = CarriedInterest(
             ownedShares = Input(100),
             vestedOptions = Input(200),
@@ -200,7 +200,7 @@ class SpreadsheetPersisterSpec extends FunSpec with TestSpreadsheetLoader with B
               Input(1.0),
               Input(1.0))))))
         
-        company.save              
+        company.save
         assert(findCompanyBy("ticker", 2012, MongoClient()("test")).get.toString === company.toString)
     }
     

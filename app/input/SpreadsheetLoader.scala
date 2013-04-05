@@ -22,6 +22,7 @@ import org.joda.time.DateTime
 import model.Input
 import play.Logger
 import util.poi.Cells
+import model.FunctionalMatch
 
 object SpreadsheetLoader {
   
@@ -79,8 +80,9 @@ object SpreadsheetLoader {
       name = { skip(1); string },
       title = string,
       shortTitle = string,
-      functionalMatches = Seq(string, string, string),
+      functionalMatches = FunctionalMatch(string, string, string, string, string),
       founder = string,
+      transitionPeriod = string,
       cashCompensations = AnualCashCompensation(
         baseSalary = numeric,
         actualBonus = numeric,
