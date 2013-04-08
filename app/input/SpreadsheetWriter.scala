@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.OutputStream
-import util.poi.Cells._
 import org.apache.poi.ss.usermodel.Workbook
 import util.FileManager
 import org.apache.poi.ss.usermodel.Cell
@@ -22,6 +21,8 @@ import java.util.Date
 import org.apache.poi.ss.util.CellUtil
 import libt.Model
 import libt.Value
+import libt._
+import libt.export.spreadsheet.util._
 
 trait Writer {
 
@@ -37,10 +38,10 @@ class DataWriter(wb: Workbook) extends Writer {
   //TODO: Remove Hardcoded values
   val sheet = { val s = wb.getSheet("ExecDB"); defineValidSheetCells(s); s }
   val metaDataWriter = new MetaDataWriter(wb)
-  val rowIterator = rows(sheet).iterator
+  val rowIterator = sheet.rows.iterator
   var cellIterator: Iterator[Cell] = null
 
-  def nextExecutiveRow = cellIterator = cells(rowIterator.next).iterator
+  def nextExecutiveRow = cellIterator = rowIterator.next.cells.iterator
   val setCurrentCompany = metaDataWriter.setCurrentCompany
 
   def writeData[T](value: T, cell: Cell): Unit = {
@@ -93,7 +94,7 @@ class DataWriter(wb: Workbook) extends Writer {
 
 class MetaDataWriter(wb: Workbook) extends Writer {
   val sheet = { val s = wb.getSheet("Notes"); defineValidSheetCells(s); s }
-  val rowIterator = rows(sheet).iterator
+  val rowIterator = sheet.rows.iterator
   var company: Model = null
   var isCompanyHeaderWritten = false
   var lastName: String = null
@@ -130,6 +131,8 @@ class MetaDataWriter(wb: Workbook) extends Writer {
   }
 
 }
+import libt._
+import libt.export.spreadsheet.util._
 
 object SpreadsheetWriter {
 

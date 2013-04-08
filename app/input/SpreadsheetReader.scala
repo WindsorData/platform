@@ -7,15 +7,14 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import util.poi.Cells._
 import scala.collection.immutable.Map
 import java.util.GregorianCalendar
 import org.joda.time.DateTime
 import play.Logger
-import util.poi.Cells
-import libt.Model
-import libt.Value
-import libt.Col
+import libt._
+import libt.export.spreadsheet.RowOrientedReader
+import libt.export.spreadsheet.util._
+import libt.export.spreadsheet.ColumnOrientedReader
 
 object SpreadsheetReader {
 
@@ -28,7 +27,7 @@ object SpreadsheetReader {
   def read(wb: Workbook): Seq[Model] = {
     /**Answers the seq of executives given a fiscal year offest*/
     def executivesByFiscalYear(fiscalYearOffest: Int) =
-      rows(wb.getSheetAt(fiscalYearOffest)).drop(3).grouped(6).map(toExecutive).toSeq
+      wb.getSheetAt(fiscalYearOffest).rows.drop(3).grouped(6).map(toExecutive).toSeq
 
     def dateCellToYear(r: Seq[Row]) = {
       val dateCell = r.get(0).getCell(2)
@@ -46,11 +45,11 @@ object SpreadsheetReader {
       ROW_INDEX_FISCAL_YEAR,
       ROW_INDEX_FISCAL_YEAR_MINUS_ONE,
       ROW_INDEX_FISCAL_YEAR_MINUS_TWO)
-      .map(it => dateCellToYear(rows(companiesSheet).drop(it)))
+      .map(it => dateCellToYear(companiesSheet.rows.drop(it)))
       .iterator
 
     for { fiscalYearOffset <- 2 to wb.getNumberOfSheets() - 1 }
-      yield toCompany(executivesByFiscalYear(fiscalYearOffset), rows(companiesSheet).drop(1), years.next)
+      yield toCompany(executivesByFiscalYear(fiscalYearOffset), companiesSheet.rows.drop(1), years.next)
   }
 
   private def invalidCellTypeErrorMessage(baseMessage: String, cell: Cell) =

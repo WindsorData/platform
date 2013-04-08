@@ -4,7 +4,6 @@ import com.mongodb.DBObject
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBList
-import libt.TValue
 import libt._
 
 object `package` {

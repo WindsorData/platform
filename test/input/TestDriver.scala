@@ -8,7 +8,6 @@
 //import org.apache.poi.hssf.usermodel.HSSFWorkbook
 //import org.apache.poi.ss.util.CellUtil
 //import org.apache.poi.ss.usermodel.Sheet
-//import util.poi.Cells
 //import model._
 //import scala.collection.mutable.MapBuilder
 //import scala.collection.mutable.{ Map => MutableMap }
@@ -27,12 +26,6 @@
 ////  case class SingleInput(input: Input[_]) extends DataInput
 ////  case class Inputs(inputs: Seq[DataItem]) extends DataInput
 //
-//  implicit def sheet2RichSheet(sheet: Sheet) = new {
-//    def cellAt(rowIndex: Int, columnIndex: Int) =
-//      CellUtil.getCell(CellUtil.getRow(rowIndex, sheet), columnIndex)
-//
-//    def rows = Cells.rows(sheet)
-//  }
 //
 //  trait Column {
 //    def read(reader: CellReader, dataItemBuilder: DataItemBuilder)

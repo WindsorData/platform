@@ -2,17 +2,14 @@ package input
 
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Cell
-import util.poi.Cells._
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import libt.Model
-import libt.Value
-import libt.Model
-import libt.Model
+import libt._
+import libt.export.spreadsheet.util._
 
 class ColumnOrientedWriter(sheet: Sheet, company: Model) {
 
-  val cellIterators = rows(sheet).drop(3).map(cells).map(_.iterator)
+  val cellIterators = sheet.rows.drop(3).map(_.cells).map(_.iterator)
   //Skips first column
   cellIterators.map(_.next)
 

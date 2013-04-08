@@ -1,9 +1,10 @@
-package input
+package libt.export.spreadsheet
 
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
-import util.poi.Cells._
 import libt.Value
+import util._
+import scala.math.BigDecimal.double2bigDecimal
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
  * The exact orientation of cells groups - columns or rows - depends on implementors
@@ -45,7 +46,7 @@ trait CellReader {
  * @author flbulgarelli
  */
 class ColumnOrientedReader(rows: Seq[Row]) extends CellReader {
-  private val cellIterators = rows.map(cells).map(_.iterator)
+  private val cellIterators = rows.map(_.cells).map(_.iterator)
 
   override protected def skip1 = cellIterators.foreach(_.next)
   override protected def next = cellIterators.map(_.next)
@@ -60,7 +61,7 @@ class RowOrientedReader(rows: Seq[Row]) extends CellReader {
   private val rowIterator = rows.iterator
 
   override protected def skip1 = rowIterator.next
-  override protected def next = cells(rowIterator.next).drop(2) //harcoded offset
+  override protected def next = rowIterator.next.cells.drop(2) //harcoded offset
 
   override protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
     Value(value,

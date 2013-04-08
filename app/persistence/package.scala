@@ -2,13 +2,12 @@ import com.mongodb.DBObject
 import model._
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
-import util.persistence._
 import com.mongodb.casbah.commons.MongoDBList
 import com.mongodb.casbah.commons.MongoDBListBuilder
-import util.persistence._
 import util._
 import libt.Model
 import libt.persistence._
+import libt.persistence.util._
 import libt.Element
 
 package object persistence {

@@ -22,7 +22,6 @@ import libt.Model
 object Application extends Controller {
 
   import persistence._
-  import util.persistence._
 
   implicit val db = MongoClient()("windsor")
 
