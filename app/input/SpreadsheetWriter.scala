@@ -21,19 +21,21 @@ import org.apache.poi.hssf.usermodel.HSSFComment
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import java.util.Date
+import org.apache.poi.ss.util.CellUtil
 
 trait Writer {
 
-  def defineValidSheetCells(x: Int, y: Int, sheet: Sheet) = {
+  def defineValidSheetCells(sheet: Sheet, x: Int = 50, y: Int = 50) = {
     for {
-      n <- 0 to (x - 1)
-      m <- 0 to (y - 1)
+      m <- 1 to y
+      n <- 0 to x
     } sheet.createRow(m).createCell(n).setAsActiveCell()
   }
 }
 
 class DataWriter(wb: Workbook, company: CompanyFiscalYear) extends Writer {
-  val sheet = {val s = wb.getSheet("ExecDB"); defineValidSheetCells(50, 50, s); s} 
+  //TODO: Remove Hardcoded values
+  val sheet = {val s = wb.getSheet("ExecDB"); defineValidSheetCells(s); s} 
   val metaDataWriter = new MetaDataWriter(wb)
   val cellIterators = rows(sheet).map(cells).map(_.iterator)
 
@@ -48,24 +50,58 @@ class DataWriter(wb: Workbook, company: CompanyFiscalYear) extends Writer {
 
   def getInputValue[T](toSomeValue: Executive => Input[T]) = company.executives.map(toSomeValue).toList
 
-  def writeInputValue[T](names: Traversable[Input[T]], cells: Seq[Cell]): Unit = {
+  def writeInputValue[T](names: Traversable[Input[T]],titleName: String, itemName: String, cells: Seq[Cell]): Unit = {
     names match {
-      case Input(Some(value), _, _, _, _) :: xs => {
+      case Input(Some(value), calc, comment, note, link) :: xs => {
+        val metadata = Seq(calc, comment, note, link)
         writeData(value, cells.head)
-        //writeMetaData
-        writeInputValue(xs, cells.tail)
+        if(!metadata.flatten.isEmpty){          
+        	metaDataWriter.write(titleName, itemName, metadata)
+        }
+        writeInputValue(xs, titleName, itemName, cells.tail)
       }
-      case Input(None, _, _, _, _) :: xs => writeInputValue(xs, cells.tail)
+      case Input(None, _, _, _, _) :: xs => writeInputValue(xs, titleName, itemName, cells.tail)
       case Nil => Unit
     }
   }
 
-  def writeCellWithExecutiveValue[T](executive2Input: Executive => Input[T]) =
-    writeInputValue(getInputValue(executive2Input), cellIterators.map(_.next))
+  def writeInput[T](executive2Input: Executive => Input[T], titleName: String, itemName: String) = 
+    writeInputValue(getInputValue(executive2Input), titleName, itemName, cellIterators.map(_.next))
+    
+  def writeExecData[T](executive2Input: Executive => Input[T], itemName: String) =
+    writeInput(executive2Input, "Exec Data", itemName)
+    
+  def writeCashCompensation[T](executive2Input: Executive => Input[T], itemName: String) =
+    writeInput(executive2Input, "Cash Compensations", itemName)
+    
+  def writeEquityCompanyValue[T](executive2Input: Executive => Input[T], itemName: String) =
+    writeInput(executive2Input, "Equity Company Value", itemName)
+    
+  def writeCarriedInterest[T](executive2Input: Executive => Input[T], itemName: String) =
+    writeInput(executive2Input, "Carried Interest", itemName)    
+    
 }
 
 class MetaDataWriter(wb: Workbook) extends Writer {
-  val sheet = wb.getSheet("Notes")
+  val sheet = {val s = wb.getSheet("Notes"); defineValidSheetCells(s); s}
+  val rowIterator = rows(sheet).iterator
+  
+  rowIterator.next
+  
+  def write(titleName: String, itemName: String, metadata: Seq[Option[String]]){
+    val row = rowIterator.next
+    CellUtil.getCell(row, 3).setCellValue(titleName)
+    CellUtil.getCell(row, 4).setCellValue(itemName)
+    
+    metadata.foldLeft(5){ (acum, value) =>
+    	value match {
+    		case Some(v) => CellUtil.getCell(row, acum).setCellValue(v) 
+    		case _ => Unit
+        } 
+    	acum + 1
+    }
+  }
+  
 }
 
 object SpreadsheetWriter {
@@ -85,40 +121,40 @@ object SpreadsheetWriter {
     val dataWriter = new DataWriter(wb, company)
     import dataWriter._
     
-    writeCellWithExecutiveValue(_.name)
-    writeCellWithExecutiveValue(_.title)
-    writeCellWithExecutiveValue(_.shortTitle)
-    writeCellWithExecutiveValue(_.functionalMatches.primary)
-    writeCellWithExecutiveValue(_.functionalMatches.secondary)
-    writeCellWithExecutiveValue(_.functionalMatches.level)
-    writeCellWithExecutiveValue(_.functionalMatches.scope)
-    writeCellWithExecutiveValue(_.functionalMatches.bod)
+    writeExecData(_.name, "Name")
+    writeExecData(_.title, "Title")
+    writeExecData(_.shortTitle, "Short Title")
+    writeExecData(_.functionalMatches.primary, "Primary")
+    writeExecData(_.functionalMatches.secondary, "Secondary")
+    writeExecData(_.functionalMatches.level, "Level")
+    writeExecData(_.functionalMatches.scope, "Scope")
+    writeExecData(_.functionalMatches.bod, "Bod")
 
-    writeCellWithExecutiveValue(_.cashCompensations.baseSalary)
-    writeCellWithExecutiveValue(_.cashCompensations.actualBonus)
-    writeCellWithExecutiveValue(_.cashCompensations.targetBonus)
-    writeCellWithExecutiveValue(_.cashCompensations.thresholdBonus)
-    writeCellWithExecutiveValue(_.cashCompensations.maxBonus)
-    writeCellWithExecutiveValue(_.cashCompensations.new8KData.baseSalary)
-    writeCellWithExecutiveValue(_.cashCompensations.new8KData.targetBonus)
+    writeCashCompensation(_.cashCompensations.baseSalary, "Base Salary")
+    writeCashCompensation(_.cashCompensations.actualBonus, "Actual Bonus")
+    writeCashCompensation(_.cashCompensations.targetBonus, "Target Bonus")
+    writeCashCompensation(_.cashCompensations.thresholdBonus, "Threshold Bonus")
+    writeCashCompensation(_.cashCompensations.maxBonus, "Max Bonus")
+    writeCashCompensation(_.cashCompensations.new8KData.baseSalary, "8K Data - Base Salary")
+    writeCashCompensation(_.cashCompensations.new8KData.targetBonus, "8K Data - Target Bonus")
 
-    writeCellWithExecutiveValue(_.equityCompanyValue.optionsValue)
-    writeCellWithExecutiveValue(_.equityCompanyValue.options)
-    writeCellWithExecutiveValue(_.equityCompanyValue.exPrice)
-    writeCellWithExecutiveValue(_.equityCompanyValue.bsPercentage)
-    writeCellWithExecutiveValue(_.equityCompanyValue.timeVestRsValue)
-    writeCellWithExecutiveValue(_.equityCompanyValue.shares)
-    writeCellWithExecutiveValue(_.equityCompanyValue.price)
-    writeCellWithExecutiveValue(_.equityCompanyValue.perfRSValue)
-    writeCellWithExecutiveValue(_.equityCompanyValue.shares2)
-    writeCellWithExecutiveValue(_.equityCompanyValue.price2)
-    writeCellWithExecutiveValue(_.equityCompanyValue.perfCash)
+    writeEquityCompanyValue(_.equityCompanyValue.optionsValue, "Options Value")
+    writeEquityCompanyValue(_.equityCompanyValue.options, "Options")
+    writeEquityCompanyValue(_.equityCompanyValue.exPrice, "Ex Price")
+    writeEquityCompanyValue(_.equityCompanyValue.bsPercentage, "Bs Percentage")
+    writeEquityCompanyValue(_.equityCompanyValue.timeVestRsValue, "Time VEst Rs Value")
+    writeEquityCompanyValue(_.equityCompanyValue.shares, "Shares")
+    writeEquityCompanyValue(_.equityCompanyValue.price, "Price")
+    writeEquityCompanyValue(_.equityCompanyValue.perfRSValue, "Perf Rs Value")
+    writeEquityCompanyValue(_.equityCompanyValue.shares2, "Shares 2")
+    writeEquityCompanyValue(_.equityCompanyValue.price2, "Price 2")
+    writeEquityCompanyValue(_.equityCompanyValue.perfCash, "Perf Cash")
 
-    writeCellWithExecutiveValue(_.carriedInterest.ownedShares)
-    writeCellWithExecutiveValue(_.carriedInterest.vestedOptions)
-    writeCellWithExecutiveValue(_.carriedInterest.unvestedOptions)
-    writeCellWithExecutiveValue(_.carriedInterest.tineVest)
-    writeCellWithExecutiveValue(_.carriedInterest.perfVest)
+    writeCarriedInterest(_.carriedInterest.ownedShares, "Owned Shares")
+    writeCarriedInterest(_.carriedInterest.vestedOptions, "Vested Options")
+    writeCarriedInterest(_.carriedInterest.unvestedOptions, "Unvested Options")
+    writeCarriedInterest(_.carriedInterest.tineVest, "Tine Vest")
+    writeCarriedInterest(_.carriedInterest.perfVest, "Perf Vest")
   }
 
   def loadTemplateInto(out: OutputStream) = {
