@@ -17,14 +17,15 @@ import libt.Model
 import libt.Value
 import libt.Col
 
-object SpreadsheetLoader {
+object SpreadsheetReader {
 
   val ROW_INDEX_FISCAL_YEAR = 27
   val ROW_INDEX_FISCAL_YEAR_MINUS_ONE = 42
   val ROW_INDEX_FISCAL_YEAR_MINUS_TWO = 57
 
-  def load(in: InputStream): Seq[Model] = {
-    val wb = WorkbookFactory.create(in)
+  def read(in: InputStream): Seq[Model] = read(WorkbookFactory.create(in))
+
+  def read(wb: Workbook): Seq[Model] = {
     /**Answers the seq of executives given a fiscal year offest*/
     def executivesByFiscalYear(fiscalYearOffest: Int) =
       rows(wb.getSheetAt(fiscalYearOffest)).drop(3).grouped(6).map(toExecutive).toSeq
@@ -41,17 +42,18 @@ object SpreadsheetLoader {
 
     val companiesSheet = wb.getSheetAt(0)
 
-    val execDbYear = dateCellToYear(rows(companiesSheet).drop(ROW_INDEX_FISCAL_YEAR))
-    val execDbYearMinusOne = dateCellToYear(rows(companiesSheet).drop(ROW_INDEX_FISCAL_YEAR_MINUS_ONE))
-    val execDbYearMinusTwo = dateCellToYear(rows(companiesSheet).drop(ROW_INDEX_FISCAL_YEAR_MINUS_TWO))
-
-    val years = Seq(execDbYear, execDbYearMinusOne, execDbYearMinusTwo).iterator
+    val years = Seq(
+      ROW_INDEX_FISCAL_YEAR,
+      ROW_INDEX_FISCAL_YEAR_MINUS_ONE,
+      ROW_INDEX_FISCAL_YEAR_MINUS_TWO)
+      .map(it => dateCellToYear(rows(companiesSheet).drop(it)))
+      .iterator
 
     for { fiscalYearOffset <- 2 to wb.getNumberOfSheets() - 1 }
       yield toCompany(executivesByFiscalYear(fiscalYearOffset), rows(companiesSheet).drop(1), years.next)
   }
 
-  def toCompany(executives: Seq[Model], rows: Seq[Row], fiscalYearOption: Option[Int]) = {
+  private def toCompany(executives: Seq[Model], rows: Seq[Row], fiscalYearOption: Option[Int]) = {
     val reader = new RowOrientedReader(rows)
     import reader._
 
@@ -64,7 +66,7 @@ object SpreadsheetLoader {
       'executives -> Col(executives: _*))
   }
 
-  def toExecutive(rows: Seq[Row]) = {
+  private def toExecutive(rows: Seq[Row]) = {
     val reader = new ColumnOrientedReader(rows)
     import reader._
 

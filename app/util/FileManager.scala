@@ -2,7 +2,7 @@ package util
 
 import java.io.InputStream
 import java.io.FileInputStream
-import input.SpreadsheetLoader
+import input.SpreadsheetReader
 import input.SpreadsheetWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -27,7 +27,7 @@ object FileManager {
 
   def loadSpreadsheet(name: String) = {
     load(name) { x =>
-      SpreadsheetLoader.load(x)
+      SpreadsheetReader.read(x)
     }
   }
   
