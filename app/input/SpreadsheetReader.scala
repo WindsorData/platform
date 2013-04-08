@@ -53,6 +53,18 @@ object SpreadsheetReader {
       yield toCompany(executivesByFiscalYear(fiscalYearOffset), rows(companiesSheet).drop(1), years.next)
   }
 
+  private def invalidCellTypeErrorMessage(baseMessage: String, cell: Cell) =
+    baseMessage +
+      " on Sheet: " + cell.getSheet().getSheetName +
+      " -> Column: " + { cell.getColumnIndex + 1 } +
+      ", Row: " + { cell.getRowIndex + 1 }
+
+  private def noFiscalYearErrorMessage(cell: Cell) = 
+    "No Fiscal Year provided at Sheet " +
+      cell.getSheet.getSheetName +
+      " Column: " + cell.getColumnIndex +
+      " Row: " + cell.getRowIndex
+
   private def toCompany(executives: Seq[Model], rows: Seq[Row], fiscalYearOption: Option[Int]) = {
     val reader = new RowOrientedReader(rows)
     import reader._
