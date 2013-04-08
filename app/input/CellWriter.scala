@@ -1,15 +1,16 @@
 package input
 
 import org.apache.poi.ss.usermodel.Sheet
-import model.CompanyFiscalYear
 import org.apache.poi.ss.usermodel.Cell
 import util.poi.Cells._
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
-import model.Executive
-import model.Input
+import libt.Model
+import libt.Value
+import libt.Model
+import libt.Model
 
-class ColumnOrientedWriter(sheet: Sheet, company: CompanyFiscalYear){
+class ColumnOrientedWriter(sheet: Sheet, company: Model){
   
     val cellIterators = rows(sheet).drop(3).map(cells).map(_.iterator)
     //Skips first column
@@ -37,20 +38,21 @@ class ColumnOrientedWriter(sheet: Sheet, company: CompanyFiscalYear){
 
     //TODO: 
     // Put other input fields as comments for the value
-    def getInputValue[T](toSomeValue: Executive => Input[T]) = company.executives.map(toSomeValue).toList
+    def getInputValue[T](toSomeValue: Model => Value[T]) = 
+      company.c('executives).map(_.asInstanceOf[Model]).map(toSomeValue).toList
 
-    def writeInputValue[T](names: Traversable[Input[T]], cells: Seq[Cell]): Unit = {
+    def writeInputValue[T](names: Traversable[Value[T]], cells: Seq[Cell]): Unit = {
       names match {
-        case Input(Some(value), calc, comment, note, link) :: xs => {
+        case Value(Some(value), calc, comment, note, link) :: xs => {
           writeValueAndComments(value, Seq(("Calc: ", calc), ("Comment: ", comment), ("Note: ", note), ("Link: ",link)), cells.head)
           writeInputValue(xs, cells.drop(2))
         }
-        case Input(None, _, _, _, _) :: xs => writeInputValue(xs, cells.drop(2))
+        case Value(None, _, _, _, _) :: xs => writeInputValue(xs, cells.drop(2))
         case Nil => Unit
       }
     }
 
-    def writeString[T](executive2Input: Executive => Input[T]) =
+    def writeString[T](executive2Input: Model => Value[T]) =
       writeInputValue(getInputValue(executive2Input), cellIterators.map(_.next))
   
 }
