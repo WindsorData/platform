@@ -31,7 +31,7 @@ object FileManager {
     }
   }
   
-  def generateNewFileWith(name: String, company: CompanyFiscalYear) = {
+  def generateNewFileWith(name: String, company: Seq[CompanyFiscalYear]) = {
     write(name) { x => 
       SpreadsheetWriter.write(x, company)
     }
