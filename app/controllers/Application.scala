@@ -75,7 +75,7 @@ object Application extends Controller {
         val out = new ByteArrayOutputStream()
         findCompanyBy(name, year.toInt) match {
           case Some(founded) => {
-            SpreadsheetWriter.write(out, founded)
+            SpreadsheetWriter.write(out, Seq(founded))
             Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
               CONTENT_DISPOSITION -> "attachment; filename=company.xls")
           }
