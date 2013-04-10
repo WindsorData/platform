@@ -39,10 +39,10 @@ class DataWriter(wb: Workbook) extends Writer {
   val metaDataWriter = new MetaDataWriter(wb)
   val rowIterator = rows(sheet).iterator
   var cellIterator: Iterator[Cell] = null
-  
+
   def nextExecutiveRow = cellIterator = cells(rowIterator.next).iterator
   val setCurrentCompany = metaDataWriter.setCurrentCompany
-  
+
   def writeData[T](value: T, cell: Cell): Unit = {
     value match {
       case v: String => cell.setCellValue(v)
@@ -63,13 +63,13 @@ class DataWriter(wb: Workbook) extends Writer {
       case _ => Unit
     }
   }
-  
+
   def writeMetaDataIfExists(title: String, name: String)(metadata: Seq[Option[String]]) =
-      if (!metadata.flatten.isEmpty)
-        metaDataWriter.write(title, name, metadata)
-        
-  def writeCompanyMetaDataIfExists[T](i: Input[T], name: String) =
-    writeMetaDataIfExists("Company Data", name)(Seq(i.calc, i.comment, i.note, i.link))
+    if (!metadata.flatten.isEmpty)
+      metaDataWriter.write(title, name, metadata)
+
+  def writeCompanyMetaDataIfExists[T](i: Input[T], itemName: String) =
+    writeMetaDataIfExists("Company Data", itemName)(Seq(i.calc, i.comment, i.note, i.link))
 
   def writeInput[T](i: Input[T], titleName: String, itemName: String) =
     writeInputValue(i, cellIterator.next, writeMetaDataIfExists(titleName, itemName)_)
@@ -96,24 +96,29 @@ class MetaDataWriter(wb: Workbook) extends Writer {
   val rowIterator = rows(sheet).iterator
   var company: CompanyFiscalYear = null
   var isCompanyHeaderWritten = false
-  
+  var lastName: String = null
+
   val setCurrentCompany = (c: CompanyFiscalYear) => {
-   company = c
-   isCompanyHeaderWritten = false
-  } 
+    company = c
+    isCompanyHeaderWritten = false
+    lastName = null
+  }
+
+  def setLastName(lastNameField: String) = lastName = lastNameField
 
   rowIterator.next
 
   def write(titleName: String, itemName: String, metadata: Seq[Option[String]]) {
     val row = rowIterator.next
-    if(!isCompanyHeaderWritten){
+    if (!isCompanyHeaderWritten) {
       CellUtil.getCell(row, 0).setCellValue(company.ticker.value.get)
       CellUtil.getCell(row, 1).setCellValue(company.name.value.get)
       CellUtil.getCell(row, 2).setCellValue(company.disclosureFiscalYear.value.get)
       isCompanyHeaderWritten = true
     }
-    CellUtil.getCell(row, 3).setCellValue(titleName)
-    CellUtil.getCell(row, 4).setCellValue(itemName)
+    CellUtil.getCell(row, 3).setCellValue(lastName)
+    CellUtil.getCell(row, 4).setCellValue(titleName)
+    CellUtil.getCell(row, 5).setCellValue(itemName)
 
     metadata.foldLeft(5) { (acum, value) =>
       value match {
@@ -145,20 +150,22 @@ object SpreadsheetWriter {
 
     companies.foreach { comp =>
       import dataWriter._
-      
+
       setCurrentCompany(comp)
       writeCompanyMetaDataIfExists(comp.ticker, "Ticker")
       writeCompanyMetaDataIfExists(comp.name, "Name")
       writeCompanyMetaDataIfExists(comp.disclosureFiscalYear, "Disclosure Fiscal Year")
-      
-      comp.executives.foreach{ e =>
+
+      comp.executives.foreach { e =>
 
         nextExecutiveRow
+        
+        metaDataWriter.setLastName(e.name.value.get)
 
         writeCompanyData(comp.ticker)
-    	writeCompanyData(comp.name)
-    	writeCompanyData(comp.disclosureFiscalYear)
-        
+        writeCompanyData(comp.name)
+        writeCompanyData(comp.disclosureFiscalYear)
+
         writeExecData(e.name, "Name")
         writeExecData(e.title, "Title")
         writeExecData(e.shortTitle, "Short Title")
@@ -195,7 +202,6 @@ object SpreadsheetWriter {
         writeCarriedInterest(e.carriedInterest.perfVest, "Perf Vest")
       }
 
-      
     }
   }
 
