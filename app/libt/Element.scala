@@ -1,24 +1,40 @@
 package libt
+import sys.error
 
+/**
+ * @author flbulgarelli
+ */
 sealed trait Element {
-  def m(key : Symbol) = this.asInstanceOf[Model](key)
-  def v[A](key : Symbol) = m(key).asInstanceOf[Value[A]] 
+  
+  /***
+   * Answers the element at the given field key.
+   * 
+   * This method only works for keyed elements - Models.  
+   * */
+  def m(key : Symbol) :  Element = error("unsupported operation")
+  
+  /***
+   * Answers the Value at given field key.
+   * Fails when the key points to something else than a Value.
+   * 
+   * This method only works for keyed elements - Models.
+   * */
+  def v[A](key : Symbol) = m(key).asInstanceOf[Value[A]]
+  
+  /***
+   * Answers the elements at given field key.
+   * Fails when the key points to something else than a Col.
+   * 
+   * This method only works for keyed elements - Models.
+   * */
   def c(key : Symbol) = m(key).asInstanceOf[Col].elements
   def mc(key : Symbol)(pos : Int) = c(key)(pos).asInstanceOf[Model]
   def vc[A](key : Symbol)(pos : Int) = c(key)(pos).asInstanceOf[Value[A]]
 }
 
-//extends Dynamic {
-//  def selectDynamic(key : String) : Element = this match {
-//    case m : Model => m(Symbol(key))
-//  } 
-//  
-//  def value[A] : Option[A] = this match {
-//    case v : Value[A] => v.value
-//  }
-//    
-//}
-
+/**
+ * A Value, with the actual basic value, plus metadata fields
+ */
 case class Value[A](
   value: Option[A],
   calc: Option[String],
@@ -41,6 +57,7 @@ case class Col(elements: Element*) extends Element
 case class Model(elements: Set[(Symbol, Element)]) extends Element {
   private val elementsMap = elements.toMap
   def apply(key: Symbol) = elementsMap(key)
+  override def m(key: Symbol) = this(key)
 }
 object Model {
   def apply(elements : (Symbol, Element)*) : Model = Model(elements.toSet)

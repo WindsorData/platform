@@ -3,6 +3,11 @@ import libt._
 import scala.collection.mutable.{ Map => MutableMap }
 import scala.collection.mutable.Buffer
 
+/***
+ * A mutable object for building immutable Models, by inserting values at given Paths
+ * @author flbulgarelli
+ * @author metalkorva
+ * */
 class ModelBuilder {
   type MModel = MutableMap[Symbol, AnyRef]
   type MCol = Buffer[AnyRef]
@@ -10,6 +15,9 @@ class ModelBuilder {
   private def MModel() = MutableMap[Symbol, AnyRef]()
   private val model = MutableMap[Symbol, AnyRef]()
 
+  /**
+   * Adds a value at the given path in the model under construction
+   * */
   def +=(modelEntry: (Path, Value[_])) = setWithRoot(model, modelEntry._1, modelEntry._2)
 
   private def setWithRoot(untypedRoot: AnyRef, path: Path, value: Value[_]): Unit = {
@@ -22,7 +30,7 @@ class ModelBuilder {
         setWithRoot(root.getOrElseUpdate(field, MModel()), Route(next) :: tail, value)
       //set value at subcollection element   
       case Route(field) :: Index(index) :: Nil =>
-        root.getOrElseUpdate(field, MModel()).asInstanceOf[MCol](0) = value
+        root.getOrElseUpdate(field, MModel()).asInstanceOf[MCol](0) = value //FIXME
       //set value at subcollection's model
       case Route(field) :: Index(index) :: tail =>
         setWithRoot(

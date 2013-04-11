@@ -18,6 +18,7 @@ class TReader(
   schema: TElement,
   width: Int = 10,
   heigth: Int = 10) {
+  
   def read(sheet: Sheet): Seq[Model] =
     sheet.rows.grouped(6).map { inputGroup =>
       val modelBuilder = new ModelBuilder()
@@ -28,4 +29,5 @@ class TReader(
 
       modelBuilder.build
     }.toSeq
+    
 }

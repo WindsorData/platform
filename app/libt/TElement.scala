@@ -1,10 +1,23 @@
 package libt
 
+/**
+ * Type mirror of Element
+ * @author flbulgarelli
+ */
 sealed trait TElement {
+  
+  /**
+   * Answers the TValue element for a path that points to a TValue.
+   * If the path points to something else, the result is undefined
+   * */
   def apply(path: Path): TValue
   def validate(elemnt: Element) = ()
 }
 
+/**
+ * Type mirror of Value
+ * @author flbulgarelli
+ * */
 sealed trait TValue extends TElement {
   override def apply(path: Path) = path match {
     case Nil => this
@@ -23,6 +36,10 @@ case class TEnum(values: String*) extends TValue {
   }
 }
 
+/**
+ * Type mirror of Col
+ * @author flbulgarelli
+ */
 case class TCol(tElement: TElement) extends TElement {
   override def apply(path: Path) = path match {
     case Index(_) :: tail => tElement(tail)
@@ -32,6 +49,10 @@ case class TCol(tElement: TElement) extends TElement {
   }
 }
 
+/**
+ * Type mirror of Model
+ * @author flbulgarelli
+ */
 case class TModel(elements: (Symbol, TElement)*) extends TElement {
   private val elementsMap = elements.toMap
 
@@ -45,7 +66,3 @@ case class TModel(elements: (Symbol, TElement)*) extends TElement {
     }
   }
 }
-
-
-//.asInstanceOf[BasicDBList].map(x => dbObject2Executive(x.asInstanceOf[DBO]))
-//    functionalMatches.toSet[Input[String]].flatMap { _.value }.subsetOf(Executive.functionalMatchValues)

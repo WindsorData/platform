@@ -102,31 +102,12 @@ class TestDriver extends FunSpec {
           Some("link")))))
     }
 
-    //    it("should let read sheets with enum values") {
-    //      val schema = TModel('foo -> TString)
-    //      val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
-    //      val mapping = Mapping(Gap, Feature(Path('foo)))
-    //      val result = schema.read(mapping, sheet)
-    //      assert(result === Seq(Model('foo ->
-    //        Value(
-    //          Some("value"),
-    //          Some("calc"),
-    //          Some("comment"),
-    //          Some("not"),
-    //          Some("link")))))
-    //    }
-    //
-    //
-    //    it("should be able to parse valid enum type fields") {
-    //      val sheet = makeSingleDataItem("someValue", "as", "as", "as", "as")
-    //      val items: Seq[DataItem] =
-    //        Mapping(
-    //          Seq(
-    //            Gap,
-    //            Feature('someValidField,
-    //              EnumType(Traversable("someKindOfValue", "someValue", "blah"))))).read(sheet)
-    //    }
-
+    it("should let read sheets with enum values") {
+      val schema = TModel('foo -> TEnum("foo", "value"))
+      val sheet: Sheet = WorkBookFactory.makeSingleDataItem("foo", "calc", "comment", "not", "link")
+      val mapping = Mapping(Gap, Feature(Path('foo)))
+      schema.read(mapping, sheet)
+    }
   }
 
   describe("mapper creation") {
@@ -149,31 +130,6 @@ class TestDriver extends FunSpec {
 
   describe("mapper for input parsing") {
     import WorkBookFactory._
-    //
-    //
-    //    it("should refuse invalid enum type fields") {
-    //      intercept[IllegalArgumentException] {
-    //        val sheet = makeSingleDataItem("invalidValue", "as", "as", "as", "as")
-    //        val items: Seq[DataItem] =
-    //          Mapping(Seq(
-    //            Gap,
-    //            Feature('someValidField,
-    //              EnumType(Traversable("someKindOfValue", "valid", "nana"))))).read(sheet)
-    //      }
-    //    }
-    //
-    //    it("should be able to take empty fields as valid enum type fields") {
-    //      val sheet = makeEmptyDataItem
-    //      Mapping(
-    //        Seq(
-    //          Gap,
-    //          Feature('someValidField,
-    //            EnumType(Traversable("someKindOfValue", "someValue", "blah"))))).read(sheet)
-    //    }
-    //
-    //    it("should be able to parse valid files using a single Feature definition ") {
-    //      Mapping(Seq(Feature('a, NumericType)))
-    //    }
 
     it("should be able to convert blank cells to None") {
       val sheet = makeEmptyDataItem
@@ -234,5 +190,4 @@ class TestDriver extends FunSpec {
   //      assert(sheetResult.cellAt(0, 1).getCellType === Cell.CELL_TYPE_BLANK)
   //    }
   //  }
-
 }
