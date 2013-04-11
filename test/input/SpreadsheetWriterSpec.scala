@@ -47,7 +47,7 @@ class SpreadsheetWriterSpec extends FunSpec {
             Input(1.0),
             Input(1.0)))),
       Executive(
-        name = Input(Some("ExecutiveName1"), None, Some("C1"), None, None),
+        name = Input(Some("ExecutiveName2"), None, Some("C1"), None, None),
         title = Input(Some("ExecutiveTitle1"), None, Some("C2"), None, None),
         shortTitle = Input(Some("ExTi1"), None, Some("C3"), None, None),
         functionalMatches = FunctionalMatch(
