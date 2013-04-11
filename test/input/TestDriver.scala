@@ -14,9 +14,10 @@ import org.apache.poi.ss.usermodel.Cell
 import com.mongodb.DBObject
 import libt.Value
 import libt.Model
-import libt.export.spreadsheet.CellReader
-import libt.export.spreadsheet.util._
-import libt.export.spreadsheet.ColumnOrientedReader
+import libt.spreadsheet.reader.CellReader
+import libt.spreadsheet.util._
+import libt.spreadsheet.reader._
+import libt.spreadsheet._
 import scala.collection.mutable.Buffer
 import libt.TModel
 import libt.TModel
@@ -35,72 +36,6 @@ import libt.builder.ModelBuilder
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
-
-  implicit def tValue2FeatureReader(tValue: TValue): FeatureReader[_] = tValue match {
-    case TString => StringReader
-    case TNumber => NumericReader
-    case e: TEnum => EnumReader(e)
-  }
-
-  trait FeatureReader[A] {
-    def read(reader: CellReader): Value[A]
-    //    def readWithDefault(reader: CellReader, defaultValue: A): Value[A]
-  }
-
-  case object NumericReader extends FeatureReader[BigDecimal] {
-    def read(reader: CellReader) = reader.numeric
-    //    def readWithDefault(reader: CellReader, defaultValue: BigDecimal) = reader.numericWithDefault(defaultValue)
-  }
-
-  case object StringReader extends FeatureReader[String] {
-    def read(reader: CellReader) = reader.string
-    //    def readWithDefault(reader: CellReader, defaultValue: String) = reader.stringWithDefault(defaultValue)
-  }
-  case class EnumReader(enum: TEnum) extends FeatureReader[String] {
-    def read(reader: CellReader) = reader.string
-    //    def readWithDefault(reader: CellReader, defaultValue: String) =
-    //      reader.stringWithDefault(defaultValue)
-  }
-
-  //  case class WithDefault[A](featureType: FeatureReader[A], defaultValue: A) extends FeatureReader[A] {
-  ////    def read(reader: CellReader) = featureType.readWithDefault(reader, defaultValue)
-  //    def readWithDefault(reader: CellReader, defaultValue: A) = ???
-  //  }
-
-  case class Mapping(columns: Column*)
-
-  trait Column {
-    def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder)
-  }
-
-  case class Feature(path: Path) extends Column {
-    def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
-      modelBuilder += (path -> readValue(schema, reader))
-
-    private def readValue(schema: TElement, reader: CellReader) = schema(path).read(reader)
-  }
-
-  case object Gap extends Column {
-    override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
-      reader.skip(1)
-  }
-
-  class TReader(
-    mapping: Mapping,
-    schema: TElement,
-    width: Int = 10,
-    heigth: Int = 10) {
-    def read(sheet: Sheet): Seq[Model] =
-      sheet.rows.grouped(6).map { inputGroup =>
-        val modelBuilder = new ModelBuilder()
-        val reader = new ColumnOrientedReader(inputGroup)
-
-        for (column <- mapping.columns)
-          column.read(reader, schema, modelBuilder)
-
-        modelBuilder.build
-      }.toSeq
-  }
 
   //==================TEST UTILS====================
 
@@ -132,10 +67,6 @@ class TestDriver extends FunSpec {
       sheet.cellAt(4, 1).setAsActiveCell()
       sheet
     }
-  }
-
-  implicit def tModel2Reader(schema: TModel) = new {
-    def read(mapping: Mapping, sheet: Sheet) = new TReader(mapping, schema).read(sheet)
   }
 
   //==================TEST======================
@@ -170,31 +101,31 @@ class TestDriver extends FunSpec {
           Some("not"),
           Some("link")))))
     }
-    
-//    it("should let read sheets with enum values") {
-//      val schema = TModel('foo -> TString)
-//      val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
-//      val mapping = Mapping(Gap, Feature(Path('foo)))
-//      val result = schema.read(mapping, sheet)
-//      assert(result === Seq(Model('foo ->
-//        Value(
-//          Some("value"),
-//          Some("calc"),
-//          Some("comment"),
-//          Some("not"),
-//          Some("link")))))
-//    }
-//
-//
-//    it("should be able to parse valid enum type fields") {
-//      val sheet = makeSingleDataItem("someValue", "as", "as", "as", "as")
-//      val items: Seq[DataItem] =
-//        Mapping(
-//          Seq(
-//            Gap,
-//            Feature('someValidField,
-//              EnumType(Traversable("someKindOfValue", "someValue", "blah"))))).read(sheet)
-//    }
+
+    //    it("should let read sheets with enum values") {
+    //      val schema = TModel('foo -> TString)
+    //      val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
+    //      val mapping = Mapping(Gap, Feature(Path('foo)))
+    //      val result = schema.read(mapping, sheet)
+    //      assert(result === Seq(Model('foo ->
+    //        Value(
+    //          Some("value"),
+    //          Some("calc"),
+    //          Some("comment"),
+    //          Some("not"),
+    //          Some("link")))))
+    //    }
+    //
+    //
+    //    it("should be able to parse valid enum type fields") {
+    //      val sheet = makeSingleDataItem("someValue", "as", "as", "as", "as")
+    //      val items: Seq[DataItem] =
+    //        Mapping(
+    //          Seq(
+    //            Gap,
+    //            Feature('someValidField,
+    //              EnumType(Traversable("someKindOfValue", "someValue", "blah"))))).read(sheet)
+    //    }
 
   }
 

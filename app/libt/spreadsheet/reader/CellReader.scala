@@ -1,9 +1,9 @@
-package libt.export.spreadsheet
+package libt.spreadsheet.reader
 
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import libt.Value
-import util._
+import libt.spreadsheet.util._
 import scala.math.BigDecimal.double2bigDecimal
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs

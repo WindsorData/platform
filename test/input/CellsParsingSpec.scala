@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSpec
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import libt.export.spreadsheet.util._
+import libt.spreadsheet.util._
 
 @RunWith(classOf[JUnitRunner])
 class CellsParsingSpec extends FunSpec with TestSpreadsheetLoader {

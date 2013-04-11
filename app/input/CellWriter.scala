@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import libt._
-import libt.export.spreadsheet.util._
+import libt.spreadsheet.util._
 
 class ColumnOrientedWriter(sheet: Sheet, company: Model) {
 

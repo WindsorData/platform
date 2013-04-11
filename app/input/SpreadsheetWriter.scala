@@ -22,7 +22,7 @@ import org.apache.poi.ss.util.CellUtil
 import libt.Model
 import libt.Value
 import libt._
-import libt.export.spreadsheet.util._
+import libt.spreadsheet.util._
 
 trait Writer {
 
@@ -132,7 +132,7 @@ class MetaDataWriter(wb: Workbook) extends Writer {
 
 }
 import libt._
-import libt.export.spreadsheet.util._
+import libt.spreadsheet.util._
 
 object SpreadsheetWriter {
 
