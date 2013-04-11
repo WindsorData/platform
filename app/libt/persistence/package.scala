@@ -28,8 +28,8 @@ object `package` {
     def unmarshall(it: DBO): Element =
       Col(it.asInstanceOf[BasicDBList].view.map(_.asInstanceOf[DBO]).map(unmarshallColElement): _*)
       
-    private val marshallColElement = tCol.element.marshall(_)
-    private val unmarshallColElement = tCol.element.unmarshall(_)
+    private val marshallColElement = tCol.tElement.marshall(_)
+    private val unmarshallColElement = tCol.tElement.unmarshall(_)
   }
 
   class TModelConverter(tModel: TModel) extends TElementConverter {

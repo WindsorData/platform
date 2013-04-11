@@ -40,25 +40,24 @@ class ModelBuilderSpe extends FlatSpec {
         Model('bar -> Value("foo"))))
   }
 
-  it should "create models with collection of values" in {
+  ignore should "create models with collection of values" in {
+    fail()
+  }
+
+  it should "create models with collections of models" in {
     val builder = new ModelBuilder()
     builder += (Path('foo, 0, 'bar) -> Value("bar1"))
     builder += (Path('foo, 0, 'barr) -> Value("bar2"))
     builder += (Path('foo, 1, 'bar) -> Value("bar3"))
     builder += (Path('foo, 1, 'barr) -> Value("bar4"))
-    
+
     assert(builder.build ===
       Model(
-          'foo -> Col(
-              Model('bar -> Value("bar1"), 
-            		'barr -> Value("bar2")),
-        		Model('bar -> Value("bar3"), 
-            		'barr -> Value("bar4"))  )
-          ))
-  }
-
-  it should "create models with collections of models" in {
-    fail()
+        'foo -> Col(
+          Model('bar -> Value("bar1"),
+            'barr -> Value("bar2")),
+          Model('bar -> Value("bar3"),
+            'barr -> Value("bar4")))))
   }
 
 }

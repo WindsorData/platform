@@ -2,10 +2,11 @@ package libt
 
 sealed trait TElement {
   def apply(path: Path): TValue
+  def validate(elemnt: Element) = ()
 }
 
 sealed trait TValue extends TElement {
-  override def apply(path: Path) =  path match {
+  override def apply(path: Path) = path match {
     case Nil => this
   }
 }
@@ -14,11 +15,20 @@ case object TInt extends TValue
 case object TBool extends TValue
 case object TDate extends TValue
 case object TNumber extends TValue
-case class TEnum(values: String*) extends TValue
+case class TEnum(values: String*) extends TValue {
+  private val valuesSet = values.toSet
+  private def isValue = valuesSet.contains(_)
+  override def validate(element: Element) = element match {
+    case v: Value[String] => assert(v.value.forall(isValue(_)))
+  }
+}
 
-case class TCol(element: TElement) extends TElement {
+case class TCol(tElement: TElement) extends TElement {
   override def apply(path: Path) = path match {
-    case Index(_) :: tail => element(tail)
+    case Index(_) :: tail => tElement(tail)
+  }
+  override def validate(element: Element) = element match {
+    case c: Col => c.elements.foreach(tElement.validate(_))
   }
 }
 
@@ -27,6 +37,12 @@ case class TModel(elements: (Symbol, TElement)*) extends TElement {
 
   override def apply(path: Path) = path match {
     case Route(field) :: tail => elementsMap(field)(tail)
+  }
+
+  override def validate(element: Element) = element match {
+    case m: Model => elements.foreach {
+      case (field, telement) => telement.validate(m(field))
+    }
   }
 }
 
