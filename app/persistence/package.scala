@@ -7,218 +7,43 @@ import com.mongodb.casbah.commons.MongoDBList
 import com.mongodb.casbah.commons.MongoDBListBuilder
 import util.persistence._
 import util._
+import libt.Model
+import libt.persistence._
+import libt.Element
 
 package object persistence {
   type DBO = DBObject
   registerBigDecimalConverter()
 
-  implicit def company2RichCompany[A <% DBObject](company: A)(implicit collection: MongoCollection) =
-    new {
-      def save() {
-        collection.insert(company)
-      }
+  private def companies(implicit db: MongoDB) = db("companies")
 
-      def update = collection.update(
-        MongoDBObject("ticker.value" -> company.get("ticker").asInstanceOf[DBO].get("value"),
-          "disclosureFiscalYear.value" -> company.get("disclosureFiscalYear").asInstanceOf[DBO].get("value")),
-        company, true)
-    }
+  def saveCompany(company: Model)(implicit db: MongoDB) {
+    companies.insert(TCompanyFiscalYear.marshall(company))
+  }
 
-  def findAllCompanies(db: MongoDB = MongoClient()("windsor")): List[CompanyFiscalYear] =
-    db("companies").toList.map(x => dbObject2Company(x.asInstanceOf[DBO]))
+  def updateCompany(company: Model)(implicit db: MongoDB) {
+    def update = companies.update(
+      MongoDBObject(
+        "ticker.value" -> company.v[String]('ticker).value.get,
+        "disclosureFiscalYear.value" -> company.v('disclosureFiscalYear).value.get),
+      TCompanyFiscalYear.marshall(company), true)
+  }
 
-  def findCompanyBy(name: String, year: Int, db: MongoDB = MongoClient()("windsor")): Option[CompanyFiscalYear] = {
-    db("companies").
+  def findAllCompanies(implicit db: MongoDB) =
+    companies.toList.map(TCompanyFiscalYear.unmarshall(_))
+
+  def findCompanyBy(name: String, year: Int)(implicit db: MongoDB) = {
+    companies.
       findOne(MongoDBObject("ticker.value" -> name, "disclosureFiscalYear.value" -> year)).
-      map { dbObject2Company(_) }
+      map { TCompanyFiscalYear.unmarshall(_) }
   }
 
   //TODO: check if there's a way to do this better
-  def findAllCompaniesNames(db: MongoDB = MongoClient()("windsor")): Seq[String] =
-    db("companies").toSet[DBO].map(x => x.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
+  def findAllCompaniesNames(implicit db: MongoDB): Seq[String] =
+    companies.toSet[DBO].map(_.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
 
-  def findAllCompaniesFiscalYears(db: MongoDB = MongoClient()("windsor")): Seq[Int] =
-    db("companies").toSet[DBO].map(x => x.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
+  def findAllCompaniesFiscalYears(implicit db: MongoDB): Seq[Int] =
+    companies.toSet[DBO].map(x =>
+      x.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
 
-  /**Conversions for creating mappings to mongo*/
-  implicit def string2MongoArrow(key: Symbol) = new {
-
-    def ~>[A <% DBO](value: A): (String, DBO) = (toString(key), value: DBO)
-
-    def ~>[A <% DBO](value: Traversable[A]): (String, Traversable[DBO]) =
-      (toString(key), value.map { x => (x: DBO) })
-
-    def toString(s: Symbol) = s.toString.drop(1)
-  }
-
-  implicit def input2DbObject[A](input: Input[A]): DBO =
-    MongoDBObject(
-      "value" -> input.value,
-      "calc" -> input.calc,
-      "comment" -> input.comment,
-      "note" -> input.note,
-      "link" -> input.link)
-      .filter {
-        case (k, v) => v != null
-      }
-
-  implicit def executive2DbObject(executive: Executive): DBO = {
-    MongoDBObject(
-      'name ~> executive.name,
-      'title ~> executive.title,
-      'shortTitle ~> executive.shortTitle,
-      'functionalMatches ~> executive.functionalMatches,
-      'founder ~> executive.founder,
-      'transitionPeriod ~> executive.transitionPeriod,
-      'carriedInterest ~> executive.carriedInterest,
-      'equityCompanyValue ~> executive.equityCompanyValue,
-      'cashCompensation ~> executive.cashCompensations)
-  }
-
-  implicit def functionalMatches2DbObject(fMatches: FunctionalMatch): DBO =
-    MongoDBObject(
-      'primary ~> fMatches.primary,
-      'secondary ~> fMatches.secondary,
-      'level ~> fMatches.level,
-      'scope ~> fMatches.scope,
-      'pod ~> fMatches.bod)
-
-  implicit def company2DbObject(company: CompanyFiscalYear): DBO =
-    MongoDBObject(
-      'ticker ~> company.ticker,
-      'name ~> company.name,
-      'disclosureFiscalYear ~> company.disclosureFiscalYear,
-      'originalCurrency ~> company.originalCurrency,
-      'currencyConversionDate ~> company.currencyConversionDate,
-      'executives ~> company.executives)
-
-  implicit def carried2DbObject(interest: CarriedInterest): DBO =
-    MongoDBObject(
-      'ownedShares ~> interest.ownedShares,
-      'vestedOptions ~> interest.vestedOptions,
-      'unvestedOptions ~> interest.unvestedOptions,
-      'tineVest ~> interest.tineVest,
-      'perfVest ~> interest.perfVest)
-
-  implicit def cashCompensation2DbObject(interest: AnualCashCompensation): DBO =
-    MongoDBObject(
-      'baseSalary ~> interest.baseSalary,
-      'actualBonus ~> interest.actualBonus,
-      'targetBonus ~> interest.targetBonus,
-      'thresholdBonus ~> interest.thresholdBonus,
-      'maxBonus ~> interest.maxBonus,
-      'new8KData ~> interest.new8KData)
-
-  implicit def new8KData2DbObject(interest: New8KData): DBO =
-    MongoDBObject(
-      'baseSalary ~> interest.baseSalary,
-      'targetBonus ~> interest.targetBonus)
-
-  implicit def equity2DbObject(value: EquityCompanyValue): DBO =
-    MongoDBObject(
-      'bsPercentage ~> value.bsPercentage,
-      'exPrice ~> value.exPrice,
-      'options ~> value.options,
-      'optionsValue ~> value.optionsValue,
-      'price ~> value.price,
-      'shares ~> value.shares,
-      'timeVestRsValue ~> value.timeVestRsValue,
-      'perfRSValue ~> value.perfRSValue,
-      'shares2 ~> value.shares2,
-      'price2 ~> value.price2,
-      'perfCash ~> value.perfCash)
-
-  def makeInput[A](it: DBO) = Input(
-    Option(it.get("value").asInstanceOf[A]),
-    Option(it.get("calc").asInstanceOf[String]),
-    Option(it.get("comment").asInstanceOf[String]),
-    Option(it.get("note").asInstanceOf[String]),
-    Option(it.get("link").asInstanceOf[String]))
-
-  def fetch[A](key: String)(implicit executive: DBO): Input[A] = {
-
-    executive.get(key) match {
-      case null => None
-      case it: DBO => makeInput(it)
-    }
-  }
-
-  def fetchDBList[A](key: String)(implicit executive: DBO): Traversable[Input[A]] =
-    executive.get(key) match {
-      case Nil => List(None, None, None)
-      case its: BasicDBList => its.map[Input[A], Traversable[Input[A]]](x => makeInput(x.asInstanceOf[DBO]))
-    }
-
-  implicit def dbObject2CarriedInteres(interest: DBO): CarriedInterest = {
-    implicit val dbo = interest
-    CarriedInterest(
-      ownedShares = fetch("ownedShares"),
-      perfVest = fetch("perfVest"),
-      tineVest = fetch("tineVest"),
-      unvestedOptions = fetch("unvestedOptions"),
-      vestedOptions = fetch("vestedOptions"))
-  }
-
-  implicit def dbObject2Executive(implicit executive: DBO): Executive =
-    Executive(
-      name = fetch("name"),
-      title = fetch("title"),
-      shortTitle = fetch("shortTitle"),
-      functionalMatches = executive.get("functionalMatches").asInstanceOf[DBO],
-      founder = fetch("founder"),
-      transitionPeriod = fetch("transitionPeriod"),
-      carriedInterest = executive.get("carriedInterest").asInstanceOf[DBO],
-      equityCompanyValue = executive.get("equityCompanyValue").asInstanceOf[DBO],
-      cashCompensations = executive.get("cashCompensation").asInstanceOf[DBO])
-
-  implicit def dbObject2Company(implicit company: DBO): CompanyFiscalYear =
-    CompanyFiscalYear(
-      ticker = fetch("ticker"),
-      name = fetch("name"),
-      disclosureFiscalYear = fetch("disclosureFiscalYear"),
-      originalCurrency = fetch("originalCurrency"),
-      currencyConversionDate = fetch("currencyConversionDate"),
-      executives = company.get("executives").asInstanceOf[BasicDBList].map(x => dbObject2Executive(x.asInstanceOf[DBO])))
-
-  implicit def dbObject2FunctionalMatches(value: DBO): FunctionalMatch = {
-    implicit val dbo = value
-    FunctionalMatch(
-      primary = fetch("primary"),
-      secondary = fetch("secondary"),
-      level = fetch("level"),
-      scope = fetch("scope"),
-      bod = fetch("bod"))
-  }
-
-  implicit def dbObject2Equity(value: DBO): EquityCompanyValue = {
-    implicit val dbo = value
-    EquityCompanyValue(
-      optionsValue = fetch("optionsValue"),
-      options = fetch("options"),
-      exPrice = fetch("exPrice"),
-      bsPercentage = fetch("bsPercentage"),
-      perfCash = fetch("perfCash"),
-      price = fetch("price"),
-      shares = fetch("shares"),
-      perfRSValue = fetch("perfRSValue"),
-      shares2 = fetch("shares2"),
-      price2 = fetch("price2"),
-      timeVestRsValue = fetch("timeVestRsValue"))
-  }
-
-  implicit def dbObject2New8KData(new8kdata: DBO): New8KData = {
-    implicit val dbo = new8kdata
-    New8KData(fetch("baseSalary"), fetch("targetBonus"))
-  }
-
-  implicit def dbObject2cashCompensation(cash: DBO): AnualCashCompensation = {
-    implicit val dbo = cash
-    AnualCashCompensation(
-      baseSalary = fetch("baseSalary"),
-      actualBonus = fetch("actualBonus"),
-      targetBonus = fetch("targetBonus"),
-      thresholdBonus = fetch("thresholdBonus"),
-      maxBonus = fetch("maxBonus"),
-      new8KData = dbObject2New8KData(cash.get("new8KData").asInstanceOf[DBO]))
-  }
 }

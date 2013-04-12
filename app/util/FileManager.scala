@@ -6,8 +6,8 @@ import input.SpreadsheetLoader
 import input.SpreadsheetWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
-import model.Executive
 import model._
+import libt.Model
 
 object FileManager {
 
@@ -31,9 +31,9 @@ object FileManager {
     }
   }
   
-  def generateNewFileWith(name: String, company: Seq[CompanyFiscalYear]) = {
+  def generateNewFileWith(name: String, company: Model) = {
     write(name) { x => 
-      SpreadsheetWriter.write(x, company)
+      SpreadsheetWriter.write(x, Seq(company))
     }
   }
 

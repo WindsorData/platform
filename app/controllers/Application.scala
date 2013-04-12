@@ -12,11 +12,11 @@ import input.SpreadsheetWriter
 import play.api.data._
 import play.api.data.Forms._
 import java.io.ByteArrayOutputStream
-import model.CompanyFiscalYear
 import com.mongodb.DBObject
 import persistence._
 import model._
 import views.html.defaultpages.badRequest
+import libt.Model
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
@@ -24,7 +24,7 @@ object Application extends Controller {
   import persistence._
   import util.persistence._
 
-  implicit val companiesCollection = MongoClient()("windsor")("companies")
+  implicit val db = MongoClient()("windsor")
 
   val companyForm = Form(
     tuple(
@@ -39,7 +39,7 @@ object Application extends Controller {
     request.body.file("dataset").map { dataset =>
       try {
         val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
-        companies.foreach(_.update)
+        companies.foreach(updateCompany(_))
         Ok(views.html.companyUploadSuccess())
       } catch {
         case e: RuntimeException => {
@@ -58,8 +58,8 @@ object Application extends Controller {
 
   def searchCompany = Action {
     Ok(views.html.searchCompanies(companyForm,
-      CompanyFiscalYear.getAllNames,
-      CompanyFiscalYear.getAllFiscalYears.map(_.toString)))
+      findAllCompaniesNames,
+      findAllCompaniesFiscalYears.map(_.toString)))
   }
 
   def doSearch = Action { implicit request =>
@@ -67,14 +67,14 @@ object Application extends Controller {
     companyForm.bindFromRequest.fold(
       formWithErrors =>
         BadRequest(views.html.searchCompanies(formWithErrors,
-          CompanyFiscalYear.getAllNames,
-          CompanyFiscalYear.getAllFiscalYears.map(_.toString))),
+          findAllCompaniesNames,
+          findAllCompaniesFiscalYears.map(_.toString))),
       values => {
         val name = values._1
         val year = values._2
         val out = new ByteArrayOutputStream()
         findCompanyBy(name, year.toInt) match {
-          case Some(founded) => {
+          case Some(founded : Model) => {
             SpreadsheetWriter.write(out, Seq(founded))
             Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
               CONTENT_DISPOSITION -> "attachment; filename=company.xls")
@@ -85,7 +85,13 @@ object Application extends Controller {
   }
 
   def companies = Action {
-    Ok(views.html.companies(CompanyFiscalYear.all()))
+    Ok(views.html.companies(findAllCompanies.asInstanceOf[List[Model]]))
   }
 
 }
+//
+//findCompanyBy
+//  def getAllNames: Seq[String] = ()
+//
+//  def getAllFiscalYears: Seq[Int] = findAllCompaniesFiscalYears()
+//

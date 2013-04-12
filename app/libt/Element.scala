@@ -1,6 +1,23 @@
 package libt
 
-sealed trait Element
+sealed trait Element {
+  def m(key : Symbol) = this.asInstanceOf[Model](key)
+  def v[A](key : Symbol) = m(key).asInstanceOf[Value[A]] 
+  def c(key : Symbol) = m(key).asInstanceOf[Col].elements
+  def mc(key : Symbol)(pos : Int) = c(key)(pos).asInstanceOf[Model]
+  def vc[A](key : Symbol)(pos : Int) = c(key)(pos).asInstanceOf[Value[A]]
+}
+
+//extends Dynamic {
+//  def selectDynamic(key : String) : Element = this match {
+//    case m : Model => m(Symbol(key))
+//  } 
+//  
+//  def value[A] : Option[A] = this match {
+//    case v : Value[A] => v.value
+//  }
+//    
+//}
 
 case class Value[A](
   value: Option[A],
@@ -21,9 +38,11 @@ object Value {
 }
 case class Col(elements: Element*) extends Element
 
-case class Model(elements: (Symbol, Element)*) extends Element {
+case class Model(elements: Set[(Symbol, Element)]) extends Element {
   private val elementsMap = elements.toMap
   def apply(key: Symbol) = elementsMap(key)
 }
-
+object Model {
+  def apply(elements : (Symbol, Element)*) : Model = Model(elements.toSet)
+}
 

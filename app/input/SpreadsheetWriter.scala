@@ -6,12 +6,10 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.FileOutputStream
 import java.io.OutputStream
-import model.Executive
 import util.poi.Cells._
 import org.apache.poi.ss.usermodel.Workbook
 import util.FileManager
 import org.apache.poi.ss.usermodel.Cell
-import model.Input
 import model._
 import org.apache.poi.ss.usermodel.Comment
 import org.apache.poi.xssf.usermodel.XSSFComment
@@ -22,6 +20,8 @@ import org.apache.poi.hssf.usermodel.HSSFClientAnchor
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import java.util.Date
 import org.apache.poi.ss.util.CellUtil
+import libt.Model
+import libt.Value
 
 trait Writer {
 
@@ -54,9 +54,9 @@ class DataWriter(wb: Workbook) extends Writer {
     }
   }
 
-  def writeInputValue[T](name: Input[T], cell: Cell, writeMetaData: Seq[Option[String]] => Unit): Unit = {
+  def writeInputValue[T](name: Value[T], cell: Cell, writeMetaData: Seq[Option[String]] => Unit): Unit = {
     name match {
-      case Input(Some(value), calc, comment, note, link) => {
+      case Value(Some(value), calc, comment, note, link) => {
         writeData(value, cell)
         writeMetaData(Seq(calc, comment, note, link))
       }
@@ -68,25 +68,25 @@ class DataWriter(wb: Workbook) extends Writer {
     if (!metadata.flatten.isEmpty)
       metaDataWriter.write(title, name, metadata)
 
-  def writeCompanyMetaDataIfExists[T](i: Input[T], itemName: String) =
+  def writeCompanyMetaDataIfExists[T](i: Value[T], itemName: String) =
     writeMetaDataIfExists("Company Data", itemName)(Seq(i.calc, i.comment, i.note, i.link))
 
-  def writeInput[T](i: Input[T], titleName: String, itemName: String) =
+  def writeInput[T](i: Value[T], titleName: String, itemName: String) =
     writeInputValue(i, cellIterator.next, writeMetaDataIfExists(titleName, itemName)_)
 
-  def writeExecData[T](i: Input[T], itemName: String) =
+  def writeExecData[T](i: Value[T], itemName: String) =
     writeInput(i, "Exec Data", itemName)
 
-  def writeCashCompensation[T](i: Input[T], itemName: String) =
+  def writeCashCompensation[T](i: Value[T], itemName: String) =
     writeInput(i, "Cash Compensations", itemName)
 
-  def writeEquityCompanyValue[T](i: Input[T], itemName: String) =
+  def writeEquityCompanyValue[T](i: Value[T], itemName: String) =
     writeInput(i, "Equity Company Value", itemName)
 
-  def writeCarriedInterest[T](i: Input[T], itemName: String) =
+  def writeCarriedInterest[T](i: Value[T], itemName: String) =
     writeInput(i, "Carried Interest", itemName)
 
-  def writeCompanyData[T](input: Input[T]) =
+  def writeCompanyData[T](input: Value[T]) =
     writeInputValue(input, cellIterator.next, (_) => Unit)
 
 }
@@ -94,11 +94,11 @@ class DataWriter(wb: Workbook) extends Writer {
 class MetaDataWriter(wb: Workbook) extends Writer {
   val sheet = { val s = wb.getSheet("Notes"); defineValidSheetCells(s); s }
   val rowIterator = rows(sheet).iterator
-  var company: CompanyFiscalYear = null
+  var company: Model = null
   var isCompanyHeaderWritten = false
   var lastName: String = null
 
-  val setCurrentCompany = (c: CompanyFiscalYear) => {
+  val setCurrentCompany = (c: Model) => {
     company = c
     isCompanyHeaderWritten = false
     lastName = null
@@ -111,9 +111,9 @@ class MetaDataWriter(wb: Workbook) extends Writer {
   def write(titleName: String, itemName: String, metadata: Seq[Option[String]]) {
     val row = rowIterator.next
     if (!isCompanyHeaderWritten) {
-      CellUtil.getCell(row, 0).setCellValue(company.ticker.value.get)
-      CellUtil.getCell(row, 1).setCellValue(company.name.value.get)
-      CellUtil.getCell(row, 2).setCellValue(company.disclosureFiscalYear.value.get)
+      CellUtil.getCell(row, 0).setCellValue(company.v[String]('ticker).value.get)
+      CellUtil.getCell(row, 1).setCellValue(company.v[String]('name).value.get)
+      CellUtil.getCell(row, 2).setCellValue(company.v[Int]('disclosureFiscalYear).value.get)
       isCompanyHeaderWritten = true
     }
     CellUtil.getCell(row, 3).setCellValue(lastName)
@@ -133,7 +133,7 @@ class MetaDataWriter(wb: Workbook) extends Writer {
 
 object SpreadsheetWriter {
 
-  def write(out: OutputStream, companies: Seq[CompanyFiscalYear]) = {
+  def write(out: OutputStream, companies: Seq[Model]) = {
     FileManager.load("docs/external/EmptyOutputTemplate.xls") {
       x =>
         {
@@ -144,7 +144,7 @@ object SpreadsheetWriter {
     }
   }
 
-  def writeExecDB(wb: Workbook, companies: Seq[CompanyFiscalYear]) = {
+  def writeExecDB(wb: Workbook, companies: Seq[Model]) = {
 
     val dataWriter = new DataWriter(wb)
 
@@ -152,54 +152,54 @@ object SpreadsheetWriter {
       import dataWriter._
 
       setCurrentCompany(comp)
-      writeCompanyMetaDataIfExists(comp.ticker, "Ticker")
-      writeCompanyMetaDataIfExists(comp.name, "Name")
-      writeCompanyMetaDataIfExists(comp.disclosureFiscalYear, "Disclosure Fiscal Year")
+      writeCompanyMetaDataIfExists(comp.v('ticker), "Ticker")
+      writeCompanyMetaDataIfExists(comp.v('name), "Name")
+      writeCompanyMetaDataIfExists(comp.v('disclosureFiscalYear), "Disclosure Fiscal Year")
 
-      comp.executives.foreach { e =>
-
+      comp.c('executives).foreach { e =>
+        
         nextExecutiveRow
         
-        metaDataWriter.setLastName(e.name.value.get)
+        metaDataWriter.setLastName(e.v('name).value.get)
 
-        writeCompanyData(comp.ticker)
-        writeCompanyData(comp.name)
-        writeCompanyData(comp.disclosureFiscalYear)
+        writeCompanyData(comp.v('ticker))
+        writeCompanyData(comp.v('name))
+        writeCompanyData(comp.v('disclosureFiscalYear))
+        
+        writeExecData(e.v('name), "Name")
+        writeExecData(e.v('title), "Title")
+        writeExecData(e.v('shortTitle), "Short Title")
+        writeExecData(e.m('functionalMatches).v('primary), "Primary")
+        writeExecData(e.m('functionalMatches).v('secondary), "Secondary")
+        writeExecData(e.m('functionalMatches).v('level), "Level")
+        writeExecData(e.m('functionalMatches).v('scope), "Scope")
+        writeExecData(e.m('functionalMatches).v('bod), "Bod")
+        
+        writeCashCompensation(e.m('cashCompensations).v('baseSalary), "Base Salary")
+        writeCashCompensation(e.m('cashCompensations).v('actualBonus), "Actual Bonus")
+        writeCashCompensation(e.m('cashCompensations).v('targetBonus), "Target Bonus")
+        writeCashCompensation(e.m('cashCompensations).v('thresholdBonus), "Threshold Bonus")
+        writeCashCompensation(e.m('cashCompensations).v('maxBonus), "Max Bonus")
+        writeCashCompensation(e.m('cashCompensations).m('new8KData).v('baseSalary), "8K Data - Base Salary")
+        writeCashCompensation(e.m('cashCompensations).m('new8KData).v('targetBonus), "8K Data - Target Bonus")
 
-        writeExecData(e.name, "Name")
-        writeExecData(e.title, "Title")
-        writeExecData(e.shortTitle, "Short Title")
-        writeExecData(e.functionalMatches.primary, "Primary")
-        writeExecData(e.functionalMatches.secondary, "Secondary")
-        writeExecData(e.functionalMatches.level, "Level")
-        writeExecData(e.functionalMatches.scope, "Scope")
-        writeExecData(e.functionalMatches.bod, "Bod")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('optionsValue), "Options Value")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('options), "Options")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('exPrice), "Ex Price")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('bsPercentage), "Bs Percentage")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('timeVestRsValue), "Time VEst Rs Value")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('shares), "Shares")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('price), "Price")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('perfRSValue), "Perf Rs Value")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('shares2), "Shares 2")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('price2), "Price 2")
+        writeEquityCompanyValue(e.m('equityCompanyValue).v('perfCash), "Perf Cash")
 
-        writeCashCompensation(e.cashCompensations.baseSalary, "Base Salary")
-        writeCashCompensation(e.cashCompensations.actualBonus, "Actual Bonus")
-        writeCashCompensation(e.cashCompensations.targetBonus, "Target Bonus")
-        writeCashCompensation(e.cashCompensations.thresholdBonus, "Threshold Bonus")
-        writeCashCompensation(e.cashCompensations.maxBonus, "Max Bonus")
-        writeCashCompensation(e.cashCompensations.new8KData.baseSalary, "8K Data - Base Salary")
-        writeCashCompensation(e.cashCompensations.new8KData.targetBonus, "8K Data - Target Bonus")
-
-        writeEquityCompanyValue(e.equityCompanyValue.optionsValue, "Options Value")
-        writeEquityCompanyValue(e.equityCompanyValue.options, "Options")
-        writeEquityCompanyValue(e.equityCompanyValue.exPrice, "Ex Price")
-        writeEquityCompanyValue(e.equityCompanyValue.bsPercentage, "Bs Percentage")
-        writeEquityCompanyValue(e.equityCompanyValue.timeVestRsValue, "Time VEst Rs Value")
-        writeEquityCompanyValue(e.equityCompanyValue.shares, "Shares")
-        writeEquityCompanyValue(e.equityCompanyValue.price, "Price")
-        writeEquityCompanyValue(e.equityCompanyValue.perfRSValue, "Perf Rs Value")
-        writeEquityCompanyValue(e.equityCompanyValue.shares2, "Shares 2")
-        writeEquityCompanyValue(e.equityCompanyValue.price2, "Price 2")
-        writeEquityCompanyValue(e.equityCompanyValue.perfCash, "Perf Cash")
-
-        writeCarriedInterest(e.carriedInterest.ownedShares, "Owned Shares")
-        writeCarriedInterest(e.carriedInterest.vestedOptions, "Vested Options")
-        writeCarriedInterest(e.carriedInterest.unvestedOptions, "Unvested Options")
-        writeCarriedInterest(e.carriedInterest.tineVest, "Tine Vest")
-        writeCarriedInterest(e.carriedInterest.perfVest, "Perf Vest")
+        writeCarriedInterest(e.m('carriedInterest).v('ownedShares), "Owned Shares")
+        writeCarriedInterest(e.m('carriedInterest).v('vestedOptions), "Vested Options")
+        writeCarriedInterest(e.m('carriedInterest).v('unvestedOptions), "Unvested Options")
+        writeCarriedInterest(e.m('carriedInterest).v('tineVest), "Tine Vest")
+        writeCarriedInterest(e.m('carriedInterest).v('perfVest), "Perf Vest")
       }
 
     }

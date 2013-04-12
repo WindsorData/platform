@@ -2,32 +2,38 @@ package input
 
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
-import model.Input
 import util.poi.Cells._
-import model.Input
+import libt.Value
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
  * The exact orientation of cells groups - columns or rows - depends on implementors
  * @author flbulgarelli
  */
-
 trait CellReader {
-  def string = createInput(_.getStringCellValue)
-  def boolean = createInput(_.getBooleanCellValue)
-  def numeric = createInput(_.getNumericCellValue: BigDecimal)
-  def date = createInput(_.getDateCellValue)
+  
+  def string = createValue(blankToNone(_.getStringCellValue))
+  def stringWithDefault(s: String = "BLANK") = createValue(blankToSome(_.getStringCellValue, s))
+    
+  def numeric = createValue(blankToNone(_.getNumericCellValue : BigDecimal))
+  def numericWithDefault(n: BigDecimal = 0.0) = createValue(blankToSome(_.getNumericCellValue : BigDecimal, n))
+  
+  def boolean = createValue(blankToNone(_.getBooleanCellValue))
+  def booleanWithDefault(b: Boolean = false) = createValue(blankToSome(_.getBooleanCellValue, b))
+  
+  def date = createValue(blankToNone(_.getDateCellValue))
+  
   def skip(offset: Int) = for (_ <- 1 to offset) skip1
   def skip1: Unit
   def next: Seq[Cell]
 
-  def createInput[T](valueMapper: Cell => T): Input[T] = {
-    val nextCells = next.map(blankToNone)
-    def nextStringValue(index: Int) = nextCells(index).map(_.getStringCellValue)
-    newInput(nextCells(0).map(validValueMapper(valueMapper)_), nextStringValue);
+  def createValue[T](valueMapper: Cell => Option[T]): Value[T] = {
+    val nextCells = next
+    def nextStringValue(index: Int) = blankToNone(_.getStringCellValue)(nextCells(index))
+    newValue(valueMapper(nextCells(0)), nextStringValue)
   }
 
-  def newInput[T](value: Option[T], nextStringValue: Int => Option[String]) =
-    Input(value,
+  def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
+    Value(value,
       nextStringValue(1),
       nextStringValue(2),
       nextStringValue(3),
@@ -35,7 +41,7 @@ trait CellReader {
 }
 
 /**
- * {{CellReader}} that expects vertical cell groups, that is, data iems are found in columns
+ * {{CellReader}} that expects vertical cell groups, that is, data items are found in columns
  * @author flbulgarelli
  */
 class ColumnOrientedReader(rows: Seq[Row]) extends CellReader {
@@ -56,11 +62,10 @@ class RowOrientedReader(rows: Seq[Row]) extends CellReader {
   override def skip1 = rowIterator.next
   override def next = cells(rowIterator.next).drop(2) //harcoded offset
 
-  override def newInput[T](value: Option[T], nextStringValue: Int => Option[String]) =
-    Input(value,
+  override def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
+    Value(value,
       None,
       None,
       nextStringValue(1),
       nextStringValue(2))
-
 }

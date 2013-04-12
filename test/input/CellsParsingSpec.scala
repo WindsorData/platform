@@ -22,7 +22,7 @@ class CellsParsingSpec extends FunSpec with TestSpreadsheetLoader {
               for (
                 row <- rows(sheet);
                 cell <- cells(row).take(6)
-              ) yield blankToNone(cell).map(_.getStringCellValue).getOrElse("_")
+              ) yield blankToNone(_.getStringCellValue)(cell).getOrElse("_")
 
             assert(r.toSeq ===
               List("_", "a", "b", "c", "_", "d",

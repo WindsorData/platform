@@ -4,6 +4,8 @@ sealed trait TElement
 
 sealed trait TValue extends TElement
 case object TString extends TValue
+case object TInt extends TValue
+case object TDate extends TValue
 case object TNumber extends TValue
 case class TEnum(values: String*) extends TValue
 
