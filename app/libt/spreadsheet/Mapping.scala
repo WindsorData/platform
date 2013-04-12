@@ -39,6 +39,10 @@ case class Feature(path: Path) extends Column {
   }
 }
 
+object Feature {
+  def apply(pathParts: PathPart*) : Feature = Feature(pathParts.toList) 
+}
+
 /**A column whose value is not important and should be skipped*/
 case object Gap extends Column {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
