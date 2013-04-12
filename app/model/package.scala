@@ -110,12 +110,6 @@ package object model {
 
 
 
-//  def validFunctionalMatch =
-//    functionalMatches.toSet[Input[String]].flatMap { _.value }.subsetOf(Executive.functionalMatchValues)
-
-
-
-  
 
 
 

@@ -4,7 +4,6 @@ import com.mongodb.DBObject
 import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBList
-import libt.TValue
 import libt._
 
 object `package` {
@@ -29,8 +28,8 @@ object `package` {
     def unmarshall(it: DBO): Element =
       Col(it.asInstanceOf[BasicDBList].view.map(_.asInstanceOf[DBO]).map(unmarshallColElement): _*)
       
-    private val marshallColElement = tCol.element.marshall(_)
-    private val unmarshallColElement = tCol.element.unmarshall(_)
+    private val marshallColElement = tCol.tElement.marshall(_)
+    private val unmarshallColElement = tCol.tElement.unmarshall(_)
   }
 
   class TModelConverter(tModel: TModel) extends TElementConverter {

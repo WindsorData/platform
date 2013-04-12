@@ -83,9 +83,9 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
     }
 
     
-    ignore("should throw IllegalArgumentException when there's an invalid functional value") {
-      intercept[IllegalArgumentException] {
-        loadSpreadsheet("InvalidFunctionalValue.xlsx")
+    it("should throw IllegalArgumentException when there's an invalid functional value") {
+      intercept[Throwable] {
+        loadSpreadsheet("InvalidFunctionalValue.xlsx").foreach(TCompanyFiscalYear.validate(_))
       }
     }
 
@@ -101,84 +101,6 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
       }
     }
 
-//    it("should import a single company fiscal year with executives") {
-//      assert(loadSpreadsheet("CompanyFiscalYearAndOneSheet.xlsx") ===
-//        Seq(
-//          Model(
-//            'ticker -> Value(Some("ticker"), Some("note ticker"), None),
-//            'name -> Value(Some("coname"), Some("note coname"), None),
-//            'disclosureFiscalYear -> Value(Some(2012), None, None),
-//            'originalCurrency -> Value(), 
-//            'currencyConversionDate -> Value(),
-//            'executives ->
-//              Seq(
-//                Model(
-//                  'name ->  Value("ExecutiveName1"),
-//                  'title ->  Value("ExecutiveTitle1"),
-//                  'shortTitle ->  Value("ExTi1"),
-//                  'functionalMatches ->  Col(Value(), Value(), Value()),
-//                  'founder ->  Value("lala"),
-//                  'carriedInterest ->  Model(
-//                    'ownedShares ->  Value(100),
-//                    'vestedOptions ->  Value(200),
-//                    'unvestedOptions ->  Value(300),
-//                    'tineVest ->  Value(400),
-//                    'perfVest ->  Value(500)),
-//                  'equityCompanyValue ->  Model(
-//                    'optionsValue ->  Value(1),
-//                    'options ->  Value(1),
-//                    'exPrice ->  Value(1),
-//                    'bsPercentage ->  Value(1),
-//                    'timeVestRsValue ->  Value(1),
-//                    'shares ->  Value(1),
-//                    'price ->  Value(1),
-//                    'perfRSValue ->  Value(1),
-//                    'shares2 ->  Value(1),
-//                    'price2 ->  Value(1),
-//                    'perfCash ->  Value(1)),
-//	            'cashCompensations -> Model(
-//	              'baseSalary -> Value(1000.0),
-//	              'actualBonus -> Value(1.0),
-//	              'targetBonus -> Value(1.0),
-//	              'thresholdBonus -> Value(1.0),
-//	              'maxBonus -> Value(1.0),
-//	              'new8KData -> Model(
-//	                'baseSalary -> Value(1.0),
-//	                'targetBonus -> Value(1.0))),
-//                Model(
-//                  'name ->  Value("ExecutiveName2"),
-//                  'title ->  Value("ExecutiveTitle2"),
-//                  'shortTitle ->  Value("ExTi2"),
-//                  'functionalMatches ->  Col(Value(), Value(), Value()),
-//                  'founder ->  Value("lala"),
-//                  'carriedInterest ->  Model(
-//                    'ownedShares ->  Value(100),
-//                    'vestedOptions ->  Value(200),
-//                    'unvestedOptions ->  Value(300),
-//                    'tineVest ->  Value(400),
-//                    'perfVest ->  Value(500)),
-//                  'equityCompanyValue ->  Model(
-//                    'optionsValue ->  Value(1),
-//                    'options ->  Value(1),
-//                    'exPrice ->  Value(1),
-//                    'bsPercentage ->  Value(1),
-//                    'timeVestRsValue ->  Value(1),
-//                    'shares ->  Value(1),
-//                    'price ->  Value(1),
-//                    'perfRSValue ->  Value(1),
-//                    'shares2 ->  Value(1),
-//                    'price2 ->  Value(1),
-//                    'perfCash ->  Value(1)),
-//                  'cashCompensations ->  Model(
-//                    Value(1000.0),
-//                    Value(1.0),
-//                    Value(1.0),
-//                    Value(1.0),
-//                    Value(1.0),
-//                    Model(
-//                      Value(1.0),
-//                      Value(1.0))))))))
-//    }
   }
 }
 
