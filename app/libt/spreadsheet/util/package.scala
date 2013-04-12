@@ -18,6 +18,8 @@ package object util {
   implicit def row2RichRow(row: Row) = new {
     def cells : Seq[Cell] = for (cellIndex <- Stream.from(0))
       yield CellUtil.getCell(row, cellIndex)
+     def cellAt(columnIndex: Int) = 
+       CellUtil.getCell(row, columnIndex) 
   }
 
   def blankToNone[T](mapper: Cell => T)(cell: Cell) =
