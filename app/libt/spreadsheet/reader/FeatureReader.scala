@@ -15,3 +15,9 @@ case object StringReader extends FeatureReader[String] {
   def read(reader: CellReader) = reader.string
   //    def readWithDefault(reader: CellReader, defaultValue: String) = reader.stringWithDefault(defaultValue)
 }
+
+case class WithDefaultReader[A](
+  baseFeatureReader: FeatureReader[A],
+  defaultValue: A) extends FeatureReader[A] {
+  def read(reader: CellReader) = baseFeatureReader.read(reader).orDefault(defaultValue)
+}

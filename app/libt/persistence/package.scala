@@ -11,7 +11,7 @@ object `package` {
   type DBO = DBObject
 
   implicit def tElement2PersitentTElement(telement: TElement): TElementConverter = telement match {
-    case _: TValue => TValueConverter
+    case _: TValue[_] => TValueConverter
     case m: TModel => new TModelConverter(m)
     case c: TCol => new TColConverter(c)
   }

@@ -28,11 +28,12 @@ case class Feature(path: Path) extends Column {
     modelBuilder += (path -> readValue(schema, reader))
 
   private def readValue(schema: TElement, reader: CellReader) = featureReader(schema(path)).read(reader)
-  private def featureReader(tValue: TValue): FeatureReader[_] = tValue match {
+  private def featureReader[A](tValue: TValue[A]): FeatureReader[A] = tValue match {
     case TString => StringReader
     case _:TEnum => StringReader
     case TNumber => NumericReader
-    case TInt => NumericReader
+    case TWithDefault(baseReader, default) => WithDefaultReader(featureReader(baseReader), default)
+    case TInt => ???
     case TBool => ???
     case TDate => ???
   }

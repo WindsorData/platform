@@ -12,7 +12,7 @@ sealed trait TElement {
    * Answers the TValue element for a path that points to a TValue.
    * If the path points to something else, the result is undefined
    * */
-  def apply(path: Path): TValue
+  def apply(path: Path): TValue[_]
   def validate(elemnt: Element) = ()
 }
 
