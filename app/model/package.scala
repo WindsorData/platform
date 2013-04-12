@@ -75,6 +75,7 @@ package object model {
               "Vice Chairman",
               "Director")),
         'founder -> TString,
+        'transitionPeriod -> TString,
 
         'cashCompensations -> TModel(
           'baseSalary -> TNumber,

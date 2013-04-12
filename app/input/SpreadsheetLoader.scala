@@ -79,6 +79,7 @@ object SpreadsheetLoader {
           'scope -> string,
           'bod -> string),
       'founder -> string,
+      'transitionPeriod -> string,
       'cashCompensations -> Model(
         'baseSalary -> numeric,
         'actualBonus -> numeric,
