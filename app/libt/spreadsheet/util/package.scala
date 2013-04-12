@@ -25,8 +25,4 @@ package object util {
       None
     else
       Some(mapper(cell))
-
-  def blankToSome[T](mapper: Cell => T, defaultValue: T)(cell: Cell) =
-    Some(blankToNone(mapper)(cell).getOrElse(defaultValue))
-
 }

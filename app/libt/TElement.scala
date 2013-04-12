@@ -3,17 +3,23 @@ import libt.util._
 import java.util.Date
 
 /**
- * Type mirror of Element
+ * Type mirror of Element. It is 
+ * the base trait for defining a data schema
+ * 
  * @author flbulgarelli
  */
 sealed trait TElement {
   
   /**
    * Answers the TValue element for a path that points to a TValue.
-   * If the path points to something else, the result is undefined
+   * Fails if the path points to something else
    * */
   def apply(path: Path): TValue[_]
-  def validate(elemnt: Element) = ()
+  /**
+   * Validates the given element using this TElement as schema,
+   * by failing if it does not conform to this TElement  
+   * */
+  def validate(element: Element) = ()
 }
 
 /**
@@ -26,6 +32,12 @@ sealed trait TValue[A] extends TElement {
   }
 }
 
+/***
+ * TValue wrapper for introducing default values information 
+ * into the schema
+ * 
+ * @author flbulgarelli
+ */
 case class TWithDefault[A](tValue: TValue[A], defaultValue: A) extends TValue[A] {
   override def validate(element: Element) = umatch(element) {
     case v: Value[A] => tValue.validate(v)
