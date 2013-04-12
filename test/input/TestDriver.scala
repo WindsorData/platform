@@ -33,6 +33,7 @@ import libt.TEnum
 import libt.Route
 import libt.Index
 import libt.builder.ModelBuilder
+import libt.TWithDefault
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
@@ -143,18 +144,15 @@ class TestDriver extends FunSpec {
 
     }
 
-    //    it("should be able to convert blank cells to a given default value") {
-    //	  val sheet = makeEmptyDataItem
-    //      val schema = TModel('aField -> WithDefault(TString, "BLANK"))
-    //      val mapping  =
-    //        Mapping(
-    //          Seq(
-    //            Gap,
-    //            Feature(Path('aField))))
-    //      
-    //      val result : Element = schema.read(mapping, sheet)
-    //      assert(result === Model('aField -> Value("BLANK")))
-    //    }
+    it("should be able to convert blank cells to a given default value") {
+      val sheet = makeEmptyDataItem
+      val schema = TModel('aField -> TWithDefault(TString, "BLANK"))
+      val mapping = Mapping(
+          Gap,
+          Feature(Path('aField)))
+      val result = schema.read(mapping, sheet)
+      assert(result === Seq(Model('aField -> Value("BLANK"))))
+    }
   }
 
   //  describe("mapper for output marshalling") {

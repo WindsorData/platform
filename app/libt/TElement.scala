@@ -1,37 +1,57 @@
 package libt
+import libt.util._
+import java.util.Date
 
 /**
- * Type mirror of Element
+ * Type mirror of Element. It is 
+ * the base trait for defining a data schema
+ * 
  * @author flbulgarelli
  */
 sealed trait TElement {
   
   /**
    * Answers the TValue element for a path that points to a TValue.
-   * If the path points to something else, the result is undefined
+   * Fails if the path points to something else
    * */
-  def apply(path: Path): TValue
-  def validate(elemnt: Element) = ()
+  def apply(path: Path): TValue[_]
+  /**
+   * Validates the given element using this TElement as schema,
+   * by failing if it does not conform to this TElement  
+   * */
+  def validate(element: Element) = ()
 }
 
 /**
  * Type mirror of Value
  * @author flbulgarelli
  * */
-sealed trait TValue extends TElement {
-  override def apply(path: Path) = path match {
+sealed trait TValue[A] extends TElement {
+  override def apply(path: Path) =  umatch(path) {
     case Nil => this
   }
 }
-case object TString extends TValue
-case object TInt extends TValue
-case object TBool extends TValue
-case object TDate extends TValue
-case object TNumber extends TValue
-case class TEnum(values: String*) extends TValue {
+
+/***
+ * TValue wrapper for introducing default values information 
+ * into the schema
+ * 
+ * @author flbulgarelli
+ */
+case class TWithDefault[A](tValue: TValue[A], defaultValue: A) extends TValue[A] {
+  override def validate(element: Element) = umatch(element) {
+    case v: Value[A] => tValue.validate(v)
+  }
+}
+case object TString extends TValue[String]
+case object TInt extends TValue[Int]
+case object TBool extends TValue[Boolean]
+case object TDate extends TValue[Date]
+case object TNumber extends TValue[BigDecimal]
+case class TEnum(values: String*) extends TValue[String] {
   private val valuesSet = values.toSet
   private def isValue = valuesSet.contains(_)
-  override def validate(element: Element) = element match {
+  override def validate(element: Element) = umatch(element) {
     case v: Value[String] => assert(v.value.forall(isValue(_)))
   }
 }
@@ -41,10 +61,10 @@ case class TEnum(values: String*) extends TValue {
  * @author flbulgarelli
  */
 case class TCol(tElement: TElement) extends TElement {
-  override def apply(path: Path) = path match {
+  override def apply(path: Path) = umatch(path) {
     case Index(_) :: tail => tElement(tail)
   }
-  override def validate(element: Element) = element match {
+  override def validate(element: Element) = umatch(element) {
     case c: Col => c.elements.foreach(tElement.validate(_))
   }
 }
@@ -56,11 +76,11 @@ case class TCol(tElement: TElement) extends TElement {
 case class TModel(elements: (Symbol, TElement)*) extends TElement {
   private val elementsMap = elements.toMap
 
-  override def apply(path: Path) = path match {
+  override def apply(path: Path) = umatch(path ) {
     case Route(field) :: tail => elementsMap(field)(tail)
   }
 
-  override def validate(element: Element) = element match {
+  override def validate(element: Element) = umatch(element) {
     case m: Model => elements.foreach {
       case (field, telement) => telement.validate(m(field))
     }

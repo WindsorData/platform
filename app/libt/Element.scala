@@ -41,8 +41,18 @@ case class Value[A](
   comment: Option[String],
   note: Option[String],
   link: Option[String]) extends Element {
+  
+  /**Maps over the value*/
   def map[B](f: A => B) =
     Value(value.map(f), calc, comment, note, link)
+
+  /**Answers this Value if its basic value is defined, otherwise answers
+   * a new Value with the basic value updated using the given alternative*/
+  def orDefault(alternative: => A) =
+    if (value.isDefined)
+      this
+    else
+      Value(Some(alternative), calc, comment, note, link)
 }
 object Value {
   def apply[A](): Value[A] = Value(None, None, None, None, None)

@@ -13,14 +13,8 @@ import scala.math.BigDecimal.double2bigDecimal
 trait CellReader {
 
   def string = createValue(blankToNone(_.getStringCellValue))
-  def stringWithDefault(s: String = "BLANK") = createValue(blankToSome(_.getStringCellValue, s))
-
   def numeric = createValue(blankToNone(_.getNumericCellValue: BigDecimal))
-  def numericWithDefault(n: BigDecimal = 0.0) = createValue(blankToSome(_.getNumericCellValue: BigDecimal, n))
-
   def boolean = createValue(blankToNone(_.getBooleanCellValue))
-  def booleanWithDefault(b: Boolean = false) = createValue(blankToSome(_.getBooleanCellValue, b))
-
   def date = createValue(blankToNone(_.getDateCellValue))
 
   def skip(offset: Int) = for (_ <- 1 to offset) skip1
