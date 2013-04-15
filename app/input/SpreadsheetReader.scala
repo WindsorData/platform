@@ -58,7 +58,7 @@ object SpreadsheetReader {
       " -> Column: " + { cell.getColumnIndex + 1 } +
       ", Row: " + { cell.getRowIndex + 1 }
 
-  private def noFiscalYearErrorMessage(cell: Cell) = 
+  private def noFiscalYearErrorMessage(cell: Cell) =
     "No Fiscal Year provided at Sheet " +
       cell.getSheet.getSheetName +
       " Column: " + cell.getColumnIndex +
@@ -72,8 +72,6 @@ object SpreadsheetReader {
       'ticker -> { skip(1); string },
       'name -> string,
       'disclosureFiscalYear -> Value(fiscalYearOption, None, None),
-      'originalCurrency -> { skip(1); string },
-      'currencyConversionDate -> date,
       'executives -> Col(executives: _*))
   }
 
@@ -81,45 +79,107 @@ object SpreadsheetReader {
     val reader = new ColumnOrientedReader(rows)
     import reader._
 
+    //    repeatModel(times: Int, )
+
+    def createOptionGrants(times: Int) = {
+      val models =
+        for (_ <- 1 to times)
+          yield Model(
+          'grantDate -> date,
+          'expireDate -> date,
+          'number -> numeric,
+          'price -> numeric,
+          'value -> numeric,
+          'perf -> xBoolean,
+          'type -> string)
+
+      Col(models: _*)
+    }
+
+    def createTimeVestRS(times: Int) = {
+      val models =
+        for (_ <- 1 to times)
+          yield Model(
+          'grantDate -> date,
+          'number -> numeric,
+          'price -> numeric,
+          'value -> numeric,
+          'type -> string)
+
+      Col(models: _*)
+    }
+
+    def createPerformanceVestRS(times: Int) = {
+      val models =
+        for (_ <- 1 to times)
+          yield Model(
+          'grantDate -> date,
+          'targetNumber -> numeric,
+          'grantDatePrice -> date,
+          'targetValue -> numeric,
+          'type -> string)
+
+      Col(models: _*)
+    }
+
+    def createPerformanceCash(times: Int) = {
+      val models =
+        for (_ <- 1 to times)
+          yield Model(
+          'grantDate -> date,
+          'targetValue -> numeric,
+          'payout -> numeric)
+
+      Col(models: _*)
+    }
+
     Model(
-      'name -> { skip(1); string },
+
+      'firstName -> { skip(1); string },
+      'lastName -> string,
       'title -> string,
-      'shortTitle -> string,
       'functionalMatches -> Model(
-          'primary -> string,
-          'secondary -> string,
-          'level -> string,
-          'scope -> string,
-          'bod -> string),
+        'primary -> string,
+        'secondary -> string,
+        'level -> string,
+        'scope -> string,
+        'bod -> string),
       'founder -> string,
       'transitionPeriod -> string,
+
       'cashCompensations -> Model(
         'baseSalary -> numeric,
         'actualBonus -> numeric,
+        'retentionBonus -> numeric,
+        'signOnBonus -> numeric,
         'targetBonus -> numeric,
         'thresholdBonus -> numeric,
         'maxBonus -> numeric,
-        'new8KData -> Model(
+        'nextFiscalYearData -> Model(
           'baseSalary -> numeric,
           'targetBonus -> numeric)),
-      'equityCompanyValue -> Model(
-        'optionsValue -> numeric,
-        'options -> numeric,
-        'exPrice -> numeric,
-        'bsPercentage -> numeric,
-        'timeVestRsValue -> numeric,
-        'shares -> numeric,
-        'price -> numeric,
-        'perfRSValue -> numeric,
-        'shares2 -> numeric,
-        'price2 -> numeric,
-        'perfCash -> numeric),
+
+      'optionGrants -> createOptionGrants(6),
+
+      'timeVestRS -> createTimeVestRS(6),
+
+      'performanceVestRS -> createPerformanceVestRS(3),
+
+      'performanceCash -> createPerformanceCash(3),
+
       'carriedInterest -> Model(
-        'ownedShares -> numeric,
-        'vestedOptions -> numeric,
-        'unvestedOptions -> numeric,
-        'tineVest -> numeric,
-        'perfVest -> numeric))
+        'ownedShares -> Model(
+          'beneficialOwnership -> numeric,
+          'options -> numeric,
+          'unvestedRestrictedStock -> numeric,
+          'disclaimBeneficialOwnership -> numeric,
+          'heldByTrust -> numeric,
+          'other -> string),
+        'outstandingEquityAwards -> Model(
+          'vestedOptions -> numeric,
+          'unvestedOptions -> numeric,
+          'timeVestRS -> numeric,
+          'perfVestRS -> numeric)))
   }
 
 }

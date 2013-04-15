@@ -15,7 +15,9 @@ trait CellReader {
   def string = createValue(blankToNone(_.getStringCellValue))
   def numeric = createValue(blankToNone(_.getNumericCellValue: BigDecimal))
   def boolean = createValue(blankToNone(_.getBooleanCellValue))
+  def xBoolean = string.orDefault("").map(_=="X")
   def date = createValue(blankToNone(_.getDateCellValue))
+  
 
   def skip(offset: Int) = for (_ <- 1 to offset) skip1
   protected def skip1: Unit
