@@ -7,7 +7,10 @@ import libt.spreadsheet.util._
 import scala.math.BigDecimal.double2bigDecimal
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
- * The exact orientation of cells groups - columns or rows - depends on implementors
+ * The exact orientation of cells groups - columns or rows - depends on implementors.
+ * 
+ * CellReaders are aimed to read single data items
+ * 
  * @author flbulgarelli
  */
 trait CellReader {

@@ -15,19 +15,29 @@ import org.apache.poi.ss.usermodel.Sheet
 
 class TReader(
   mapping: Mapping,
-  schema: TElement,
-  width: Int = 10,
-  heigth: Int = 10) {
+  schema: TElement) {
   
-  def read(sheet: Sheet): Seq[Model] =
-    sheet.rows.grouped(6).map { inputGroup =>
+  val fieldCount = 10
+  
+  def read(sheet: Sheet): Seq[Model] = 
+  Seq( { 
       val modelBuilder = new ModelBuilder()
-      val reader = new ColumnOrientedReader(inputGroup)
+      val reader = new RowOrientedReader(sheet.rows)
 
       for (column <- mapping.columns)
         column.read(reader, schema, modelBuilder)
 
-      modelBuilder.build
-    }.toSeq
-    
+      modelBuilder.build 
+  }
+    )
+//    sheet.rows.grouped(6).map { inputGroup =>
+//      val modelBuilder = new ModelBuilder()
+//      val reader = new ColumnOrientedReader(inputGroup)
+//
+//      for (column <- mapping.columns)
+//        column.read(reader, schema, modelBuilder)
+//
+//      modelBuilder.build
+//    }.toSeq
+//    
 }

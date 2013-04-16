@@ -24,6 +24,7 @@ import libt.spreadsheet.Feature
 import libt.TString
 import libt.Path
 import libt.Value
+import libt.builder.ModelBuilder
 
 @RunWith(classOf[JUnitRunner])
 class WorkbookReaderSpec extends FunSpec {
@@ -47,9 +48,32 @@ class WorkbookReaderSpec extends FunSpec {
     def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]) = results
   }
 
-  type Orientation = Seq[Row] => CellReader
-  val RowOrientation: Orientation = new RowOrientedReader(_)
-  val ColumnOrientation: Orientation = new ColumnOrientedReader(_)
+  sealed trait Orientation {
+    def read(schema: TModel, mapping: Mapping, sheet: Sheet): Seq[Model]
+
+    def makeModels(schema: TModel, mapping: Mapping, rows: Seq[Row], orientation: Seq[Row] => CellReader): Model = {
+      val modelBuilder = new ModelBuilder()
+      val reader = orientation(rows)
+      for (column <- mapping.columns)
+        column.read(reader, schema, modelBuilder)
+      modelBuilder.build
+    }
+  }
+  object RowOrientation extends Orientation {
+    import libt.spreadsheet.util._
+    override def read(schema: TModel, mapping: Mapping, sheet: Sheet): Seq[Model] = {
+      Seq(makeModels(schema, mapping, sheet.rows, new RowOrientedReader(_)))
+    }
+  }
+
+  object ColumnOrientation extends Orientation {
+    import libt.spreadsheet.util._
+    override def read(schema: TModel, mapping: Mapping, sheet: Sheet): Seq[Model] = {
+      sheet.rows.grouped(6).map {
+        makeModels(schema, mapping, _, new ColumnOrientedReader(_))
+      }.toSeq
+    }
+  }
 
   sealed trait SheetDefinition {
     def read(sheet: Sheet, schema: TModel): Seq[Model]
@@ -61,7 +85,7 @@ class WorkbookReaderSpec extends FunSpec {
 
     def read(sheet: Sheet, schema: TModel): Seq[Model] = {
       takeArea(sheet)
-      schema.read(mapper, sheet)
+      orientation.read(schema, mapper, sheet)
     }
 
     private def takeArea(sheet: Sheet) =
@@ -71,7 +95,6 @@ class WorkbookReaderSpec extends FunSpec {
           (0 to (columnIndex - 1)).foreach(sheet.rows.map(_.cellIterator).map(_.next))
         }
       }
-
   }
 
   object Area {
@@ -124,7 +147,8 @@ class WorkbookReaderSpec extends FunSpec {
 
     object WorkbookFactory {
       import libt.spreadsheet.util._
-      def makeSingleValueWorkbook = {
+      
+      def makeSingleColumnValueWorkbook = {
         val wb = new HSSFWorkbook
         val sheet = wb.createSheet("foo")
         sheet.cellAt(0, 0).setCellValue("something")
@@ -137,13 +161,13 @@ class WorkbookReaderSpec extends FunSpec {
 
     }
 
-    it("should be able to read a single input, on a single sheet workbook, and return results without combining") {
+    it("should be able to read a single input, on a single column oriented sheet workbook, and return results without combining") {
       val result = new WorkbookReader(
         TModel('a -> TString),
-        WorkbookMapping(Stream(Area((0, 0), RowOrientation, Mapping(Feature(Path('a)))))),
-        new MirrorCombiner).read(WorkbookFactory.makeSingleValueWorkbook)
+        WorkbookMapping(Stream(Area((0, 0), ColumnOrientation, Mapping(Feature(Path('a)))))),
+        new MirrorCombiner).read(WorkbookFactory.makeSingleColumnValueWorkbook)
 
-      assert(result === Seq(Seq(Model('a -> Value("something")))))
+      assert(result.head === Seq(Model('a -> Value("something"))))
     }
   }
 
