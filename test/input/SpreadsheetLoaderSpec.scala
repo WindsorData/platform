@@ -32,54 +32,57 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
             'ticker -> Value(Some("ticker"), Some("note ticker"), Some("http://alink.com")),
             'name -> Value(Some("coname"), Some("note coname"), Some("http://anotherlink.com")),
             'disclosureFiscalYear -> Value(2012), 
-            'originalCurrency -> Value(), 
-            'currencyConversionDate -> Value(),
             'executives -> Col())))
     }
 
     it("should be able to import a single executive") {
-      Assert.assertEquals(
-        loadSpreadsheet("FullValuesOnly.xlsx").head.c('executives).take(1),
-        Seq(
-          Model(
-            'name -> Value("ExecutiveName1"),
-            'title -> Value("ExecutiveTitle1"),
-            'shortTitle -> Value("ExTi1"),
-            'functionalMatches -> Model(
-              'scope -> Value(),
-              'secondary -> Value(),
-              'primary -> Value(),
-              'level -> Value(),
-              'bod -> Value()),
-            'founder -> Value("lala"),
-            'transitionPeriod -> Value(),
-            'carriedInterest -> Model(
-              'ownedShares -> Value(100),
-              'vestedOptions -> Value(200),
-              'unvestedOptions -> Value(300),
-              'tineVest -> Value(400),
-              'perfVest -> Value(500)),
-            'equityCompanyValue -> Model(
-              'optionsValue -> Value(1),
-              'options -> Value(1),
-              'exPrice -> Value(1),
-              'bsPercentage -> Value(1),
-              'timeVestRsValue -> Value(1),
-              'shares -> Value(1),
-              'price -> Value(1),
-              'perfRSValue -> Value(1),
-              'shares2 -> Value(1),
-              'price2 -> Value(1),
-              'perfCash -> Value(1)),
-            'cashCompensations -> Model(
-              'baseSalary -> Value(1000.0),
-              'actualBonus -> Value(1.0),
-              'targetBonus -> Value(1.0),
-              'thresholdBonus -> Value(1.0),
-              'maxBonus -> Value(1.0),
-              'new8KData -> Model(
-                'baseSalary -> Value(1.0),
-                'targetBonus -> Value(1.0))  ))))
+      
+      val firstExec = loadSpreadsheet("FullValuesOnly.xlsx").head.c('executives).take(1).head
+
+      import firstExec._
+      
+      assert(v('firstName) === Value("exec1"))
+      assert(v('lastName) === Value("exec1Last"))
+      assert(v('title) === Value())
+      
+      assert(m('functionalMatches).v('primary) === Value("Engineering"))
+      assert(m('functionalMatches).v('secondary) === Value())
+      assert(m('functionalMatches).v('level) === Value("SVP (Senior Vice President)"))
+      assert(m('functionalMatches).v('scope) === Value("Asia"))
+      assert(m('functionalMatches).v('bod) === Value())
+      
+      assert(m('cashCompensations).v('baseSalary) === Value(1000))
+      assert(m('cashCompensations).v('actualBonus) === Value())
+      assert(m('cashCompensations).v('targetBonus) === Value(0.1: BigDecimal))
+      assert(m('cashCompensations).m('nextFiscalYearData).v('baseSalary) === Value(2000))
+      assert(m('cashCompensations).m('nextFiscalYearData).v('targetBonus) === Value(0.5))
+      
+      assert(mc('optionGrants)(0).v('number) === Value(1))
+      assert(mc('optionGrants)(0).v('price) === Value(2))
+      assert(mc('optionGrants)(0).v('value) === Value(3))
+      assert(mc('optionGrants)(0).v('perf) === Value(true))
+      assert(mc('optionGrants)(0).v('type) === Value("Hire"))
+      
+      assert(mc('optionGrants)(1).v('perf) === Value(true))
+      assert(mc('optionGrants)(2).v('perf) === Value(true))
+      assert(mc('optionGrants)(3).v('perf) === Value(true))
+      assert(mc('optionGrants)(4).v('perf) === Value(false))
+      
+      assert(mc('optionGrants)(5).v('number) === Value(1))
+      assert(mc('optionGrants)(5).v('type) === Value("Annual"))
+      
+      assert(mc('timeVestRS)(0).v('number) === Value(100))
+      assert(mc('timeVestRS)(0).v('price) === Value(200))
+      assert(mc('timeVestRS)(0).v('value) === Value(300))
+      assert(mc('timeVestRS)(0).v('type) === Value())
+      
+      assert(mc('timeVestRS)(5).v('type) === Value("Other"))
+      
+      assert(m('carriedInterest).m('ownedShares).v('beneficialOwnership) === Value(12))
+      assert(m('carriedInterest).m('ownedShares).v('disclaimBeneficialOwnership) === Value(13))
+      assert(m('carriedInterest).m('outstandingEquityAwards).v('unvestedOptions) === Value(14))
+      assert(m('carriedInterest).m('outstandingEquityAwards).v('perfVestRS) === Value(15))
+        
     }
 
     
@@ -103,5 +106,6 @@ class SpreadsheetLoaderSpec extends FunSpec with TestSpreadsheetLoader {
 
   }
 }
+
 
 

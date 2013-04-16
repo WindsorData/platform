@@ -2,110 +2,147 @@ import libt._
 package object model {
   import persistence._
 
+  val grantTypes = TEnum("Annual", "Retention", "Hire", "Promotion", "Special", "Acquisition", "Other")
+
+  val validPrimaryValues = TEnum("CEO (Chief Executive Officer)",
+    "CFO (Chief Financial Officer)",
+    "COO (Chief Operating Officer)",
+    "Sales",
+    "Bus Dev (Business Development)",
+    "CAO (Chief Admin Officer)",
+    "GC (General Counsel-Legal)",
+    "CAO (Chief Accounting Officer)",
+    "CIO (Chief Investment-Asset Officer)",
+    "CTO (Chief Technology Officer)",
+    "Manufacturing",
+    "Engineering",
+    "Marketing",
+    "CSO (Chief Science Officer)",
+    "CSO (Chief Strategic Officer)",
+    "CIO (Chief Information Officer)",
+    "Product",
+    "CRO (Chief Risk Officer)",
+    "Treasurer/Secretary",
+    "Executive Chairman",
+    "Other")
+
+  val validSecondaryValues = TEnum(
+    "Sales",
+    "Bus Dev (Business Development)",
+    "CAO (Chief Admin Officer)",
+    "GC (General Counsel-Legal)",
+    "CAO (Chief Accounting Officer)",
+    "CIO (Chief Investment-Asset Officer)",
+    "CTO (Chief Technology Officer)",
+    "Manufacturing",
+    "Engineering",
+    "Marketing",
+    "CSO (Chief Science Officer)",
+    "CSO (Chief Strategic Officer)",
+    "CIO (Chief Information Officer)",
+    "Product",
+    "CRO (Chief Risk Officer)",
+    "Treasurer/Secretary",
+    "GM (General Manager)",
+    "Other")
+
+  val validLevelValues = TEnum(
+    "President",
+    "EVP (Executive Vice President)",
+    "SVP (Senior Vice President)",
+    "VP (Vice President)",
+    "GM (General Manager)",
+    "Group President")
+
+  val validScopeValues = TEnum(
+    "WW/Global/International",
+    "US",
+    "North America",
+    "Europe",
+    "Asia",
+    "Americas")
+
+  val validBodValues = TEnum("Chairman",
+    "Vice Chairman",
+    "Director")
+
   val TCompanyFiscalYear = TModel(
     'ticker -> TString,
     'name -> TString,
     'disclosureFiscalYear -> TInt,
-    'originalCurrency -> TString,
-    'currencyConversionDate -> TDate,
 
     'executives -> TCol(
       TModel(
-        'name -> TString,
+        'firstName -> TString,
+        'lastName -> TString,
         'title -> TString,
-        'shortTitle -> TString,
         'functionalMatches ->
           TModel(
-            'primary -> TEnum("CEO (Chief Executive Officer)",
-              "CFO (Chief Financial Officer)",
-              "COO (Chief Operating Officer)",
-              "Sales",
-              "Bus Dev (Business Development)",
-              "CAO (Chief Admin Officer)",
-              "GC (General Counsel-Legal)",
-              "CAO (Chief Accounting Officer)",
-              "CIO (Chief Investment-Asset Officer)",
-              "CTO (Chief Technology Officer)",
-              "Manufacturing",
-              "Engineering",
-              "Marketing",
-              "CSO (Chief Science Officer)",
-              "CSO (Chief Strategic Officer)",
-              "CIO (Chief Information Officer)",
-              "Product",
-              "CRO (Chief Risk Officer)",
-              "Treasurer/Secretary",
-              "Executive Chairman",
-              "Other"),
-            'secondary -> TEnum(
-              "Sales",
-              "Bus Dev (Business Development)",
-              "CAO (Chief Admin Officer)",
-              "GC (General Counsel-Legal)",
-              "CAO (Chief Accounting Officer)",
-              "CIO (Chief Investment-Asset Officer)",
-              "CTO (Chief Technology Officer)",
-              "Manufacturing",
-              "Engineering",
-              "Marketing",
-              "CSO (Chief Science Officer)",
-              "CSO (Chief Strategic Officer)",
-              "CIO (Chief Information Officer)",
-              "Product",
-              "CRO (Chief Risk Officer)",
-              "Treasurer/Secretary",
-              "GM (General Manager)",
-              "Other"),
-            'level -> TEnum(
-              "President",
-              "EVP (Executive Vice President)",
-              "SVP (Senior Vice President)",
-              "VP (Vice President)",
-              "GM (General Manager)",
-              "Group President"),
-            'scope -> TEnum(
-              "WW/Global/International",
-              "US",
-              "North America",
-              "Europe",
-              "Asia",
-              "Americas"),
-            'bod -> TEnum(
-              "Chairman",
-              "Vice Chairman",
-              "Director")),
+            'primary -> validPrimaryValues,
+            'secondary -> validSecondaryValues,
+            'level -> validLevelValues,
+            'scope -> validScopeValues,
+            'bod -> validBodValues),
         'founder -> TString,
         'transitionPeriod -> TString,
 
         'cashCompensations -> TModel(
           'baseSalary -> TNumber,
           'actualBonus -> TNumber,
+          'retentionBonus -> TNumber,
+          'signOnBonus -> TNumber,
           'targetBonus -> TNumber,
           'thresholdBonus -> TNumber,
           'maxBonus -> TNumber,
-          'new8KData -> TModel(
+          'nextFiscalYearData -> TModel(
             'baseSalary -> TNumber,
             'targetBonus -> TNumber)),
 
-        'equityCompanyValue -> TModel(
-          'optionsValue -> TNumber,
-          'options -> TNumber,
-          'exPrice -> TNumber,
-          'bsPercentage -> TNumber,
-          'timeVestRsValue -> TNumber,
-          'shares -> TNumber,
-          'price -> TNumber,
-          'perfRSValue -> TNumber,
-          'shares2 -> TNumber,
-          'price2 -> TNumber,
-          'perfCash -> TNumber),
+        'optionGrants -> TCol(
+          TModel(
+            'grantDate -> TDate,
+            'expireDate -> TDate,
+            'number -> TNumber,
+            'price -> TNumber,
+            'value -> TNumber,
+            'perf -> TWithDefault(TString, ""),
+            'type -> grantTypes)),
+
+        'timeVestRS -> TCol(
+          TModel(
+            'grantDate -> TDate,
+            'number -> TNumber,
+            'price -> TNumber,
+            'value -> TNumber,
+            'type -> grantTypes)),
+
+        'performanceVestRS -> TCol(
+          TModel(
+            'grantDate -> TDate,
+            'targetNumber -> TNumber,
+            'grantDatePrice -> TDate,
+            'targetValue -> TNumber,
+            'type -> grantTypes)),
+
+        'performanceCash -> TCol(
+          TModel(
+            'grantDate -> TDate,
+            'targetValue -> TNumber,
+            'payout -> TNumber)),
 
         'carriedInterest -> TModel(
-          'ownedShares -> TNumber,
-          'vestedOptions -> TNumber,
-          'unvestedOptions -> TNumber,
-          'tineVest -> TNumber,
-          'perfVest -> TNumber))))
+          'ownedShares -> TModel(
+            'beneficialOwnership -> TNumber,
+            'options -> TNumber,
+            'unvestedRestrictedStock -> TNumber,
+            'disclaimBeneficialOwnership -> TNumber,
+            'heldByTrust -> TNumber,
+            'other -> TString),
+          'outstandingEquityAwards -> TModel(
+            'vestedOptions -> TNumber,
+            'unvestedOptions -> TNumber,
+            'timeVestRS -> TNumber,
+            'perfVestRS -> TNumber)))))
 }
 
 

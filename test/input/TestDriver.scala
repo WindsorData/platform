@@ -34,6 +34,7 @@ import libt.Route
 import libt.Index
 import libt.builder.ModelBuilder
 import libt.TWithDefault
+import libt.TCol
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
@@ -56,6 +57,24 @@ class TestDriver extends FunSpec {
       sheet.cellAt(2, 1).setCellValue(comment)
       sheet.cellAt(3, 1).setCellValue(note)
       sheet.cellAt(4, 1).setCellValue(link)
+      sheet
+    }
+    
+    def makeSingleColOfModels = {
+      val sheet = new HSSFWorkbook createSheet ("foo")
+      
+      for (x <- 0 to 7; y <- 0 to 4)
+        sheet.cellAt(y, x).setAsActiveCell()
+      
+      sheet.cellAt(0, 0).setCellValue("model1-value1")
+      sheet.cellAt(0, 1).setCellValue("model1-value2")
+      sheet.cellAt(0, 2).setCellValue("model1-value3")
+      sheet.cellAt(0, 3).setCellValue("model1-value4")
+      
+      sheet.cellAt(0, 4).setCellValue("model2-value1")
+      sheet.cellAt(0, 5).setCellValue("model2-value2")
+      sheet.cellAt(0, 6).setCellValue("model2-value3")
+      sheet.cellAt(0, 7).setCellValue("model2-value4")
       sheet
     }
 
@@ -142,6 +161,44 @@ class TestDriver extends FunSpec {
       val result = schema.read(mapping, sheet)
       assert(result === Seq(Model('aField -> Value())))
 
+    }
+    
+    it("should be able to parse Cols") {
+      val sheet = makeSingleColOfModels
+      val schema = TModel('models -> TCol(TModel(
+          'value1 -> TString,
+          'value2 -> TString,
+          'value3 -> TString,
+          'value4 -> TString
+          )))
+          
+      val mapping = Mapping(
+          Feature(Path('models, 0, 'value1)),
+          Feature(Path('models, 0, 'value2)),
+          Feature(Path('models, 0, 'value3)),
+          Feature(Path('models, 0, 'value4)),
+          Feature(Path('models, 1, 'value1)),
+          Feature(Path('models, 1, 'value2)),
+          Feature(Path('models, 1, 'value3)),
+          Feature(Path('models, 1, 'value4))
+          )
+          
+      val result = schema.read(mapping, sheet)
+      assert(result === Seq(Model('models -> Col(
+          Model(
+          'value1 -> Value("model1-value1"),
+          'value2 -> Value("model1-value2"),
+          'value3 -> Value("model1-value3"),
+          'value4 -> Value("model1-value4")
+              ),
+          Model(
+          'value1 -> Value("model2-value1"),
+          'value2 -> Value("model2-value2"),
+          'value3 -> Value("model2-value3"),
+          'value4 -> Value("model2-value4")
+              )    
+              
+          ))))
     }
 
     it("should be able to convert blank cells to a given default value") {
