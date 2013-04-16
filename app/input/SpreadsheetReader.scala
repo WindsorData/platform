@@ -79,8 +79,6 @@ object SpreadsheetReader {
     val reader = new ColumnOrientedReader(rows)
     import reader._
 
-    //    repeatModel(times: Int, )
-
     def createOptionGrants(times: Int) = {
       val models =
         for (_ <- 1 to times)
