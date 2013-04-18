@@ -2,7 +2,6 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import input.SpreadsheetReader
 import java.io.InputStream
 import util.Closeables
 import util.FileManager
@@ -37,7 +36,7 @@ object Application extends Controller {
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
       try {
-        val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
+        val companies = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
         companies.foreach(updateCompany(_))
         Ok(views.html.companyUploadSuccess())
       } catch {

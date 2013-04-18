@@ -2,12 +2,12 @@ package util
 
 import java.io.InputStream
 import java.io.FileInputStream
-import input.SpreadsheetReader
 import input.SpreadsheetWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
 import model._
 import libt.Model
+import input.WorkbookReader
 
 object FileManager {
 
@@ -25,11 +25,11 @@ object FileManager {
     }
   }
 
-  def loadSpreadsheet(name: String) = {
-    load(name) { x =>
-      SpreadsheetReader.read(x)
-    }
-  }
+//  def loadSpreadsheet(name: String) = {
+//    load(name) { x =>
+//      SpreadsheetReader.read(x)
+//    }
+//  }
   
   def generateNewFileWith(name: String, company: Model) = {
     write(name) { x => 

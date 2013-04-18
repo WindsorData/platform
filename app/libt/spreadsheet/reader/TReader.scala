@@ -12,32 +12,22 @@ import libt.TEnum
 import libt.Value
 import libt.TModel
 import org.apache.poi.ss.usermodel.Sheet
+import input.Offset
 
 class TReader(
   mapping: Mapping,
   schema: TElement) {
-  
-  val fieldCount = 10
-  
+    
   def read(sheet: Sheet): Seq[Model] = 
-  Seq( { 
+
+    sheet.rows.grouped(6).map { inputGroup =>
       val modelBuilder = new ModelBuilder()
-      val reader = new RowOrientedReader(sheet.rows)
+      val reader = new ColumnOrientedReader(0, inputGroup)
 
       for (column <- mapping.columns)
         column.read(reader, schema, modelBuilder)
 
-      modelBuilder.build 
-  }
-    )
-//    sheet.rows.grouped(6).map { inputGroup =>
-//      val modelBuilder = new ModelBuilder()
-//      val reader = new ColumnOrientedReader(inputGroup)
-//
-//      for (column <- mapping.columns)
-//        column.read(reader, schema, modelBuilder)
-//
-//      modelBuilder.build
-//    }.toSeq
-//    
+      modelBuilder.build
+    }.toSeq
+    
 }

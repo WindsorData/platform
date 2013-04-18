@@ -5,6 +5,7 @@ import org.apache.poi.ss.usermodel.Row
 import libt.Value
 import libt.spreadsheet.util._
 import scala.math.BigDecimal.double2bigDecimal
+import input.Offset
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
  * The exact orientation of cells groups - columns or rows - depends on implementors.
@@ -44,9 +45,10 @@ trait CellReader {
  * {{CellReader}} that expects vertical cell groups, that is, data items are found in columns
  * @author flbulgarelli
  */
-class ColumnOrientedReader(rows: Seq[Row]) extends CellReader {
-  private val cellIterators = rows.map(_.cells).map(_.iterator)
-
+class ColumnOrientedReader(columnOffset: Int, rows: Seq[Row]) extends CellReader {
+  private val cellIterators = rows.map(_.cells).map(_.iterator) 
+  skip(columnOffset)
+  
   override protected def skip1 = cellIterators.foreach(_.next)
   override protected def next = cellIterators.map(_.next)
 }
@@ -56,11 +58,11 @@ class ColumnOrientedReader(rows: Seq[Row]) extends CellReader {
  * data items are found in rows
  * @author flbulgarelli
  */
-class RowOrientedReader(rows: Seq[Row]) extends CellReader {
-  private val rowIterator = rows.iterator
+class RowOrientedReader(offset: Offset, rows: Seq[Row]) extends CellReader {
+  private val rowIterator = rows.drop(offset.rowIndex).iterator
 
   override protected def skip1 = rowIterator.next
-  override protected def next = rowIterator.next.cells.drop(2) //harcoded offset
+  override protected def next = rowIterator.next.cells.drop(offset.columnIndex) 
 
   override protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
     Value(value,
