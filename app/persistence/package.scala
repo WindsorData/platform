@@ -21,7 +21,7 @@ package object persistence {
   }
 
   def updateCompany(company: Model)(implicit db: MongoDB) {
-    def update = companies.update(
+    companies.update(
       MongoDBObject(
         "'ticker.value" -> company.v[String]('ticker).value.get,
         "'disclosureFiscalYear.value" -> company.v('disclosureFiscalYear).value.get),
