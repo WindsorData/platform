@@ -1,4 +1,5 @@
-package input
+package libt.spreadsheet.reader
+
 import util.FileManager._
 import libt._
 import libt.util._
@@ -8,19 +9,12 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Row
-import libt.spreadsheet.reader.CellReader
 import libt.builder.ModelBuilder
-import libt.spreadsheet.reader._
-import org.joda.time.DateTime
-import org.apache.poi.ss.usermodel.Cell
+import libt.spreadsheet.util.sheet2RichSheet
 
 class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
-  def read(filePath: String): A =
-    load(filePath) { x =>
-      read(x)
-    }
   def read(in: InputStream): A = read(WorkbookFactory.create(in))
-  def read(wb: Workbook): A = 
+  def read(wb: Workbook): A =
     combiner.combineReadResult(wb, wbMapping.read(wb).filter(!_.isEmpty))
 }
 
@@ -33,10 +27,6 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 
 trait Combiner[A] {
   def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]): A
-}
-
-class IdentityCombiner extends Combiner[Seq[Seq[Model]]] {
-  def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]) = results
 }
 
 case class Offset(rowIndex: Int, columnIndex: Int)
@@ -74,16 +64,13 @@ sealed trait SheetDefinition {
 
 case class Area(schema: TModel, offset: Offset, orientation: Orientation, mapper: Mapping) extends SheetDefinition {
   import libt.spreadsheet.util._
-  import libt.spreadsheet.reader._
 
   def read(sheet: Sheet): Seq[Model] =
     orientation.read(schema, mapper, sheet, offset)
+
+  def continually = Stream.continually[SheetDefinition](this)
 }
 
-object Area {
-  def toInfinite(schema: TModel, offset: Offset, orientation: Orientation, mapper: Mapping) =
-    Stream.continually[SheetDefinition](Area(schema, offset, orientation, mapper))
-}
 object AreaGap extends SheetDefinition {
   def read(sheet: Sheet) = Nil
 }

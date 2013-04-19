@@ -12,7 +12,7 @@ import libt.TEnum
 import libt.Value
 import libt.TModel
 import org.apache.poi.ss.usermodel.Sheet
-import input.Offset
+import libt.spreadsheet.reader.Offset
 
 class TReader(
   mapping: Mapping,

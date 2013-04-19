@@ -4,7 +4,7 @@ import play.api._
 import play.api.mvc._
 import java.io.InputStream
 import util.Closeables
-import util.FileManager
+import util.FileManager._
 import java.io.FileInputStream
 import com.mongodb.casbah.MongoClient
 import input.SpreadsheetWriter
@@ -16,6 +16,7 @@ import persistence._
 import model._
 import views.html.defaultpages.badRequest
 import libt.Model
+import model.mapping._
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
