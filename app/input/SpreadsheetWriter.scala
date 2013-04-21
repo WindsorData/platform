@@ -81,15 +81,8 @@ class DataWriter(wb: Workbook) extends Writer {
   def writeCashCompensation[T](i: Value[T], itemName: String) =
     writeInput(i, "Cash Compensations", itemName)
 
-  def writeEquityCompanyValue[T](i: Value[T], itemName: String) =
-    writeInput(i, "Equity Company Value", itemName)
-
-  def writeCarriedInterest[T](i: Value[T], itemName: String) =
-    writeInput(i, "Carried Interest", itemName)
-
   def writeCompanyData[T](input: Value[T]) =
     writeInputValue(input, cellIterator.next, (_) => Unit)
-
 }
 
 class MetaDataWriter(wb: Workbook) extends Writer {
@@ -163,46 +156,80 @@ object SpreadsheetWriter {
         
         nextExecutiveRow
         
-        metaDataWriter.setLastName(e.v('name).value.get)
+        metaDataWriter.setLastName(e.v('lastName).value.get)
 
         writeCompanyData(comp.v('ticker))
         writeCompanyData(comp.v('name))
         writeCompanyData(comp.v('disclosureFiscalYear))
         
-        writeExecData(e.v('name), "Name")
+        writeExecData(e.v('firstName), "First Name")
+        writeExecData(e.v('lastName), "Last Name")
         writeExecData(e.v('title), "Title")
-        writeExecData(e.v('shortTitle), "Short Title")
         writeExecData(e.m('functionalMatches).v('primary), "Primary")
         writeExecData(e.m('functionalMatches).v('secondary), "Secondary")
         writeExecData(e.m('functionalMatches).v('level), "Level")
         writeExecData(e.m('functionalMatches).v('scope), "Scope")
         writeExecData(e.m('functionalMatches).v('bod), "Bod")
         
+        writeExecData(e.v('founder), "Founder")
+        writeExecData(e.v('transitionPeriod), "Transition Period")
+        
         writeCashCompensation(e.m('cashCompensations).v('baseSalary), "Base Salary")
         writeCashCompensation(e.m('cashCompensations).v('actualBonus), "Actual Bonus")
         writeCashCompensation(e.m('cashCompensations).v('targetBonus), "Target Bonus")
         writeCashCompensation(e.m('cashCompensations).v('thresholdBonus), "Threshold Bonus")
         writeCashCompensation(e.m('cashCompensations).v('maxBonus), "Max Bonus")
-        writeCashCompensation(e.m('cashCompensations).m('new8KData).v('baseSalary), "8K Data - Base Salary")
-        writeCashCompensation(e.m('cashCompensations).m('new8KData).v('targetBonus), "8K Data - Target Bonus")
-
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('optionsValue), "Options Value")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('options), "Options")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('exPrice), "Ex Price")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('bsPercentage), "Bs Percentage")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('timeVestRsValue), "Time VEst Rs Value")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('shares), "Shares")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('price), "Price")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('perfRSValue), "Perf Rs Value")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('shares2), "Shares 2")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('price2), "Price 2")
-        writeEquityCompanyValue(e.m('equityCompanyValue).v('perfCash), "Perf Cash")
-
-        writeCarriedInterest(e.m('carriedInterest).v('ownedShares), "Owned Shares")
-        writeCarriedInterest(e.m('carriedInterest).v('vestedOptions), "Vested Options")
-        writeCarriedInterest(e.m('carriedInterest).v('unvestedOptions), "Unvested Options")
-        writeCarriedInterest(e.m('carriedInterest).v('tineVest), "Tine Vest")
-        writeCarriedInterest(e.m('carriedInterest).v('perfVest), "Perf Vest")
+        writeCashCompensation(e.m('cashCompensations).m('nextFiscalYearData).v('baseSalary), "Next Fiscal Year Data - Base Salary")
+        writeCashCompensation(e.m('cashCompensations).m('nextFiscalYearData).v('targetBonus), "Next Fiscal Year Data - Target Bonus")
+        
+        e.c('optionGrants).seq.foldLeft(0){ case (acum, elem) => 
+          writeInput(elem.asInstanceOf[Model].v('grantDate), "OptionGrants - Grant " + acum.toString, "Grant Date")
+          writeInput(elem.asInstanceOf[Model].v('expireDate), "OptionGrants - Grant " + acum.toString, "Expire Date")
+          writeInput(elem.asInstanceOf[Model].v('number), "OptionGrants - Grant " + acum.toString, "Number")
+          writeInput(elem.asInstanceOf[Model].v('price), "OptionGrants - Grant " + acum.toString, "Price")
+          writeInput(elem.asInstanceOf[Model].v('value), "OptionGrants - Grant " + acum.toString, "Value")
+          writeInput(elem.asInstanceOf[Model].v('perf), "OptionGrants - Grant " + acum.toString, "Perf")
+          writeInput(elem.asInstanceOf[Model].v('type), "OptionGrants - Grant " + acum.toString, "Type")
+          acum + 1
+        }
+        
+        e.c('timeVestRS).seq.foldLeft(0){ case (acum, elem) => 
+          writeInput(elem.asInstanceOf[Model].v('grantDate), "Time Vest Rs - Grant " + acum.toString, "Grant Date")
+          writeInput(elem.asInstanceOf[Model].v('number), "Time Vest Rs - Grant " + acum.toString, "Number")
+          writeInput(elem.asInstanceOf[Model].v('price), "Time Vest Rs - Grant " + acum.toString, "Price")
+          writeInput(elem.asInstanceOf[Model].v('value), "Time Vest Rs - Grant " + acum.toString, "Value")
+          writeInput(elem.asInstanceOf[Model].v('type), "Time Vest Rs - Grant " + acum.toString, "Type")
+          acum + 1
+        }
+        
+        e.c('performanceVestRS).seq.foldLeft(0){ case (acum, elem) => 
+          writeInput(elem.asInstanceOf[Model].v('grantDate), "Performance Vest RS - Grant " + acum.toString, "Grant Date")
+          writeInput(elem.asInstanceOf[Model].v('targetNumber), "Performance Vest RS - Grant " + acum.toString, "Target Value")
+          writeInput(elem.asInstanceOf[Model].v('grantDatePrice), "Performance Vest RS - Grant " + acum.toString, "Grant Date Price")
+          writeInput(elem.asInstanceOf[Model].v('targetValue), "Performance Vest RS - Grant " + acum.toString, "Target Value")
+          writeInput(elem.asInstanceOf[Model].v('type), "Performance Vest RS - Grant " + acum.toString, "Type")
+          acum + 1
+        }
+        
+        e.c('performanceCash).seq.foldLeft(0){ case (acum, elem) => 
+          writeInput(elem.asInstanceOf[Model].v('grantDate), "Performance Cash - Grant " + acum.toString, "Grant Date")
+          writeInput(elem.asInstanceOf[Model].v('targetValue), "Performance Cash - Grant " + acum.toString, "Target Number")
+          writeInput(elem.asInstanceOf[Model].v('payout), "Performance Cash - Grant " + acum.toString, "Payout")
+          acum + 1
+        }
+        
+        writeInput(e.m('carriedInterest).m('ownedShares).v('beneficialOwnership), "Carried Interest - Owned Shares", "Beneficial Ownership")
+        writeInput(e.m('carriedInterest).m('ownedShares).v('options), "Carried Interest - Owned Shares", "Options")
+        writeInput(e.m('carriedInterest).m('ownedShares).v('unvestedRestrictedStock), "Carried Interest - Owned Shares", "Unvested Restricted Stock")
+        writeInput(e.m('carriedInterest).m('ownedShares).v('disclaimBeneficialOwnership), "Carried Interest - Owned Shares", "Disclaim Beneficial Ownership")
+        writeInput(e.m('carriedInterest).m('ownedShares).v('heldByTrust), "Carried Interest - Owned Shares", "Held By Trust")
+        writeInput(e.m('carriedInterest).m('ownedShares).v('other), "Carried Interest - Owned Shares", "Other")
+        
+        writeInput(e.m('carriedInterest).m('outstandingEquityAwards).v('vestedOptions), "Carried Interest - Outstanding Equity Awards", "Vested Options")
+        writeInput(e.m('carriedInterest).m('outstandingEquityAwards).v('unvestedOptions), "Carried Interest - Outstanding Equity Awards", "Unvested Options")
+        writeInput(e.m('carriedInterest).m('outstandingEquityAwards).v('timeVestRS), "Carried Interest - Outstanding Equity Awards", "Time Vest RS")
+        writeInput(e.m('carriedInterest).m('outstandingEquityAwards).v('perfVestRS), "Carried Interest - Outstanding Equity Awards", "Perf Vest RS")
+        
       }
 
     }
