@@ -46,6 +46,7 @@ case class TWithDefault[A](tValue: TValue[A], defaultValue: A) extends TValue[A]
 case object TString extends TValue[String]
 case object TInt extends TValue[Int]
 case object TBool extends TValue[Boolean]
+case object TXBool extends TValue[Boolean]
 case object TDate extends TValue[Date]
 case object TNumber extends TValue[BigDecimal]
 case class TEnum(values: String*) extends TValue[String] {

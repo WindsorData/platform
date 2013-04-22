@@ -2,10 +2,9 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import input.SpreadsheetReader
 import java.io.InputStream
 import util.Closeables
-import util.FileManager
+import util.FileManager._
 import java.io.FileInputStream
 import com.mongodb.casbah.MongoClient
 import input.SpreadsheetWriter
@@ -17,6 +16,7 @@ import persistence._
 import model._
 import views.html.defaultpages.badRequest
 import libt.Model
+import model.mapping._
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
@@ -37,7 +37,7 @@ object Application extends Controller {
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
       try {
-        val companies = FileManager.loadSpreadsheet(dataset.ref.file.getAbsolutePath)
+        val companies = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
         companies.foreach(updateCompany(_))
         Ok(views.html.companyUploadSuccess())
       } catch {

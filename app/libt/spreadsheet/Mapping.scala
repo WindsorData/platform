@@ -35,12 +35,18 @@ case class Feature(path: Path) extends Column {
     case TWithDefault(baseReader, default) => WithDefaultReader(featureReader(baseReader), default)
     case TInt => ???
     case TBool => ???
-    case TDate => ???
+    case TXBool => XBoolReader
+    case TDate => DateReader
   }
+}
+
+object Feature {
+  def apply(pathParts: PathPart*) : Feature = Feature(pathParts.toList) 
 }
 
 /**A column whose value is not important and should be skipped*/
 case object Gap extends Column {
+  
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
     reader.skip(1)
 }

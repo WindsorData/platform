@@ -12,17 +12,17 @@ import libt.TEnum
 import libt.Value
 import libt.TModel
 import org.apache.poi.ss.usermodel.Sheet
+import libt.spreadsheet.reader.Offset
 
 class TReader(
   mapping: Mapping,
-  schema: TElement,
-  width: Int = 10,
-  heigth: Int = 10) {
-  
-  def read(sheet: Sheet): Seq[Model] =
+  schema: TElement) {
+    
+  def read(sheet: Sheet): Seq[Model] = 
+
     sheet.rows.grouped(6).map { inputGroup =>
       val modelBuilder = new ModelBuilder()
-      val reader = new ColumnOrientedReader(inputGroup)
+      val reader = new ColumnOrientedReader(0, inputGroup)
 
       for (column <- mapping.columns)
         column.read(reader, schema, modelBuilder)

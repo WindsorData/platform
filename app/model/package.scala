@@ -1,4 +1,13 @@
 import libt._
+import libt.spreadsheet._
+import input._
+import scala.collection.immutable.Stream
+import org.apache.poi.ss.usermodel.Row
+import org.joda.time.DateTime
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Cell
+import org.apache.poi.ss.usermodel.Workbook
+
 package object model {
   import persistence._
 
@@ -66,83 +75,86 @@ package object model {
     "Vice Chairman",
     "Director")
 
+  val TExecutive = TModel(
+    'firstName -> TString,
+    'lastName -> TString,
+    'title -> TString,
+    'functionalMatches ->
+      TModel(
+        'primary -> validPrimaryValues,
+        'secondary -> validSecondaryValues,
+        'level -> validLevelValues,
+        'scope -> validScopeValues,
+        'bod -> validBodValues),
+    'founder -> TString,
+    'transitionPeriod -> TString,
+
+    'cashCompensations -> TModel(
+      'baseSalary -> TNumber,
+      'actualBonus -> TNumber,
+      'retentionBonus -> TNumber,
+      'signOnBonus -> TNumber,
+      'targetBonus -> TNumber,
+      'thresholdBonus -> TNumber,
+      'maxBonus -> TNumber,
+      'nextFiscalYearData -> TModel(
+        'baseSalary -> TNumber,
+        'targetBonus -> TNumber)),
+
+    'optionGrants -> TCol(
+      TModel(
+        'grantDate -> TDate,
+        'expireDate -> TDate,
+        'number -> TNumber,
+        'price -> TNumber,
+        'value -> TNumber,
+        'perf -> TXBool,
+        'type -> grantTypes)),
+
+    'timeVestRS -> TCol(
+      TModel(
+        'grantDate -> TDate,
+        'number -> TNumber,
+        'price -> TNumber,
+        'value -> TNumber,
+        'type -> grantTypes)),
+
+    'performanceVestRS -> TCol(
+      TModel(
+        'grantDate -> TDate,
+        'targetNumber -> TNumber,
+        'grantDatePrice -> TDate,
+        'targetValue -> TNumber,
+        'type -> grantTypes)),
+
+    'performanceCash -> TCol(
+      TModel(
+        'grantDate -> TDate,
+        'targetValue -> TNumber,
+        'payout -> TNumber)),
+
+    'carriedInterest -> TModel(
+      'ownedShares -> TModel(
+        'beneficialOwnership -> TNumber,
+        'options -> TNumber,
+        'unvestedRestrictedStock -> TNumber,
+        'disclaimBeneficialOwnership -> TNumber,
+        'heldByTrust -> TNumber,
+        'other -> TString),
+      'outstandingEquityAwards -> TModel(
+        'vestedOptions -> TNumber,
+        'unvestedOptions -> TNumber,
+        'timeVestRS -> TNumber,
+        'perfVestRS -> TNumber)))
+
   val TCompanyFiscalYear = TModel(
     'ticker -> TString,
     'name -> TString,
     'disclosureFiscalYear -> TInt,
 
-    'executives -> TCol(
-      TModel(
-        'firstName -> TString,
-        'lastName -> TString,
-        'title -> TString,
-        'functionalMatches ->
-          TModel(
-            'primary -> validPrimaryValues,
-            'secondary -> validSecondaryValues,
-            'level -> validLevelValues,
-            'scope -> validScopeValues,
-            'bod -> validBodValues),
-        'founder -> TString,
-        'transitionPeriod -> TString,
+    'executives -> TCol(TExecutive))
 
-        'cashCompensations -> TModel(
-          'baseSalary -> TNumber,
-          'actualBonus -> TNumber,
-          'retentionBonus -> TNumber,
-          'signOnBonus -> TNumber,
-          'targetBonus -> TNumber,
-          'thresholdBonus -> TNumber,
-          'maxBonus -> TNumber,
-          'nextFiscalYearData -> TModel(
-            'baseSalary -> TNumber,
-            'targetBonus -> TNumber)),
-
-        'optionGrants -> TCol(
-          TModel(
-            'grantDate -> TDate,
-            'expireDate -> TDate,
-            'number -> TNumber,
-            'price -> TNumber,
-            'value -> TNumber,
-            'perf -> TWithDefault(TString, ""),
-            'type -> grantTypes)),
-
-        'timeVestRS -> TCol(
-          TModel(
-            'grantDate -> TDate,
-            'number -> TNumber,
-            'price -> TNumber,
-            'value -> TNumber,
-            'type -> grantTypes)),
-
-        'performanceVestRS -> TCol(
-          TModel(
-            'grantDate -> TDate,
-            'targetNumber -> TNumber,
-            'grantDatePrice -> TDate,
-            'targetValue -> TNumber,
-            'type -> grantTypes)),
-
-        'performanceCash -> TCol(
-          TModel(
-            'grantDate -> TDate,
-            'targetValue -> TNumber,
-            'payout -> TNumber)),
-
-        'carriedInterest -> TModel(
-          'ownedShares -> TModel(
-            'beneficialOwnership -> TNumber,
-            'options -> TNumber,
-            'unvestedRestrictedStock -> TNumber,
-            'disclaimBeneficialOwnership -> TNumber,
-            'heldByTrust -> TNumber,
-            'other -> TString),
-          'outstandingEquityAwards -> TModel(
-            'vestedOptions -> TNumber,
-            'unvestedOptions -> TNumber,
-            'timeVestRS -> TNumber,
-            'perfVestRS -> TNumber)))))
+ 
 }
 
 

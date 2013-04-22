@@ -113,13 +113,13 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
       val mapping = Mapping(Gap, Feature(Path('foo)))
       val result = schema.read(mapping, sheet)
-      assert(result === Seq(Model('foo ->
+      assert(result.head === Model('foo ->
         Value(
           Some("value"),
           Some("calc"),
           Some("comment"),
           Some("not"),
-          Some("link")))))
+          Some("link"))))
     }
 
     it("should let read sheets with enum values") {

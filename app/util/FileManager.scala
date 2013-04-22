@@ -2,12 +2,13 @@ package util
 
 import java.io.InputStream
 import java.io.FileInputStream
-import input.SpreadsheetReader
 import input.SpreadsheetWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
 import model._
 import libt.Model
+import libt.spreadsheet.reader.WorkbookReader
+import libt.spreadsheet.reader.WorkbookReader
 
 object FileManager {
 
@@ -18,6 +19,13 @@ object FileManager {
     }
   }
   
+  implicit def reader2RichReader[A](wb: WorkbookReader[A]) = new {
+    def read(filePath: String): A =
+    load(filePath) { x =>
+      wb.read(x)
+    }
+  }
+  
   def write[T](name: String)(action: OutputStream => T) = {
     import Closeables._
     new FileOutputStream(name).processWith {
@@ -25,12 +33,6 @@ object FileManager {
     }
   }
 
-  def loadSpreadsheet(name: String) = {
-    load(name) { x =>
-      SpreadsheetReader.read(x)
-    }
-  }
-  
   def generateNewFileWith(name: String, company: Model) = {
     write(name) { x => 
       SpreadsheetWriter.write(x, Seq(company))
