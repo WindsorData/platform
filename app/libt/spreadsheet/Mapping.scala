@@ -14,20 +14,7 @@ import libt.spreadsheet.util._
  * @author flbulgarelli
  * @author metalkorva
  */
-case class Mapping(columns: Column*) {
-    def read(schema: TElement, sheet: Sheet): Seq[Model] = 
-
-    sheet.rows.grouped(6).map { inputGroup =>
-      val modelBuilder = new ModelBuilder()
-      val reader = new ColumnOrientedReader(0, inputGroup)
-
-      for (column <- columns)
-        column.read(reader, schema, modelBuilder)
-
-      modelBuilder.build
-    }.toSeq
-  
-} //TODO output
+case class Mapping(columns: Column*) //TODO output
 
 /**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap

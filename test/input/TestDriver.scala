@@ -95,24 +95,24 @@ class TestDriver extends FunSpec {
     it("should let read empty sheets using empty mappings ") {
       val schema = TModel()
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
-      val mapping = Mapping()
-      val result: Seq[Model] = mapping.read(schema, sheet)
+      val area = TestArea(schema, Mapping())
+      val result: Seq[Model] = area.read(sheet)
       assert(result === Seq(Model()))
     }
 
     it("should let read empty sheets using non-empty mappings ") {
       val schema = TModel('foo -> TString)
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
-      val mapping = Mapping(Feature(Path('foo)))
-      val result = mapping.read(schema, sheet)
+      val area = TestArea(schema, Mapping(Feature(Path('foo))))
+      val result = area.read(sheet)
       assert(result === Seq(Model('foo -> Value())))
     }
 
     it("should let read non-empty sheets using non-empty mappings ") {
       val schema = TModel('foo -> TString)
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
-      val mapping = Mapping(Gap, Feature(Path('foo)))
-      val result = mapping.read(schema, sheet)
+      val area = TestArea(schema, Mapping(Gap, Feature(Path('foo))))
+      val result = area.read(sheet)
       assert(result.head === Model('foo ->
         Value(
           Some("value"),
@@ -125,8 +125,8 @@ class TestDriver extends FunSpec {
     it("should let read sheets with enum values") {
       val schema = TModel('foo -> TEnum("foo", "value"))
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("foo", "calc", "comment", "not", "link")
-      val mapping = Mapping(Gap, Feature(Path('foo)))
-      mapping.read(schema, sheet)
+      val area = TestArea(schema, Mapping(Gap, Feature(Path('foo))))
+      area.read(sheet)
     }
   }
 
@@ -154,11 +154,11 @@ class TestDriver extends FunSpec {
     it("should be able to convert blank cells to None") {
       val sheet = makeEmptyDataItem
       val schema = TModel('aField -> TString)
-      val mapping = Mapping(
+      val area = TestArea(schema, Mapping(
         Gap,
-        Feature(Path('aField)))
+        Feature(Path('aField))))
 
-      val result = mapping.read(schema, sheet)
+      val result = area.read(sheet)
       assert(result === Seq(Model('aField -> Value())))
 
     }
@@ -172,7 +172,7 @@ class TestDriver extends FunSpec {
           'value4 -> TString
           )))
           
-      val mapping = Mapping(
+      val area = TestArea(schema, Mapping(
           Feature(Path('models, 0, 'value1)),
           Feature(Path('models, 0, 'value2)),
           Feature(Path('models, 0, 'value3)),
@@ -181,9 +181,9 @@ class TestDriver extends FunSpec {
           Feature(Path('models, 1, 'value2)),
           Feature(Path('models, 1, 'value3)),
           Feature(Path('models, 1, 'value4))
-          )
+          ))
           
-      val result = mapping.read(schema, sheet)
+      val result = area.read(sheet)
       assert(result === Seq(Model('models -> Col(
           Model(
           'value1 -> Value("model1-value1"),
@@ -204,13 +204,16 @@ class TestDriver extends FunSpec {
     it("should be able to convert blank cells to a given default value") {
       val sheet = makeEmptyDataItem
       val schema = TModel('aField -> TWithDefault(TString, "BLANK"))
-      val mapping = Mapping(
+      val area = TestArea(schema, Mapping(
           Gap,
-          Feature(Path('aField)))
-      val result = mapping.read(schema, sheet)
+          Feature(Path('aField))))
+      val result = area.read(sheet)
       assert(result === Seq(Model('aField -> Value("BLANK"))))
     }
   }
+
+  def TestArea(schema: TModel, mapping: Mapping) =
+    Area(schema, Offset(0, 0), ColumnOrientation, mapping)
 
   //  describe("mapper for output marshalling") {
   //    it("should write a single numeric value") {
