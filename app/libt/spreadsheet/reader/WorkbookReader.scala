@@ -32,28 +32,28 @@ trait Combiner[A] {
 case class Offset(rowIndex: Int, columnIndex: Int)
 
 sealed trait Orientation {
-  def read(schema: TModel, mapping: Mapping, sheet: Sheet, offset: Offset): Seq[Model]
+  def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model]
 
-  def makeModels(schema: TModel, mapping: Mapping, rows: Seq[Row], orientation: Seq[Row] => CellReader): Model = {
+  def makeModels(schema: TModel, columns: Seq[Column], rows: Seq[Row], orientation: Seq[Row] => CellReader): Model = {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
-    for (column <- mapping.columns)
+    for (column <- columns)
       column.read(reader, schema, modelBuilder)
     modelBuilder.build
   }
 }
 object RowOrientation extends Orientation {
   import libt.spreadsheet.util._
-  override def read(schema: TModel, mapping: Mapping, sheet: Sheet, offset: Offset): Seq[Model] = {
-    Seq(makeModels(schema, mapping, sheet.rows, new RowOrientedReader(offset, _)))
+  override def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model] = {
+    Seq(makeModels(schema, columns, sheet.rows, new RowOrientedReader(offset, _)))
   }
 }
 
 object ColumnOrientation extends Orientation {
   import libt.spreadsheet.util._
-  override def read(schema: TModel, mapping: Mapping, sheet: Sheet, offset: Offset): Seq[Model] = {
+  override def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model] = {
     sheet.rows.drop(offset.rowIndex).grouped(6).map { rows =>
-      makeModels(schema, mapping, rows, new ColumnOrientedReader(offset.columnIndex, _))
+      makeModels(schema, columns, rows, new ColumnOrientedReader(offset.columnIndex, _))
     }.toSeq
   }
 }
@@ -62,11 +62,18 @@ sealed trait SheetDefinition {
   def read(sheet: Sheet): Seq[Model]
 }
 
-case class Area(schema: TModel, offset: Offset, orientation: Orientation, mapper: Mapping) extends SheetDefinition {
+/**
+ * A declarative description of a mapping of a Model to an
+ * Excel file, for both reading from and writing to it
+ *
+ * @author flbulgarelli
+ * @author metalkorva
+ */
+case class Area(schema: TModel, offset: Offset, orientation: Orientation, columns: Seq[Column]) extends SheetDefinition {
   import libt.spreadsheet.util._
 
   def read(sheet: Sheet): Seq[Model] =
-    orientation.read(schema, mapper, sheet, offset)
+    orientation.read(schema, columns, sheet, offset)
 
   def continually = Stream.continually[SheetDefinition](this)
 }

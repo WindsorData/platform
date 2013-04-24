@@ -8,15 +8,6 @@ import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
 
 /**
- * A declarative description of a mapping of a Model to an
- * Excel file, for both reading from and writing to it
- *
- * @author flbulgarelli
- * @author metalkorva
- */
-case class Mapping(columns: Column*) //TODO output
-
-/**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
  */
 sealed trait Column {

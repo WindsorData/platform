@@ -73,29 +73,29 @@ class WorkbookReaderSpec extends FunSpec {
     it("should be able to create single sheet workbookreader") {
       new WorkbookReader(
         WorkbookMapping(
-          Seq(Area(TModel(), Offset(0, 0), ColumnOrientation, Mapping()))),
+          Seq(Area(TModel(), Offset(0, 0), ColumnOrientation, Seq()))),
         new IdentityCombiner)
     }
 
     it("should be able to create multiple sheets workbookreader") {
       new WorkbookReader(
         WorkbookMapping(
-          Area(TModel(), Offset(0, 0), ColumnOrientation, Mapping())
+          Area(TModel(), Offset(0, 0), ColumnOrientation, Seq())
             #::
-            Stream.continually(Area(TModel(), Offset(1, 1), RowOrientation, Mapping()))),
+            Stream.continually(Area(TModel(), Offset(1, 1), RowOrientation, Seq()))),
         new IdentityCombiner)
     }
 
     it("should be able to create multiple sheets workbookreader with gaps") {
       new WorkbookReader(
         WorkbookMapping(
-          Area(TModel(), Offset(0, 0), ColumnOrientation, Mapping())
+          Area(TModel(), Offset(0, 0), ColumnOrientation, Seq())
             #::
             AreaGap
             #::
             AreaGap
             #::
-            Area(TModel(), Offset(1, 1), RowOrientation, Mapping()).continually),
+            Area(TModel(), Offset(1, 1), RowOrientation, Seq()).continually),
         new IdentityCombiner())
     }
   }
@@ -107,7 +107,7 @@ class WorkbookReaderSpec extends FunSpec {
       val workbook = createNewSingleSheetWorkbook.addSingleColumnOrientedValue(2, "a")
       val reader = new WorkbookReader(
         WorkbookMapping(
-          Seq(Area(TModel('a -> TString),Offset(0, 2), ColumnOrientation, Mapping(Feature(Path('a)))))),
+          Seq(Area(TModel('a -> TString),Offset(0, 2), ColumnOrientation, Seq(Feature(Path('a)))))),
         new IdentityCombiner)
       val result = reader.read(workbook)
 
@@ -118,7 +118,7 @@ class WorkbookReaderSpec extends FunSpec {
       import MyWorkbookFactory._
       val result = new WorkbookReader(
         WorkbookMapping(
-          Seq(Area(TModel('a -> TString, 'b -> TString),Offset(0, 0), ColumnOrientation, Mapping(Feature(Path('a)), Feature(Path('b)))))),
+          Seq(Area(TModel('a -> TString, 'b -> TString),Offset(0, 0), ColumnOrientation, Seq(Feature(Path('a)), Feature(Path('b)))))),
         new IdentityCombiner)
         .read(createNewSingleSheetWorkbook
           .addSingleColumnOrientedValue(0, "a")
@@ -133,7 +133,7 @@ class WorkbookReaderSpec extends FunSpec {
 
       val result = new WorkbookReader(
         WorkbookMapping(
-          Seq(Area(TModel('a -> TString), Offset(1, 0), RowOrientation, Mapping(Feature(Path('a)))))),
+          Seq(Area(TModel('a -> TString), Offset(1, 0), RowOrientation, Seq(Feature(Path('a)))))),
         new IdentityCombiner).read(workbook)
 
       import libt.spreadsheet.util._

@@ -18,7 +18,7 @@ package object mapping {
   def colOfModelsPath(basePath: Symbol, times: Int, paths: Symbol*): Seq[Column] =
     for (index <- 0 to times; valuePath <- paths) yield Feature(Path(basePath, index, valuePath))
 
-  val executiveMapping = Mapping(
+  val executiveMapping = 
     Seq[Column](Path('firstName),
       Path('lastName),
       Path('title),
@@ -38,16 +38,11 @@ package object mapping {
       Path('cashCompensations, 'thresholdBonus),
       Path('cashCompensations, 'maxBonus),
       Path('cashCompensations, 'nextFiscalYearData, 'baseSalary),
-      Path('cashCompensations, 'nextFiscalYearData, 'targetBonus))
-      ++
-      colOfModelsPath('optionGrants, 5, 'grantDate, 'expireDate, 'number, 'price, 'value, 'perf, 'type)
-      ++
-      colOfModelsPath('timeVestRS, 5, 'grantDate, 'number, 'price, 'value, 'type)
-      ++
-      colOfModelsPath('performanceVestRS, 2, 'grantDate, 'targetNumber, 'grantDatePrice, 'targetValue, 'type)
-      ++
-      colOfModelsPath('performanceCash, 2, 'grantDate, 'targetValue, 'payout)
-      ++
+      Path('cashCompensations, 'nextFiscalYearData, 'targetBonus)) ++
+      colOfModelsPath('optionGrants, 5, 'grantDate, 'expireDate, 'number, 'price, 'value, 'perf, 'type) ++
+      colOfModelsPath('timeVestRS, 5, 'grantDate, 'number, 'price, 'value, 'type) ++
+      colOfModelsPath('performanceVestRS, 2, 'grantDate, 'targetNumber, 'grantDatePrice, 'targetValue, 'type) ++
+      colOfModelsPath('performanceCash, 2, 'grantDate, 'targetValue, 'payout) ++
       Seq[Column](
         Path('carriedInterest, 'ownedShares, 'beneficialOwnership),
         Path('carriedInterest, 'ownedShares, 'options),
@@ -58,7 +53,7 @@ package object mapping {
         Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions),
         Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions),
         Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
-        Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS)): _*)
+        Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
 
   class CompanyFiscalYearCombiner extends Combiner[Seq[Model]] {
     import scala.collection.JavaConversions._
@@ -107,7 +102,7 @@ package object mapping {
 
   val CompanyFiscalYearReader = new WorkbookReader(
     WorkbookMapping(
-      Area(TCompanyFiscalYear, Offset(2, 2), RowOrientation, Mapping(Feature(Path('ticker)), Feature(Path('name))))
+      Area(TCompanyFiscalYear, Offset(2, 2), RowOrientation, Seq(Feature(Path('ticker)), Feature(Path('name))))
         #::
         AreaGap
         #::
