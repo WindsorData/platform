@@ -96,7 +96,7 @@ class TestDriver extends FunSpec {
       val schema = TModel()
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val mapping = Mapping()
-      val result: Seq[Model] = schema.read(mapping, sheet)
+      val result: Seq[Model] = mapping.read(schema, sheet)
       assert(result === Seq(Model()))
     }
 
@@ -104,7 +104,7 @@ class TestDriver extends FunSpec {
       val schema = TModel('foo -> TString)
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val mapping = Mapping(Feature(Path('foo)))
-      val result = schema.read(mapping, sheet)
+      val result = mapping.read(schema, sheet)
       assert(result === Seq(Model('foo -> Value())))
     }
 
@@ -112,7 +112,7 @@ class TestDriver extends FunSpec {
       val schema = TModel('foo -> TString)
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
       val mapping = Mapping(Gap, Feature(Path('foo)))
-      val result = schema.read(mapping, sheet)
+      val result = mapping.read(schema, sheet)
       assert(result.head === Model('foo ->
         Value(
           Some("value"),
@@ -126,7 +126,7 @@ class TestDriver extends FunSpec {
       val schema = TModel('foo -> TEnum("foo", "value"))
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("foo", "calc", "comment", "not", "link")
       val mapping = Mapping(Gap, Feature(Path('foo)))
-      schema.read(mapping, sheet)
+      mapping.read(schema, sheet)
     }
   }
 
@@ -158,7 +158,7 @@ class TestDriver extends FunSpec {
         Gap,
         Feature(Path('aField)))
 
-      val result = schema.read(mapping, sheet)
+      val result = mapping.read(schema, sheet)
       assert(result === Seq(Model('aField -> Value())))
 
     }
@@ -183,7 +183,7 @@ class TestDriver extends FunSpec {
           Feature(Path('models, 1, 'value4))
           )
           
-      val result = schema.read(mapping, sheet)
+      val result = mapping.read(schema, sheet)
       assert(result === Seq(Model('models -> Col(
           Model(
           'value1 -> Value("model1-value1"),
@@ -207,7 +207,7 @@ class TestDriver extends FunSpec {
       val mapping = Mapping(
           Gap,
           Feature(Path('aField)))
-      val result = schema.read(mapping, sheet)
+      val result = mapping.read(schema, sheet)
       assert(result === Seq(Model('aField -> Value("BLANK"))))
     }
   }
