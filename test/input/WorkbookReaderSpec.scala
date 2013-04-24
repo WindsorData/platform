@@ -73,7 +73,7 @@ class WorkbookReaderSpec extends FunSpec {
     it("should be able to create single sheet workbookreader") {
       new WorkbookReader(
         WorkbookMapping(
-          Stream(Area(TModel(), Offset(0, 0), ColumnOrientation, Mapping()))),
+          Seq(Area(TModel(), Offset(0, 0), ColumnOrientation, Mapping()))),
         new IdentityCombiner)
     }
 
@@ -96,7 +96,7 @@ class WorkbookReaderSpec extends FunSpec {
             AreaGap
             #::
             Area(TModel(), Offset(1, 1), RowOrientation, Mapping()).continually),
-        new IdentityCombiner)
+        new IdentityCombiner())
     }
   }
 
