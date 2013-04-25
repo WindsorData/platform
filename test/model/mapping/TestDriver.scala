@@ -20,7 +20,7 @@ class TestDriver extends FunSpec {
       val results = new WorkbookReader(
         WorkbookMapping(
           Seq(Area(TCompanyFiscalYear, Offset(2, 2), RowOrientation,
-            Mapping(Feature(Path('ticker)), Feature(Path('name)))))),
+            Seq(Feature(Path('ticker)), Feature(Path('name)))))),
         new CompanyFiscalYearCombiner).read("test/input/CompanyValuesAndNotes.xlsx")
 
       assert(results === Seq())

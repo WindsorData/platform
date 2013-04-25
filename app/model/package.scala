@@ -11,9 +11,9 @@ import org.apache.poi.ss.usermodel.Workbook
 package object model {
   import persistence._
 
-  val grantTypes = TEnum("Annual", "Retention", "Hire", "Promotion", "Special", "Acquisition", "Other")
+  val TGrantTypes = TEnum("Annual", "Retention", "Hire", "Promotion", "Special", "Acquisition", "Other")
 
-  val validPrimaryValues = TEnum("CEO (Chief Executive Officer)",
+  val TPrimaryValues = TEnum("CEO (Chief Executive Officer)",
     "CFO (Chief Financial Officer)",
     "COO (Chief Operating Officer)",
     "Sales",
@@ -35,7 +35,7 @@ package object model {
     "Executive Chairman",
     "Other")
 
-  val validSecondaryValues = TEnum(
+  val TSecondaryValues = TEnum(
     "Sales",
     "Bus Dev (Business Development)",
     "CAO (Chief Admin Officer)",
@@ -55,7 +55,7 @@ package object model {
     "GM (General Manager)",
     "Other")
 
-  val validLevelValues = TEnum(
+  val TLevelValues = TEnum(
     "President",
     "EVP (Executive Vice President)",
     "SVP (Senior Vice President)",
@@ -63,15 +63,15 @@ package object model {
     "GM (General Manager)",
     "Group President")
 
-  val validScopeValues = TEnum(
+  val TScopeValues = TEnum(
     "WW/Global/International",
     "US",
     "North America",
     "Europe",
     "Asia",
     "Americas")
-
-  val validBodValues = TEnum("Chairman",
+    
+  val TBodValues = TEnum("Chairman",
     "Vice Chairman",
     "Director")
 
@@ -81,11 +81,11 @@ package object model {
     'title -> TString,
     'functionalMatches ->
       TModel(
-        'primary -> validPrimaryValues,
-        'secondary -> validSecondaryValues,
-        'level -> validLevelValues,
-        'scope -> validScopeValues,
-        'bod -> validBodValues),
+        'primary -> TPrimaryValues,
+        'secondary -> TSecondaryValues,
+        'level -> TLevelValues,
+        'scope -> TScopeValues,
+        'bod -> TBodValues),
     'founder -> TString,
     'transitionPeriod -> TString,
 
@@ -109,7 +109,7 @@ package object model {
         'price -> TNumber,
         'value -> TNumber,
         'perf -> TXBool,
-        'type -> grantTypes)),
+        'type -> TGrantTypes)),
 
     'timeVestRS -> TCol(
       TModel(
@@ -117,7 +117,7 @@ package object model {
         'number -> TNumber,
         'price -> TNumber,
         'value -> TNumber,
-        'type -> grantTypes)),
+        'type -> TGrantTypes)),
 
     'performanceVestRS -> TCol(
       TModel(
@@ -125,7 +125,7 @@ package object model {
         'targetNumber -> TNumber,
         'grantDatePrice -> TDate,
         'targetValue -> TNumber,
-        'type -> grantTypes)),
+        'type -> TGrantTypes)),
 
     'performanceCash -> TCol(
       TModel(

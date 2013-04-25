@@ -95,24 +95,24 @@ class TestDriver extends FunSpec {
     it("should let read empty sheets using empty mappings ") {
       val schema = TModel()
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
-      val mapping = Mapping()
-      val result: Seq[Model] = schema.read(mapping, sheet)
+      val area = TestArea(schema, Seq())
+      val result: Seq[Model] = area.read(sheet)
       assert(result === Seq(Model()))
     }
 
     it("should let read empty sheets using non-empty mappings ") {
       val schema = TModel('foo -> TString)
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
-      val mapping = Mapping(Feature(Path('foo)))
-      val result = schema.read(mapping, sheet)
+      val area = TestArea(schema, Seq(Feature(Path('foo))))
+      val result = area.read(sheet)
       assert(result === Seq(Model('foo -> Value())))
     }
 
     it("should let read non-empty sheets using non-empty mappings ") {
       val schema = TModel('foo -> TString)
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
-      val mapping = Mapping(Gap, Feature(Path('foo)))
-      val result = schema.read(mapping, sheet)
+      val area = TestArea(schema, Seq(Gap, Feature(Path('foo))))
+      val result = area.read(sheet)
       assert(result.head === Model('foo ->
         Value(
           Some("value"),
@@ -125,26 +125,8 @@ class TestDriver extends FunSpec {
     it("should let read sheets with enum values") {
       val schema = TModel('foo -> TEnum("foo", "value"))
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("foo", "calc", "comment", "not", "link")
-      val mapping = Mapping(Gap, Feature(Path('foo)))
-      schema.read(mapping, sheet)
-    }
-  }
-
-  describe("mapper creation") {
-
-    it("should be able to create empty mappers") {
-      Mapping()
-    }
-
-    it("should be able to create mappers with a single Integer Feature") {
-      Mapping(Feature(Path('a)))
-    }
-
-    it("should be able to describe gaps") {
-      Mapping(
-        Feature(Path('a)),
-        Gap,
-        Gap)
+      val area = TestArea(schema, Seq(Gap, Feature(Path('foo))))
+      area.read(sheet)
     }
   }
 
@@ -154,11 +136,11 @@ class TestDriver extends FunSpec {
     it("should be able to convert blank cells to None") {
       val sheet = makeEmptyDataItem
       val schema = TModel('aField -> TString)
-      val mapping = Mapping(
+      val area = TestArea(schema, Seq(
         Gap,
-        Feature(Path('aField)))
+        Feature(Path('aField))))
 
-      val result = schema.read(mapping, sheet)
+      val result = area.read(sheet)
       assert(result === Seq(Model('aField -> Value())))
 
     }
@@ -172,7 +154,7 @@ class TestDriver extends FunSpec {
           'value4 -> TString
           )))
           
-      val mapping = Mapping(
+      val area = TestArea(schema, Seq(
           Feature(Path('models, 0, 'value1)),
           Feature(Path('models, 0, 'value2)),
           Feature(Path('models, 0, 'value3)),
@@ -181,9 +163,9 @@ class TestDriver extends FunSpec {
           Feature(Path('models, 1, 'value2)),
           Feature(Path('models, 1, 'value3)),
           Feature(Path('models, 1, 'value4))
-          )
+          ))
           
-      val result = schema.read(mapping, sheet)
+      val result = area.read(sheet)
       assert(result === Seq(Model('models -> Col(
           Model(
           'value1 -> Value("model1-value1"),
@@ -204,13 +186,16 @@ class TestDriver extends FunSpec {
     it("should be able to convert blank cells to a given default value") {
       val sheet = makeEmptyDataItem
       val schema = TModel('aField -> TWithDefault(TString, "BLANK"))
-      val mapping = Mapping(
+      val area = TestArea(schema, Seq(
           Gap,
-          Feature(Path('aField)))
-      val result = schema.read(mapping, sheet)
+          Feature(Path('aField))))
+      val result = area.read(sheet)
       assert(result === Seq(Model('aField -> Value("BLANK"))))
     }
   }
+
+  def TestArea(schema: TModel, mapping: Seq[Column]) =
+    Area(schema, Offset(0, 0), ColumnOrientation, mapping)
 
   //  describe("mapper for output marshalling") {
   //    it("should write a single numeric value") {

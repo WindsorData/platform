@@ -3,15 +3,9 @@ package libt.spreadsheet
 import libt._
 import builder._
 import reader._
+import org.apache.poi.ss.usermodel.Sheet
 
-/**
- * A declarative description of a mapping of a Model to an
- * Excel file, for both reading from and writing to it
- *
- * @author flbulgarelli
- * @author metalkorva
- */
-case class Mapping(columns: Column*) //TODO output
+import libt.spreadsheet.util._
 
 /**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
