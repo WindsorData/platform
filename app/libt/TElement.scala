@@ -14,12 +14,19 @@ sealed trait TElement {
    * Answers the TValue element for a path that points to a TValue.
    * Fails if the path points to something else
    * */
-  def apply(path: Path): TValue[_]
+  def apply(path : Path) : TElement = umatch((path, this)) {
+    case (Nil, _) => this
+    case (Index(_) :: tail, self : TCol) => self.tElement(tail)
+    case (Route(field) :: tail, self : TModel) => self(field)(tail)
+  }
+  
   /**
    * Validates the given element using this TElement as schema,
    * by failing if it does not conform to this TElement  
    * */
   def validate(element: Element) = ()
+  
+  def asValue[A] = asInstanceOf[TValue[A]]
 }
 
 /**
@@ -62,9 +69,6 @@ case class TEnum(values: String*) extends TValue[String] {
  * @author flbulgarelli
  */
 case class TCol(tElement: TElement) extends TElement {
-  override def apply(path: Path) = umatch(path) {
-    case Index(_) :: tail => tElement(tail)
-  }
   override def validate(element: Element) = umatch(element) {
     case c: Col => c.elements.foreach(tElement.validate(_))
   }
@@ -77,10 +81,8 @@ case class TCol(tElement: TElement) extends TElement {
 case class TModel(elements: (Symbol, TElement)*) extends TElement {
   private val elementsMap = elements.toMap
 
-  override def apply(path: Path) = umatch(path ) {
-    case Route(field) :: tail => elementsMap(field)(tail)
-  }
-
+  def apply(key:Symbol) = elementsMap(key)
+  
   override def validate(element: Element) = umatch(element) {
     case m: Model => elements.foreach {
       case (field, telement) => telement.validate(m(field))

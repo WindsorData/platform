@@ -2,13 +2,14 @@ package util
 
 import java.io.InputStream
 import java.io.FileInputStream
-import input.SpreadsheetWriter
+import output.SpreadsheetWriter
 import java.io.FileOutputStream
 import java.io.OutputStream
 import model._
 import libt.Model
 import libt.spreadsheet.reader.WorkbookReader
 import libt.spreadsheet.reader.WorkbookReader
+import output.SpreadsheetWriter
 
 object FileManager {
 

@@ -1,5 +1,7 @@
 package libt
 import sys.error
+import util._
+import output.PK
 
 /**
  * @author flbulgarelli
@@ -27,9 +29,20 @@ sealed trait Element {
    * 
    * This method only works for keyed elements - Models.
    * */
-  def c(key : Symbol) = m(key).asInstanceOf[Col].elements
+  def c(key : Symbol) = m(key).asCol.elements
   def mc(key : Symbol)(pos : Int) = c(key)(pos).asInstanceOf[Model]
-  def vc[A](key : Symbol)(pos : Int) = c(key)(pos).asInstanceOf[Value[A]]
+  def vc[A](key : Symbol)(pos : Int) = c(key)(pos).asValue[A]
+  
+  def apply(path : Path) : Element = umatch((path, this)) {
+    case (Nil, _) => this
+    case (Index(i) :: tail, self : Col) => self(i)(tail)
+    case (Route(field) :: tail, self : Model) => self(field)(tail)
+  }
+  
+  //TODO Philosoraptor asks: should we use pattern matching or cast ?
+  def asValue[A] = asInstanceOf[Value[A]]
+  def asCol = asInstanceOf[Col]
+  def asModel = asInstanceOf[Model]
 }
 
 /**
@@ -41,6 +54,9 @@ case class Value[A](
   comment: Option[String],
   note: Option[String],
   link: Option[String]) extends Element {
+  
+  def contains(rawValue : A) = 
+    value.exists(_ == rawValue)
   
   /**Maps over the value*/
   def map[B](f: A => B) =
@@ -62,12 +78,20 @@ object Value {
     note: Option[String],
     link: Option[String]): Value[A] = Value(value, None, None, note, link)
 }
-case class Col(elements: Element*) extends Element
+case class Col(elements: Element*) extends Element {
+  def apply(index: Int) = elements(index)
+}
 
 case class Model(elements: Set[(Symbol, Element)]) extends Element {
   private val elementsMap = elements.toMap
   def apply(key: Symbol) = elementsMap(key)
   override def m(key: Symbol) = this(key)
+  
+  def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
+    for (element <- this(flatteningPath).asCol.elements)
+      yield element.asModel ++ Model(rootPk.elements.map(path => (path.last.routeValue -> this(path))).toSet)
+  
+  def ++(other: Model) = Model(elements ++ other.elements)
 }
 object Model {
   def apply(elements : (Symbol, Element)*) : Model = Model(elements.toSet)

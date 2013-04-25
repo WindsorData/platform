@@ -11,14 +11,17 @@ object ApplicationBuild extends Build {
      "org.apache.poi" % "poi" % "3.9",
      "org.apache.poi" % "poi-ooxml" % "3.9",
      "org.apache.poi" % "poi-ooxml-schemas" % "3.9",
-     "junit" % "junit" % "4.8.1" % "test",
+     "org.mongodb" %% "casbah" % "2.5.0",
      "org.scalatest" % "scalatest_2.10.0-RC5" % "2.0.M5-B1",
-     "org.mongodb" %% "casbah" % "2.5.0"
+     "junit" % "junit" % "4.8.1" % "test",
+     "org.scalamock" %% "scalamock-scalatest-support" % "3.0.1" % "test"
 //     anorm,
 //     jdbc
   )
 
 
+
+  
   val main = play.Project(appName, appVersion, appDependencies).settings(
     // Add your own project settings here      
   )
