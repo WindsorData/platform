@@ -112,7 +112,7 @@ object SpreadsheetWriter {
     WorkbookMapping(Seq(
       FlattedArea(
         PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
-        //        flattenLevelPrimaryKey = PK(Path('lastName)),
+        PK(Path('lastName)),
         Path('executives),
         TCompanyFiscalYear,
         Seq(

@@ -67,6 +67,9 @@ case class Value[A](
       this
     else
       Value(Some(alternative), calc, comment, note, link)
+
+  /**Answers the seq of metadata elements of this value*/
+  def metadataSeq = Seq(calc, comment, note, link)   
 }
 object Value {
   

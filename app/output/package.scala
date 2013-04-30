@@ -6,11 +6,13 @@ import libt.spreadsheet.util._
 import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet.Feature
 import libt.spreadsheet.writer.CellWriter
+import libt.spreadsheet.writer.RowOrientedWriter
 
 package output {
   //TODO refactor packages
   case class FlattedArea(
-    rootPrimaryKey: PK,
+    rootPK: PK,
+    flatteningPK: PK,
     flatteningPath: Path,
     schema: TModel,
     columns: Seq[Column]) extends SheetDefinition {
@@ -27,24 +29,52 @@ package output {
     def read(sheet: Sheet): Seq[Model] = ???
 
     def write(models: Seq[Model])(sheet: Sheet) {
-      defineSheetLimits(sheet, models.size * 5, columns.size)
+      defineSheetLimits(sheet, models.size * 5, columns.size) //TODO why by 5??
 
-      sheet.rows.zip(Model.flattenWith(models, rootPrimaryKey, flatteningPath)).foreach {
+      sheet.rows.zip(Model.flattenWith(models, rootPK, flatteningPath)).foreach {
         case (row, flattedModel) => {
-          val writer = new FlatterModelWriter(
+          val writer = new FlattedModelWriter(
             new ColumnOrientedWriter(row),
             flattedModel)
-          writer.writeHeaders
-          writer.writeFlattedModel
+          writer.writeRootPKHeaders
+          writer.writeFlattedModelFeatures
         }
       }
     }
 
-    class FlatterModelWriter(writer: CellWriter, flattedModel: Model) {
-      def writeHeaders =
-        rootPrimaryKey.map(Feature(_)).foreach(_.write(writer, schema, flattedModel))
+    def modelHeight = columns.size + 1
 
-      def writeFlattedModel =
+    def write2(models: Seq[Model])(sheet: Sheet) {
+      defineSheetLimits(sheet, models.size * modelHeight, rootPK.size) //TODO  + flatteningPk.size
+
+      sheet
+        .rows
+        .grouped(modelHeight)
+        .zip(Model.flattenWith(models, rootPK, flatteningPath).iterator)
+        .foreach {
+          case (rows, flattedModel) => {
+            val writer = new FlattedModelWriter(
+              new RowOrientedWriter(rows),
+              flattedModel)
+            writer.writeRootPKHeaders
+            writer.writeFlattedPKHeaders
+            writer.writeTitles
+            writer.writeFlattedModelFeatures
+          }
+        }
+    }
+
+    class FlattedModelWriter(writer: CellWriter, flattedModel: Model) {
+      private def writePKHeaders(pk: PK) =
+        pk.map(Feature(_)).foreach(_.write(writer, schema, flattedModel))
+
+      def writeTitles = () //TODO
+
+      def writeRootPKHeaders = writePKHeaders(rootPK)
+
+      def writeFlattedPKHeaders = writePKHeaders(???)
+
+      def writeFlattedModelFeatures =
         columns.foreach(_.write(writer, flattedSchema(Path(*)), flattedModel))
     }
   }
