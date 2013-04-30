@@ -11,7 +11,7 @@ import java.util.Date
 sealed trait TElement extends ElementLike[TElement] {
   override type ModelType = TModel
   override type ColType = TCol
-  override type ValueType[_] = TValue[_]
+  override type ValueType[A] = TValue[A]
   
   /**
    * Validates the given element using this TElement as schema,

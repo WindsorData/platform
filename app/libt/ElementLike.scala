@@ -12,7 +12,7 @@ import libt.util._
 trait ElementLike[ElementType] { self : ElementType =>
   type ModelType <: ModelLike[ElementType]
   type ColType <: ColLike[ElementType]
-  type ValueType[_] <: ValueLike[ElementType, _]
+  type ValueType[A] <: ValueLike[ElementType, A]
   
   /*===Casting===*/
 
