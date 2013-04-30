@@ -5,7 +5,6 @@ import org.scalatest.FunSpec
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import libt._
-import output._
 
 @RunWith(classOf[JUnitRunner])
 class FlattenerSpec extends FlatSpec {
@@ -69,7 +68,7 @@ class FlattenerSpec extends FlatSpec {
           Model('value -> Value("bye")),
           Model('value -> Value("day")))))
 
-    val flattenedModels = flattenWith(models,PK(Path('key)), Path('value))
+    val flattenedModels = Model.flattenWith(models, PK(Path('key)), Path('value))
 
     assert(flattenedModels === Seq(
       Model(

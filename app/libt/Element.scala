@@ -1,7 +1,6 @@
 package libt
 import sys.error
 import util._
-import output.PK
 
 /**
  * @author flbulgarelli
@@ -116,5 +115,8 @@ case class Model(elements: Set[(Symbol, Element)])
 }
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)
+  
+  def flattenWith(models: Seq[Model], rootPk: PK, flatteningPath: Path): Seq[Model] =
+    models.flatMap(_.flattenWith(rootPk, flatteningPath))
 }
 

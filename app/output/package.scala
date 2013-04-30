@@ -19,17 +19,17 @@ package output {
 
     private def flattedSchema = schema(flatteningPath)
 
-    def defineSheetLimits(sheet: Sheet, x: Int, y: Int) =
+    private def defineSheetLimits(sheet: Sheet, x: Int, y: Int) =
       for (n <- 1 to y; m <- 1 to x)
         sheet.createRow(n).createCell(m).setAsActiveCell()
 
     //TODO remove method 
     def read(sheet: Sheet): Seq[Model] = ???
 
-    def write(models: Seq[Model])(sheet: Sheet): Unit = {
+    def write(models: Seq[Model])(sheet: Sheet) {
       defineSheetLimits(sheet, models.size * 5, columns.size)
 
-      sheet.rows.zip(flattenWith(models, rootPrimaryKey, flatteningPath)).foreach {
+      sheet.rows.zip(Model.flattenWith(models, rootPrimaryKey, flatteningPath)).foreach {
         case (row, flattedModel) => {
           val writer = new FlatterModelWriter(
             new ColumnOrientedWriter(row),
@@ -50,12 +50,3 @@ package output {
   }
 }
 
-package object output {
-  type PK = Seq[Path]
-  object PK {
-    def apply(elements: Path*) = elements
-  }
-
-  def flattenWith(models: Seq[Model], rootPk: PK, flatteningPath: Path): Seq[Model] =
-    models.flatMap(_.flattenWith(rootPk, flatteningPath))
-}
