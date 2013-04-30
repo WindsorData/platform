@@ -35,9 +35,9 @@ sealed trait TValue[A] extends TElement with ValueLike[TElement, A]
  *
  * @author flbulgarelli
  */
-case class TWithDefault[A](tValue: TValue[A], defaultValue: A) extends TValue[A] {
+case class TWithDefault[A](valueType: TValue[A], defaultValue: A) extends TValue[A] {
   override def validate(element: Element) = umatch(element) {
-    case v: Value[A] => tValue.validate(v)
+    case v: Value[A] => valueType.validate(v)
   }
 }
 case object TString extends TValue[String]
@@ -63,14 +63,14 @@ case class TEnum(values: String*) extends TValue[String] {
  * Type mirror of Col
  * @author flbulgarelli
  */
-case class TCol(tElement: TElement)
+case class TCol(elementType: TElement)
   extends TElement
   with ColLike[TElement] {
   
-  override def apply(index: Int) = tElement
+  override def apply(index: Int) = elementType
   
   override def validate(element: Element) = umatch(element) {
-    case c: Col => c.elements.foreach(tElement.validate(_))
+    case c: Col => c.elements.foreach(elementType.validate(_))
   }
 }
 
@@ -80,15 +80,15 @@ case class TCol(tElement: TElement)
  * Type mirror of Model
  * @author flbulgarelli
  */
-case class TModel(elements: (Symbol, TElement)*)
+case class TModel(elementTypes: (Symbol, TElement)*)
   extends TElement
   with ModelLike[TElement] {
-  private val elementsMap = elements.toMap
+  private val elementsMap = elementTypes.toMap
 
   override def apply(key: Symbol) = elementsMap(key)
 
   override def validate(element: Element) = umatch(element) {
-    case m: Model => elements.foreach {
+    case m: Model => elementTypes.foreach {
       case (field, telement) => telement.validate(m(field))
     }
   }

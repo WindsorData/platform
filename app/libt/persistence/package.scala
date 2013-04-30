@@ -28,22 +28,22 @@ object `package` {
     def unmarshall(it: DBO): Element =
       Col(it.asInstanceOf[BasicDBList].view.map(_.asInstanceOf[DBO]).map(unmarshallColElement): _*)
       
-    private val marshallColElement = tCol.tElement.marshall(_)
-    private val unmarshallColElement = tCol.tElement.unmarshall(_)
+    private val marshallColElement = tCol.elementType.marshall(_)
+    private val unmarshallColElement = tCol.elementType.unmarshall(_)
   }
 
   class TModelConverter(tModel: TModel) extends TElementConverter {
     def marshall(it: Element) = {
       val model = it.asInstanceOf[Model]
       MongoDBObject(
-        tModel.elements.map {
+        tModel.elementTypes.map {
           case (key, telement) =>
             (key.toString -> telement.marshall(model(key)))
         }: _*)
     }
 
     def unmarshall(it: DBO) =
-      Model(tModel.elements.map {
+      Model(tModel.elementTypes.map {
         case (key, telement) =>
           (key -> telement.unmarshall(it(key.toString).asInstanceOf[DBO]))
       }: _*)
