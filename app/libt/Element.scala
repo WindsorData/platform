@@ -17,7 +17,7 @@ sealed trait Element extends ElementLike[Element] {
    *
    * This method only works for keyed elements - Models.
    */
-  def m(key: Symbol): Element = error("unsupported operation")
+  def m(key: Symbol): Element = this(Path(key))
 
   /**
    * *
@@ -26,7 +26,7 @@ sealed trait Element extends ElementLike[Element] {
    *
    * This method only works for keyed elements - Models.
    */
-  def v[A](key: Symbol) = m(key).asInstanceOf[Value[A]]
+  def v[A](key: Symbol) = m(key).asValue[A]
 
   /**
    * *
@@ -36,9 +36,6 @@ sealed trait Element extends ElementLike[Element] {
    * This method only works for keyed elements - Models.
    */
   def c(key: Symbol) = m(key).asCol.elements
-  //TODO remove
-  def mc(key: Symbol)(pos: Int) = c(key)(pos).asInstanceOf[Model]
-  def vc[A](key: Symbol)(pos: Int) = c(key)(pos).asValue[A]
 }
 
 /*=======Value=======*/
@@ -73,8 +70,11 @@ case class Value[A](
       Value(Some(alternative), calc, comment, note, link)
 }
 object Value {
+  
   def apply[A](): Value[A] = Value(None, None, None, None, None)
+  
   def apply[A](value: A): Value[A] = Value(Some(value), None, None, None, None)
+  
   def apply[A](
     value: Option[A],
     note: Option[String],
@@ -86,7 +86,9 @@ object Value {
 case class Col(elements: Element*)
   extends Element
   with ColLike[Element] {
+  
   override def apply(index: Int) = elements(index)
+  
 }
 
 /*=======Model=======*/
@@ -96,8 +98,8 @@ case class Model(elements: Set[(Symbol, Element)])
   with ModelLike[Element] {
 
   private val elementsMap = elements.toMap
+  
   override def apply(key: Symbol) = elementsMap(key)
-  override def m(key: Symbol) = this(key)
 
   def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
     for (element <- this(flatteningPath).asCol.elements)
