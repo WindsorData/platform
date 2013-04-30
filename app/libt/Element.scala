@@ -103,7 +103,7 @@ case class Model(elements: Set[(Symbol, Element)])
 
   def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
     for (element <- this(flatteningPath).asCol.elements)
-      yield element.asModel ++ Model(rootPk.elements.map(path => (path.last.routeValue -> this(path))).toSet)
+      yield element.asModel ++ Model(rootPk.map(path => (path.last.routeValue -> this(path))).toSet)
 
   /**
    * Model addition

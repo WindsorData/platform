@@ -10,7 +10,7 @@ import libt.spreadsheet.writer.CellWriter
 /**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
  */
-sealed trait Column {
+sealed trait Column { //TODO rename
   /**
    * *Reads from a CellReader, using the given TElement as schema, and collects
    * the results into the given ModelBuilder
@@ -27,7 +27,8 @@ case class Feature(path: Path) extends Column {
     modelBuilder += (path -> readValue(schema, reader))
 
   def write(writer: CellWriter, schema: TElement, model: Model) = {
-    def foo[A] = featureReader(schema(path).asInstanceOf[TValue[A]]).write(writer, model(path).asInstanceOf[Value[A]])
+    def foo[A] = featureReader(schema(path).asInstanceOf[TValue[A]]).
+    			 write(writer, model(path).asInstanceOf[Value[A]])
     foo
   }
 
