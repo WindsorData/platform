@@ -20,8 +20,7 @@ trait CellWriter {
   protected def skip1: Unit
 }
 
-//Currently only writes values
-class ColumnOrientedWriter(row: Row) extends CellWriter {
+class ColumnOrientedValueWriter(row: Row) extends CellWriter {
   private val cellIterator = row.cells.iterator
 
   override protected def skip1 = cellIterator.next
@@ -32,7 +31,7 @@ class ColumnOrientedWriter(row: Row) extends CellWriter {
 }
 
 //currentl only supports metadata
-class RowOrientedWriter(rows: Seq[Row]) extends CellWriter {
+class RowOrientedMetadataWriter(rows: Seq[Row]) extends CellWriter {
   private val rowsIterator = rows.iterator
 
   override protected def skip1 = rowsIterator.next

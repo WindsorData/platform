@@ -3,58 +3,44 @@ import libt.spreadsheet.Column
 import libt.spreadsheet.reader.SheetDefinition
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
-import libt.spreadsheet.writer.ColumnOrientedWriter
+import libt.spreadsheet.writer.ColumnOrientedValueWriter
 import libt.spreadsheet.Feature
 import libt.spreadsheet.writer.CellWriter
-import libt.spreadsheet.writer.RowOrientedWriter
+import libt.spreadsheet.writer.RowOrientedMetadataWriter
+import org.apache.poi.ss.usermodel.Row
 
 package output {
-  //TODO refactor packages
-  case class FlattedArea(
-    rootPK: PK,
-    flatteningPK: PK,
-    flatteningPath: Path,
-    schema: TModel,
-    columns: Seq[Column]) extends SheetDefinition {
 
-    val * = 0
+  trait FlattedAreaLayout {
+    def write(models: Seq[Model], sheet: Sheet, area: FlattedArea): Unit
+  }
 
-    private def flattedSchema = schema(flatteningPath)
-
-    private def defineSheetLimits(sheet: Sheet, x: Int, y: Int) =
-      for (n <- 1 to y; m <- 1 to x)
-        sheet.createRow(n).createCell(m).setAsActiveCell()
-
-    //TODO remove method 
-    def read(sheet: Sheet): Seq[Model] = ???
-
-    def write(models: Seq[Model])(sheet: Sheet) {
-      defineSheetLimits(sheet, models.size * 5, columns.size) //TODO why by 5??
-
-      sheet.rows.zip(Model.flattenWith(models, rootPK, flatteningPath)).foreach {
+  case object ValueAreaLayout extends FlattedAreaLayout {
+    override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
+      sheet.defineLimits(models.size * 5, area.featuresSize) //TODO why by 5??
+      sheet.rows.zip(area.flatten(models)).foreach {
         case (row, flattedModel) => {
-          val writer = new FlattedModelWriter(
-            new ColumnOrientedWriter(row),
+          val writer = area.newWriter(
+            new ColumnOrientedValueWriter(row),
             flattedModel)
           writer.writeRootPKHeaders
           writer.writeFlattedModelFeatures
         }
       }
     }
+  }
 
-    def modelHeight = columns.size + 1
-
-    def write2(models: Seq[Model])(sheet: Sheet) {
-      defineSheetLimits(sheet, models.size * modelHeight, rootPK.size) //TODO  + flatteningPk.size
-
+  case object MetadataAreaLayout extends FlattedAreaLayout {
+    override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
+      sheet.defineLimits(models.size * area.featuresSize, area.completePKSize)
       sheet
         .rows
-        .grouped(modelHeight)
-        .zip(Model.flattenWith(models, rootPK, flatteningPath).iterator)
+        .grouped(area.featuresSize)
+        .zip(area.flatten(models).iterator)
         .foreach {
           case (rows, flattedModel) => {
-            val writer = new FlattedModelWriter(
-              new RowOrientedWriter(rows),
+            val writer = area.newWriter(
+              new RowOrientedMetadataWriter(rows),
               flattedModel)
             writer.writeRootPKHeaders
             writer.writeFlattedPKHeaders
@@ -63,10 +49,36 @@ package output {
           }
         }
     }
+  }
 
-    class FlattedModelWriter(writer: CellWriter, flattedModel: Model) {
-      private def writePKHeaders(pk: PK) =
-        pk.map(Feature(_)).foreach(_.write(writer, schema, flattedModel))
+  //TODO refactor packages
+  case class FlattedArea(
+    rootPK: PK,
+    flatteningPK: PK,
+    flatteningPath: Path,
+    schema: TModel,
+    layout: FlattedAreaLayout,
+    columns: Seq[Column]) extends SheetDefinition {
+
+    //TODO remove method 
+    def read(sheet: Sheet): Seq[Model] = ???
+
+    def write(models: Seq[Model])(sheet: Sheet) =
+      layout.write(models, sheet, this)
+
+    def featuresSize = columns.size + 1
+
+    def rootPKSize = rootPK.size
+
+    def completePKSize = rootPKSize + flatteningPK.size
+
+    def flatten(models: Seq[Model]) =
+      Model.flattenWith(models, rootPK, flatteningPath)
+
+    protected def * = 0
+    protected def flattedSchema = schema(flatteningPath)
+
+    def newWriter(writer: CellWriter, flattedModel: Model) = new {
 
       def writeTitles = () //TODO
 
@@ -76,6 +88,10 @@ package output {
 
       def writeFlattedModelFeatures =
         columns.foreach(_.write(writer, flattedSchema(Path(*)), flattedModel))
+
+      private def writePKHeaders(pk: PK) =
+        pk.map(Feature(_)).foreach(_.write(writer, schema, flattedModel))
+
     }
   }
 }

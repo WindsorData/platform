@@ -21,6 +21,7 @@ class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
 //TODO varageize
 case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 
+  //TODO wtf??
   def ioAction[A](wb: Workbook, action: (Sheet, SheetDefinition) => A) = {
     val sheets = for (sheetIndex <- 0 to wb.getNumberOfSheets() - 1) yield wb.getSheetAt(sheetIndex)
     sheets.zip(areas).map{ case (sheet, area) => action(sheet, area) }
@@ -76,7 +77,11 @@ trait SheetDefinition {
  * @author flbulgarelli
  * @author metalkorva
  */
-case class Area(schema: TModel, offset: Offset, orientation: Orientation, columns: Seq[Column]) extends SheetDefinition {
+case class Area(
+    schema: TModel, 
+    offset: Offset, 
+    orientation: Orientation, 
+    columns: Seq[Column]) extends SheetDefinition {
   import libt.spreadsheet.util._
 
   def read(sheet: Sheet): Seq[Model] =

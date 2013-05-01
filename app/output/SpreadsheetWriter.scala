@@ -10,7 +10,7 @@ import libt._
 import libt.spreadsheet._
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
-import libt.spreadsheet.writer.ColumnOrientedWriter
+import libt.spreadsheet.writer.ColumnOrientedValueWriter
 
 //trait Writer {
 //
@@ -109,12 +109,13 @@ object SpreadsheetWriter {
   }
 
   def write(out: Workbook, companies: Seq[Model]): Unit = {
-    WorkbookMapping(Seq(
+    val areas = Seq(ValueAreaLayout, MetadataAreaLayout).map(
       FlattedArea(
         PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
         PK(Path('lastName)),
         Path('executives),
         TCompanyFiscalYear,
+        _,
         Seq(
           Feature('firstName),
           Feature('lastName),
@@ -125,8 +126,8 @@ object SpreadsheetWriter {
           Feature('functionalMatches, 'scope),
           Feature('functionalMatches, 'bod),
           Feature('founder),
-          Feature('transitionPeriod))))).write(companies, out)
-
+          Feature('transitionPeriod))))
+    WorkbookMapping(areas).write(companies, out)
   }
 
   def loadTemplateInto(out: OutputStream) = {

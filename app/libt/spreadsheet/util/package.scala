@@ -13,6 +13,10 @@ package object util {
 
     def rows : Seq[Row] = for (rowIndex <- 0 to sheet.getLastRowNum())
       yield CellUtil.getRow(rowIndex, sheet)
+
+    def defineLimits(x: Int, y: Int) =
+      for (n <- 1 to y; m <- 1 to x)
+        sheet.createRow(n).createCell(m).setAsActiveCell()
   }
 
   implicit def row2RichRow(row: Row) = new {
