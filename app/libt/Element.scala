@@ -102,10 +102,22 @@ case class Model(elements: Set[(Symbol, Element)])
   private val elementsMap = elements.toMap
   
   override def apply(key: Symbol) = elementsMap(key)
+  
+  //TODO test
+  def subModel(pk: PK) = 
+    Model(pk.map(path => (path.last.routeValue -> this(path))).toSet)
 
+  /**
+   * Flattens this model based on a path - flatteningPath - that points
+   * to a Col of Models inside this model.
+   *
+   * It converts this model into a sequence
+   * of new models, where each of them is built from the elements in the col of model,
+   * plus the elements that conform the pk of this model - the rootPK.
+   */
   def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
     for (element <- this(flatteningPath).asCol.elements)
-      yield element.asModel ++ Model(rootPk.map(path => (path.last.routeValue -> this(path))).toSet)
+      yield element.asModel ++ this.subModel(rootPk)
 
   /**
    * Model addition
@@ -119,6 +131,7 @@ case class Model(elements: Set[(Symbol, Element)])
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)
   
+  /**Converts a sequence of models into a sequence of flattened models*/
   def flattenWith(models: Seq[Model], rootPk: PK, flatteningPath: Path): Seq[Model] =
     models.flatMap(_.flattenWith(rootPk, flatteningPath))
 }

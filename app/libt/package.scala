@@ -15,6 +15,7 @@ package object libt {
     def apply(parts: PathPart*): Path = List(parts: _*)
   }
 
+  //TODO rename
   type PK = Seq[Path]
   
   object PK {
