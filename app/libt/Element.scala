@@ -103,7 +103,8 @@ case class Model(elements: Set[(Symbol, Element)])
   
   override def apply(key: Symbol) = elementsMap(key)
   
-  //TODO test
+  /**Creates a new model that is a submodel of this one that only
+   * contains the elements of the given pk*/
   def subModel(pk: PK) = 
     Model(pk.map(path => (path.last.routeValue -> this(path))).toSet)
 
