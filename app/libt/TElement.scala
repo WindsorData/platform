@@ -85,7 +85,9 @@ case class TModel(elementTypes: (Symbol, TElement)*)
   with ModelLike[TElement] {
   private val elementsMap = elementTypes.toMap
 
-  override def apply(key: Symbol) = elementsMap(key)
+  override def apply(key: Symbol) = elementsMap.get(key).getOrElse {
+    sys.error("key "+key+" not found in model "+ this)
+  }
 
   override def validate(element: Element) = umatch(element) {
     case m: Model => elementTypes.foreach {

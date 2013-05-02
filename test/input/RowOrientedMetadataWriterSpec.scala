@@ -25,7 +25,7 @@ class RowOrientedMetadataWriterSpec extends FlatSpec with BeforeAndAfter {
     sheet.defineLimits(Offset(0,0), 3, 4)
     val rows  = sheet.rows
     
-    val writer = new RowOrientedMetadataWriter(rows)
+    val writer = new RowOrientedMetadataWriter(Offset(0, 0), rows)
     writer.numeric(Value(2))
     writer.string(Value(Some("v1"), Some("v2"), Some("v3"), Some("v4"), Some("v5")))
     writer.string(Value(Some("v6"), Some("v7"), Some("v8"), Some("v9"), Some("v10")))

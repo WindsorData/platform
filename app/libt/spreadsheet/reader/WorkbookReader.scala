@@ -36,7 +36,10 @@ trait Combiner[A] {
   def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]): A
 }
 
-case class Offset(rowIndex: Int, columnIndex: Int)
+case class Offset(rowIndex: Int, columnIndex: Int) {
+  def +(that: Offset) =
+    Offset(rowIndex + that.rowIndex, columnIndex + that.columnIndex)
+}
 
 sealed trait Orientation {
   def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model]

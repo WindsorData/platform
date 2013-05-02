@@ -47,6 +47,10 @@ case class FlattedArea(
   def rootPKSize = rootPK.size
 
   def completePKSize = rootPKSize + flatteningPK.size
+  
+  def titleSize = 2
+  
+  def  headerSize = completePKSize + titleSize 
 
   def flatteningColSize(models: Seq[Model]) =
     models.map(_.apply(flatteningPath).asCol.size).sum
@@ -60,25 +64,24 @@ case class FlattedArea(
 
   //TODO remove
   protected def * = 0
-  protected def flattedSchema = schema(flatteningPath)
+  protected def flattedSchema = schema(flatteningPath)(Path(*))
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 
     def writeTitles = ??? //TODO
 
     /**writes each pk of the root*/
-    def writeRootPKHeaders = writePKHeaders(rootPK)
+    def writeRootPKHeaders = writePKHeaders(schema, rootPK)
 
     /**writes each pk of the flattened model*/
-    def writeFlattedPKHeaders = writePKHeaders(flatteningPK)
+    def writeFlattedPKHeaders = writePKHeaders(flattedSchema, flatteningPK)
 
     /**writes each feature of the (flattened) model*/
     def writeFlattedModelFeatures =
-      columns.foreach(_.write(writer, flattedSchema(Path(*)), flattedModel))
+      columns.foreach(_.write(writer, flattedSchema, flattedModel))
 
-    private def writePKHeaders(pk: PK) =
+    private def writePKHeaders(schema: TElement, pk: PK) =
       pk.map(Feature(_)).foreach(_.write(writer, schema, flattedModel))
-
   }
 }
 
@@ -107,9 +110,7 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout {
   override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
     sheet.defineLimits(offset,
       area.flatteningColSize(models) * area.featuresSize,
-      area.completePKSize
-        + 2 //number of titles 
-        + 4 //number of metadata features
+      area.headerSize + 4 //number of metadata features
         )
     sheet
       .rows
@@ -118,12 +119,17 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout {
       .zip(area.flatten(models).iterator)
       .foreach {
         case (rows, flattedModel) => {
+          rows.foreach { row =>
+	          val headersWriter = area.newWriter(
+	              new ColumnOrientedValueWriter(offset.rowIndex, row), flattedModel) 
+	          headersWriter.writeRootPKHeaders
+	          headersWriter.writeFlattedPKHeaders
+//	          headersWriter.writeTitles  
+          }
+          
           val writer = area.newWriter(
-            new RowOrientedMetadataWriter(rows),
+            new RowOrientedMetadataWriter(offset + Offset(0, area.headerSize), rows),
             flattedModel)
-          //          writer.writeRootPKHeaders
-          //          writer.writeFlattedPKHeaders
-          //          writer.writeTitles
           writer.writeFlattedModelFeatures
         }
       }

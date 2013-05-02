@@ -5,6 +5,7 @@ import java.util.Date
 import org.apache.poi.ss.usermodel.Row
 import libt.spreadsheet.util._
 import org.apache.poi.ss.usermodel.Cell
+import libt.spreadsheet.reader.Offset
 
 trait CellWriter {
 
@@ -32,8 +33,8 @@ class ColumnOrientedValueWriter(offset: Int, row: Row) extends CellWriter {
 }
 
 //currently only supports metadata
-class RowOrientedMetadataWriter(rows: Seq[Row]) extends CellWriter {
-  private val rowsIterator = rows.iterator
+class RowOrientedMetadataWriter(offset: Offset, rows: Seq[Row]) extends CellWriter {
+  private val rowsIterator = rows.drop(offset.rowIndex).iterator
 
   override protected def skip1 = rowsIterator.next
 
@@ -41,9 +42,9 @@ class RowOrientedMetadataWriter(rows: Seq[Row]) extends CellWriter {
     val nextRow = rowsIterator.next
     for ((Some(metadata), index) <- value.metadataSeq.zipWithIndex) {
       nextRow
-      .cellAt(index)
+      .cellAt(index + offset.columnIndex)
       .setCellValue(metadata)
     }
   }
-  	
+  
 }

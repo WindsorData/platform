@@ -156,6 +156,7 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
           Feature('d),
           Feature('e)))))
     .write(models, wb)
+    wb.write(new FileOutputStream("foo.xlsx"))
     // complete this test and move it to another class
   }
 }
