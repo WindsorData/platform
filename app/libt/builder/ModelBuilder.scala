@@ -9,10 +9,14 @@ import scala.collection.mutable.Buffer
  * @author metalkorva
  * */
 class ModelBuilder {
-  type MModel = MutableMap[Symbol, AnyRef]
-  type MCol = Buffer[AnyRef]
-  
+  /**The mutable representation of Model*/
+  private type MModel = MutableMap[Symbol, AnyRef]
   private def MModel() = MutableMap[Symbol, AnyRef]()
+  
+  /**The mutable representation of Col*/
+  private type MCol = Buffer[AnyRef]
+
+  /**the mutable representation of the model being built*/
   private val model = MutableMap[Symbol, AnyRef]()
 
   /**
