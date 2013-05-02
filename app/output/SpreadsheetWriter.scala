@@ -109,7 +109,7 @@ object SpreadsheetWriter {
   }
 
   def write(out: Workbook, companies: Seq[Model]): Unit = {
-    val areas = Seq(ValueAreaLayout, MetadataAreaLayout).map(
+    val areas = Seq(ValueAreaLayout(Offset(0,0)), MetadataAreaLayout(Offset(0,0))).map(
       FlattedArea(
         PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
         PK(Path('lastName)),

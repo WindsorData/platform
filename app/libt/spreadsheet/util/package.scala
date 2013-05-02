@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
+import libt.spreadsheet.reader.Offset
 
 package object util {
 
@@ -11,19 +12,21 @@ package object util {
     def cellAt(rowIndex: Int, columnIndex: Int) =
       CellUtil.getCell(CellUtil.getRow(rowIndex, sheet), columnIndex)
 
-    def rows : Seq[Row] = for (rowIndex <- 0 to sheet.getLastRowNum())
+    def rows: Seq[Row] = for (rowIndex <- 0 to sheet.getLastRowNum())
       yield CellUtil.getRow(rowIndex, sheet)
 
-    def defineLimits(x: Int, y: Int) =
-      for (n <- 1 to y; m <- 1 to x)
-        sheet.createRow(n).createCell(m).setAsActiveCell()
+    def defineLimits(offset: Offset, rowLimit: Int, columnLimit: Int) =
+      for {
+        cIndex <- 1 to columnLimit + offset.columnIndex
+        rIndex <- 1 to rowLimit + offset.rowIndex
+      } sheet.createRow(rIndex).createCell(cIndex).setAsActiveCell()
   }
 
   implicit def row2RichRow(row: Row) = new {
-    def cells : Seq[Cell] = for (cellIndex <- Stream.from(0))
+    def cells: Seq[Cell] = for (cellIndex <- Stream.from(0))
       yield CellUtil.getCell(row, cellIndex)
-     def cellAt(columnIndex: Int) = 
-       CellUtil.getCell(row, columnIndex) 
+    def cellAt(columnIndex: Int) =
+      CellUtil.getCell(row, columnIndex)
   }
 
   def blankToNone[T](mapper: Cell => T)(cell: Cell) =

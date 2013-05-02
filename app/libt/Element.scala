@@ -90,7 +90,7 @@ case class Col(elements: Element*)
   with ColLike[Element] {
   
   override def apply(index: Int) = elements(index)
-  
+  def size = elements.size
 }
 
 /*=======Model=======*/

@@ -10,6 +10,7 @@ import libt.spreadsheet.Feature
 import libt.spreadsheet.writer.CellWriter
 import libt.spreadsheet.writer.RowOrientedMetadataWriter
 import org.apache.poi.ss.usermodel.Row
+import libt.spreadsheet.reader.Offset
 
 //TODO refactor packages
 /**
@@ -47,8 +48,13 @@ case class FlattedArea(
 
   def completePKSize = rootPKSize + flatteningPK.size
 
-  /**Flattens the given model using the root primary 
-   * key and flattening path*/
+  def flatteningColSize(models: Seq[Model]) =
+    models.map(_.apply(flatteningPath).asCol.size).sum
+
+  /**
+   * Flattens the given model using the root primary
+   * key and flattening path
+   */
   def flatten(models: Seq[Model]) =
     Model.flattenWith(models, rootPK, flatteningPath)
 
@@ -58,7 +64,7 @@ case class FlattedArea(
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 
-    def writeTitles = () //TODO
+    def writeTitles = ??? //TODO
 
     /**writes each pk of the root*/
     def writeRootPKHeaders = writePKHeaders(rootPK)
@@ -80,13 +86,15 @@ trait FlattedAreaLayout {
   def write(models: Seq[Model], sheet: Sheet, area: FlattedArea): Unit
 }
 
-case object ValueAreaLayout extends FlattedAreaLayout {
+case class ValueAreaLayout(offset: Offset) extends FlattedAreaLayout {
   override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
-    sheet.defineLimits(models.size * 5, area.featuresSize) //TODO why by 5??
-    sheet.rows.zip(area.flatten(models)).foreach {
+    sheet.defineLimits(offset,
+      models.size * area.flatteningColSize(models),
+      area.featuresSize)
+    sheet.rows.drop(offset.rowIndex).zip(area.flatten(models)).foreach {
       case (row, flattedModel) => {
         val writer = area.newWriter(
-          new ColumnOrientedValueWriter(row),
+          new ColumnOrientedValueWriter(offset.columnIndex, row),
           flattedModel)
         writer.writeRootPKHeaders
         writer.writeFlattedModelFeatures
@@ -95,11 +103,17 @@ case object ValueAreaLayout extends FlattedAreaLayout {
   }
 }
 
-case object MetadataAreaLayout extends FlattedAreaLayout {
+case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout {
   override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
-    sheet.defineLimits(models.size * area.featuresSize, area.completePKSize)
+    sheet.defineLimits(offset,
+      area.flatteningColSize(models) * area.featuresSize,
+      area.completePKSize
+        + 2 //number of titles 
+        + 4 //number of metadata features
+        )
     sheet
       .rows
+      .drop(offset.rowIndex)
       .grouped(area.featuresSize)
       .zip(area.flatten(models).iterator)
       .foreach {
@@ -107,11 +121,14 @@ case object MetadataAreaLayout extends FlattedAreaLayout {
           val writer = area.newWriter(
             new RowOrientedMetadataWriter(rows),
             flattedModel)
-          writer.writeRootPKHeaders
-          writer.writeFlattedPKHeaders
-          writer.writeTitles
+          //          writer.writeRootPKHeaders
+          //          writer.writeFlattedPKHeaders
+          //          writer.writeTitles
           writer.writeFlattedModelFeatures
         }
       }
   }
 }
+
+
+

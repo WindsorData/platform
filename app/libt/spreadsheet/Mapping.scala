@@ -19,7 +19,7 @@ sealed trait Column { //TODO rename
 
   /***Writes with a CellWriter, using the given TElement as schema*/
   def write(writer: CellWriter, schema: TElement, model: Model)
-  def title: Option[String]
+  def title: Option[Seq[String]]
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/
@@ -29,16 +29,18 @@ case class Feature(path: Path) extends Column {
 
   def write(writer: CellWriter, schema: TElement, model: Model) = {
     def foo[A] = featureReader(schema(path).asInstanceOf[TValue[A]]).
-    			 write(writer, model(path).asInstanceOf[Value[A]])
+      write(writer, model(path).asInstanceOf[Value[A]])
     foo
   }
 
   override def title =
     Some(
       path.map {
-        case Route(s) => s.name.foldLeft("")( (acc, ch) => (if (ch.isUpper) " " else "") + ch + acc.capitalize)
+        case Route(s) => s.name.foldLeft("") { (acc, ch) =>
+          (if (ch.isUpper) " " else "") + ch + acc.capitalize
+        }
         case Index(i) => i.toString
-      }.mkString(" - "))
+      })
 
   private def readValue(schema: TElement, reader: CellReader) =
     featureReader(schema(path).asValue).read(reader)
@@ -73,7 +75,7 @@ case object Gap extends Column {
 abstract class Calculation extends Column {
   def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
   override def write(writer: CellWriter, schema: TElement, model: Model) = ???
-  override def title = Some("Calculated")
+  override def title = Some(Seq("Calculated"))
 }
 case class Sum(path: Path) extends Calculation
 case class Averge(path: Path) extends Calculation

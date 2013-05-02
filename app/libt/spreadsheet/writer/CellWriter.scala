@@ -20,9 +20,10 @@ trait CellWriter {
   protected def skip1: Unit
 }
 
-class ColumnOrientedValueWriter(row: Row) extends CellWriter {
+class ColumnOrientedValueWriter(offset: Int, row: Row) extends CellWriter {
   private val cellIterator = row.cells.iterator
-
+  skip(offset)
+  
   override protected def skip1 = cellIterator.next
   override protected def writeNext[A](value: Value[A])(writeFunction: (Cell, A) => Unit) {
     val nextCell = cellIterator.next
@@ -30,7 +31,7 @@ class ColumnOrientedValueWriter(row: Row) extends CellWriter {
   }
 }
 
-//currentl only supports metadata
+//currently only supports metadata
 class RowOrientedMetadataWriter(rows: Seq[Row]) extends CellWriter {
   private val rowsIterator = rows.iterator
 
@@ -39,7 +40,10 @@ class RowOrientedMetadataWriter(rows: Seq[Row]) extends CellWriter {
   override protected def writeNext[A](value: Value[A])(writeFunction: (Cell, A) => Unit) {
     val nextRow = rowsIterator.next
     for ((Some(metadata), index) <- value.metadataSeq.zipWithIndex) {
-      nextRow.getCell(index).setCellValue(metadata)
+      nextRow
+      .cellAt(index)
+      .setCellValue(metadata)
     }
   }
+  	
 }
