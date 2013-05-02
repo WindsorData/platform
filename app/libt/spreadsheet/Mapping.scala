@@ -19,7 +19,7 @@ sealed trait Column { //TODO rename
 
   /***Writes with a CellWriter, using the given TElement as schema*/
   def write(writer: CellWriter, schema: TElement, model: Model)
-  def title: Option[Seq[String]]
+  def title: Option[(String, String)]
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/
@@ -33,14 +33,13 @@ case class Feature(path: Path) extends Column {
     foo
   }
 
-  override def title =
-    Some(
-      path.map {
-        case Route(s) => s.name.foldLeft("") { (acc, ch) =>
-          (if (ch.isUpper) " " else "") + ch + acc.capitalize
-        }
-        case Index(i) => i.toString
-      })
+  private def pathTitles = path.map(_.name)
+      
+  override def title = pathTitles match {
+    case Nil => None
+    case it => Some(it.init.mkString(" - ") -> it.last) 
+  } 
+    
 
   private def readValue(schema: TElement, reader: CellReader) =
     featureReader(schema(path).asValue).read(reader)
@@ -71,11 +70,11 @@ case object Gap extends Column {
 
   override def title = None
 }
-
+//TODO remove
 abstract class Calculation extends Column {
   def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
   override def write(writer: CellWriter, schema: TElement, model: Model) = ???
-  override def title = Some(Seq("Calculated"))
+  override def title = ???
 }
 case class Sum(path: Path) extends Calculation
 case class Averge(path: Path) extends Calculation

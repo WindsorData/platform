@@ -68,7 +68,14 @@ case class FlattedArea(
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 
-    def writeTitles = ??? //TODO
+    def writeTitles = columns.foreach(
+      _.title match {
+        case Some((dataItemBaseTitle, dataItem)) => {
+          writer.string(Value(dataItemBaseTitle))
+          writer.string(Value(dataItem))
+        }
+        case _ => writer.skip(2)
+      })
 
     /**writes each pk of the root*/
     def writeRootPKHeaders = writePKHeaders(schema, rootPK)
@@ -124,7 +131,7 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout {
 	              new ColumnOrientedValueWriter(offset.rowIndex, row), flattedModel) 
 	          headersWriter.writeRootPKHeaders
 	          headersWriter.writeFlattedPKHeaders
-//	          headersWriter.writeTitles  
+	          headersWriter.writeTitles  
           }
           
           val writer = area.newWriter(
