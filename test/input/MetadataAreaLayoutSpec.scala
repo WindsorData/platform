@@ -7,7 +7,6 @@ import org.scalatest.junit.JUnitRunner
 import libt._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
-import libt.spreadsheet.reader.Offset
 import libt.spreadsheet.reader.WorkbookMapping
 import output._
 import libt.spreadsheet._

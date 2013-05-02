@@ -5,7 +5,7 @@ import java.util.Date
 import org.apache.poi.ss.usermodel.Row
 import libt.spreadsheet.util._
 import org.apache.poi.ss.usermodel.Cell
-import libt.spreadsheet.reader.Offset
+import libt.spreadsheet.Offset
 
 package object op {
   type WriteOp = (Cell) => Unit

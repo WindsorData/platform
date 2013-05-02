@@ -13,7 +13,7 @@ import java.io.FileOutputStream
 import libt.spreadsheet.reader.WorkbookReader
 import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.reader.RowOrientation
-import libt.spreadsheet.reader.Offset
+import libt.spreadsheet.Offset
 import libt.spreadsheet.reader.Combiner
 import libt.spreadsheet.reader.ColumnOrientation
 import libt.spreadsheet.reader.AreaGap

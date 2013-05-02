@@ -12,6 +12,7 @@ import org.apache.poi.ss.usermodel.Row
 import libt.builder.ModelBuilder
 import libt.spreadsheet.util.sheet2RichSheet
 import libt.spreadsheet.writer.ColumnOrientedWriter
+import libt.spreadsheet._
 
 class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
   //TODO move to WBMapping
@@ -34,11 +35,6 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 
 trait Combiner[A] {
   def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]): A
-}
-
-case class Offset(rowIndex: Int, columnIndex: Int) {
-  def +(that: Offset) =
-    Offset(rowIndex + that.rowIndex, columnIndex + that.columnIndex)
 }
 
 sealed trait Orientation {

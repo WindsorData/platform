@@ -8,9 +8,9 @@ import libt.spreadsheet.util._
 import libt.spreadsheet.Feature
 import libt.spreadsheet.writer.CellWriter
 import org.apache.poi.ss.usermodel.Row
-import libt.spreadsheet.reader.Offset
 import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet.writer.RowOrientedWriter
+import libt.spreadsheet.Offset
 
 //TODO refactor packages
 /**
