@@ -101,11 +101,11 @@ package object mapping {
 
   val CompanyFiscalYearReader = new WorkbookReader(
     WorkbookMapping(
-      Area(TCompanyFiscalYear, Offset(2, 2), RowOrientation, Seq(Feature(Path('ticker)), Feature(Path('name))))
+      Area(TCompanyFiscalYear, Offset(2, 2), RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name))))
         #::
         AreaGap
         #::
-        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), ColumnOrientation, executiveMapping))),
+        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), ColumnOrientedLayout, executiveMapping))),
     new CompanyFiscalYearCombiner)
 
 }

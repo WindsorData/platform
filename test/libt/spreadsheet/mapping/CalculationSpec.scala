@@ -27,7 +27,7 @@ class CalculationSpec extends FlatSpec {
       'a -> TString,
       'b -> TCol(TNumber)),
     Offset(0, 0),
-    ColumnOrientation,
+    ColumnOrientedLayout,
     Seq(
       Feature('a),
       Calculation(Sum(Path('b, *)))))
