@@ -2,39 +2,41 @@ package libt.spreadsheet.reader
 import libt._
 import java.util.Date
 import libt.spreadsheet.writer.CellWriter
+import libt.spreadsheet.writer.op.WriteOp
+import libt.spreadsheet.writer.op
 
 trait FeatureReader[A] {
   def read(reader: CellReader): Value[A]
-  def write(writer : CellWriter, value: Value[A]) : Unit
+  def writeOp(value: Option[A]) : op.WriteOp
 }
 
 case object NumericReader extends FeatureReader[BigDecimal] {
   def read(reader: CellReader) = reader.numeric
-  def write(writer : CellWriter, value: Value[BigDecimal]) = writer.numeric(value)
+  override def writeOp(value: Option[BigDecimal]) = op.Numeric(value)
 }
 
 case object StringReader extends FeatureReader[String] {
   def read(reader: CellReader) = reader.string
-  def write(writer : CellWriter, value: Value[String]) = writer.string(value)
+  override def writeOp(value: Option[String]) = op.String(value)
 }
 
 case object DateReader extends FeatureReader[Date] {
   def read(reader: CellReader) = reader.date
-  def write(writer : CellWriter, value: Value[Date]) = writer.date(value)
+  override def writeOp(value: Option[Date]) = op.Date(value)
 }
 
 case object XBoolReader extends FeatureReader[Boolean] {
   def read(reader: CellReader) = reader.xBoolean
-  def write(writer : CellWriter, value: Value[Boolean]) = writer.xBoolean(value)
+  override def writeOp(value: Option[Boolean]) = op.Boolean(value)
 }
 
 case class WithDefaultReader[A](
   baseFeatureReader: FeatureReader[A],
   defaultValue: A) extends FeatureReader[A] {
   def read(reader: CellReader) = baseFeatureReader.read(reader).orDefault(defaultValue)
-  def write(writer: CellWriter, value: Value[A]) =
-    if (value.contains(defaultValue))
-      writer.skip(1)
+  override def writeOp(value: Option[A]) =
+    if (value.exists(_ == defaultValue))
+      op.Skip
     else
-      baseFeatureReader.write(writer, value);
+      baseFeatureReader.writeOp(value)
 }

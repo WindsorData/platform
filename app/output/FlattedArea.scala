@@ -5,12 +5,12 @@ import libt.spreadsheet.Column
 import libt.spreadsheet.reader.SheetDefinition
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
-import libt.spreadsheet.writer.ColumnOrientedValueWriter
 import libt.spreadsheet.Feature
 import libt.spreadsheet.writer.CellWriter
-import libt.spreadsheet.writer.RowOrientedMetadataWriter
 import org.apache.poi.ss.usermodel.Row
 import libt.spreadsheet.reader.Offset
+import libt.spreadsheet.writer.ColumnOrientedWriter
+import libt.spreadsheet.writer.RowOrientedWriter
 
 //TODO refactor packages
 /**
@@ -50,7 +50,7 @@ case class FlattedArea(
   
   def titleSize = 2
   
-  def  headerSize = completePKSize + titleSize 
+  def headerSize = completePKSize + titleSize 
 
   def flatteningColSize(models: Seq[Model]) =
     models.map(_.apply(flatteningPath).asCol.size).sum
@@ -68,27 +68,29 @@ case class FlattedArea(
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 
-    def writeTitles = columns.foreach(
-      _.title match {
-        case Some((dataItemBaseTitle, dataItem)) => {
-          writer.string(Value(dataItemBaseTitle))
-          writer.string(Value(dataItem))
-        }
-        case _ => writer.skip(2)
-      })
-
     /**writes each pk of the root*/
     def writeRootPKHeaders = writePKHeaders(schema, rootPK)
 
     /**writes each pk of the flattened model*/
     def writeFlattedPKHeaders = writePKHeaders(flattedSchema, flatteningPK)
+    
+    def writeFlattedModelFeaturesValues =
+      columns.foreach { column =>
+        val ops = column.writeOps(flattedSchema, flattedModel)
+        writer.write( ops.value :: Nil )
+      }
 
-    /**writes each feature of the (flattened) model*/
-    def writeFlattedModelFeatures =
-      columns.foreach(_.write(writer, flattedSchema, flattedModel))
+    def writeFlattedModelFeaturesMetadataWithTitle =
+      columns.foreach { column =>
+        val ops = column.writeOps(flattedSchema, flattedModel)
+        writer.write( ops.titles ++ ops.metadata )
+      }
 
     private def writePKHeaders(schema: TElement, pk: PK) =
-      pk.map(Feature(_)).foreach(_.write(writer, schema, flattedModel))
+      pk.map(Feature(_)).foreach { column =>
+        val ops = column.writeOps(schema, flattedModel)
+        writer.write( ops.value :: Nil )
+      }
   }
 }
 
@@ -103,11 +105,10 @@ case class ValueAreaLayout(offset: Offset) extends FlattedAreaLayout {
       area.featuresSize)
     sheet.rows.drop(offset.rowIndex).zip(area.flatten(models)).foreach {
       case (row, flattedModel) => {
-        val writer = area.newWriter(
-          new ColumnOrientedValueWriter(offset.columnIndex, row),
+        val writer = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)),
           flattedModel)
         writer.writeRootPKHeaders
-        writer.writeFlattedModelFeatures
+        writer.writeFlattedModelFeaturesValues
       }
     }
   }
@@ -127,17 +128,13 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout {
       .foreach {
         case (rows, flattedModel) => {
           rows.foreach { row =>
-	          val headersWriter = area.newWriter(
-	              new ColumnOrientedValueWriter(offset.rowIndex, row), flattedModel) 
+	          val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.rowIndex, Seq(row)), flattedModel) 
 	          headersWriter.writeRootPKHeaders
 	          headersWriter.writeFlattedPKHeaders
-	          headersWriter.writeTitles  
           }
           
-          val writer = area.newWriter(
-            new RowOrientedMetadataWriter(offset + Offset(0, area.headerSize), rows),
-            flattedModel)
-          writer.writeFlattedModelFeatures
+          val writer = area.newWriter(new RowOrientedWriter(offset + Offset(0, area.completePKSize), rows), flattedModel)
+          writer.writeFlattedModelFeaturesMetadataWithTitle
         }
       }
   }

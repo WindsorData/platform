@@ -6,6 +6,8 @@ import reader._
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
 import libt.spreadsheet.writer.CellWriter
+import libt.spreadsheet.writer.op
+import libt.spreadsheet.writer.op._
 
 /**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
@@ -18,8 +20,13 @@ sealed trait Column { //TODO rename
   def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder)
 
   /***Writes with a CellWriter, using the given TElement as schema*/
-  def write(writer: CellWriter, schema: TElement, model: Model)
-  def title: Option[(String, String)]
+  def writeOps(schema: TElement, model: Model) : WriteOps
+}
+
+trait WriteOps {
+  def value : WriteOp
+  def titles : List[WriteOp]
+  def metadata : List[WriteOp]
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/
@@ -27,20 +34,17 @@ case class Feature(path: Path) extends Column {
   def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
     modelBuilder += (path -> readValue(schema, reader))
 
-  def write(writer: CellWriter, schema: TElement, model: Model) = {
-    def foo[A] = featureReader(schema(path).asInstanceOf[TValue[A]]).
-      write(writer, model(path).asInstanceOf[Value[A]])
-    foo
+  def writeOps(schema: TElement, model: Model) = new WriteOps {
+    val reader = featureReader[AnyRef](schema(path).asInstanceOf[TValue[AnyRef]])
+    val element = model(path).asInstanceOf[Value[AnyRef]]
+    def value = reader.writeOp(element.value)
+    def metadata = element.metadataSeq.map(op.String(_)).toList
+    def titles = path.titles match {
+      case Nil => op.Skip :: op.Skip :: Nil
+      case it => op.String(Some(it.init.mkString(" - "))) :: op.String(Some(it.last)) :: Nil
+    }
   }
-
-  private def pathTitles = path.map(_.name)
       
-  override def title = pathTitles match {
-    case Nil => None
-    case it => Some(it.init.mkString(" - ") -> it.last) 
-  } 
-    
-
   private def readValue(schema: TElement, reader: CellReader) =
     featureReader(schema(path).asValue).read(reader)
   private def featureReader[A](tValue: TValue[A]): FeatureReader[A] = tValue match {
@@ -65,17 +69,9 @@ case object Gap extends Column {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
     reader.skip(1)
 
-  override def write(writer: CellWriter, schema: TElement, model: Model) =
-    writer.skip(1)
-
-  override def title = None
+  override def writeOps(schema: TElement, model: Model) = new WriteOps {
+    def value = Skip
+    def titles = Skip :: Skip :: Nil
+    def metadata = Skip :: Skip :: Skip :: Skip :: Nil
+  }
 }
-//TODO remove
-abstract class Calculation extends Column {
-  def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
-  override def write(writer: CellWriter, schema: TElement, model: Model) = ???
-  override def title = ???
-}
-case class Sum(path: Path) extends Calculation
-case class Averge(path: Path) extends Calculation
-case class Custom(path: Path, calculation: Any) extends Calculation

@@ -10,7 +10,6 @@ import libt._
 import libt.spreadsheet._
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
-import libt.spreadsheet.writer.ColumnOrientedValueWriter
 
 //trait Writer {
 //
@@ -107,7 +106,6 @@ object SpreadsheetWriter {
         }
     }
   }
-
   def write(out: Workbook, companies: Seq[Model]): Unit = {
     val areas = Seq(ValueAreaLayout(Offset(0,0)), MetadataAreaLayout(Offset(0,0))).map(
       FlattedArea(

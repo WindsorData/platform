@@ -10,9 +10,14 @@ package object libt {
   implicit def symbol2Route(s: Symbol) = Route(s)
   
   implicit def int2Index(i: Int) = Index(i)
+
+  implicit def path2RichPath(path: Path) = new {
+    def titles = path.map(_.name)
+  }
   
   object Path {
     def apply(parts: PathPart*): Path = List(parts: _*)
+    
   }
 
   //TODO rename

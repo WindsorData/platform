@@ -7,44 +7,52 @@ import libt.spreadsheet.util._
 import org.apache.poi.ss.usermodel.Cell
 import libt.spreadsheet.reader.Offset
 
-trait CellWriter {
+package object op {
+  type WriteOp = (Cell) => Unit
 
-  def numeric(value: Value[BigDecimal]) = writeNext(value.map(_.toDouble))(_.setCellValue(_))
-  def string(value: Value[String]) = writeNext(value)(_.setCellValue(_))
-  def xBoolean(value: Value[Boolean]) = writeNext(value)(_.setCellValue(_))
-  def date(value: Value[Date]) = writeNext(value)(_.setCellValue(_))
+  private def WriteOp[A](rawOp: (Cell, A) => Unit)(optionalValue: Option[A]): WriteOp =
+    cell => optionalValue.foreach(rawOp(cell, _)) 
+  
+  val Skip : WriteOp = _ => ()
+  
+  val Numeric = WriteOp((cell, value : BigDecimal) => cell.setCellValue(value.toDouble)) _
+  val String = WriteOp((cell, value : String ) => cell.setCellValue(value)) _ 
+  val Boolean = WriteOp((cell, value : Boolean) => cell.setCellValue(value)) _
+  val Date = WriteOp((cell, value : Date) => cell.setCellValue(value)) _
+}
+
+
+trait CellWriter {
+  def write(writeOps: Seq[op.WriteOp])
 
   def skip(offset: Int) = for (_ <- 1 to offset) skip1
-
-  protected def writeNext[A](value: Value[A])(writeFunction: (Cell, A) => Unit)
 
   protected def skip1: Unit
 }
 
-class ColumnOrientedValueWriter(offset: Int, row: Row) extends CellWriter {
-  private val cellIterator = row.cells.iterator
+class ColumnOrientedWriter(offset: Int, rows: Seq[Row]) extends CellWriter {
+  private val cellIterator = rows.map(_.cells.iterator)
   skip(offset)
-  
-  override protected def skip1 = cellIterator.next
-  override protected def writeNext[A](value: Value[A])(writeFunction: (Cell, A) => Unit) {
-    val nextCell = cellIterator.next
-    value.value.foreach(writeFunction(nextCell, _))
+
+  private def nextCells = cellIterator.map(_.next)
+  override protected def skip1 = nextCells
+
+  override def write(ops: Seq[op.WriteOp]) {
+    for ((op, nextCell) <- ops.zip(nextCells))
+      op(nextCell)
   }
 }
 
 //currently only supports metadata
-class RowOrientedMetadataWriter(offset: Offset, rows: Seq[Row]) extends CellWriter {
+class RowOrientedWriter(offset: Offset, rows: Seq[Row]) extends CellWriter {
   private val rowsIterator = rows.drop(offset.rowIndex).iterator
 
   override protected def skip1 = rowsIterator.next
 
-  override protected def writeNext[A](value: Value[A])(writeFunction: (Cell, A) => Unit) {
+  override def write(ops: Seq[op.WriteOp]) {
     val nextRow = rowsIterator.next
-    for ((Some(metadata), index) <- value.metadataSeq.zipWithIndex) {
-      nextRow
-      .cellAt(index + offset.columnIndex)
-      .setCellValue(metadata)
-    }
+    for ((op, index) <- ops.zipWithIndex)
+      op(nextRow.cellAt(index + offset.columnIndex))
   }
-  
+
 }

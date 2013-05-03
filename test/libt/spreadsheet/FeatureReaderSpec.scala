@@ -10,9 +10,10 @@ import libt.spreadsheet.writer.CellWriter
 import org.scalatest.junit.JUnitRunner
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
-import libt.spreadsheet.writer.ColumnOrientedValueWriter
 import libt.spreadsheet.util._
 import org.apache.poi.ss.usermodel.Cell
+import libt.spreadsheet.writer.ColumnOrientedWriter
+import libt.spreadsheet.writer.ColumnOrientedWriter
 
 @RunWith(classOf[JUnitRunner])
 class FeatureReaderSpec extends FunSpec with MockFactory with BeforeAndAfter {
@@ -46,14 +47,14 @@ class FeatureReaderSpec extends FunSpec with MockFactory with BeforeAndAfter {
     }
     
     it("should write the actual value if is not the default one") {
-      writer = new ColumnOrientedValueWriter(0, sheet.rows(0))
-      WithDefaultReader(StringReader, "X").write(writer, Value("f"))
+      writer = new ColumnOrientedWriter(0, sheet.rows)
+      writer.write(WithDefaultReader(StringReader, "X").writeOp(Some("f")) :: Nil)
       assert(sheet.cellAt(0, 0).getStringCellValue() === "f")
     }
 
     it("should skip the column when the value is the default") {
-      writer = new ColumnOrientedValueWriter(0, sheet.rows(0))
-      WithDefaultReader(StringReader, "X").write(writer, Value("X"))
+      writer = new ColumnOrientedWriter(0, sheet.rows)
+      writer.write(WithDefaultReader(StringReader, "X").writeOp(Some("X")) :: Nil)
       assert(sheet.cellAt(0, 0).getCellType() === Cell.CELL_TYPE_BLANK) 
     }
 

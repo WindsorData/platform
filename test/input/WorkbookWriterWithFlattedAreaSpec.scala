@@ -105,7 +105,6 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
 
   it should "write a row for each root model and flattened model" in {
     writeModel
-//    wb.write(new FileOutputStream("foo.xlsx"))
     //First root model - First flattened model
     assert(sheet.cellAt(0, 0).getNumericCellValue() === 1000)
     assert(sheet.cellAt(0, 1).getStringCellValue() === "value1")
