@@ -4,7 +4,7 @@ import libt._
 
 sealed trait Reduction {
   def reduce(model: Model): BigDecimal
-  def filterValues(path: Path, model: Model) =
+  protected def filterValues(path: Path, model: Model) =
     model.applySeq(path).map(_.asValue[BigDecimal])
 }
 

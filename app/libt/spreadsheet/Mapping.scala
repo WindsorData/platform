@@ -8,6 +8,7 @@ import libt.spreadsheet.util._
 import libt.spreadsheet.writer.CellWriter
 import libt.spreadsheet.writer.op
 import libt.spreadsheet.writer.op._
+import output.calculation.Reduction
 
 /**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
@@ -25,8 +26,8 @@ sealed trait Column { //TODO rename
 
 trait WriteOps {
   def value : WriteOp
-  def titles : List[WriteOp]
-  def metadata : List[WriteOp]
+  def titles : List[WriteOp] = List.fill(2)(Skip)
+  def metadata : List[WriteOp] = List.fill(4)(Skip)
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/
@@ -37,9 +38,9 @@ case class Feature(path: Path) extends Column {
   def writeOps(schema: TElement, model: Model) = new WriteOps {
     val reader = featureReader[AnyRef](schema(path).asInstanceOf[TValue[AnyRef]])
     val element = model(path).asInstanceOf[Value[AnyRef]]
-    def value = reader.writeOp(element.value)
-    def metadata = element.metadataSeq.map(op.String(_)).toList
-    def titles = path.titles match {
+    override def value = reader.writeOp(element.value)
+    override def metadata = element.metadataSeq.map(op.String(_)).toList
+    override def titles = path.titles match {
       case Nil => op.Skip :: op.Skip :: Nil
       case it => op.String(Some(it.init.mkString(" - "))) :: op.String(Some(it.last)) :: Nil
     }
@@ -63,6 +64,24 @@ object Feature {
   def apply(pathParts: PathPart*): Feature = Feature(pathParts.toList)
 }
 
+case class Tag(tag: String, column:Column) extends Column {
+  override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = 
+    column.read(reader, schema, modelBuilder)
+  override def writeOps(schema: TElement, model: Model) = new WriteOps {
+    private val writeOps = column.writeOps(schema, model)
+    override def value =  op.String(Some(tag))
+    override def metadata = writeOps.metadata
+    override def titles = writeOps.titles
+  }
+}
+
+case class Calculation(reduction: Reduction) extends Column {
+  override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
+  override def writeOps(schema: TElement, model: Model) = new WriteOps {
+    def value = Numeric(Some(reduction.reduce(model)))
+  }
+}
+
 /**A column whose value is not important and should be skipped*/
 case object Gap extends Column {
 
@@ -70,8 +89,6 @@ case object Gap extends Column {
     reader.skip(1)
 
   override def writeOps(schema: TElement, model: Model) = new WriteOps {
-    def value = Skip
-    def titles = Skip :: Skip :: Nil
-    def metadata = Skip :: Skip :: Skip :: Skip :: Nil
+    override def value = Skip
   }
 }
