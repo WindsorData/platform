@@ -18,12 +18,10 @@ import org.apache.poi.hssf.usermodel.HSSFComment
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor
 import org.apache.poi.hssf.usermodel.HSSFRichTextString
 import java.util.Date
-import org.apache.poi.ss.util.CellUtil
 import libt.Model
 import libt.Value
 import libt._
 import libt.spreadsheet.util._
-
 trait Writer {
 
   def defineValidSheetCells(sheet: Sheet, x: Int = 50, y: Int = 100) = {
@@ -105,18 +103,18 @@ class MetaDataWriter(wb: Workbook) extends Writer {
   def write(titleName: String, itemName: String, metadata: Seq[Option[String]]) {
     val row = rowIterator.next
     if (!isCompanyHeaderWritten) {
-      CellUtil.getCell(row, 0).setCellValue(company.v[String]('ticker).value.get)
-      CellUtil.getCell(row, 1).setCellValue(company.v[String]('name).value.get)
-      CellUtil.getCell(row, 2).setCellValue(company.v[Int]('disclosureFiscalYear).value.get)
+      row.cellAt(0).setCellValue(company.v[String]('ticker).value.get)
+      row.cellAt(1).setCellValue(company.v[String]('name).value.get)
+      row.cellAt(2).setCellValue(company.v[Int]('disclosureFiscalYear).value.get)
       isCompanyHeaderWritten = true
     }
-    CellUtil.getCell(row, 3).setCellValue(lastName)
-    CellUtil.getCell(row, 4).setCellValue(titleName)
-    CellUtil.getCell(row, 5).setCellValue(itemName)
+    row.cellAt(3).setCellValue(lastName)
+    row.cellAt(4).setCellValue(titleName)
+    row.cellAt(5).setCellValue(itemName)
 
     metadata.foldLeft(5) { (acum, value) =>
       value match {
-        case Some(v) => CellUtil.getCell(row, acum).setCellValue(v)
+        case Some(v) => row.cellAt(acum).setCellValue(v)
         case _ => Unit
       }
       acum + 1
