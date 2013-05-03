@@ -59,13 +59,5 @@ class TestDriver extends FunSpec {
     }
   }
 
-  describe("value") {
-    it("can map") {
-      assert(Value(4).map(_ + 1) === Value(5))
-    }
-    it("can perform orDefault") {
-      assert(Value(4).orDefault(5) === Value(4))
-      assert(Value().orDefault(5) === Value(5))
-    }
-  }
+
 }

@@ -16,6 +16,7 @@ import scala.math.BigDecimal.double2bigDecimal
 trait CellReader {
 
   def string = createValue(blankToNone(_.getStringCellValue))
+  def int = createValue(blankToNone(_.getNumericCellValue.toInt))
   def numeric = createValue(blankToNone(_.getNumericCellValue: BigDecimal))
   def boolean = createValue(blankToNone(_.getBooleanCellValue))
   def xBoolean = string.orDefault("").map(_=="X")
