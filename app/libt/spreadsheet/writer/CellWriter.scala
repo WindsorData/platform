@@ -16,6 +16,7 @@ package object op {
   val Skip : WriteOp = _ => ()
   
   val Numeric = WriteOp((cell, value : BigDecimal) => cell.setCellValue(value.toDouble)) _
+  val Int = WriteOp((cell, value : Int) => cell.setCellValue(value.toInt)) _
   val String = WriteOp((cell, value : String ) => cell.setCellValue(value)) _ 
   val Boolean = WriteOp((cell, value : Boolean) => cell.setCellValue(value)) _
   val Date = WriteOp((cell, value : Date) => cell.setCellValue(value)) _

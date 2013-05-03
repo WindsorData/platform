@@ -52,7 +52,7 @@ case class Feature(path: Path) extends Column {
     case _: TEnum => StringReader
     case TNumber => NumericReader
     case TWithDefault(baseReader, default) => WithDefaultReader(featureReader(baseReader), default)
-    case TInt => ???
+    case TInt => IntReader
     case TBool => ???
     case TXBool => XBoolReader
     case TDate => DateReader

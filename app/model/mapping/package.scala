@@ -58,9 +58,9 @@ package object mapping {
     import scala.collection.JavaConversions._
     import libt.spreadsheet.util._
 
-    val ROW_INDEX_FISCAL_YEAR = 27
-    val ROW_INDEX_FISCAL_YEAR_MINUS_ONE = 42
-    val ROW_INDEX_FISCAL_YEAR_MINUS_TWO = 57
+    val ROW_INDEX_FISCAL_YEAR = 25
+    val ROW_INDEX_FISCAL_YEAR_MINUS_ONE = 40
+    val ROW_INDEX_FISCAL_YEAR_MINUS_TWO = 55
 
     def dateCellToYear(r: Seq[Row]) = {
       val dateCell = r.get(0).getCell(2)

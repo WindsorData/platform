@@ -15,6 +15,11 @@ case object NumericReader extends FeatureReader[BigDecimal] {
   override def writeOp(value: Option[BigDecimal]) = op.Numeric(value)
 }
 
+case object IntReader extends FeatureReader[Int] {
+  def read(reader: CellReader) = reader.int
+  override def writeOp(value: Option[Int]) = op.Int(value)
+}
+
 case object StringReader extends FeatureReader[String] {
   def read(reader: CellReader) = reader.string
   override def writeOp(value: Option[String]) = op.String(value)

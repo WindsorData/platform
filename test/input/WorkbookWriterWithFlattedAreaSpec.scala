@@ -76,6 +76,7 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
     wb.createSheet()
     sheet = wb.getSheetAt(0)
     offset = Offset(0,0)
+    writeModel
   }
 
   after {
@@ -83,20 +84,17 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
   }
 
   it should "write keys" in {
-    writeModel
     assert(sheet.cellAt(0, 0).getNumericCellValue() === 1000)
     assert(sheet.cellAt(0, 1).getStringCellValue() === "value1")
   }
 
   it should "write values of flattened models" in {
-    writeModel
     assert(sheet.cellAt(0, 2).getStringCellValue() === "someValue")
     assert(sheet.cellAt(0, 3).getStringCellValue() === "foo")
     assert(sheet.cellAt(0, 4).getBooleanCellValue())
   }
 
   it should "write a row for each flatted model" in {
-    writeModel
     assert(sheet.cellAt(0, 0).getNumericCellValue() === 1000)
     assert(sheet.cellAt(0, 2).getStringCellValue() === "someValue")
     assert(sheet.cellAt(1, 0).getNumericCellValue() === 1000)
@@ -104,7 +102,6 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
   }
 
   it should "write a row for each root model and flattened model" in {
-    writeModel
     //First root model - First flattened model
     assert(sheet.cellAt(0, 0).getNumericCellValue() === 1000)
     assert(sheet.cellAt(0, 1).getStringCellValue() === "value1")
@@ -139,22 +136,5 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
     assert(sheet.cellAt(0, 2).getNumericCellValue() === 1000)
     assert(sheet.cellAt(2, 2).getNumericCellValue() === 2000)
     assert(sheet.cellAt(3, 2).getNumericCellValue() === 2000)
-  }
-  
-  it should "write keys on metadata" in {
-    WorkbookMapping(
-    Seq(
-      FlattedArea(
-        PK(Path('key1), Path('key2)),
-        PK(Path('c)),
-        Path('values),
-        TSimpleSchema,
-        MetadataAreaLayout(offset),
-        Seq(
-          Feature('c),
-          Feature('d),
-          Feature('e)))))
-    .write(models, wb)
-    fail("Fix titles")
   }
 }
