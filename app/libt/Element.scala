@@ -1,6 +1,7 @@
 package libt
 import sys.error
 import util._
+import output._
 
 /**
  * @author flbulgarelli
@@ -8,7 +9,7 @@ import util._
 sealed trait Element extends ElementLike[Element] {
   override type ModelType = Model
   override type ColType = Col
-  override type ValueType[_] = Value[_]
+  override type ValueType[A] = Value[A]
 
   /**
    * *
@@ -35,6 +36,11 @@ sealed trait Element extends ElementLike[Element] {
    * This method only works for keyed elements - Models.
    */
   def c(key: Symbol) = m(key).asCol.elements
+  
+  def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
+    case (* :: tail, self: Col) => self.elements.map(_.apply(tail))
+    case (Route(field) :: tail, self: Model) => self(field).applySeq(tail)
+  }
 }
 
 /*=======Value=======*/

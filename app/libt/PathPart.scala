@@ -24,3 +24,7 @@ case class Route(symbol: Symbol) extends PathPart {
 case class Index(position: Int) extends PathPart {
   def name = position.toString
 }
+/**A path part that points to the elements of a Col*/
+case object * extends PathPart {
+  def name = "*"
+}
