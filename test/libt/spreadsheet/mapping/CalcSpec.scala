@@ -6,7 +6,7 @@ import org.scalatest.junit.JUnitRunner
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt.spreadsheet.util._
-import output.calculation._
+import libt.reduction._
 import libt._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell

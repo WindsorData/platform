@@ -4,8 +4,10 @@ import scala.math.BigDecimal.double2bigDecimal
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import libt.spreadsheet.util._
+import libt.spreadsheet.generic._
 import libt.spreadsheet._
 import libt._
+
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
  * The exact orientation of cells groups - columns or rows - depends on implementors.
@@ -14,7 +16,7 @@ import libt._
  * 
  * @author flbulgarelli
  */
-trait CellReader {
+trait CellReader extends SkipeableLike {
 
   def string = createValue(blankToNone(_.getStringCellValue))
   def int = createValue(blankToNone(_.getNumericCellValue.toInt))
@@ -23,9 +25,6 @@ trait CellReader {
   def xBoolean = string.orDefault("").map(_=="X")
   def date = createValue(blankToNone(_.getDateCellValue))
   
-
-  def skip(offset: Int) = for (_ <- 1 to offset) skip1
-  protected def skip1: Unit
   protected def next: Seq[Cell]
 
   private def createValue[T](valueMapper: Cell => Option[T]): Value[T] = {

@@ -24,10 +24,10 @@ sealed trait Strip {
   def writeOps(schema: TElement, model: Element) : WriteOps
 }
 
-trait WriteOps {
+trait WriteOps extends LibtSizes {
   def value : WriteOp
-  def titles : List[WriteOp] = List.fill(2)(Skip)
-  def metadata : List[WriteOp] = List.fill(4)(Skip)
+  def titles : List[WriteOp] = List.fill(TitlesSize)(Skip)
+  def metadata : List[WriteOp] = List.fill(MetadataSize)(Skip)
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/

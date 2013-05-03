@@ -6,6 +6,7 @@ import org.apache.poi.ss.usermodel.Row
 import libt.spreadsheet.util._
 import org.apache.poi.ss.usermodel.Cell
 import libt.spreadsheet.Offset
+import libt.spreadsheet.generic.SkipeableLike
 
 package object op {
   type WriteOp = (Cell) => Unit
@@ -23,12 +24,8 @@ package object op {
 }
 
 
-trait CellWriter {
+trait CellWriter extends SkipeableLike {
   def write(writeOps: Seq[op.WriteOp])
-
-  def skip(offset: Int) = for (_ <- 1 to offset) skip1
-
-  protected def skip1: Unit
 }
 
 class ColumnOrientedWriter(columnOffset: Int, rows: Seq[Row]) extends CellWriter {
@@ -44,7 +41,6 @@ class ColumnOrientedWriter(columnOffset: Int, rows: Seq[Row]) extends CellWriter
   }
 }
 
-//currently only supports metadata
 class RowOrientedWriter(offset: Offset, rows: Seq[Row]) extends CellWriter {
   private val rowsIterator = rows.drop(offset.rowIndex).iterator
 

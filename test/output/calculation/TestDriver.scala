@@ -3,7 +3,7 @@ package output.calculation
 import org.junit.runner.RunWith
 import org.scalatest.FunSpec
 import org.scalatest.junit.JUnitRunner
-import output.calculation
+import libt.reduction._
 import libt._
 
 @RunWith(classOf[JUnitRunner])
