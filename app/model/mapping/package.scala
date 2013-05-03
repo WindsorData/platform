@@ -14,11 +14,11 @@ package object mapping {
 
    implicit def pathToFeature(path: Path): Feature = Feature(path)
 
-  def colOfModelsPath(basePath: Symbol, times: Int, paths: Symbol*): Seq[Column] =
+  def colOfModelsPath(basePath: Symbol, times: Int, paths: Symbol*): Seq[Strip] =
     for (index <- 0 to times; valuePath <- paths) yield Feature(Path(basePath, index, valuePath))
 
   val executiveMapping = 
-    Seq[Column](Path('firstName),
+    Seq[Strip](Path('firstName),
       Path('lastName),
       Path('title),
       Path('functionalMatches, 'primary),
@@ -42,7 +42,7 @@ package object mapping {
       colOfModelsPath('timeVestRS, 5, 'grantDate, 'number, 'price, 'value, 'type) ++
       colOfModelsPath('performanceVestRS, 2, 'grantDate, 'targetNumber, 'grantDatePrice, 'targetValue, 'type) ++
       colOfModelsPath('performanceCash, 2, 'grantDate, 'targetValue, 'payout) ++
-      Seq[Column](
+      Seq[Strip](
         Path('carriedInterest, 'ownedShares, 'beneficialOwnership),
         Path('carriedInterest, 'ownedShares, 'options),
         Path('carriedInterest, 'ownedShares, 'unvestedRestrictedStock),

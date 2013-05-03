@@ -194,7 +194,7 @@ class TestDriver extends FunSpec {
     }
   }
 
-  def TestArea(schema: TModel, mapping: Seq[Column]) =
+  def TestArea(schema: TModel, mapping: Seq[Strip]) =
     Area(schema, Offset(0, 0), ColumnOrientedLayout, mapping)
 
   //  describe("mapper for output marshalling") {

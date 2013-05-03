@@ -1,9 +1,16 @@
-package output.calculation
+package libt.reduction
 
 import libt._
 
+/**
+ * A numeric reduction - aggregation - over an element
+ * @author metalkorva
+ * */
 sealed trait Reduction {
+  
+  /**Reduces the given element to a BigDecimal*/
   def reduce(model: Element): BigDecimal
+  
   protected def filterValues(path: Path, model: Element) =
     model.applySeq(path).map(_.asValue[BigDecimal])
 }

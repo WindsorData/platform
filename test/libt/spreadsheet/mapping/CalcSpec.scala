@@ -12,7 +12,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 
 @RunWith(classOf[JUnitRunner])
-class CalculationSpec extends FlatSpec {
+class CalcSpec extends FlatSpec {
 
   val model = Seq(
     Model(
@@ -30,7 +30,7 @@ class CalculationSpec extends FlatSpec {
     ColumnOrientedLayout,
     Seq(
       Feature('a),
-      Calculation(Sum(Path('b, *)))))
+      Calc(Sum(Path('b, *)))))
 
   def writeSheet = {
     val wb = new HSSFWorkbook()

@@ -53,7 +53,7 @@ case class Area(
     schema: TModel, 
     offset: Offset, 
     orientation: Layout, 
-    columns: Seq[Column]) extends SheetDefinition {
+    columns: Seq[Strip]) extends SheetDefinition {
   
   import libt.spreadsheet.util._
 

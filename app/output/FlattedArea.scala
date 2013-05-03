@@ -1,7 +1,7 @@
 package output
 
 import libt._
-import libt.spreadsheet.Column
+import libt.spreadsheet.Strip
 import libt.spreadsheet.reader.SheetDefinition
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
@@ -33,7 +33,7 @@ case class FlattedArea(
   flatteningPath: Path,
   schema: TModel,
   layout: FlattedAreaLayout,
-  columns: Seq[Column])
+  columns: Seq[Strip])
   extends SheetDefinition {
 
   //TODO remove method 
