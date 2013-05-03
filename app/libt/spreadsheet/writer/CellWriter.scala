@@ -31,9 +31,9 @@ trait CellWriter {
   protected def skip1: Unit
 }
 
-class ColumnOrientedWriter(offset: Int, rows: Seq[Row]) extends CellWriter {
+class ColumnOrientedWriter(columnOffset: Int, rows: Seq[Row]) extends CellWriter {
   private val cellIterator = rows.map(_.cells.iterator)
-  skip(offset)
+  skip(columnOffset)
 
   private def nextCells = cellIterator.map(_.next)
   override protected def skip1 = nextCells

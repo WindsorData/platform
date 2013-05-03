@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Row
 import libt.builder.ModelBuilder
 import libt.spreadsheet.util.sheet2RichSheet
+import libt.spreadsheet.writer.ColumnOrientedWriter
 
 class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
   //TODO move to WBMapping
@@ -29,7 +30,6 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 
   def read(wb: Workbook) = ioAction(wb, (sheet, area) => area.read(sheet))
   def write(models: Seq[Model], wb: Workbook) = ioAction(wb, (sheet, area) => area.write(models)(sheet)) 
-
 }
 
 trait Combiner[A] {
@@ -42,29 +42,32 @@ case class Offset(rowIndex: Int, columnIndex: Int) {
 }
 
 sealed trait Orientation {
-  def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model]
-
-  def makeModels(schema: TModel, columns: Seq[Column], rows: Seq[Row], orientation: Seq[Row] => CellReader): Model = {
-    val modelBuilder = new ModelBuilder()
-    val reader = orientation(rows)
-    for (column <- columns)
-      column.read(reader, schema, modelBuilder)
-    modelBuilder.build
-  }
+  def read(area: Area, sheet: Sheet): Seq[Model]
+  def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
 object RowOrientation extends Orientation {
   import libt.spreadsheet.util._
-  override def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model] = {
-    Seq(makeModels(schema, columns, sheet.rows, new RowOrientedReader(offset, _)))
-  }
+  override def read(area: Area, sheet: Sheet) = 
+    Seq(area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _)))
+  override def write(area: Area, sheet: Sheet, models: Seq[Model]) = ???
 }
 
 object ColumnOrientation extends Orientation {
   import libt.spreadsheet.util._
-  override def read(schema: TModel, columns: Seq[Column], sheet: Sheet, offset: Offset): Seq[Model] = {
-    sheet.rows.drop(offset.rowIndex).grouped(6).map { rows =>
-      makeModels(schema, columns, rows, new ColumnOrientedReader(offset.columnIndex, _))
+  
+  override def read(area: Area, sheet: Sheet) =
+    sheet.rows.drop(area.offset.rowIndex).grouped(6).map { rows =>
+      area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _))
     }.toSeq
+
+  override def write(area: Area, sheet: Sheet, models: Seq[Model]) {
+    sheet.defineLimits(area.offset, models.size * 6, area.columns.size)
+    (sheet.rows.drop(area.offset.rowIndex).grouped(6).toSeq, models).zipped.foreach { (row, model) =>
+      val writer = new ColumnOrientedWriter(area.offset.columnIndex, row)
+      area.columns.foreachWithOps(model, area.schema) { ops =>
+        writer.write(ops.value :: ops.metadata)
+      }
+    }
   }
 }
 
@@ -85,12 +88,22 @@ case class Area(
     offset: Offset, 
     orientation: Orientation, 
     columns: Seq[Column]) extends SheetDefinition {
+  
   import libt.spreadsheet.util._
 
   def read(sheet: Sheet): Seq[Model] =
-    orientation.read(schema, columns, sheet, offset)
+    orientation.read(this, sheet)
 
-  def write(models: Seq[Model])(sheet: Sheet): Unit = ???
+  def write(models: Seq[Model])(sheet: Sheet) = 
+    orientation.write(this, sheet, models)
+    
+  private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
+    val modelBuilder = new ModelBuilder()
+    val reader = orientation(rows)
+    for (column <- columns)
+      column.read(reader, schema, modelBuilder)
+    modelBuilder.build
+  }  
 
   def continually = Stream.continually[SheetDefinition](this)
 }

@@ -10,6 +10,15 @@ import libt.spreadsheet.writer.op
 import libt.spreadsheet.writer.op._
 import output.calculation.Reduction
 
+object `package` {
+  implicit def columnsSeq2RichColummnsSeq(columns: Seq[Column]) = new {
+    def foreachWithOps(model: Element, schema: TElement)(action: WriteOps => Unit) =
+      columns.foreach { column =>
+        val ops = column.writeOps(schema, model)
+        action(ops)
+      }
+  }
+}
 /**
  * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
  */
@@ -21,7 +30,7 @@ sealed trait Column { //TODO rename
   def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder)
 
   /***Writes with a CellWriter, using the given TElement as schema*/
-  def writeOps(schema: TElement, model: Model) : WriteOps
+  def writeOps(schema: TElement, model: Element) : WriteOps
 }
 
 trait WriteOps {
@@ -35,7 +44,7 @@ case class Feature(path: Path) extends Column {
   def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
     modelBuilder += (path -> readValue(schema, reader))
 
-  def writeOps(schema: TElement, model: Model) = new WriteOps {
+  override def writeOps(schema: TElement, model: Element) = new WriteOps {
     val reader = featureReader[AnyRef](schema(path).asInstanceOf[TValue[AnyRef]])
     val element = model(path).asInstanceOf[Value[AnyRef]]
     override def value = reader.writeOp(element.value)
@@ -67,7 +76,7 @@ object Feature {
 case class Tag(tag: String, column:Column) extends Column {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = 
     column.read(reader, schema, modelBuilder)
-  override def writeOps(schema: TElement, model: Model) = new WriteOps {
+  override def writeOps(schema: TElement, model: Element) = new WriteOps {
     private val writeOps = column.writeOps(schema, model)
     override def value =  op.String(Some(tag))
     override def metadata = writeOps.metadata
@@ -77,7 +86,7 @@ case class Tag(tag: String, column:Column) extends Column {
 
 case class Calculation(reduction: Reduction) extends Column {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
-  override def writeOps(schema: TElement, model: Model) = new WriteOps {
+  override def writeOps(schema: TElement, model: Element) = new WriteOps {
     def value = Numeric(Some(reduction.reduce(model)))
   }
 }
@@ -88,7 +97,7 @@ case object Gap extends Column {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) =
     reader.skip(1)
 
-  override def writeOps(schema: TElement, model: Model) = new WriteOps {
+  override def writeOps(schema: TElement, model: Element) = new WriteOps {
     override def value = Skip
   }
 }
