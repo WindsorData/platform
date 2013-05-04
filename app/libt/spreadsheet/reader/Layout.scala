@@ -42,7 +42,7 @@ object ColumnOrientedLayout extends Layout {
   }
     
   def effectiveRowGrops(area: Area, sheet: Sheet) = 
-    sheet.rows.drop(area.offset.rowIndex).grouped(6)   
+     sheet.rows(area.offset).grouped(6)   
 }
 
 

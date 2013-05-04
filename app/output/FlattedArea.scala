@@ -99,7 +99,7 @@ case class ValueAreaLayout(offset: Offset) extends FlattedAreaLayout {
     sheet.defineLimits(offset,
       models.size * area.flatteningColSize(models),
       area.featuresSize)
-    (sheet.rows.drop(offset.rowIndex), area.flatten(models)).zipped.foreach { (row, flattedModel) =>
+    (sheet.rows(offset), area.flatten(models)).zipped.foreach { (row, flattedModel) =>
       val writer = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)),
         flattedModel)
       writer.writeRootPKHeaders
@@ -113,7 +113,7 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
     sheet.defineLimits(offset,
       area.flatteningColSize(models) * area.featuresSize,
       area.headerSize + MetadataSize)
-    (sheet.rows.drop(offset.rowIndex).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach { 
+    (sheet.rows(offset).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach { 
       (rows, flattedModel) =>
       rows.foreach { row =>
         val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.rowIndex, Seq(row)), flattedModel)

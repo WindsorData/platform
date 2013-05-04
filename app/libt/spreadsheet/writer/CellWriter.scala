@@ -7,6 +7,8 @@ import libt.spreadsheet.util._
 import org.apache.poi.ss.usermodel.Cell
 import libt.spreadsheet.Offset
 import libt.spreadsheet.generic.SkipeableLike
+import libt.spreadsheet.generic.RowOrientedLike
+import libt.spreadsheet.generic.ColumnOrientedLike
 
 package object op {
   type WriteOp = (Cell) => Unit
@@ -28,26 +30,22 @@ trait CellWriter extends SkipeableLike {
   def write(writeOps: Seq[op.WriteOp])
 }
 
-class ColumnOrientedWriter(columnOffset: Int, rows: Seq[Row]) extends CellWriter {
-  private val cellIterator = rows.map(_.cells.iterator)
-  skip(columnOffset)
-
-  private def nextCells = cellIterator.map(_.next)
-  override protected def skip1 = nextCells
-
+class ColumnOrientedWriter(
+    override val columnOffset: Int, 
+    override val rows: Seq[Row]) extends CellWriter with ColumnOrientedLike {
+  private def nextCells = cellIterators.map(_.next)
   override def write(ops: Seq[op.WriteOp]) {
     for ((op, nextCell) <- ops.zip(nextCells))
       op(nextCell)
   }
 }
 
-class RowOrientedWriter(offset: Offset, rows: Seq[Row]) extends CellWriter {
-  private val rowsIterator = rows.drop(offset.rowIndex).iterator
-
-  override protected def skip1 = rowsIterator.next
-
+class RowOrientedWriter(
+    override val offset: Offset, 
+    override val rows: Seq[Row]) extends CellWriter with RowOrientedLike {
+  
   override def write(ops: Seq[op.WriteOp]) {
-    val nextRow = rowsIterator.next
+    val nextRow = rowIterator.next
     for ((op, index) <- ops.zipWithIndex)
       op(nextRow.cellAt(index + offset.columnIndex))
   }
