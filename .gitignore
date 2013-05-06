@@ -17,4 +17,4 @@ dist
 /.cache
 /.worksheet/*
 /bin/*
-
+/.metadata

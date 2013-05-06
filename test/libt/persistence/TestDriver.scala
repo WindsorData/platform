@@ -21,6 +21,7 @@ import org.scalatest.junit.JUnitRunner
 class TestDriver extends FunSpec {
 
   describe("tmodel persistence") {
+      
     it("can marshall values") {
       val schema = TString
       assert(schema.marshall(
