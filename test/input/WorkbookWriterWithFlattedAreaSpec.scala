@@ -13,6 +13,7 @@ import org.scalatest.BeforeAndAfter
 import java.io.FileOutputStream
 import output._
 import org.scalatest.FlatSpec
+import libt.spreadsheet.Offset
 
 @RunWith(classOf[JUnitRunner])
 class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {

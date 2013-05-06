@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
-import libt.spreadsheet.reader.Offset
 
 package object util {
 
@@ -12,6 +11,8 @@ package object util {
     def cellAt(rowIndex: Int, columnIndex: Int) =
       CellUtil.getCell(CellUtil.getRow(rowIndex, sheet), columnIndex)
 
+    def rows(offset:Offset) : Seq[Row] = rows.drop(offset.rowIndex)   
+      
     def rows: Seq[Row] = for (rowIndex <- 0 to sheet.getLastRowNum())
       yield CellUtil.getRow(rowIndex, sheet)
 

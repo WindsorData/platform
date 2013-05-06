@@ -20,6 +20,10 @@ package object libt {
     
   }
 
+  /**
+   * A PK is just a sequence of Paths that represent
+   * the primary identifier an element
+   */
   //TODO rename
   type PK = Seq[Path]
   

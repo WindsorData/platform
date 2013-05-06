@@ -12,7 +12,6 @@ sealed trait Element extends ElementLike[Element] {
   override type ValueType[A] = Value[A]
 
   /**
-   * *
    * Answers the element at the given field key.
    *
    * This method only works for keyed elements - Models.

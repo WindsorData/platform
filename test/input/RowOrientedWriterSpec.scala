@@ -5,7 +5,7 @@ import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 import output.MetadataAreaLayout
-import libt.spreadsheet.reader.Offset
+import libt.spreadsheet.Offset
 import org.apache.poi.ss.usermodel.Row
 import libt._
 import org.apache.poi.ss.usermodel.WorkbookFactory

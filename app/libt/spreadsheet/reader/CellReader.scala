@@ -1,10 +1,13 @@
 package libt.spreadsheet.reader
 
+import scala.math.BigDecimal.double2bigDecimal
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
-import libt.Value
 import libt.spreadsheet.util._
-import scala.math.BigDecimal.double2bigDecimal
+import libt.spreadsheet.generic._
+import libt.spreadsheet._
+import libt._
+
 /**
  * Trait for reading cells, that allows to parse cell groups as Inputs
  * The exact orientation of cells groups - columns or rows - depends on implementors.
@@ -13,7 +16,7 @@ import scala.math.BigDecimal.double2bigDecimal
  * 
  * @author flbulgarelli
  */
-trait CellReader {
+trait CellReader extends SkipeableLike {
 
   def string = createValue(blankToNone(_.getStringCellValue))
   def int = createValue(blankToNone(_.getNumericCellValue.toInt))
@@ -22,9 +25,6 @@ trait CellReader {
   def xBoolean = string.orDefault("").map(_=="X")
   def date = createValue(blankToNone(_.getDateCellValue))
   
-
-  def skip(offset: Int) = for (_ <- 1 to offset) skip1
-  protected def skip1: Unit
   protected def next: Seq[Cell]
 
   private def createValue[T](valueMapper: Cell => Option[T]): Value[T] = {
@@ -45,11 +45,10 @@ trait CellReader {
  * {{CellReader}} that expects vertical cell groups, that is, data items are found in columns
  * @author flbulgarelli
  */
-class ColumnOrientedReader(columnOffset: Int, rows: Seq[Row]) extends CellReader {
-  private val cellIterators = rows.map(_.cells).map(_.iterator) 
-  skip(columnOffset)
-  
-  override protected def skip1 = cellIterators.foreach(_.next)
+class ColumnOrientedReader(
+    override val columnOffset: Int, 
+    override val rows: Seq[Row]) extends CellReader with ColumnOrientedLike {
+
   override protected def next = cellIterators.map(_.next)
 }
 
@@ -58,12 +57,11 @@ class ColumnOrientedReader(columnOffset: Int, rows: Seq[Row]) extends CellReader
  * data items are found in rows
  * @author flbulgarelli
  */
-class RowOrientedReader(offset: Offset, rows: Seq[Row]) extends CellReader {
-  private val rowIterator = rows.drop(offset.rowIndex).iterator
-
-  override protected def skip1 = rowIterator.next
+class RowOrientedReader(
+    override val offset: Offset, 
+    override val rows: Seq[Row]) extends CellReader with RowOrientedLike {
+  
   override protected def next = rowIterator.next.cells.drop(offset.columnIndex) 
-
   override protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
     Value(value,
       None,

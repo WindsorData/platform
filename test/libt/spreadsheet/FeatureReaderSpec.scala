@@ -37,24 +37,24 @@ class FeatureReaderSpec extends FunSpec with MockFactory with BeforeAndAfter {
     it("should read the actual value if is not the default one") {
       reader = mock[CellReader]
       (reader.string _).expects.returns(Value("Y"))
-      assert(WithDefaultReader(StringReader, "X").read(reader) === Value("Y"))
+      assert(TWithDefaultMapping(TStringMapping, "X").read(reader) === Value("Y"))
     }
 
     it("should read value if is not the default one") {
       reader = mock[CellReader]
       (reader.string _).expects.returns(Value())
-      assert(WithDefaultReader(StringReader, "X").read(reader) === Value("X"))
+      assert(TWithDefaultMapping(TStringMapping, "X").read(reader) === Value("X"))
     }
     
     it("should write the actual value if is not the default one") {
       writer = new ColumnOrientedWriter(0, sheet.rows)
-      writer.write(WithDefaultReader(StringReader, "X").writeOp(Some("f")) :: Nil)
+      writer.write(TWithDefaultMapping(TStringMapping, "X").writeOp(Some("f")) :: Nil)
       assert(sheet.cellAt(0, 0).getStringCellValue() === "f")
     }
 
     it("should skip the column when the value is the default") {
       writer = new ColumnOrientedWriter(0, sheet.rows)
-      writer.write(WithDefaultReader(StringReader, "X").writeOp(Some("X")) :: Nil)
+      writer.write(TWithDefaultMapping(TStringMapping, "X").writeOp(Some("X")) :: Nil)
       assert(sheet.cellAt(0, 0).getCellType() === Cell.CELL_TYPE_BLANK) 
     }
 
