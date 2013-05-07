@@ -122,7 +122,7 @@ package object model {
       TModel(
         'grantDate -> TDate,
         'targetNumber -> TNumber,
-        'grantDatePrice -> TDate,
+        'grantDatePrice -> TNumber,
         'targetValue -> TNumber,
         'type -> TGrantTypes)),
 

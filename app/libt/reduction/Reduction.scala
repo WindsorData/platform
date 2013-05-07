@@ -25,8 +25,11 @@ case class Average(path: Path) extends Reduction {
 	Sum(path).reduce(model) / filterValues(path, model).size 
 }
 
-case class CustomReduction(
-    basePath: Path, 
-    reductionMapper: Model => BigDecimal) extends Reduction {
-  override def reduce(model: Element) = reductionMapper(model(basePath).asModel)
+//TODO generalize this to a custom Reduction
+case class SubstractAll(basePath: Path, paths: Path*) extends Reduction{
+  override def reduce(model: Element) = {
+	  val valuesModel = model(basePath).asModel
+	  paths.flatMap(valuesModel(_).asValue[BigDecimal].value)
+	  .reduce( (v1, v2) => v1 - v2)
+  }
 }

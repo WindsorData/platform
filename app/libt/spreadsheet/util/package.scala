@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.Row
 package object util {
 
   implicit def sheet2RichSheet(sheet: Sheet) = new {
-    def cellAt(rowIndex: Int, columnIndex: Int) =
+    def cellAt(rowIndex: Int, columnIndex: Int): Cell =
       CellUtil.getCell(CellUtil.getRow(rowIndex, sheet), columnIndex)
 
     def rows(offset:Offset) : Seq[Row] = rows.drop(offset.rowIndex)   
@@ -20,7 +20,7 @@ package object util {
       for {
         cIndex <- 1 to columnLimit + offset.columnIndex
         rIndex <- 1 to rowLimit + offset.rowIndex
-      } sheet.createRow(rIndex).createCell(cIndex).setAsActiveCell()
+      } cellAt(rIndex, cIndex).setAsActiveCell()
   }
 
   implicit def row2RichRow(row: Row) = new {
