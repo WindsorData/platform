@@ -7,12 +7,10 @@ import com.mongodb.casbah.commons.MongoDBListBuilder
 import util._
 import libt.Model
 import libt.persistence._
-import libt.persistence.util._
 import libt.Element
 
 package object persistence {
   type DBO = DBObject
-  registerBigDecimalConverter()
 
   private def companies(implicit db: MongoDB) = db("companies")
 
