@@ -116,7 +116,7 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
     (sheet.rows(offset).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach { 
       (rows, flattedModel) =>
       rows.foreach { row =>
-        val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.rowIndex, Seq(row)), flattedModel)
+        val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)), flattedModel)
         headersWriter.writeRootPKHeaders
         headersWriter.writeFlattedPKHeaders
       }
