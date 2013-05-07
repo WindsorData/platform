@@ -29,7 +29,9 @@ case class Average(path: Path) extends Reduction {
 case class SubstractAll(basePath: Path, paths: Path*) extends Reduction{
   override def reduce(model: Element) = {
 	  val valuesModel = model(basePath).asModel
-	  paths.flatMap(valuesModel(_).asValue[BigDecimal].value)
-	  .reduce( (v1, v2) => v1 - v2)
+	  paths.flatMap(valuesModel(_).asValue[BigDecimal].value) match {
+	    case Seq() => 0
+	    case values => values.reduce( (v1, v2) => v1 - v2)
+	  }	  
   }
 }

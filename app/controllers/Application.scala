@@ -58,8 +58,8 @@ object Application extends Controller {
 
   def searchCompany = Action {
     Ok(views.html.searchCompanies(companyForm,
-      findAllCompaniesNames,
-      findAllCompaniesFiscalYears.map(_.toString)))
+      allCompanies :: findAllCompaniesNames.toList,
+      allYears :: findAllCompaniesFiscalYears.map(_.toString).toList))
   }
 
   def doSearch = Action { implicit request =>
@@ -73,9 +73,9 @@ object Application extends Controller {
         val name = values._1
         val year = values._2
         val out = new ByteArrayOutputStream()
-        findCompanyBy(name, year.toInt) match {
-          case Some(founded : Model) => {
-            SpreadsheetWriter.write(out, Seq(founded))
+        findCompaniesBy(name, year) match {
+          case Some(founded : Seq[Model]) => {
+            SpreadsheetWriter.write(out, founded)
             Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
               CONTENT_DISPOSITION -> "attachment; filename=company.xls")
           }
@@ -89,9 +89,3 @@ object Application extends Controller {
   }
 
 }
-//
-//findCompanyBy
-//  def getAllNames: Seq[String] = ()
-//
-//  def getAllFiscalYears: Seq[Int] = findAllCompaniesFiscalYears()
-//
