@@ -28,14 +28,14 @@ class TModelConverter(tModel: TModel) extends TElementConverter {
     MongoDBObject(
       tModel.elementTypes.map {
         case (key, telement) =>
-          (key.toString -> telement.marshall(model(key)))
+          (key.name -> telement.marshall(model(key)))
       }: _*)
   }
 
   def unmarshall(it: DBO) =
     Model(tModel.elementTypes.map {
       case (key, telement) =>
-        (key -> telement.unmarshall(it(key.toString).asInstanceOf[DBO]))
+        (key -> telement.unmarshall(it(key.name).asInstanceOf[DBO]))
     }: _*)
 }
 
