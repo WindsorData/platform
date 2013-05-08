@@ -50,7 +50,7 @@ class CalcSpec extends FlatSpec {
   it should "have empty metadata" in {
     val sheet = writeSheet
     assert(sheet.cellAt(1, 0).getStringCellValue === "calc")
-    assert(sheet.cellAt(1, 1).getCellType === Cell.CELL_TYPE_BLANK)
+    assert(sheet.cellAt(1, 1).getStringCellValue === "Calculated")
     assert(sheet.cellAt(2, 0).getStringCellValue === "comment")
     assert(sheet.cellAt(2, 1).getCellType === Cell.CELL_TYPE_BLANK)
     assert(sheet.cellAt(3, 0).getStringCellValue === "note")
