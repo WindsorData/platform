@@ -43,7 +43,7 @@ case class FlattedArea(
   def write(models: Seq[Model])(sheet: Sheet) =
     layout.write(models, sheet, this)
 
-  def featuresSize = columns.size + 1
+  def featuresSize = columns.size
 
   def rootPKSize = rootPK.size
 
@@ -121,7 +121,7 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
         headersWriter.writeFlattedPKHeaders
       }
 
-      val writer = area.newWriter(new RowOrientedWriter(offset + Offset(0, area.completePKSize), rows), flattedModel)
+      val writer = area.newWriter(new RowOrientedWriter(Offset(0, area.completePKSize + offset.columnIndex), rows), flattedModel)
       writer.writeFlattedModelFeaturesMetadataWithTitle
     }
   }

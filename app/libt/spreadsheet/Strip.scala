@@ -60,9 +60,9 @@ case class Tag(tag: String, column:Strip) extends Strip {
     column.read(reader, schema, modelBuilder)
   override def writeOps(schema: TElement, model: Element) = new WriteOps {
     private val writeOps = column.writeOps(schema, model)
-    override def value =  op.String(Some(tag))
+    override def value =  writeOps.value
     override def metadata = writeOps.metadata
-    override def titles = writeOps.titles
+    override def titles = List(Skip, op.String(Some(tag)))
   }
 }
 
@@ -73,7 +73,8 @@ case class Tag(tag: String, column:Strip) extends Strip {
 case class Calc(reduction: Reduction) extends Strip {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
   override def writeOps(schema: TElement, model: Element) = new WriteOps {
-    def value = Numeric(Some(reduction.reduce(model)))
+    override def value = Numeric(Some(reduction.reduce(model)))
+    override def metadata = List(op.String(Some("Calculated")), Skip, Skip, Skip)
   }
 }
 

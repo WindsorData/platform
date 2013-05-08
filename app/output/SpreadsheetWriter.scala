@@ -38,9 +38,8 @@ object SpreadsheetWriter {
     Feature('cashCompensations, 'nextFiscalYearData, 'targetBonus),
 
     //Equity Comp Value
-    //Options Value
     Gap,
-    Calc(Sum(Path('optionGrants, *, 'value))),
+    Tag("Options Value", Calc(Sum(Path('optionGrants, *, 'value)))),
     Calc(Sum(Path('optionGrants, *, 'number))),
     Calc(Average(Path('optionGrants, *, 'price))),
     Gap, //Leave Blank

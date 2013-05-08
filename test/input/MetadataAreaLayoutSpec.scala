@@ -84,10 +84,10 @@ class MetadataAreaLayoutSpec extends FlatSpec with BeforeAndAfter {
     assert(sheet.cellAt(0, 6).getStringCellValue === "value3")
     assert(sheet.cellAt(0, 7).getStringCellValue === "value4")
     
-    assert(sheet.cellAt(4, 4).getStringCellValue === "value13")
-    assert(sheet.cellAt(4, 5).getStringCellValue === "value14")
-    assert(sheet.cellAt(4, 6).getStringCellValue === "value15")
-    assert(sheet.cellAt(4, 7).getStringCellValue === "value16")
+    assert(sheet.cellAt(3, 4).getStringCellValue === "value13")
+    assert(sheet.cellAt(3, 5).getStringCellValue === "value14")
+    assert(sheet.cellAt(3, 6).getStringCellValue === "value15")
+    assert(sheet.cellAt(3, 7).getStringCellValue === "value16")
   }
   
 }
