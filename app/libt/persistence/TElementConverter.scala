@@ -13,7 +13,7 @@ trait TElementConverter {
 
 class TColConverter(tCol: TCol) extends TElementConverter {
   def marshall(it: Element): DBO =
-    MongoDBList(it.asInstanceOf[Col].elements.map(marshallColElement): _*)
+    MongoDBList(it.asCol.elements.map(marshallColElement): _*)
 
   def unmarshall(it: DBO): Element =
     Col(it.asInstanceOf[BasicDBList].view.map(_.asInstanceOf[DBO]).map(unmarshallColElement): _*)
@@ -24,7 +24,7 @@ class TColConverter(tCol: TCol) extends TElementConverter {
 
 class TModelConverter(tModel: TModel) extends TElementConverter {
   def marshall(it: Element) = {
-    val model = it.asInstanceOf[Model]
+    val model = it.asModel
     MongoDBObject(
       tModel.elementTypes.map {
         case (key, telement) =>
@@ -41,7 +41,7 @@ class TModelConverter(tModel: TModel) extends TElementConverter {
 
 class TValueConverter(v: TValue[_]) extends TElementConverter {
   def marshall(it: Element) = {
-    val value = it.asInstanceOf[Value[_]]
+    val value = it.asValue
     
     def convert(v: Option[_]) = v match {
       case Some(value : BigDecimal) => Some(value.toString)

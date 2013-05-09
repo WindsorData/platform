@@ -36,8 +36,8 @@ case class Feature(path: Path) extends Strip {
     modelBuilder += (path -> readValue(schema, reader))
 
   override def writeOps(schema: TElement, model: Element) = new WriteOps {
-    val mapping = TMapping[AnyRef](schema(path).asInstanceOf[TValue[AnyRef]])
-    val element = model(path).asInstanceOf[Value[AnyRef]]
+    val mapping = TMapping[AnyRef](schema(path).asValue)
+    val element = model(path).asValue
     override def value = mapping.writeOp(element.value)
     override def metadata = element.metadataSeq.map(op.String(_)).toList
     override def titles = path.titles match {
