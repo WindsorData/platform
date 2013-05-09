@@ -17,7 +17,6 @@ package object libt {
   
   object Path {
     def apply(parts: PathPart*): Path = List(parts: _*)
-    
   }
 
   /**

@@ -22,14 +22,15 @@ object SpreadsheetWriter {
     Gap, //Leave Blank
     Feature('functionalMatches, 'primary),
     Feature('founder),
-    Gap, //TTDC Calculation
+    Gap, //TTDC Pay Rank Calculation
 
     //Cash Compensation
     //Current Year
     Gap,
     Feature('cashCompensations, 'baseSalary),
     Feature('cashCompensations, 'actualBonus),
-    Gap, //TTDC Calculation
+    
+    Gap, // TTDC Pay calculation
     Feature('cashCompensations, 'targetBonus),
     Feature('cashCompensations, 'thresholdBonus),
     Feature('cashCompensations, 'maxBonus),
