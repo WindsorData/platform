@@ -27,13 +27,13 @@ object RowOrientedLayout extends Layout {
 object ColumnOrientedLayout extends Layout {
   
   override def read(area: Area, sheet: Sheet) =
-    effectiveRowGrops(area, sheet).map { rows =>
+    effectiveRowGroups(area, sheet).map { rows =>
       area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _))
     }.toSeq
 
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) {
     sheet.defineLimits(area.offset, models.size * 6, area.columns.size)
-    (effectiveRowGrops(area, sheet).toSeq, models).zipped.foreach { (row, model) =>
+    (effectiveRowGroups(area, sheet).toSeq, models).zipped.foreach { (row, model) =>
       val writer = new ColumnOrientedWriter(area.offset.columnIndex, row)
       area.columns.foreachWithOps(model, area.schema) { ops =>
         writer.write(ops.value :: ops.metadata)
@@ -41,7 +41,7 @@ object ColumnOrientedLayout extends Layout {
     }
   }
     
-  def effectiveRowGrops(area: Area, sheet: Sheet) = 
+  def effectiveRowGroups(area: Area, sheet: Sheet) = 
      sheet.rows(area.offset).grouped(6)   
 }
 

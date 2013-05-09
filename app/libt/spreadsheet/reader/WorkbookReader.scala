@@ -21,17 +21,15 @@ class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
   def read(wb: Workbook): A =
     combiner.combineReadResult(wb, wbMapping.read(wb).filter(!_.isEmpty))
 }
-//TODO varageize
+
 case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 
-  //TODO wtf??
-  def ioAction[A](wb: Workbook, action: (Sheet, SheetDefinition) => A) = {
+  def sheetsWithAreas[A](wb: Workbook) = {
     val sheets = for (sheetIndex <- 0 to wb.getNumberOfSheets() - 1) yield wb.getSheetAt(sheetIndex)
-    sheets.zip(areas).map { case (sheet, area) => action(sheet, area) }
+    (sheets, areas).zipped 
   }
-
-  def read(wb: Workbook) = ioAction(wb, (sheet, area) => area.read(sheet))
-  def write(models: Seq[Model], wb: Workbook) = ioAction(wb, (sheet, area) => area.write(models)(sheet)) 
+  def read(wb: Workbook) = sheetsWithAreas(wb).map((sheet, area) => area.read(sheet))
+  def write(models: Seq[Model], wb: Workbook) = sheetsWithAreas(wb).foreach((sheet, area) => area.write(models)(sheet)) 
 }
 
 trait Combiner[A] {
