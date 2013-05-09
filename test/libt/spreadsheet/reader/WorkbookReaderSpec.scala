@@ -1,23 +1,18 @@
-package input
+package libt.spreadsheet.reader
 
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.apache.poi.ss.usermodel.Workbook
 import libt._
 import model._
 import model.mapping._
 import libt.spreadsheet._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import java.io.FileOutputStream
-import libt.spreadsheet.reader.WorkbookReader
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.reader.RowOrientedLayout
+import libt.spreadsheet.reader._
 import libt.spreadsheet.Offset
-import libt.spreadsheet.reader.Combiner
-import libt.spreadsheet.reader.ColumnOrientedLayout
-import libt.spreadsheet.reader.AreaGap
-import libt.spreadsheet.reader.Area
+import libt.spreadsheet.util.sheet2RichSheet
+import scala.collection.immutable.Stream.consWrapper
+import org.scalatest.junit.JUnitRunner
 
 
 @RunWith(classOf[JUnitRunner])

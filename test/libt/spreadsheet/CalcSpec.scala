@@ -1,8 +1,7 @@
-package libt.spreadsheet.mapping
+package libt.spreadsheet
 
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt.spreadsheet.util._
@@ -10,6 +9,8 @@ import libt.reduction._
 import libt._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
+import scala.math.BigDecimal.int2bigDecimal
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class CalcSpec extends FlatSpec {

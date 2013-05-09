@@ -1,21 +1,14 @@
-package input
+package libt.spreadsheet.writer
 
-import org.scalatest.BeforeAndAfter
-import org.junit.runner.RunWith
-import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
-import output.MetadataAreaLayout
-import libt.spreadsheet.Offset
-import org.apache.poi.ss.usermodel.Row
-import libt._
-import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import libt.spreadsheet.util._
-import org.apache.poi.ss.usermodel.Sheet
-import java.io.FileOutputStream
 import org.apache.poi.ss.usermodel.Cell
-import libt.spreadsheet.writer.RowOrientedWriter
-import libt.spreadsheet.writer.op
+import org.junit.runner.RunWith
+import org.scalatest.BeforeAndAfter
+import org.scalatest.FlatSpec
+import libt.Value
+import libt.spreadsheet.Offset
+import libt.spreadsheet.util.sheet2RichSheet
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class RowOrientedWriterSpec extends FlatSpec with BeforeAndAfter {

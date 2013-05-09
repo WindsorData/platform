@@ -1,8 +1,5 @@
-package input
-
-import org.scalatest.FunSpec
+package output
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.reader._
@@ -10,10 +7,11 @@ import libt.spreadsheet._
 import libt.spreadsheet.util._
 import libt._
 import org.scalatest.BeforeAndAfter
-import java.io.FileOutputStream
 import output._
 import org.scalatest.FlatSpec
 import libt.spreadsheet.Offset
+import scala.math.BigDecimal.int2bigDecimal
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
