@@ -43,7 +43,6 @@ object Application extends Controller {
         Ok(views.html.companyUploadSuccess())
       } catch {
         case e: RuntimeException => {
-          Logger.error(e.getMessage)
           BadRequest(e.getMessage())
         }
       }

@@ -1,5 +1,6 @@
 package model
 
+import util.WorkbookLogger._
 import libt._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
@@ -12,12 +13,12 @@ import org.apache.poi.ss.usermodel.Workbook
 
 package object mapping {
 
-   implicit def pathToFeature(path: Path): Feature = Feature(path)
+  implicit def pathToFeature(path: Path): Feature = Feature(path)
 
   def colOfModelsPath(basePath: Symbol, times: Int, paths: Symbol*): Seq[Strip] =
     for (index <- 0 to times; valuePath <- paths) yield Feature(Path(basePath, index, valuePath))
 
-  val executiveMapping = 
+  val executiveMapping =
     Seq[Strip](Path('firstName),
       Path('lastName),
       Path('title),
@@ -67,8 +68,10 @@ package object mapping {
       try {
         Some(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
       } catch {
-        case e: NoSuchElementException => throw new NoSuchElementException(noFiscalYearErrorMessage(dateCell))
-        case e: RuntimeException => throw new IllegalStateException(invalidCellTypeErrorMessage(e.getMessage(), dateCell))
+        case e: NoSuchElementException =>
+          logAndThrowException(ReaderError().noFiscalYearProvidedAt(dateCell))
+        case e: RuntimeException =>
+          logAndThrowException(ReaderError(e.getMessage()).invalidCellTypeAt(dateCell))
       }
     }
 
@@ -78,18 +81,6 @@ package object mapping {
         ROW_INDEX_FISCAL_YEAR_MINUS_ONE,
         ROW_INDEX_FISCAL_YEAR_MINUS_TWO)
         .map(it => dateCellToYear(sheet.rows.drop(it)))
-
-    private def invalidCellTypeErrorMessage(baseMessage: String, cell: Cell) =
-      baseMessage +
-        " on Sheet: " + cell.getSheet().getSheetName +
-        " -> Column: " + { cell.getColumnIndex + 1 } +
-        ", Row: " + { cell.getRowIndex + 1 }
-
-    private def noFiscalYearErrorMessage(cell: Cell) =
-      "No Fiscal Year provided at Sheet " +
-        cell.getSheet.getSheetName +
-        " Column: " + cell.getColumnIndex +
-        " Row: " + cell.getRowIndex
 
     def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]) = {
       val ys = years(wb.getSheetAt(0))
