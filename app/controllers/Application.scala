@@ -4,6 +4,7 @@ import play.api._
 import play.api.mvc._
 import java.io.InputStream
 import util.Closeables
+import util.ErrorHandler._
 import util.FileManager._
 import java.io.FileInputStream
 import com.mongodb.casbah.MongoClient
@@ -18,6 +19,7 @@ import views.html.defaultpages.badRequest
 import libt.Model
 import model.mapping._
 import output.SpreadsheetWriter
+import play.api.templates.Html
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
@@ -37,15 +39,19 @@ object Application extends Controller {
 
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
-      try {
-        val companies = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
-        companies.foreach(updateCompany(_))
-        Ok(views.html.companyUploadSuccess())
-      } catch {
-        case e: RuntimeException => {
-          BadRequest(e.getMessage())
-        }
+      var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
+
+      val result = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
+      
+      if(result.hasErrors) {
+        response = BadRequest(views.html.parsingError(result.errors.flatMap(_.left.get)))
       }
+      else{
+        result.foreach(company => updateCompany(company.right.get))
+      }
+
+      response
+
     }.getOrElse {
       Redirect(routes.Application.companies).flashing("error" -> "Missing file")
     }

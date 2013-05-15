@@ -37,9 +37,6 @@ case class FlattedArea(
   columns: Seq[Strip])
   extends SheetDefinition with LibtSizes {
 
-  //TODO remove method 
-  def read(sheet: Sheet): Seq[Model] = ???
-
   def write(models: Seq[Model])(sheet: Sheet) =
     layout.write(models, sheet, this)
 
@@ -64,6 +61,8 @@ case class FlattedArea(
   //TODO remove
   protected def * = 0
   protected def flattedSchema = schema(flatteningPath)(Path(*))
+  
+  def read(sheet: Sheet): Seq[ModelOrErrors] = ???
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 

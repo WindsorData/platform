@@ -9,9 +9,12 @@ object WorkbookLogger {
 
   trait Loggeable {
     def generateErrorMessage(description: String): String
-    def where(cell: Cell) = " on Sheet " + cell.getSheet().getSheetName +
-      " -> Column: " + { cell.getColumnIndex + 1 } +
-      ", Row: " + { cell.getRowIndex + 1 }
+    def where(cell: Cell) =
+      if (cell != null) {
+        " on Sheet " + cell.getSheet().getSheetName +
+        " -> Column: " + { cell.getColumnIndex + 1 } +
+        ", Row: " + { cell.getRowIndex + 1 }
+      }
   }
 
   case class ReaderError(baseMessage: String) extends Loggeable {
@@ -23,9 +26,8 @@ object WorkbookLogger {
       generateErrorMessage(baseMessage + specificMessage + where(cell))
 
     def noFiscalYearProvidedAt(cell: Cell) = description(cell, "No Fiscal Year provided ")
-    def invalidCellTypeAt(cell: Cell) = description(cell)
   }
-  
+
   case class WriterError(baseMessage: String) extends Loggeable {
     def generateErrorMessage(description: String) = ???
   }
@@ -39,7 +41,4 @@ object WorkbookLogger {
     Logger.error(completeMsg);
     completeMsg
   }
-
-  def logAndThrowException(msg: String) =
-    throw new RuntimeException(log(msg))
 }

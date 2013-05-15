@@ -61,8 +61,8 @@ class WorkbookReaderSpec extends FunSpec {
 
   }
 
-  class IdentityCombiner extends Combiner[Seq[Seq[Model]]] {
-    def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]) = results
+  class IdentityCombiner extends Combiner[Seq[Seq[ModelOrErrors]]] {
+    def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = results
   }
 
   describe("WorkbookReader creation") {
@@ -111,7 +111,7 @@ class WorkbookReaderSpec extends FunSpec {
         new IdentityCombiner)
       val result = reader.read(workbook)
 
-      assert(result.head === Seq(Model('a -> Value("a"))))
+      assert(result.head === Seq(Right(Model('a -> Value("a")))))
     }
 
     it("should be able to read two column oriented inputs without combining") {
@@ -124,7 +124,7 @@ class WorkbookReaderSpec extends FunSpec {
           .addSingleColumnOrientedValue(0, "a")
           .addSingleColumnOrientedValue(1, "b"))
 
-      assert(result.head === Seq(Model('a -> Value("a"), 'b -> Value("b"))))
+      assert(result.head === Seq(Right(Model('a -> Value("a"), 'b -> Value("b")))))
     }
 
     it("should be able to read row oriented inputs") {
@@ -137,7 +137,7 @@ class WorkbookReaderSpec extends FunSpec {
         new IdentityCombiner).read(workbook)
 
       import libt.spreadsheet.util._
-      assert(result.head === Seq(Model('a -> Value("a"))))
+      assert(result.head === Seq(Right(Model('a -> Value("a")))))
     }
 
   }

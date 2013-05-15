@@ -4,7 +4,6 @@ import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 
 import libt.spreadsheet.writer._
-import util.WorkbookLogger._
 import libt.spreadsheet.util._
 import libt.spreadsheet._
 import libt.builder._
@@ -15,7 +14,7 @@ import libt._
  * the exact way a sheet is read and written
  * */
 sealed trait Layout {
-  def read(area: Area, sheet: Sheet): Seq[Model]
+  def read(area: Area, sheet: Sheet): Seq[ModelOrErrors]
   def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
 
@@ -43,7 +42,7 @@ object ColumnOrientedLayout extends Layout {
   }
     
   def effectiveRowGrops(area: Area, sheet: Sheet) = 
-     sheet.rows(area.offset).grouped(6)
+     sheet.rows(area.offset).grouped(6)   
 }
 
 
