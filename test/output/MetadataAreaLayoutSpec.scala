@@ -1,9 +1,8 @@
-package input
+package output
 
 import org.scalatest.BeforeAndAfter
 import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
 import libt._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
@@ -11,7 +10,8 @@ import libt.spreadsheet.reader.WorkbookMapping
 import output._
 import libt.spreadsheet._
 import libt.spreadsheet.util._
-import java.io.FileOutputStream
+import scala.math.BigDecimal.int2bigDecimal
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class MetadataAreaLayoutSpec extends FlatSpec with BeforeAndAfter {

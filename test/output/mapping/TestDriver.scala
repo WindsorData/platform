@@ -1,23 +1,16 @@
-package input
+package output.mapping
 
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
-import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.ss.usermodel.Sheet
-import model._
-import libt._
-import scala.collection.mutable.MapBuilder
-import org.apache.poi.ss.usermodel.Cell
-import com.mongodb.DBObject
-import libt.spreadsheet.reader.CellReader
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
-import scala.collection.mutable.Buffer
+import libt._
+import model._
+import org.scalatest.junit.JUnitRunner
+
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 

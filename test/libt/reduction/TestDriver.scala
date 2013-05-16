@@ -1,11 +1,11 @@
-package output.calculation
+package libt.reduction
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSpec
-import org.scalatest.junit.JUnitRunner
 import libt.reduction._
 import libt._
-import libt.reduction.Reduction
+import scala.math.BigDecimal.int2bigDecimal
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class CalculationSpec extends FunSpec {

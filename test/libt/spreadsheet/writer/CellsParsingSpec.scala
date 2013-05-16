@@ -1,18 +1,18 @@
-package input
-
-import org.scalatest.FlatSpec
+package libt.spreadsheet.writer
 import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSpec
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import libt.spreadsheet.util._
+import output.mapping.TestSpreadsheetLoader
+import org.scalatest.junit.JUnitRunner
+import util.FileManager
 
 @RunWith(classOf[JUnitRunner])
 class CellsParsingSpec extends FunSpec with TestSpreadsheetLoader {
 
   describe("cells parsing") {
     it("should not ommit blanks") {
-      load("MatrixWithBlanks.xlsx") {
+      FileManager.load("test/input/MatrixWithBlanks.xlsx") {
         x =>
           {
             val wb = WorkbookFactory.create(x)

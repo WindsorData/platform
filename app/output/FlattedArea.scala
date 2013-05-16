@@ -58,8 +58,6 @@ case class FlattedArea(
   def flatten(models: Seq[Model]) =
     Model.flattenWith(models, rootPK, flatteningPath)
 
-  //TODO remove
-  protected def * = 0
   protected def flattedSchema = schema(flatteningPath)(Path(*))
   
   def read(sheet: Sheet): Seq[ModelOrErrors] = ???

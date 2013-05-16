@@ -49,7 +49,7 @@ class ModelBuilder {
     buf(index)
   }
 
-  def build: Model = convert(model).asInstanceOf[Model]
+  def build: Model = convert(model).asModel
 
   private def convert(element: AnyRef): Element = element match {
     case v: Value[_] => v

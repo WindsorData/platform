@@ -7,7 +7,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import libt._
 import model._
-import input._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
 
@@ -38,14 +37,14 @@ class TestDriver extends FunSpec {
       
       (0 to 2).zip(Seq(2005, 2012, 2013)).foreach{ case (index, year) => 
         validateCompanyYear(results(index), year)
-        validateExecutive(results(index).c('executives).take(1).head.asInstanceOf[Model])
+        validateExecutive(results(index).c('executives).take(1).head.asModel)
       }
     }
     
     def validateCompanyYear(company: Model, year: Int) {
       assert(company.v('disclosureFiscalYear) === Value(year))
       val firstExecFirstCompany = company.c('executives).take(1).head
-      validateExecutive(firstExecFirstCompany.asInstanceOf[Model])
+      validateExecutive(firstExecFirstCompany.asModel)
     }
     
     def validateExecutive(exec: Model) {

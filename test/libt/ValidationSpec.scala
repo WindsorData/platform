@@ -22,7 +22,7 @@ class ValidationSpec extends FlatSpec {
   }
 
   ignore should "fail for illegal structures models" in {
-    TModel('bar -> TString).validate(Model('foo -> Value("")))
+    TModel('foo -> TString).validate(Model('foo -> Value("")))
   }
 
   it should "pass for valid enums" in {

@@ -9,7 +9,7 @@ import libt.Value
 import libt._
 
 @RunWith(classOf[JUnitRunner])
-class ModelBuilderSpe extends FlatSpec {
+class TestDriver extends FlatSpec {
 
   behavior of "model builder"
 

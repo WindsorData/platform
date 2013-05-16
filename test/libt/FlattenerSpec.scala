@@ -1,10 +1,9 @@
-package input
+package libt
 
-import org.junit.runner.RunWith
-import org.scalatest.FunSpec
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 import libt._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
 @RunWith(classOf[JUnitRunner])
 class FlattenerSpec extends FlatSpec {

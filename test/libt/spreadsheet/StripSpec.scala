@@ -16,7 +16,7 @@ import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet.writer.ColumnOrientedWriter
 
 @RunWith(classOf[JUnitRunner])
-class FeatureReaderSpec extends FunSpec with MockFactory with BeforeAndAfter {
+class StripSpec extends FunSpec with MockFactory with BeforeAndAfter {
 
     var reader: CellReader = null
     var writer: CellWriter = null
