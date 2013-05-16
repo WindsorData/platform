@@ -9,33 +9,15 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.util.CellUtil
 import org.apache.poi.ss.usermodel.Sheet
 import model._
+import libt._
 import scala.collection.mutable.MapBuilder
 import org.apache.poi.ss.usermodel.Cell
 import com.mongodb.DBObject
-import libt.Value
-import libt.Model
 import libt.spreadsheet.reader.CellReader
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import scala.collection.mutable.Buffer
-import libt.TModel
-import libt.TModel
-import libt.TString
-import libt.Element
-import libt.TElement
-import libt.Element
-import libt.Col
-import libt.Path
-import libt.TValue
-import libt.TNumber
-import libt.TEnum
-import libt.Route
-import libt.Index
-import libt.builder.ModelBuilder
-import libt.TWithDefault
-import libt.TCol
-
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 
@@ -96,8 +78,8 @@ class TestDriver extends FunSpec {
       val schema = TModel()
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val area = TestArea(schema, Seq())
-      val result: Seq[Model] = area.read(sheet)
-      assert(result === Seq(Model()))
+      val result: Seq[ModelOrErrors] = area.read(sheet)
+      assert(result === Seq(Right(Model())))
     }
 
     it("should let read empty sheets using non-empty mappings ") {
@@ -105,7 +87,7 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val area = TestArea(schema, Seq(Feature(Path('foo))))
       val result = area.read(sheet)
-      assert(result === Seq(Model('foo -> Value())))
+      assert(result === Seq(Right(Model('foo -> Value()))))
     }
 
     it("should let read non-empty sheets using non-empty mappings ") {
@@ -113,13 +95,13 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
       val area = TestArea(schema, Seq(Gap, Feature(Path('foo))))
       val result = area.read(sheet)
-      assert(result.head === Model('foo ->
+      assert(result.head === Right(Model('foo ->
         Value(
           Some("value"),
           Some("calc"),
           Some("comment"),
           Some("not"),
-          Some("link"))))
+          Some("link")))))
     }
 
     it("should let read sheets with enum values") {
@@ -141,7 +123,7 @@ class TestDriver extends FunSpec {
         Feature(Path('aField))))
 
       val result = area.read(sheet)
-      assert(result === Seq(Model('aField -> Value())))
+      assert(result === Seq(Right(Model('aField -> Value()))))
 
     }
     
@@ -166,7 +148,7 @@ class TestDriver extends FunSpec {
           ))
           
       val result = area.read(sheet)
-      assert(result === Seq(Model('models -> Col(
+      assert(result === Seq(Right(Model('models -> Col(
           Model(
           'value1 -> Value("model1-value1"),
           'value2 -> Value("model1-value2"),
@@ -180,7 +162,7 @@ class TestDriver extends FunSpec {
           'value4 -> Value("model2-value4")
               )    
               
-          ))))
+          )))))
     }
 
     it("should be able to convert blank cells to a given default value") {
@@ -190,7 +172,7 @@ class TestDriver extends FunSpec {
           Gap,
           Feature(Path('aField))))
       val result = area.read(sheet)
-      assert(result === Seq(Model('aField -> Value("BLANK"))))
+      assert(result === Seq(Right(Model('aField -> Value("BLANK")))))
     }
   }
 

@@ -1,5 +1,6 @@
 package libt.spreadsheet.reader
 
+import util.ErrorHandler._
 import util.FileManager._
 import libt._
 import libt.util._
@@ -26,7 +27,7 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
   //TODO wtf??
   def ioAction[A](wb: Workbook, action: (Sheet, SheetDefinition) => A) = {
     val sheets = for (sheetIndex <- 0 to wb.getNumberOfSheets() - 1) yield wb.getSheetAt(sheetIndex)
-    sheets.zip(areas).map{ case (sheet, area) => action(sheet, area) }
+    sheets.zip(areas).map { case (sheet, area) => action(sheet, area) }
   }
 
   def read(wb: Workbook) = ioAction(wb, (sheet, area) => area.read(sheet))
@@ -34,11 +35,11 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 }
 
 trait Combiner[A] {
-  def combineReadResult(wb: Workbook, results: Seq[Seq[Model]]): A
+  def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]): A
 }
 
 trait SheetDefinition {
-  def read(sheet: Sheet): Seq[Model]
+  def read(sheet: Sheet): Seq[ModelOrErrors]
   def write(models: Seq[Model])(sheet: Sheet): Unit
 }
 
@@ -50,14 +51,14 @@ trait SheetDefinition {
  * @author metalkorva
  */
 case class Area(
-    schema: TModel, 
-    offset: Offset, 
-    orientation: Layout, 
-    columns: Seq[Strip]) extends SheetDefinition {
-  
+  schema: TModel,
+  offset: Offset,
+  orientation: Layout,
+  columns: Seq[Strip]) extends SheetDefinition {
+
   import libt.spreadsheet.util._
 
-  def read(sheet: Sheet): Seq[Model] =
+  def read(sheet: Sheet): Seq[ModelOrErrors] =
     orientation.read(this, sheet)
 
   def write(models: Seq[Model])(sheet: Sheet) = 
@@ -66,10 +67,18 @@ case class Area(
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
-    for (column <- columns)
-      column.read(reader, schema, modelBuilder)
-    modelBuilder.build
-  }  
+
+    val errorMessages =
+      for {
+        column <- columns
+        message <- handle(column.read(reader, schema, modelBuilder)).left.toSeq
+      } yield message
+
+    if (errorMessages.isEmpty)
+      Right(modelBuilder.build)
+    else
+      Left(errorMessages)
+  }
 
   def continually = Stream.continually[SheetDefinition](this)
 }

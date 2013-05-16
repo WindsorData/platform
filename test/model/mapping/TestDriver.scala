@@ -1,5 +1,6 @@
 package model.mapping
 
+import util.ErrorHandler._
 import util.FileManager._
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
@@ -28,7 +29,7 @@ class TestDriver extends FunSpec {
 
     it("should be able to import 3 company fiscal years with executives") {
 
-      val results = CompanyFiscalYearReader.read("test/input/FullValuesOnly.xlsx")
+      val results = CompanyFiscalYearReader.read("test/input/FullValuesOnly.xlsx").map(_.right.get)
       
       assert(results.size === 3)
       
@@ -93,20 +94,17 @@ class TestDriver extends FunSpec {
 
     it("should throw IllegalArgumentException when there's an invalid functional value") {
       intercept[Throwable] {
-        CompanyFiscalYearReader.read("test/input/InvalidFunctionalValue.xlsx").foreach(TCompanyFiscalYear.validate(_))
+        CompanyFiscalYearReader.read("test/input/InvalidFunctionalValue.xlsx")
+        .foreach(company => TCompanyFiscalYear.validate(company.right.get))
       }
     }
 
     it("should throw an Exception when there's a numeric value on string cell") {
-      intercept[IllegalStateException] {
-        CompanyFiscalYearReader.read("test/input/ExpectedStringButWasNumeric.xlsx")
-      }
+        assert(CompanyFiscalYearReader.read("test/input/ExpectedStringButWasNumeric.xlsx").hasErrors)
     }
 
     it("should throw an Exception when there's no value on any fiscal year") {
-      intercept[IllegalStateException] {
-        CompanyFiscalYearReader.read("test/input/EmptyFiscalYear.xlsx")
-      }
+        assert(CompanyFiscalYearReader.read("test/input/EmptyFiscalYear.xlsx").hasErrors)
     }
 
   }

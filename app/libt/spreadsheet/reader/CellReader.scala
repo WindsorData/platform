@@ -3,6 +3,7 @@ package libt.spreadsheet.reader
 import scala.math.BigDecimal.double2bigDecimal
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
+import util.WorkbookLogger._
 import libt.spreadsheet.util._
 import libt.spreadsheet.generic._
 import libt.spreadsheet._
@@ -30,7 +31,14 @@ trait CellReader extends SkipeableLike {
   private def createValue[T](valueMapper: Cell => Option[T]): Value[T] = {
     val nextCells = next
     def nextStringValue(index: Int) = blankToNone(_.getStringCellValue)(nextCells(index))
-    newValue(valueMapper(nextCells(0)), nextStringValue)
+    
+    try {
+      newValue(valueMapper(nextCells(0)), nextStringValue)
+    } catch {
+      case e: RuntimeException =>
+        throw new RuntimeException(ReaderError(e.getMessage()).description(nextCells(0)))
+    }
+
   }
 
   protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =

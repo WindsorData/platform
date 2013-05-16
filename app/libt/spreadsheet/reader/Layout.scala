@@ -14,7 +14,7 @@ import libt._
  * the exact way a sheet is read and written
  * */
 sealed trait Layout {
-  def read(area: Area, sheet: Sheet): Seq[Model]
+  def read(area: Area, sheet: Sheet): Seq[ModelOrErrors]
   def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
 
