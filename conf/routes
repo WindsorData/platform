@@ -14,6 +14,7 @@ GET     /companies                              controllers.Application.companie
 ##Upload Companies
 GET     /companies/reports                      controllers.Application.reports
 POST    /companies/reports                      controllers.Application.newCompany
+POST    /companies/reports/batch                controllers.Application.newCompanies
 
 ##Query a Company
 GET     /companies/search                       controllers.Application.searchCompany

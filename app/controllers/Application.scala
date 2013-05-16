@@ -20,6 +20,8 @@ import libt.Model
 import model.mapping._
 import output.SpreadsheetWriter
 import play.api.templates.Html
+import java.util.zip.ZipFile
+import scala.collection.JavaConversions._
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller {
@@ -36,7 +38,36 @@ object Application extends Controller {
   def index = Action {
     Redirect(routes.Application.companies)
   }
-
+  
+  //TODO: repeated code with newCompany
+  def newCompanies = Action(parse.multipartFormData) { request =>
+    request.body.file("datasets").map { dataset =>  
+      var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
+      val files = new ZipFile(dataset.ref.file.getAbsolutePath())
+      
+      
+      val results = files.entries().map{ fileExtracted =>
+       CompanyFiscalYearReader.read(files.getInputStream(fileExtracted))
+      }.toSeq
+      
+      
+      if(results.exists(_.hasErrors)){
+    	  val errors = files.entries().map(_.getName())
+    	  .zip(results.map(_.errors.flatMap(_.left.get)).iterator).toSeq
+    	  response = BadRequest(views.html.parsingError(errors))
+      }
+      else{
+        results.foreach(_.foreach(company => updateCompany(company.right.get)))
+      }
+      
+      response
+      
+    }.getOrElse {
+      Redirect(routes.Application.companies).flashing("error" -> "Missing file")
+    }
+    
+  }
+  
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
       var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
@@ -44,7 +75,9 @@ object Application extends Controller {
       val result = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
       
       if(result.hasErrors) {
-        response = BadRequest(views.html.parsingError(result.errors.flatMap(_.left.get)))
+        response = BadRequest(
+            views.html.parsingError(
+                Seq((dataset.ref.file.getName(),result.errors.flatMap(_.left.get)))))
       }
       else{
         result.foreach(company => updateCompany(company.right.get))
