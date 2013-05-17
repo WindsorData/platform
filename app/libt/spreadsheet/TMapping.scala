@@ -16,6 +16,7 @@ trait TMapping[A] {
 object TMapping {
   def apply[A](tValue: TValue[A]): TMapping[A] = tValue match {
     case TString => TStringMapping
+    case TAny => TAnyMapping
     case _: TEnum => TStringMapping
     case TNumber => TNumberMapping
     case TWithDefault(baseReader, default) => TWithDefaultMapping(this(baseReader), default)
@@ -38,6 +39,11 @@ case object TIntMapping extends TMapping[Int] {
 
 case object TStringMapping extends TMapping[String] {
   def read(reader: CellReader) = reader.string
+  override def writeOp(value: Option[String]) = op.String(value)
+}
+
+case object TAnyMapping extends TMapping[String] {
+  override def read(reader: CellReader) = reader.any
   override def writeOp(value: Option[String]) = op.String(value)
 }
 

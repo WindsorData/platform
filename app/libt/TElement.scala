@@ -41,6 +41,7 @@ case class TWithDefault[A](valueType: TValue[A], defaultValue: A) extends TValue
   }
 }
 case object TString extends TValue[String]
+case object TAny extends TValue[String]
 case object TInt extends TValue[Int]
 case object TBool extends TValue[Boolean]
 case object TXBool extends TValue[Boolean]
