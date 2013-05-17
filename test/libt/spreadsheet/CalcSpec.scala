@@ -28,6 +28,7 @@ class CalcSpec extends FlatSpec {
       'a -> TString,
       'b -> TCol(TNumber)),
     Offset(0, 0),
+    None,
     ColumnOrientedLayout,
     Seq(
       Feature('a),
