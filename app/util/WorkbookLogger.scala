@@ -4,6 +4,7 @@ import play.Logger
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.util.CellReference
 
 object WorkbookLogger {
 
@@ -12,7 +13,7 @@ object WorkbookLogger {
     def where(cell: Cell) =
       if (cell != null) {
         " on Sheet " + cell.getSheet().getSheetName +
-        " -> Column: " + { cell.getColumnIndex + 1 } +
+        " -> Column: " + CellReference.convertNumToColString(cell.getColumnIndex()) +
         ", Row: " + { cell.getRowIndex + 1 }
       }
   }
