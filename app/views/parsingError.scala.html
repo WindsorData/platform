@@ -1,10 +1,15 @@
-@(errors: Seq[String])
+@(errors: Seq[(String,Seq[String])])
 @import helper._
 
 <div>
-    <ul>
-        @for(error <- errors) {
-            <li>@error</li>
-        }
-    </ul>
+    @for(error <- errors) {
+        <div>
+            <h3>@error._1</h3>
+        </div>
+        <ul>
+            @for(e <- error._2) {
+                <li>@e</li>
+            }
+        </ul>
+    }
 </div>

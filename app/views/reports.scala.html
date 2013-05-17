@@ -3,15 +3,28 @@
 <div>
     <a href="/companies">Home</a>
     <div>
-        <p>Please upload your company TOP5 data set</p>
-    </div>
-    <div>
         @form(action = routes.Application.newCompany, 'enctype -> "multipart/form-data") {
-        <!--  -->
-        <input type="file" name="dataset">
-        <p>
-            <input type="submit">
-        </p>
+            <!--  -->
+            <div>
+                <p>Upload a single TOP5 data set</p>
+            </div>
+            <input type="file" name="dataset">
+            <p>
+                <input type="submit">
+            </p>
+        }
+    </div>
+    
+    <div>
+        @form(action = routes.Application.newCompanies, 'enctype -> "multipart/form-data") {
+            <!--  -->
+            <div>
+                <p>Upload a zip file with TOP5 data sets</p>
+            </div>
+            <input type="file" name="datasets">
+            <p>
+                <input type="submit">
+            </p>
         }
     </div>
 
