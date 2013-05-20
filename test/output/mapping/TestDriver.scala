@@ -170,7 +170,7 @@ class TestDriver extends FunSpec {
   }
 
   def TestArea(schema: TModel, mapping: Seq[Strip]) =
-    Area(schema, Offset(0, 0), ColumnOrientedLayout, mapping)
+    Area(schema, Offset(0, 0), None, ColumnOrientedLayout, mapping)
 
   //  describe("mapper for output marshalling") {
   //    it("should write a single numeric value") {

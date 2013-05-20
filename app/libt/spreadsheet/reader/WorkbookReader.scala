@@ -51,6 +51,7 @@ trait SheetDefinition {
 case class Area(
   schema: TModel,
   offset: Offset,
+  limit: Option[Int],
   orientation: Layout,
   columns: Seq[Strip]) extends SheetDefinition {
 
