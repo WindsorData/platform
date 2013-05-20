@@ -24,7 +24,7 @@ class ReadAnyTypeSpec extends FunSpec with BeforeAndAfter {
       WorkbookMapping(
         Seq(
           Area(
-            TModel('a -> TAny), Offset(0, 0), ColumnOrientedLayout, Seq(Feature(Path('a)))))),
+            TModel('a -> TAny), Offset(0, 0), None, ColumnOrientedLayout, Seq(Feature(Path('a)))))),
       new IdentityCombiner)
 
     before {
