@@ -42,33 +42,40 @@ object Application extends Controller {
     Redirect(routes.Application.companies)
   }
   
-  def readZipFile(file: ZipFile): Seq[Seq[ModelOrErrors]] = {
+  def readZipFile(file: ZipFile, entries: Seq[ZipEntry]) = {
+    entries
+    .map { entry =>
+      (entry.getName(), CompanyFiscalYearReader.read(file.getInputStream(entry)))
+    }.toSeq
+  }
+  
+  def getValidEntries(file: ZipFile) = {
     file.entries.map { entry =>
       file.getEntry(entry.getName())
     }
     .filter { entry =>
       !entry.isDirectory() && entry.getName().split("-").last == top5Suffix
     }
-    .map { entry =>
-      CompanyFiscalYearReader.read(file.getInputStream(entry))
-    }.toSeq
   }
   
   //TODO: repeated code with newCompany
   def newCompanies = Action(parse.multipartFormData) { request =>
     request.body.file("datasets").map { dataset =>  
       var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
+      
       val file = new ZipFile(dataset.ref.file.getAbsolutePath())
+      val results = readZipFile(file, getValidEntries(file).toSeq)
       
-      val results = readZipFile(file)
-      
-      if(results.exists(_.hasErrors)){
-    	  val errors = file.entries().map(_.getName())
-    	  .zip(results.map(_.errors.flatMap(_.left.get)).iterator).toSeq
-    	  response = BadRequest(views.html.parsingError(errors))
+      if(results.exists{case (_, result) => result.hasErrors}){
+        val errors = 
+          results.filter{case (_, result) => result.hasErrors}
+        .map{case (entryName, result) => 
+          (entryName, result.errors.flatMap(_.left.get))}.toSeq
+          
+    	 response = BadRequest(views.html.parsingError(errors))
       }
       else{
-        results.foreach(_.foreach(company => updateCompany(company.right.get)))
+        results.foreach{case (_, result) => result.foreach(company => updateCompany(company.right.get))}
       }
       
       response
