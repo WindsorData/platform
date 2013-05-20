@@ -1,0 +1,9 @@
+== Sorwind
+
+This repo should be private!
+
+1) Install gems
+* bundle
+
+2) Create database, and run migrations and seed.rb
+* bundle exec rake db:setup
