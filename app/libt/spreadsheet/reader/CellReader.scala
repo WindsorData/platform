@@ -25,6 +25,13 @@ trait CellReader extends SkipeableLike {
   def boolean = createValue(blankToNone(_.getBooleanCellValue))
   def xBoolean = string.orDefault("").map(_=="X")
   def date = createValue(blankToNone(_.getDateCellValue))
+  def any: Value[String] = createValue(blankToNone { cell =>
+    cell.getCellType() match {
+    	case Cell.CELL_TYPE_BOOLEAN => cell.getBooleanCellValue().toString
+    	case Cell.CELL_TYPE_NUMERIC => cell.getNumericCellValue().toString
+    	case _ => cell.getStringCellValue()
+    }
+  })
   
   protected def next: Seq[Cell]
 
