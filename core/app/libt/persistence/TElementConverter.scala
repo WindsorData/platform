@@ -26,15 +26,23 @@ class TModelConverter(tModel: TModel) extends TElementConverter {
   def marshall(it: Element) = {
     val model = it.asModel
     MongoDBObject(
-      tModel.elementTypes.map {
+      tModel.elementTypes
+      .filter {
+        case (key, _) => model.hasElement(key)
+      }
+      .map {
         case (key, telement) =>
           (key.name -> telement.marshall(model(key)))
       }: _*)
   }
 
   def unmarshall(it: DBO) =
-    Model(tModel.elementTypes.map {
-      case (key, telement) =>
+    Model(tModel.elementTypes
+      .filter {
+      	case (key, _) => it.contains(key.name)
+      }  
+      .map {
+      	case (key, telement) =>
         (key -> telement.unmarshall(it(key.name).asInstanceOf[DBO]))
     }: _*)
 }

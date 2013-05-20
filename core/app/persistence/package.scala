@@ -25,7 +25,7 @@ package object persistence {
       MongoDBObject(
         "ticker.value" -> company(Path('ticker)).asValue[String].value.get,
         "disclosureFiscalYear.value" -> company(Path('disclosureFiscalYear)).asValue.value.get),
-      TCompanyFiscalYear.marshall(company), true)
+      MongoDBObject("$set" -> TCompanyFiscalYear.marshall(company)), true)
   }
 
   def findAllCompanies(implicit db: MongoDB) = companies.toList.map(TCompanyFiscalYear.unmarshall(_))
@@ -39,7 +39,7 @@ package object persistence {
 
   //TODO: check if there's a way to do this better
   def findAllCompaniesNames(implicit db: MongoDB): Seq[String] =
-      companies.toSet[DBO].map(_.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
+    companies.toSet[DBO].map(_.get("ticker").asInstanceOf[DBO].get("value").toString()).toSeq
 
   def findAllCompaniesFiscalYears(implicit db: MongoDB): Seq[Int] =
     companies.toSet[DBO].map(_.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
