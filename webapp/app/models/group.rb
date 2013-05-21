@@ -9,5 +9,11 @@
 #
 
 class Group < ActiveRecord::Base
-  attr_accessible :name
+  attr_accessible :name, :tickers_tokens
+  has_and_belongs_to_many :tickers
+  attr_reader :tickers_tokens
+
+  def tickers_tokens=(ids)
+    self.ticker_ids =  ids.split(",")
+  end
 end

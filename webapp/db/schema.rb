@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130520194406) do
+ActiveRecord::Schema.define(:version => 20130521185139) do
 
   create_table "active_admin_comments", :force => true do |t|
     t.string   "resource_id",   :null => false
@@ -50,6 +50,20 @@ ActiveRecord::Schema.define(:version => 20130520194406) do
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "name"
+  end
+
+  create_table "groups_tickers", :id => false, :force => true do |t|
+    t.integer "group_id"
+    t.integer "ticker_id"
+  end
+
+  add_index "groups_tickers", ["group_id", "ticker_id"], :name => "index_groups_tickers_on_group_id_and_ticker_id"
+  add_index "groups_tickers", ["ticker_id", "group_id"], :name => "index_groups_tickers_on_ticker_id_and_group_id"
+
+  create_table "tickers", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "users", :force => true do |t|
