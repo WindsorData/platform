@@ -1,28 +1,24 @@
 package controllers
 
-import play.api._
+import play.api.templates.Html
+import play.api.data.Forms._
+import play.api.data._
 import play.api.mvc._
-import java.io.InputStream
+import play.api._
+import java.io.ByteArrayOutputStream
 import util.Closeables
 import util.ErrorHandler._
 import util.FileManager._
-import java.io.FileInputStream
 import com.mongodb.casbah.MongoClient
-import output.SpreadsheetWriter
-import play.api.data._
-import play.api.data.Forms._
-import java.io.ByteArrayOutputStream
 import com.mongodb.DBObject
+import output.SpreadsheetWriter
 import persistence._
-import model._
-import views.html.defaultpages.badRequest
 import model.mapping._
-import play.api.templates.Html
-import java.util.zip.ZipFile
+import model._
 import libt._
 
 //No content-negotiation yet. Just assume HTML for now
-object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]] {
+object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]] with SpreadsheetUploader {
 
   implicit val db = MongoClient()("windsor")
   override val suffix = "Exec Top5 and Grants.xls"
@@ -36,11 +32,10 @@ object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]]
   def index = Action {
     Redirect(routes.Application.companies)
   }
-
+  
   //TODO: repeated code with newCompany
-  def newCompanies = Action(parse.multipartFormData) { request =>
-    request.body.file("datasets").map { dataset =>
-      var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
+  def newCompanies = UploadSpreadsheetAction {  dataset =>
+      var response = Ok(views.html.companyUploadSuccess())
 
       val results = readZipFileEntries(dataset.ref.file.getAbsolutePath)
 
@@ -48,8 +43,7 @@ object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]]
         val errors =
           results.filter { case (_, result) => result.hasErrors }
             .map {
-              case (entryName, result) =>
-                (entryName, result.errors.flatMap(_.left.get))
+              case (entryName, result) => (entryName, result.errors.flatMap(_.left.get))
             }.toSeq
 
         response = BadRequest(views.html.parsingError(errors))
@@ -57,30 +51,20 @@ object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]]
         results.foreach { case (_, result) => result.foreach(company => updateCompany(company.right.get)) }
       }
       response
-    }.getOrElse {
-      Redirect(routes.Application.companies).flashing("error" -> "Missing file")
-    }
-
   }
 
-  def newCompany = Action(parse.multipartFormData) { request =>
-    request.body.file("dataset").map { dataset =>
-      var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
+  def newCompany = UploadSpreadsheetAction { dataset =>
+      var response = Ok(views.html.companyUploadSuccess())
 
       val result = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
 
       if (result.hasErrors) {
         response = BadRequest(
-          views.html.parsingError(
-            Seq((dataset.ref.file.getName(), result.errors.flatMap(_.left.get)))))
+          views.html.parsingError(Seq((dataset.ref.file.getName, result.errors.flatMap(_.left.get)))))
       } else {
         result.foreach(company => updateCompany(company.right.get))
       }
-
       response
-    }.getOrElse {
-      Redirect(routes.Application.companies).flashing("error" -> "Missing file")
-    }
   }
 
   def reports = Action {
