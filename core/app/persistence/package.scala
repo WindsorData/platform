@@ -4,9 +4,8 @@ import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBList
 import util._
-import libt.Model
 import libt.persistence._
-import libt.Element
+import libt._
 import com.mongodb.casbah.commons.MongoDBObjectBuilder
 
 package object persistence {
@@ -24,8 +23,8 @@ package object persistence {
   def updateCompany(company: Model)(implicit db: MongoDB) {
     companies.update(
       MongoDBObject(
-        "ticker.value" -> company.v[String]('ticker).value.get,
-        "disclosureFiscalYear.value" -> company.v('disclosureFiscalYear).value.get),
+        "ticker.value" -> company(Path('ticker)).asValue[String].value.get,
+        "disclosureFiscalYear.value" -> company(Path('disclosureFiscalYear)).asValue.value.get),
       TCompanyFiscalYear.marshall(company), true)
   }
 
