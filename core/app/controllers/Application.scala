@@ -16,22 +16,17 @@ import com.mongodb.DBObject
 import persistence._
 import model._
 import views.html.defaultpages.badRequest
-import libt.Model
 import model.mapping._
-import output.SpreadsheetWriter
 import play.api.templates.Html
 import java.util.zip.ZipFile
-import scala.collection.JavaConversions._
-import libt.ModelOrErrors
-import java.util.zip.ZipEntry
+import libt._
 
 //No content-negotiation yet. Just assume HTML for now
-object Application extends Controller {
-
-  import persistence._
+object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]] {
 
   implicit val db = MongoClient()("windsor")
-  val top5Suffix = "Exec Top5 and Grants.xls"
+  override val suffix = "Exec Top5 and Grants.xls"
+  override val reader = CompanyFiscalYearReader
 
   val companyForm = Form(
     tuple(
@@ -41,62 +36,44 @@ object Application extends Controller {
   def index = Action {
     Redirect(routes.Application.companies)
   }
-  
-  def readZipFile(file: ZipFile, entries: Seq[ZipEntry]) = {
-    entries
-    .map { entry =>
-      (entry.getName(), CompanyFiscalYearReader.read(file.getInputStream(entry)))
-    }.toSeq
-  }
-  
-  def getValidEntries(file: ZipFile) = {
-    file.entries.map { entry =>
-      file.getEntry(entry.getName())
-    }
-    .filter { entry =>
-      !entry.isDirectory() && entry.getName().split("-").last == top5Suffix
-    }
-  }
-  
+
   //TODO: repeated code with newCompany
   def newCompanies = Action(parse.multipartFormData) { request =>
-    request.body.file("datasets").map { dataset =>  
+    request.body.file("datasets").map { dataset =>
       var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
-      
-      val file = new ZipFile(dataset.ref.file.getAbsolutePath())
-      val results = readZipFile(file, getValidEntries(file).toSeq)
-      
-      if(results.exists{case (_, result) => result.hasErrors}){
-        val errors = 
-          results.filter{case (_, result) => result.hasErrors}
-        .map{case (entryName, result) => 
-          (entryName, result.errors.flatMap(_.left.get))}.toSeq
-          
-    	 response = BadRequest(views.html.parsingError(errors))
+
+      val results = readZipFileEntries(dataset.ref.file.getAbsolutePath)
+
+      if (results.exists { case (_, result) => result.hasErrors }) {
+        val errors =
+          results.filter { case (_, result) => result.hasErrors }
+            .map {
+              case (entryName, result) =>
+                (entryName, result.errors.flatMap(_.left.get))
+            }.toSeq
+
+        response = BadRequest(views.html.parsingError(errors))
+      } else {
+        results.foreach { case (_, result) => result.foreach(company => updateCompany(company.right.get)) }
       }
-      else{
-        results.foreach{case (_, result) => result.foreach(company => updateCompany(company.right.get))}
-      }
-      
       response
     }.getOrElse {
       Redirect(routes.Application.companies).flashing("error" -> "Missing file")
     }
-    
+
   }
-  
+
   def newCompany = Action(parse.multipartFormData) { request =>
     request.body.file("dataset").map { dataset =>
       var response: SimpleResult[Html] = Ok(views.html.companyUploadSuccess())
 
       val result = CompanyFiscalYearReader.read(dataset.ref.file.getAbsolutePath)
-      
-      if(result.hasErrors) {
+
+      if (result.hasErrors) {
         response = BadRequest(
-            views.html.parsingError(
-                Seq((dataset.ref.file.getName(),result.errors.flatMap(_.left.get)))))
-      }
-      else{
+          views.html.parsingError(
+            Seq((dataset.ref.file.getName(), result.errors.flatMap(_.left.get)))))
+      } else {
         result.foreach(company => updateCompany(company.right.get))
       }
 
@@ -117,7 +94,6 @@ object Application extends Controller {
   }
 
   def doSearch = Action { implicit request =>
-
     companyForm.bindFromRequest.fold(
       formWithErrors =>
         BadRequest(views.html.searchCompanies(formWithErrors,
@@ -128,7 +104,7 @@ object Application extends Controller {
         val year = values._2
         val out = new ByteArrayOutputStream()
         findCompaniesBy(name, year) match {
-          case Some(founded : Seq[Model]) => {
+          case Some(founded: Seq[Model]) => {
             SpreadsheetWriter.write(out, founded)
             Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
               CONTENT_DISPOSITION -> "attachment; filename=company.xls")
