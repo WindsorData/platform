@@ -7,7 +7,6 @@ import play.api.mvc._
 import play.api._
 import java.io.ByteArrayOutputStream
 import util.Closeables
-import util.ErrorHandler._
 import util.FileManager._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.DBObject
@@ -15,6 +14,7 @@ import output.SpreadsheetWriter
 import persistence._
 import model.mapping._
 import model._
+import libt.error._
 import libt._
 
 //No content-negotiation yet. Just assume HTML for now
@@ -43,12 +43,12 @@ object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]]
         val errors =
           results.filter { case (_, result) => result.hasErrors }
             .map {
-              case (entryName, result) => (entryName, result.errors.flatMap(_.left.get))
+              case (entryName, result) => (entryName, result.errors)
             }.toSeq
 
         response = BadRequest(views.html.parsingError(errors))
       } else {
-        results.foreach { case (_, result) => result.foreach(company => updateCompany(company.right.get)) }
+        results.foreach { case (_, result) => result.foreach(company => updateCompany(company.get)) }
       }
       response
   }
@@ -60,9 +60,9 @@ object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]]
 
       if (result.hasErrors) {
         response = BadRequest(
-          views.html.parsingError(Seq((dataset.ref.file.getName, result.errors.flatMap(_.left.get)))))
+          views.html.parsingError(Seq((dataset.ref.file.getName, result.errors))))
       } else {
-        result.foreach(company => updateCompany(company.right.get))
+        result.foreach(company => updateCompany(company.get))
       }
       response
   }

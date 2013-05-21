@@ -1,13 +1,14 @@
 package model
 
-import util.ErrorHandler._
 import util.WorkbookLogger._
-import libt._
-import libt.spreadsheet._
 import libt.spreadsheet.reader._
-import scala.collection.immutable.Stream
-import org.apache.poi.ss.usermodel.Row
+import libt.spreadsheet._
+import libt.error._
+import libt._
+
 import org.joda.time.DateTime
+
+import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Workbook
@@ -64,15 +65,15 @@ package object mapping {
     val ROW_INDEX_FISCAL_YEAR_MINUS_ONE = 40
     val ROW_INDEX_FISCAL_YEAR_MINUS_TWO = 55
 
-    def dateCellToYear(r: Seq[Row]) = {
+    def dateCellToYear(r: Seq[Row]) : Validated[Int] = {
       val dateCell = r.get(0).getCell(2)
       try {
-        Right(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
+        Valid(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
       } catch {
         case e: NoSuchElementException =>
-          Left(log(ReaderError().noFiscalYearProvidedAt(dateCell)))
+          Invalid(log(ReaderError().noFiscalYearProvidedAt(dateCell)))
         case e: RuntimeException =>
-          Left(log(ReaderError(e.getMessage()).description(dateCell)))
+          Invalid(log(ReaderError(e.getMessage()).description(dateCell)))
       }
     }
 
@@ -84,16 +85,18 @@ package object mapping {
         .map(it => dateCellToYear(sheet.rows.drop(it)))
 
     def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = {
+      val flattenResults = results.flatten
       val ys = years(wb.getSheetAt(0))
-      if (ys.hasErrors || results.exists(_.hasErrors)) {
-    	  results.flatten :+ Left(ys.errors.map(error => error.left.get))
+      
+      if (ys.hasErrors || flattenResults.hasErrors) {
+    	  flattenResults :+ Invalid(ys.errors : _*)
       }
       else {
         (ys, results.tail, Stream.continually(results.head.head)).zipped
           .map((year, executives, company) =>
-            Right(Model(company.right.get.elements
-              + ('disclosureFiscalYear -> Value(year.right.get))
-              + ('executives -> Col(executives.map(_.right.get).toList: _*)))))
+            Valid(Model(company.get.elements
+              + ('disclosureFiscalYear -> Value(year.get))
+              + ('executives -> Col(executives.map(_.get).toList: _*)))))
       }
     }
   }

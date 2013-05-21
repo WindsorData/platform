@@ -18,7 +18,7 @@ object WorkbookLogger {
       }
   }
 
-  case class ReaderError(baseMessage: String) extends Loggeable {
+  case class ReaderError(baseMessage : String = "") extends Loggeable {
 
     def generateErrorMessage(description: String) =
       "PARSING INPUT" + " - " + description
@@ -27,14 +27,6 @@ object WorkbookLogger {
       generateErrorMessage(baseMessage + specificMessage + where(cell))
 
     def noFiscalYearProvidedAt(cell: Cell) = description(cell, "No Fiscal Year provided ")
-  }
-
-  case class WriterError(baseMessage: String) extends Loggeable {
-    def generateErrorMessage(description: String) = ???
-  }
-
-  object ReaderError {
-    def apply(): ReaderError = ReaderError("")
   }
 
   def log(cause: String) = {

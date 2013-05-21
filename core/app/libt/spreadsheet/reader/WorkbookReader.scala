@@ -1,6 +1,5 @@
 package libt.spreadsheet.reader
 
-import util.ErrorHandler._
 import util.FileManager._
 import libt._
 import libt.util._
@@ -62,21 +61,15 @@ case class Area(
 
   def write(models: Seq[Model])(sheet: Sheet) = 
     orientation.write(this, sheet, models)
-    
+  
+  import libt.error._
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
-
-    val errorMessages =
-      for {
-        column <- columns
-        message <- handle(column.read(reader, schema, modelBuilder)).left.toSeq
-      } yield message
-
-    if (errorMessages.isEmpty)
-      Right(modelBuilder.build)
-    else
-      Left(errorMessages)
+    columns
+    	.impureMap(column => Validated(column.read(reader, schema, modelBuilder)))
+    	.join
+    	.map(_ => modelBuilder.build)
   }
 
   def continually = Stream.continually[SheetDefinition](this)

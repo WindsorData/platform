@@ -30,5 +30,6 @@ package object libt {
     def apply(elements: Path*) : PK = elements
   }
   
-  type ModelOrErrors = Either[Seq[String], Model]
+  import error._
+  type ModelOrErrors = Validated[Model]
 }
