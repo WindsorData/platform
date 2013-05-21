@@ -12,29 +12,13 @@ sealed trait Element extends ElementLike[Element] {
   override type ValueType[A] = Value[A]
 
   /**
-   * Answers the element at the given field key.
-   *
-   * This method only works for keyed elements - Models.
-   */
-  def m(key: Symbol): Element = this(Path(key))
-
-  /**
-   * *
-   * Answers the Value at given field key.
-   * Fails when the key points to something else than a Value.
-   *
-   * This method only works for keyed elements - Models.
-   */
-  def v[A](key: Symbol) = m(key).asValue[A]
-
-  /**
    * *
    * Answers the elements at given field key.
    * Fails when the key points to something else than a Col.
    *
    * This method only works for keyed elements - Models.
    */
-  def c(key: Symbol) = m(key).asCol.elements
+  def c(key: Symbol) = this(Path(key)).asCol.elements
   
   def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
     case (* :: tail, self: Col) => self.elements.map(_.apply(tail))

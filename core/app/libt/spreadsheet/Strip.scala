@@ -11,7 +11,8 @@ import libt.builder._
 import libt._
 
 /**
- * The declaration of the content of a column, that may either important - Feature  - or unimportant - Gap
+ * The declaration of the content of a column, that may be important - Feature  -, unimportant - Gap,
+ * calculated - Calc - or a tag over an existing strip - Tag
  */
 sealed trait Strip {
   /**

@@ -32,8 +32,8 @@ class TestDriver extends FunSpec {
       
       assert(results.size === 3)
       
-      assert(results.head.v('ticker) === Value("something"))
-      assert(results.head.v('name) === Value("something"))
+      assert(results.head('ticker) === Value("something"))
+      assert(results.head('name) === Value("something"))
       
       (0 to 2).zip(Seq(2005, 2012, 2013)).foreach{ case (index, year) => 
         validateCompanyYear(results(index), year)
@@ -42,7 +42,7 @@ class TestDriver extends FunSpec {
     }
     
     def validateCompanyYear(company: Model, year: Int) {
-      assert(company.v('disclosureFiscalYear) === Value(year))
+      assert(company('disclosureFiscalYear) === Value(year))
       val firstExecFirstCompany = company.c('executives).take(1).head
       validateExecutive(firstExecFirstCompany.asModel)
     }
@@ -50,8 +50,8 @@ class TestDriver extends FunSpec {
     def validateExecutive(exec: Model) {
       import exec._
 
-      assert(v('lastName) === Value("exec1Last"))
-      assert(v('title) === Value())
+      assert(apply('lastName) === Value("exec1Last"))
+      assert(apply('title) === Value())
 
       assert(exec(Path('functionalMatches, 'primary)) === Value("Engineering"))
       assert(exec(Path('functionalMatches, 'secondary)) === Value())

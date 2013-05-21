@@ -2,7 +2,6 @@ package libt.spreadsheet.reader
 
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
-
 import libt.spreadsheet.writer._
 import libt.spreadsheet.util._
 import libt.spreadsheet._
@@ -14,7 +13,6 @@ import libt._
  * the exact way a sheet is read and written
  * */
 sealed trait Layout {
-  val effectiveExecutiveGroup = 6
   def read(area: Area, sheet: Sheet): Seq[ModelOrErrors]
   def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
@@ -25,8 +23,7 @@ object RowOrientedLayout extends Layout {
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) = ???
 }
 
-object ColumnOrientedLayout extends Layout {
-  
+object ColumnOrientedLayout extends Layout with LibtSizes {
   override def read(area: Area, sheet: Sheet) = {
 	  val models = effectiveRowGroups(area, sheet).map { rows =>
 	  area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _))
@@ -38,7 +35,7 @@ object ColumnOrientedLayout extends Layout {
   }
 
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) {
-    sheet.defineLimits(area.offset, models.size * effectiveExecutiveGroup, area.columns.size)
+    sheet.defineLimits(area.offset, models.size * ValueSizeWithSeparator, area.columns.size)
     (effectiveRowGroups(area, sheet).toSeq, models).zipped.foreach { (row, model) =>
       val writer = new ColumnOrientedWriter(area.offset.columnIndex, row)
       area.columns.foreachWithOps(model, area.schema) { ops =>
@@ -48,9 +45,5 @@ object ColumnOrientedLayout extends Layout {
   }
     
   def effectiveRowGroups(area: Area, sheet: Sheet) = 
-     sheet.rows(area.offset).grouped(effectiveExecutiveGroup)
+     sheet.rows(area.offset).grouped(ValueSizeWithSeparator)
 }
-
-
-
-
