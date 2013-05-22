@@ -31,106 +31,112 @@
   </div>
 </div>
 <div class="span9">
-  <form class="form-horizontal">
+  <%= form_tag('/executive_compensation', class: "form-horizontal" ) do %>
     <legend>Executive compensation</legend>
-    <div class="basic-group">
-      <div class="role-selector">
-        <label>ROLE *</label>
-        <select>
-          <option>CEO</option>
-          <option>CTO</option>
-          <option>CFO</option>
-        </select>
-        <label>PAY RANK</label>
-        <select>
-          <option>CEO</option>
-          <option>CTO</option>
-          <option>CFO</option>
-        </select>
-      </div>
-      <div class="filters">
-        <!-- cash compensation -->
-        <h3>cash compensation</h3>
-        <select>
-          <option>Salary</option>
-          <option>Salary</option>
-          <option>Salary</option>
-        </select>
-        <label>Less than ($)<input type="text"></label>
-        <label>Greater than ($)<input type="text"></label>
-        <!-- equity compensation -->
-        <h3>equity compensation</h3>
-        <select>
-          <option>Salary</option>
-          <option>Salary</option>
-          <option>Salary</option>
-        </select>
-        <label>Less than ($)<input type="text"></label>
-        <label>Greater than ($)<input type="text"></label>
-        <!-- incentive plan compensation -->
-        <h3>equity compensation</h3>
-        <select>
-          <option>Salary</option>
-          <option>Salary</option>
-          <option>Salary</option>
-        </select>
-        <label>Less than ($)<input type="text"></label>
-        <label>Greater than ($)<input type="text"></label>
-        <!-- equity holdings -->
-        <h3>equity compensation</h3>
-        <select>
-          <option>Salary</option>
-          <option>Salary</option>
-          <option>Salary</option>
-        </select>
-        <label>Less than ($)<input type="text"></label>
-        <label>Greater than ($)<input type="text"></label>
-        <!-- compensation arrangements -->
-        <h3>compensation arrangements</h3>
-        <select>
-          <option>Yes</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
-        <!-- reload options -->
-        <h3>compensation arrangements</h3>
-        <select>
-          <option>Yes</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
-        <!-- CEO tenure -->
-        <h3>CEO tenure</h3>
-        <label>Less than (yrs)<input type="text"></label>
-        <label>Greater than (yrs)<input type="text"></label>
-        <!-- other criteria -->
-        <h3>other criteria</h3>
-        <label>Founder</label>
-        <select>
-          <option>Yes</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
-        <label>Director</label>
-        <select>
-          <option>Yes</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
-        <label>New hire</label>
-        <select>
-          <option>Yes</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
-        <label>Transition period</label>
-        <select>
-          <option>Yes</option>
-          <option>No</option>
-          <option>N/A</option>
-        </select>
+    <div id='forms-container'>      
+      <div class="basic-group hidden">
+        <div class="role-selector">
+          <label>ROLE *</label>
+          <select>
+            <option>CEO</option>
+            <option>CTO</option>
+            <option>CFO</option>
+          </select>
+          <label>PAY RANK</label>
+          <select>
+            <option>CEO</option>
+            <option>CTO</option>
+            <option>CFO</option>
+          </select>
+        </div>
+        <div class="filters">
+          <!-- cash compensation -->
+          <h3>cash compensation</h3>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <label>Less than ($)<input type="text"></label>
+          <label>Greater than ($)<input type="text"></label>
+          <!-- equity compensation -->
+          <h3>equity compensation</h3>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <label>Less than ($)<input type="text"></label>
+          <label>Greater than ($)<input type="text"></label>
+          <!-- incentive plan compensation -->
+          <h3>equity compensation</h3>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <label>Less than ($)<input type="text"></label>
+          <label>Greater than ($)<input type="text"></label>
+          <!-- equity holdings -->
+          <h3>equity compensation</h3>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <label>Less than ($)<input type="text"></label>
+          <label>Greater than ($)<input type="text"></label>
+          <!-- compensation arrangements -->
+          <h3>compensation arrangements</h3>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <!-- reload options -->
+          <h3>compensation arrangements</h3>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <!-- CEO tenure -->
+          <h3>CEO tenure</h3>
+          <label>Less than (yrs)<input type="text"></label>
+          <label>Greater than (yrs)<input type="text"></label>
+          <!-- other criteria -->
+          <h3>other criteria</h3>
+          <label>Founder</label>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <label>Director</label>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <label>New hire</label>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <label>Transition period</label>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+        </div>
+        <br/>
+        <br/>        
       </div>
     </div>
+    <a href="#" id="js-new-form">New form</a>
+    <br/>
     <button type="submit" class="btn">Search</button>
-  </form>
-</div> 
+  <% end %>
+</div>
