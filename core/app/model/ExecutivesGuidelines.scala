@@ -3,6 +3,14 @@ import libt._
 
 object ExecutivesGuidelines {
   import model.Commons._
+
+  val TGuidelinesPeriod = TEnum(
+    "Until guidelines are met",
+    "Retention Period",
+    "Entire employment",
+    "No disclosure provided",
+    "Other")
+
   val TExecGuidelines = TModel(
     'title -> TString,
     'functionalMatches -> functionalMatches,
@@ -10,15 +18,8 @@ object ExecutivesGuidelines {
     'yearsToAchieve -> TNumber,
     'retention -> TModel(
       'ratio -> TNumber,
-      //TODO: change this to be a TEnum
-      'period -> TString),
+      'period -> TGuidelinesPeriod),
     'numberOfShares -> TNumber,
     'multipleOfSalary -> TNumber)
 
-  val GuidelinesPeriod = TEnum(
-    "Until guidelines are met",
-    "Retention Period",
-    "Entire employment",
-    "No disclosure provided",
-    "Other")
 }
