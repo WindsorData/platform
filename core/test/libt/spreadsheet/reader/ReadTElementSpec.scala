@@ -11,6 +11,8 @@ import org.scalatest.BeforeAndAfter
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.Sheet
 import java.util.Date
+import java.io.FileOutputStream
+import libt.error.Valid
 
 @RunWith(classOf[JUnitRunner])
 class ReadTElementSpec extends FunSpec with BeforeAndAfter {
@@ -40,38 +42,46 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
     it("should read numeric values as a string") {
       sheet.cellAt(0, 0).setCellValue(22)
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('key -> Value("22.0")))))
+      assert(result.head.toList === Seq(Valid(Model('key -> Value("22.0")))))
     }
 
     it("should read boolean values as a string") {
       sheet.cellAt(0, 0).setCellValue(true)
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('key -> Value("true")))))
+      assert(result.head.toList === Seq(Valid(Model('key -> Value("true")))))
     }
 
     it("should read string values as a string") {
       sheet.cellAt(0, 0).setCellValue("something")
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('key -> Value("something")))))
+      assert(result.head.toList === Seq(Valid(Model('key -> Value("something")))))
     }
 
   }
 
-  describe("TEnum") {
-    val schema = TEnum("a","b","c")
-    val reader = createWbReader(schema)
+  describe("TGenericEnum") {
 
-    it("should read valid entries") {
+    it("should read valid Strings") {
+      val reader = createWbReader(TEnum("a","b","c"))
       sheet.cellAt(0, 0).setCellValue("b")
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('key -> Value("b")))))
+      assert(result.head.toList === Seq(Valid(Model('key -> Value("b")))))
+    }
+    
+    ignore("should read valid Numbers") {
+      val reader = createWbReader(TGenericEnum[BigDecimal](TNumber, Seq(1,2,3)))      
+      sheet.cellAt(0, 0).setCellValue(1)
+      val result = reader.read(workbook)
+      assert(result.head.toList === Seq(Valid(Model('key -> Value(1)))))
     }
 
     it("should not let read invalid entries") {
       intercept[Throwable] {
+        val schema = TEnum("a","b","c")
+        val reader = createWbReader(schema)
         sheet.cellAt(0, 0).setCellValue("x")
         val result = reader.read(workbook)
-        schema.validate(result.head.head.right.get)
+        schema.validate(result.head.head.get)
       }
     }
   }

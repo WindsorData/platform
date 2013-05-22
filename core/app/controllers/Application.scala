@@ -8,7 +8,6 @@ import play.api._
 import java.io.ByteArrayOutputStream
 import util.Closeables
 import util.FileManager._
-import util.ErrorHandler._
 import com.mongodb.casbah.MongoClient
 import com.mongodb.DBObject
 import output.SpreadsheetWriter

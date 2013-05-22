@@ -31,10 +31,10 @@ object ExecutivesTop5Mapping {
       Path('cashCompensations, 'maxBonus),
       Path('cashCompensations, 'nextFiscalYearData, 'baseSalary),
       Path('cashCompensations, 'nextFiscalYearData, 'targetBonus)) ++
-      colOfModelsPath('optionGrants, 5, 'grantDate, 'expireDate, 'number, 'price, 'value, 'perf, 'type) ++
-      colOfModelsPath('timeVestRS, 5, 'grantDate, 'number, 'price, 'value, 'type) ++
-      colOfModelsPath('performanceVestRS, 2, 'grantDate, 'targetNumber, 'grantDatePrice, 'targetValue, 'type) ++
-      colOfModelsPath('performanceCash, 2, 'grantDate, 'targetValue, 'payout) ++
+      colOfModelsPath(Path('optionGrants), 5, 'grantDate, 'expireDate, 'number, 'price, 'value, 'perf, 'type) ++
+      colOfModelsPath(Path('timeVestRS), 5, 'grantDate, 'number, 'price, 'value, 'type) ++
+      colOfModelsPath(Path('performanceVestRS), 2, 'grantDate, 'targetNumber, 'grantDatePrice, 'targetValue, 'type) ++
+      colOfModelsPath(Path('performanceCash), 2, 'grantDate, 'targetValue, 'payout) ++
       Seq[Strip](
         Path('carriedInterest, 'ownedShares, 'beneficialOwnership),
         Path('carriedInterest, 'ownedShares, 'options),
@@ -55,4 +55,6 @@ object ExecutivesTop5Mapping {
         #::
         Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping))),
     companyFiscalYearCombiner)
+  
+  def companyFiscalYearCombiner = DocSrcCombiner(25 -> 'executives, 40 -> 'executives, 55 -> 'executives)
 }

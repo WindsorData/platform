@@ -19,18 +19,14 @@ package object mapping {
 
   implicit def pathToFeature(path: Path): Feature = Feature(path)
 
-  def colOfModelsPath(basePath: Symbol, times: Int, paths: Symbol*): Seq[Strip] =
-    for (index <- 0 to times; valuePath <- paths) yield Feature(Path(basePath, index, valuePath))
+  def colOfModelsPath(basePath: Path, times: Int, paths: Symbol*): Seq[Strip] =
+    for (index <- 0 to times; valuePath <- paths) yield Feature((basePath :+ Index(index)) :+ Route(valuePath))
 
-  class DocSrcCombiner(yearsIndexes: Seq[Int], toCombine: Symbol) extends Combiner[Seq[ModelOrErrors]] {
+  class DocSrcCombiner(yearsPositionWithKeys: Seq[(Int, Symbol)]) extends Combiner[Seq[ModelOrErrors]] {
     import scala.collection.JavaConversions._
     import libt.spreadsheet.util._
 
-    val ROW_INDEX_FISCAL_YEAR = 25
-    val ROW_INDEX_FISCAL_YEAR_MINUS_ONE = 40
-    val ROW_INDEX_FISCAL_YEAR_MINUS_TWO = 55
-
-    def dateCellToYear(r: Seq[Row]) : Validated[Int] = {
+    def dateCellToYear(r: Seq[Row]): Validated[Int] = {
       val dateCell = r.get(0).getCell(2)
       try {
         Valid(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
@@ -43,26 +39,28 @@ package object mapping {
     }
 
     def years(sheet: Sheet) =
-      yearsIndexes.map(it => dateCellToYear(sheet.rows.drop(it)))
+      yearsPositionWithKeys.map {
+        case (yearIndex, key) => (dateCellToYear(sheet.rows.drop(yearIndex)), key)
+      }
 
     def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = {
       val flattenResults = results.flatten
-      val ys = years(wb.getSheetAt(0))
-      
-      if (ys.hasErrors || flattenResults.hasErrors) {
-    	  flattenResults :+ Invalid(ys.errors : _*)
-      }
-      else {
-        (ys, results.tail, Stream.continually(results.head.head)).zipped
-          .map((year, executives, company) =>
+      val yearsWithKeys = years(wb.getSheetAt(0))
+
+      if (yearsWithKeys.map(_._1).hasErrors || flattenResults.hasErrors) {
+        flattenResults :+ Invalid(yearsWithKeys.map(_._1).errors: _*)
+      } else {
+        (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped
+          .map((yearWithKey, executives, company) =>
             Valid(Model(company.get.elements
-              + ('disclosureFiscalYear -> Value(year.get))
-              + ('executives -> Col(executives.map(_.get).toList: _*)))))
+              + ('disclosureFiscalYear -> Value(yearWithKey._1.get))
+              + (yearWithKey._2 -> Col(executives.map(_.get).toList: _*)))))
       }
     }
   }
 
-  def companyFiscalYearCombiner = new DocSrcCombiner(Seq(25,40,55), 'executives)
-  def execGuidelinesCombiner = new DocSrcCombiner(Seq(10), 'guidelines)
-
+  object DocSrcCombiner {
+    def apply(years: (Int, Symbol)*) = new DocSrcCombiner(years.toSeq)
+  }
+  
 }

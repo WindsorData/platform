@@ -4,7 +4,6 @@ import play.api.libs.Files._
 import play.api.mvc.MultipartFormData._
 import play.api.mvc._
 import libt.spreadsheet.reader.WorkbookReader
-import util.ErrorHandler._
 import util.FileManager._
 import persistence._
 

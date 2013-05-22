@@ -11,6 +11,7 @@ package object model {
   import persistence._
   import model.ExecutivesGuidelines._
   import model.ExecutivesTop5._
+  import model.ExecutivesSTBonusPlan._
   
    val TCompanyFiscalYear = TModel(
     'ticker -> TString,
@@ -18,7 +19,8 @@ package object model {
     'disclosureFiscalYear -> TInt,
 
     'executives -> TCol(TExecutive),
-    'guidelines -> TCol(TExecGuidelines))
+    'guidelines -> TCol(TExecGuidelines),
+    'stBonusPlan -> TCol(TExecSTBonusPlan))
 }
 
 
