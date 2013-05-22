@@ -7,6 +7,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
+import libt.error._
 import libt._
 import model._
 import org.scalatest.junit.JUnitRunner
@@ -72,7 +73,7 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val area = TestArea(schema, Seq())
       val result: Seq[ModelOrErrors] = area.read(sheet)
-      assert(result === Seq(Right(Model())))
+      assert(result === Seq(Valid(Model())))
     }
 
     it("should let read empty sheets using non-empty mappings ") {
@@ -80,7 +81,7 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val area = TestArea(schema, Seq(Feature(Path('foo))))
       val result = area.read(sheet)
-      assert(result === Seq(Right(Model('foo -> Value()))))
+      assert(result === Seq(Valid(Model('foo -> Value()))))
     }
 
     it("should let read non-empty sheets using non-empty mappings ") {
@@ -88,7 +89,7 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
       val area = TestArea(schema, Seq(Gap, Feature(Path('foo))))
       val result = area.read(sheet)
-      assert(result.head === Right(Model('foo ->
+      assert(result.head === Valid(Model('foo ->
         Value(
           Some("value"),
           Some("calc"),
@@ -116,7 +117,7 @@ class TestDriver extends FunSpec {
         Feature(Path('aField))))
 
       val result = area.read(sheet)
-      assert(result === Seq(Right(Model('aField -> Value()))))
+      assert(result === Seq(Valid(Model('aField -> Value()))))
 
     }
     
@@ -141,7 +142,7 @@ class TestDriver extends FunSpec {
           ))
           
       val result = area.read(sheet)
-      assert(result === Seq(Right(Model('models -> Col(
+      assert(result === Seq(Valid(Model('models -> Col(
           Model(
           'value1 -> Value("model1-value1"),
           'value2 -> Value("model1-value2"),
@@ -165,7 +166,7 @@ class TestDriver extends FunSpec {
           Gap,
           Feature(Path('aField))))
       val result = area.read(sheet)
-      assert(result === Seq(Right(Model('aField -> Value("BLANK")))))
+      assert(result === Seq(Valid(Model('aField -> Value("BLANK")))))
     }
   }
 

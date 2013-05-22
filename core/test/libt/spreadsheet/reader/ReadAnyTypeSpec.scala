@@ -2,6 +2,7 @@ package libt.spreadsheet.reader
 
 import org.scalatest.FunSpec
 import libt.spreadsheet.util._
+import libt.error._
 import libt._
 import libt.spreadsheet.Offset
 import libt.spreadsheet.Feature
@@ -36,19 +37,19 @@ class ReadAnyTypeSpec extends FunSpec with BeforeAndAfter {
     it("should read numeric values as a string") {
       sheet.cellAt(0, 0).setCellValue(22)
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('a -> Value("22.0")))))
+      assert(result.head.toList === Seq(Valid(Model('a -> Value("22.0")))))
     }
 
     it("should read boolean values as a string") {
       sheet.cellAt(0, 0).setCellValue(true)
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('a -> Value("true")))))
+      assert(result.head.toList === Seq(Valid(Model('a -> Value("true")))))
     }
     
     it("should read string values as a string") {
       sheet.cellAt(0, 0).setCellValue("something")
       val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Right(Model('a -> Value("something")))))
+      assert(result.head.toList === Seq(Valid(Model('a -> Value("something")))))
     }
 
   }

@@ -3,6 +3,7 @@ package libt.spreadsheet.reader
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
 import org.apache.poi.ss.usermodel.Workbook
+import libt.error._
 import libt._
 import model._
 import model.mapping._
@@ -68,7 +69,7 @@ class WorkbookReaderSpec extends FunSpec {
         new IdentityCombiner)
       val result = reader.read(workbook)
 
-      assert(result.head === Seq(Right(Model('a -> Value("a")))))
+      assert(result.head === Seq(Valid(Model('a -> Value("a")))))
     }
 
     it("should be able to read two column oriented inputs without combining") {
@@ -81,7 +82,7 @@ class WorkbookReaderSpec extends FunSpec {
           .addSingleColumnOrientedValue(0, "a")
           .addSingleColumnOrientedValue(1, "b"))
 
-      assert(result.head === Seq(Right(Model('a -> Value("a"), 'b -> Value("b")))))
+      assert(result.head === Seq(Valid(Model('a -> Value("a"), 'b -> Value("b")))))
     }
 
     it("should be able to read row oriented inputs") {
@@ -94,7 +95,7 @@ class WorkbookReaderSpec extends FunSpec {
         new IdentityCombiner).read(workbook)
 
       import libt.spreadsheet.util._
-      assert(result.head === Seq(Right(Model('a -> Value("a")))))
+      assert(result.head === Seq(Valid(Model('a -> Value("a")))))
     }
 
   }

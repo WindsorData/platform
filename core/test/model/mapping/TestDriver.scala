@@ -1,10 +1,10 @@
 package model.mapping
 
-import util.ErrorHandler._
 import util.FileManager._
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+import libt.error._
 import libt._
 import model._
 import libt.spreadsheet._
@@ -28,7 +28,7 @@ class TestDriver extends FunSpec {
 
     it("should be able to import 3 company fiscal years with executives") {
 
-      val results = CompanyFiscalYearReader.read("test/input/FullValuesOnly.xlsx").map(_.right.get)
+      val results = CompanyFiscalYearReader.read("test/input/FullValuesOnly.xlsx").map(_.get)
       
       assert(results.size === 3)
       
@@ -94,7 +94,7 @@ class TestDriver extends FunSpec {
     it("should throw IllegalArgumentException when there's an invalid functional value") {
       intercept[Throwable] {
         CompanyFiscalYearReader.read("test/input/InvalidFunctionalValue.xlsx")
-        .foreach(company => TCompanyFiscalYear.validate(company.right.get))
+        .foreach(company => TCompanyFiscalYear.validate(company.get))
       }
     }
 
