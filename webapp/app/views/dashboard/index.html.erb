@@ -7,11 +7,7 @@
         <p>Select peer group</p>
           <%= select_tag :group, options_from_collection_for_select(Group.all, "id", "name") %>
         <p>Select report</p>
-        <select>
-          <option>1</option>
-          <option>2</option>
-          <option>3</option>
-        </select>
+        <%= select_tag :report, options_for_select(Constants::REPORTS) %>
         <a href="<%= new_group_path %>">Create new</a>
         <%= submit_tag "Select" %>
       <% end %>
@@ -37,69 +33,24 @@
       <div class="basic-group hidden">
         <div class="role-selector">
           <label>ROLE *</label>
-          <select>
-            <option>CEO</option>
-            <option>CTO</option>
-            <option>CFO</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::ROLES) %>
           <label>PAY RANK</label>
-          <select>
-            <option>CEO</option>
-            <option>CTO</option>
-            <option>CFO</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::ROLES) %>
         </div>
         <div class="filters">
           <!-- cash compensation -->
           <h3>cash compensation</h3>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
           <label>Less than ($)<input type="text"></label>
           <label>Greater than ($)<input type="text"></label>
-          <!-- equity compensation -->
+          <!-- equity compensation -->          
           <h3>equity compensation</h3>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
-          <label>Less than ($)<input type="text"></label>
-          <label>Greater than ($)<input type="text"></label>
-          <!-- incentive plan compensation -->
-          <h3>equity compensation</h3>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
-          <label>Less than ($)<input type="text"></label>
-          <label>Greater than ($)<input type="text"></label>
-          <!-- equity holdings -->
-          <h3>equity compensation</h3>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>          
           <label>Less than ($)<input type="text"></label>
           <label>Greater than ($)<input type="text"></label>
           <!-- compensation arrangements -->
           <h3>compensation arrangements</h3>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
-          <!-- reload options -->
-          <h3>compensation arrangements</h3>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <!-- CEO tenure -->
           <h3>CEO tenure</h3>
           <label>Less than (yrs)<input type="text"></label>
@@ -107,29 +58,13 @@
           <!-- other criteria -->
           <h3>other criteria</h3>
           <label>Founder</label>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <label>Director</label>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <label>New hire</label>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <label>Transition period</label>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>          
         </div>
         <br/>
         <br/>        
