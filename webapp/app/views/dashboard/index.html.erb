@@ -33,7 +33,7 @@
 <div class="span9">
   <%= form_tag('/executive_compensation', class: "main-form" ) do %>
     <legend>Executive compensation</legend>
-    <div id='forms-container'>      
+    <div class="form-container" id="forms-container">      
       <div class="basic-group hidden">
         <div class="role-selector">
           <label>ROLE *</label>
@@ -73,71 +73,71 @@
         <div class="filters">
           <!-- cash compensation -->
           <div class="item-form">
-          <p class="label">cash compensation</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
-          <input type="text" placeholder="Less than ($)">
-          <input type="text" placeholder="Greater than ($)">
+            <p class="label">cash compensation</p>
+            <select>
+              <option>Salary</option>
+              <option>Salary</option>
+              <option>Salary</option>
+            </select>
+            <input type="text" placeholder="Less than ($)">
+            <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- equity compensation -->
           <div class="item-form">
-          <p class="label">equity compensation</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
-          <input type="text" placeholder="Less than ($)">
-          <input type="text" placeholder="Greater than ($)">
+            <p class="label">equity compensation</p>
+            <select>
+              <option>Salary</option>
+              <option>Salary</option>
+              <option>Salary</option>
+            </select>
+            <input type="text" placeholder="Less than ($)">
+            <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- incentive plan compensation -->
           <div class="item-form">
-          <p class="label">incentive plan compensation</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
-          <input type="text" placeholder="Less than ($)">
-          <input type="text" placeholder="Greater than ($)">
+            <p class="label">incentive plan compensation</p>
+            <select>
+              <option>Salary</option>
+              <option>Salary</option>
+              <option>Salary</option>
+            </select>
+            <input type="text" placeholder="Less than ($)">
+            <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- equity holdings -->
           <div class="item-form">
-          <p class="label">equity holdings</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
-          <input type="text" placeholder="Less than ($)">
-          <input type="text" placeholder="Greater than ($)">
+            <p class="label">equity holdings</p>
+            <select>
+              <option>Salary</option>
+              <option>Salary</option>
+              <option>Salary</option>
+            </select>
+            <input type="text" placeholder="Less than ($)">
+            <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- compensation arrangements -->
           <div class="item-form">
-          <p class="label">compensation arrangements</p>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+            <p class="label">compensation arrangements</p>
+            <select>
+              <option>Yes</option>
+              <option>No</option>
+              <option>N/A</option>
+            </select>
           </div>
           <!-- reload options -->
           <div class="item-form">
-          <p class="label">reload options</p>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+            <p class="label">reload options</p>
+            <select>
+              <option>Yes</option>
+              <option>No</option>
+              <option>N/A</option>
+            </select>
           </div>
           <!-- CEO tenure -->
           <div class="item-form">
-          <p class="label">CEO tenure</p>
-          <input type="text" placeholder="Less than (yrs)">
-          <input type="text" placeholder="Greater than (yrs)">
+            <p class="label">CEO tenure</p>
+            <input type="text" placeholder="Less than (yrs)">
+            <input type="text" placeholder="Greater than (yrs)">
           </div>
           <!-- other criteria -->
           <div class="item-form">
@@ -150,12 +150,97 @@
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <label>Transition period</label>
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>          
-
+          </div>
         </div>
       </div>
+
     </div>
-    <a href="#" id="js-new-form">New form</a>
-    <br/>
-    <button type="submit" class="btn">Search</button>
+    <a href="#" id="js-new-form">Add another role</a>
+
+    <legend id="advanced-search">Advanced search</legend>
+
+    <!-- advanced search -->
+    <div class="advanced-search hidden">
+      <!-- general criteria -->
+      <div class="general-criteria">
+        <h4>GENERAL CRITERIA</h4>
+        <p>COMPANY</p>
+        <div class="item-form">
+          <p class="label">reload options</p>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <span>help</span>
+        </div>
+        <p>INDUSTRY</p>
+        <div class="item-form">
+          <p class="label">reload options</p>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <span>help</span>
+        </div>
+        <p>PROXY FILLING DATE</p>
+        <div class="item-form">
+          <p class="label">reload options</p>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          <span>help</span>
+        </div>
+      </div>
+      <!-- financials -->
+      <h4>FINANCIALS</h4>
+      <div class="general-criteria">
+        <div class="item-form">
+          <p class="label">income statement</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+        </div>
+      </div>
+      <div class="item-form">
+          <p class="label">Valuation</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+      </div>
+      <div class="item-form">
+          <p class="label">stock price performance</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+        </div>
+      <div class="item-form">
+          <p class="label">profitability</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+        </div>
+    </div>
+    <hr>
+    <button type="submit" class="btn right">Search</button>
   <% end %>
 </div>
