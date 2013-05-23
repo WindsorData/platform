@@ -124,7 +124,7 @@
     <legend id="advanced-search">Advanced search</legend>
 
     <!-- advanced search -->
-    <div class="advanced-search hidden">
+    <div class="advanced-search">
       <!-- general criteria -->
       <div class="general-criteria">
         <h4>GENERAL CRITERIA</h4>
@@ -134,17 +134,34 @@
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <span>help</span>
         </div>
+        <div class="item-form">      
+          <p class="label">Add more tickers</p>
+          <input type="text" placeholder="Add tickers">
+          <span>help</span>
+        </div>
         <p>INDUSTRY</p>
         <div class="item-form">
-          <p class="label">reload options</p>
+          <p class="label">Sectors</p>
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <span>help</span>
         </div>
+        <div class="item-form">      
+          <p class="label">SIC Codes</p>
+          <input type="text" placeholder="Add tickers">
+          <span>view sic codes</span>
+        </div>
         <p>PROXY FILLING DATE</p>
         <div class="item-form">
-          <p class="label">reload options</p>
-          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
-          <span>help</span>
+          <p class="label">Between</p>
+          <%= select_tag :report, options_for_select(["Month", "No", "N/A"]) %>
+          <%= select_tag :report, options_for_select(["Day", "No", "N/A"]) %>
+          <%= select_tag :report, options_for_select(["Year", "No", "N/A"]) %>
+        </div>
+        <div class="item-form">
+          <p class="label">And</p>
+          <%= select_tag :report, options_for_select(["Month", "No", "N/A"]) %>
+          <%= select_tag :report, options_for_select(["Day", "No", "N/A"]) %>
+          <%= select_tag :report, options_for_select(["Year", "No", "N/A"]) %>
         </div>
       </div>
       <!-- financials -->
