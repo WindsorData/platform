@@ -16,8 +16,9 @@ a {
   transition: 0.2s;
 }
 
-label {
-  font-weight: bold
+legend {
+  display: block;
+  width: 100%;
 }
 
 .left {
@@ -52,9 +53,11 @@ label {
 
   .title {
     font-size: 1em;
+    font-weight: normal;
     color: $white;
-    background-color: $blue;
-    padding: 0 10px;
+    background-color: lighten($black, 60%);
+    padding-left: 10px;
+    line-height: 40px;
   }
 }
 
@@ -80,6 +83,32 @@ label {
     }
     &:last-child {
       border-bottom: none;
+    }
+  }
+}
+
+.main-form {
+  legend {
+    color: $white;
+    background-color: $blue;
+    line-height: 40px;
+    padding-left: 10px;
+  }
+
+  .basic-group {
+    background-color: lighten($black, 90%);
+    padding: 10px;
+    &:not(:nth-child(2)) {
+      border-top: 1px solid lighten($black, 80%);
+    }
+  }
+  .item-form {
+    padding: 5px 0;
+    .label {
+      font-size: 14px;
+      width: 250px;
+      display: inline-block;
+      text-transform: uppercase;
     }
   }
 }

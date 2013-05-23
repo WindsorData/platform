@@ -1,3 +1,5 @@
+
+<!-- sidebar -->
 <div class="span3">
   <!-- quick launch -->
   <div class="side-container quick-launch">
@@ -26,8 +28,10 @@
     </div>
   </div>
 </div>
+
+<!-- main form -->
 <div class="span9">
-  <%= form_tag('/executive_compensation', class: "form-horizontal" ) do %>
+  <%= form_tag('/executive_compensation', class: "main-form" ) do %>
     <legend>Executive compensation</legend>
     <div id='forms-container'>      
       <div class="basic-group hidden">
@@ -51,12 +55,93 @@
           <!-- compensation arrangements -->
           <h3>compensation arrangements</h3>
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
+          <label class="half">ROLE *
+            <select>
+              <option>CEO</option>
+              <option>CTO</option>
+              <option>CFO</option>
+            </select>
+          </label>
+          <label class="half">PAY RANK
+            <select>
+              <option>CEO</option>
+              <option>CTO</option>
+              <option>CFO</option>
+            </select>
+          </label>
+        </div>
+        <div class="filters">
+          <!-- cash compensation -->
+          <div class="item-form">
+          <p class="label">cash compensation</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+          </div>
+          <!-- equity compensation -->
+          <div class="item-form">
+          <p class="label">equity compensation</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+          </div>
+          <!-- incentive plan compensation -->
+          <div class="item-form">
+          <p class="label">incentive plan compensation</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+          </div>
+          <!-- equity holdings -->
+          <div class="item-form">
+          <p class="label">equity holdings</p>
+          <select>
+            <option>Salary</option>
+            <option>Salary</option>
+            <option>Salary</option>
+          </select>
+          <input type="text" placeholder="Less than ($)">
+          <input type="text" placeholder="Greater than ($)">
+          </div>
+          <!-- compensation arrangements -->
+          <div class="item-form">
+          <p class="label">compensation arrangements</p>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          </div>
+          <!-- reload options -->
+          <div class="item-form">
+          <p class="label">reload options</p>
+          <select>
+            <option>Yes</option>
+            <option>No</option>
+            <option>N/A</option>
+          </select>
+          </div>
           <!-- CEO tenure -->
-          <h3>CEO tenure</h3>
-          <label>Less than (yrs)<input type="text"></label>
-          <label>Greater than (yrs)<input type="text"></label>
+          <div class="item-form">
+          <p class="label">CEO tenure</p>
+          <input type="text" placeholder="Less than (yrs)">
+          <input type="text" placeholder="Greater than (yrs)">
+          </div>
           <!-- other criteria -->
-          <h3>other criteria</h3>
+          <div class="item-form">
+          <p class="label">other criteria</p>
           <label>Founder</label>
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <label>Director</label>
@@ -65,9 +150,8 @@
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <label>Transition period</label>
           <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>          
+
         </div>
-        <br/>
-        <br/>        
       </div>
     </div>
     <a href="#" id="js-new-form">New form</a>
