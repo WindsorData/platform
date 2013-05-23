@@ -46,15 +46,15 @@
           <div class="item-form">
             <p class="label">cash compensation</p>
             <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
-            <label>Less than ($)<input type="text"></label>
-            <label>Greater than ($)<input type="text"></label>
+            <input type="text" placeholder="Less than ($)">
+            <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- equity compensation -->
           <div class="item-form">      
             <p class="label">equity compensation</p>
             <%= select_tag :report, options_for_select(Constants::CRITERIA) %>          
-            <label>Less than ($)<input type="text"></label>
-            <label>Greater than ($)<input type="text"></label>
+            <input type="text" placeholder="Less than ($)">
+            <input type="text" placeholder="Greater than ($)">
           </div>
           
         </div>
