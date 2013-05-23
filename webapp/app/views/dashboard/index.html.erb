@@ -43,95 +43,59 @@
         </div>
         <div class="filters">
           <!-- cash compensation -->
-          <h3>cash compensation</h3>
-          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
-          <label>Less than ($)<input type="text"></label>
-          <label>Greater than ($)<input type="text"></label>
-          <!-- equity compensation -->          
-          <h3>equity compensation</h3>
-          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>          
-          <label>Less than ($)<input type="text"></label>
-          <label>Greater than ($)<input type="text"></label>
-          <!-- compensation arrangements -->
-          <h3>compensation arrangements</h3>
-          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
-          <label class="half">ROLE *
-            <select>
-              <option>CEO</option>
-              <option>CTO</option>
-              <option>CFO</option>
-            </select>
-          </label>
-          <label class="half">PAY RANK
-            <select>
-              <option>CEO</option>
-              <option>CTO</option>
-              <option>CFO</option>
-            </select>
-          </label>
+          <div class="item-form">
+            <p class="label">cash compensation</p>
+            <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
+            <label>Less than ($)<input type="text"></label>
+            <label>Greater than ($)<input type="text"></label>
+          </div>
+          <!-- equity compensation -->
+          <div class="item-form">      
+            <p class="label">equity compensation</p>
+            <%= select_tag :report, options_for_select(Constants::CRITERIA) %>          
+            <label>Less than ($)<input type="text"></label>
+            <label>Greater than ($)<input type="text"></label>
+          </div>
+          
         </div>
         <div class="filters">
           <!-- cash compensation -->
           <div class="item-form">
             <p class="label">cash compensation</p>
-            <select>
-              <option>Salary</option>
-              <option>Salary</option>
-              <option>Salary</option>
-            </select>
+            <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
             <input type="text" placeholder="Less than ($)">
             <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- equity compensation -->
           <div class="item-form">
             <p class="label">equity compensation</p>
-            <select>
-              <option>Salary</option>
-              <option>Salary</option>
-              <option>Salary</option>
-            </select>
+            <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
             <input type="text" placeholder="Less than ($)">
             <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- incentive plan compensation -->
           <div class="item-form">
             <p class="label">incentive plan compensation</p>
-            <select>
-              <option>Salary</option>
-              <option>Salary</option>
-              <option>Salary</option>
-            </select>
+            <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
             <input type="text" placeholder="Less than ($)">
             <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- equity holdings -->
           <div class="item-form">
             <p class="label">equity holdings</p>
-            <select>
-              <option>Salary</option>
-              <option>Salary</option>
-              <option>Salary</option>
-            </select>
+            <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
             <input type="text" placeholder="Less than ($)">
             <input type="text" placeholder="Greater than ($)">
           </div>
           <!-- compensation arrangements -->
-          <div class="item-form">
+          <div class="item-form">      
             <p class="label">compensation arrangements</p>
-            <select>
-              <option>Yes</option>
-              <option>No</option>
-              <option>N/A</option>
-            </select>
+            <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           </div>
           <!-- reload options -->
           <div class="item-form">
             <p class="label">reload options</p>
-            <select>
-              <option>Yes</option>
-              <option>No</option>
-              <option>N/A</option>
-            </select>
+            <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           </div>
           <!-- CEO tenure -->
           <div class="item-form">
@@ -167,31 +131,19 @@
         <p>COMPANY</p>
         <div class="item-form">
           <p class="label">reload options</p>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <span>help</span>
         </div>
         <p>INDUSTRY</p>
         <div class="item-form">
           <p class="label">reload options</p>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <span>help</span>
         </div>
         <p>PROXY FILLING DATE</p>
         <div class="item-form">
           <p class="label">reload options</p>
-          <select>
-            <option>Yes</option>
-            <option>No</option>
-            <option>N/A</option>
-          </select>
+          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
           <span>help</span>
         </div>
       </div>
@@ -200,42 +152,26 @@
       <div class="general-criteria">
         <div class="item-form">
           <p class="label">income statement</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
           <input type="text" placeholder="Less than ($)">
           <input type="text" placeholder="Greater than ($)">
         </div>
       </div>
       <div class="item-form">
           <p class="label">Valuation</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
           <input type="text" placeholder="Less than ($)">
           <input type="text" placeholder="Greater than ($)">
       </div>
       <div class="item-form">
           <p class="label">stock price performance</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
           <input type="text" placeholder="Less than ($)">
           <input type="text" placeholder="Greater than ($)">
         </div>
       <div class="item-form">
           <p class="label">profitability</p>
-          <select>
-            <option>Salary</option>
-            <option>Salary</option>
-            <option>Salary</option>
-          </select>
+          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
           <input type="text" placeholder="Less than ($)">
           <input type="text" placeholder="Greater than ($)">
         </div>
