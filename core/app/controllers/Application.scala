@@ -20,15 +20,17 @@ import play.api.mvc.MultipartFormData.FilePart
 import play.api.libs.Files.TemporaryFile
 
 //No content-negotiation yet. Just assume HTML for now
-object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]] with SpreadsheetUploader {
+object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
 
   import model.mapping.ExecutivesTop5Mapping._
   import model.mapping.ExecutivesGuidelinesMapping._
 
   implicit val db = MongoClient()("windsor")
-  override val suffix = "Exec Top5 and Grants.xls"
-  override val reader = CompanyFiscalYearReader
-
+  
+  val readersAndValidSuffixes = 
+    Seq((CompanyFiscalYearReader, "Exec Top5 and Grants.xls"),
+        (GuidelineReader, "Exec Top5 ST Bonus and Exec Guidelines.xls"))
+        
   val companyForm = Form(
     tuple(
       "Company Name" -> nonEmptyText,
@@ -42,7 +44,7 @@ object Application extends Controller with WorkbookZipReader[Seq[ModelOrErrors]]
   def newCompanies = UploadSpreadsheetAction {  dataset =>
       var response = Ok(views.html.companyUploadSuccess())
 
-      val results = readZipFileEntries(dataset.ref.file.getAbsolutePath)
+      val results = readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes)
 
       if (results.exists { case (_, result) => result.hasErrors }) {
         val errors =

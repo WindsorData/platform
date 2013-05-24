@@ -16,12 +16,13 @@ import libt.TNumber
 import libt.TString
 import libt.Value
 import org.scalatest.junit.JUnitRunner
+import com.mongodb.DBObject
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 
   describe("tmodel persistence") {
-      
+
     it("can marshall values") {
       val schema = TString
       assert(schema.marshall(
@@ -77,11 +78,9 @@ class TestDriver extends FunSpec {
         'baz -> Value()))
     }
 
-    ignore("expects all attributes") {
+    it("ignore attributes not contained in the schema") {
       val schema = TModel('foo -> TNumber)
-      intercept[Exception] {
-        schema.marshall(Model())
-      }
+      assert(schema.marshall(Model('bar -> Value(1))) === MongoDBObject())
     }
 
     it("can deal with decimals") {

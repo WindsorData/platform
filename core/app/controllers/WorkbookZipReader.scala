@@ -8,26 +8,35 @@ import libt.spreadsheet.reader._
 import libt._
 
 /**Trait that provides behavior for reading zipped spreadsheet sets */
-trait WorkbookZipReader[A] {
-  /**TODO semantics not clear*/
-  val suffix: String
-  /**the reader used to parse each spreadsheet*/
-  val reader : WorkbookReader[A]
+trait WorkbookZipReader {
+  
+  var file : ZipFile = _
 
   /**answers a seq of file names and read results*/
-  def readZipFileEntries(filePath: String) = {
-    val file = new ZipFile(filePath)
-    readZipFile(file, getValidEntries(file).toSeq)
+  def readZipFileEntries[A](filePath: String, readers: Seq[(WorkbookReader[A], String)]) = {
+    file = new ZipFile(filePath)
+    readZipFile(getValidEntries(readers))
   }
-  
-  protected def readZipFile(file: ZipFile, entries: Seq[ZipEntry]) =
-    entries
-      .map { entry => (entry.getName(), reader.read(file.getInputStream(entry))) }
+
+  protected def readZipFile[A](readersWithEntries: Seq[(WorkbookReader[A], ZipEntry)]) =
+    readersWithEntries
+      .map { case (reader, entry) => (entry.getName(), reader.read(file.getInputStream(entry))) }
       .toSeq
 
-  protected def getValidEntries(file: ZipFile) =
+  protected def getValidEntries[A](readers: Seq[(WorkbookReader[A], String)]) = {
+    def suffix(entry: ZipEntry) = entry.getName().split("-").last
+    def isValidEntry(validSuffix: String, entry: ZipEntry) = !entry.isDirectory() && validSuffix == suffix(entry)
+
+    def validEntryWithReader[A](readers: Seq[(WorkbookReader[A], String)], entry: ZipEntry) =
+      readers
+        .collectFirst {
+          case (reader, validSuffix) if isValidEntry(validSuffix, entry) => (reader, entry)
+        }
+
     file
       .entries
-      .map { entry => file.getEntry(entry.getName()) }
-      .filter { entry => !entry.isDirectory() && entry.getName().split("-").last == suffix }
+      .map(validEntryWithReader(readers, _))
+      .toSeq.flatten
+
+  }
 }
