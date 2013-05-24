@@ -21,8 +21,11 @@ package object mapping {
 
   def colOfModelsPath(basePath: Path, times: Int, paths: Symbol*): Seq[Strip] =
     for (index <- 0 to times; valuePath <- paths) yield Feature((basePath :+ Index(index)) :+ Route(valuePath))
+  
+  val colWrapping = ((x:Seq[ModelOrErrors]) => Col(x.map(_.get).toList: _*))
+  
 
-  class DocSrcCombiner(yearsPositionWithKeys: Seq[(Int, Symbol)]) extends Combiner[Seq[ModelOrErrors]] {
+  class DocSrcCombiner(yearsPositionWithKeys: Seq[(Int, Symbol, Seq[ModelOrErrors] => Element)]) extends Combiner[Seq[ModelOrErrors]] {
     import scala.collection.JavaConversions._
     import libt.spreadsheet.util._
 
@@ -40,7 +43,7 @@ package object mapping {
 
     def years(sheet: Sheet) =
       yearsPositionWithKeys.map {
-        case (yearIndex, key) => (dateCellToYear(sheet.rows.drop(yearIndex)), key)
+        case (yearIndex, key, elemWrap) => (dateCellToYear(sheet.rows.drop(yearIndex)), key, elemWrap)
       }
 
     def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = {
@@ -51,16 +54,16 @@ package object mapping {
         flattenResults :+ Invalid(yearsWithKeys.map(_._1).errors: _*)
       } else {
         (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped
-          .map((yearWithKey, executives, company) =>
+          .map{ case ( (year, key, elemWrap) , executives, company) =>
             Valid(Model(company.get.elements
-              + ('disclosureFiscalYear -> Value(yearWithKey._1.get))
-              + (yearWithKey._2 -> Col(executives.map(_.get).toList: _*)))))
+              + ('disclosureFiscalYear -> Value(year.get))
+              + (key -> elemWrap(executives)))) }
       }
     }
   }
 
   object DocSrcCombiner {
-    def apply(years: (Int, Symbol)*) = new DocSrcCombiner(years.toSeq)
+    def apply(years: (Int, Symbol, Seq[ModelOrErrors] => Element)*) = new DocSrcCombiner(years.toSeq)
   }
   
 }

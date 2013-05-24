@@ -15,6 +15,7 @@ GET     /companies                              controllers.Application.companie
 GET     /companies/reports                      controllers.Application.reports
 POST    /companies/reports                      controllers.Application.newCompany
 POST    /companies/reports/guidelines           controllers.Application.newExecGuideline
+POST    /companies/reports/dilution             controllers.Application.newSVTBSDilution
 POST    /companies/reports/batch                controllers.Application.newCompanies
 
 ##Query a Company

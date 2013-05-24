@@ -12,12 +12,17 @@ package object model {
   import model.ExecutivesGuidelines._
   import model.ExecutivesTop5._
   import model.ExecutivesSTBonusPlan._
+  import model.ExecutivesSVTBSDilution._
   
    val TCompanyFiscalYear = TModel(
     'ticker -> TString,
     'name -> TString,
     'disclosureFiscalYear -> TInt,
 
+    'usageAndSVTData -> TCol(TUsageAndSVTData),
+    'bsInputs -> TCol(TBlackScholesInputs),
+    'dilution -> TCol(TDilution),
+    
     'executives -> TCol(TExecutive),
     'guidelines -> TCol(TExecGuidelines),
     'stBonusPlan -> TCol(TExecSTBonusPlan))

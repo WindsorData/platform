@@ -37,6 +37,5 @@ trait WorkbookZipReader {
       .entries
       .map(validEntryWithReader(readers, _))
       .toSeq.flatten
-
   }
 }
