@@ -12,10 +12,6 @@ body {
   margin: 0;
 }
 
-a {
-  transition: 0.2s;
-}
-
 legend {
   display: block;
   width: 100%;
@@ -27,6 +23,19 @@ legend {
 
 .right {
   float: right;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.btn {
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .hidden {
@@ -88,6 +97,19 @@ legend {
 }
 
 .main-form {
+  .add-new-role {
+    top: 0;
+    right: 0;
+    line-height: 40px;
+    color: $white;
+    padding: 0 10px;
+    border-left: 1px solid darken($blue, 10%);
+    text-decoration: none;
+    &:hover {
+      background-color: darken($blue, 10%);
+    }
+  }
+
   .form-container {
     margin-bottom: 20px;
   }
@@ -119,5 +141,9 @@ legend {
       display: inline-block;
       text-transform: uppercase;
     }
+  }
+
+  .advanced-search-button:hover {
+    background-color: darken($blue, 10%);
   }
 }

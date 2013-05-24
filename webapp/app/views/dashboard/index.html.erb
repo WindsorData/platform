@@ -32,7 +32,10 @@
 <!-- main form -->
 <div class="span9">
   <%= form_tag('/executive_compensation', class: "main-form" ) do %>
-    <legend>Executive compensation</legend>
+    <div class="relative">
+      <legend>Executive compensation</legend>
+      <a class="add-new-role absolute btn" href="#" id="js-new-form">Add another role</a>
+    </div>
     <div class="form-container" id="forms-container">      
       <div class="basic-group hidden">
         <div class="role-selector">
@@ -119,9 +122,8 @@
       </div>
 
     </div>
-    <a href="#" id="js-new-form">Add another role</a>
 
-    <legend id="advanced-search">Advanced search</legend>
+    <legend class="advanced-search-button btn" id="advanced-search">Advanced search</legend>
 
     <!-- advanced search -->
     <div class="advanced-search">
