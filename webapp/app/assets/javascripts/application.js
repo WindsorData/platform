@@ -14,3 +14,9 @@
 //= require jquery_ujs
 //= require jquery.tokeninput
 //= require_tree
+
+$(function() {
+  $(".close").click(function () {
+    $(".alert").remove();
+  });
+});

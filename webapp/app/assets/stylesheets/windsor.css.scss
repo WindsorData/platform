@@ -147,3 +147,34 @@ legend {
     background-color: darken($blue, 10%);
   }
 }
+
+/* alert */
+.alert {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  background: #F7F775;
+  margin-left: -150px;
+  font-size: 14px;
+  color: #666;
+  height: 48px;
+  display: table;
+  width: 300px;
+  padding-left: 10px;
+  & > div,
+  & > a {
+    display: table-cell;
+    vertical-align: middle;
+    color: lighten($black, 30%);
+
+  }
+
+  & > a {
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  & > a:hover {
+    color: $black;
+  }
+}
