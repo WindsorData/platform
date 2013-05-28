@@ -32,4 +32,8 @@ package object libt {
   
   import error._
   type ModelOrErrors = Validated[Model]
+
+  object TEnum {
+    def apply(values: String*) = TGenericEnum(TString, values)
+  }
 }

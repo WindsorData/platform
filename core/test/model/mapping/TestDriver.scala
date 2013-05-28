@@ -9,6 +9,7 @@ import libt._
 import model._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
+import model.mapping.ExecutivesTop5Mapping._
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
@@ -21,7 +22,7 @@ class TestDriver extends FunSpec {
         WorkbookMapping(
           Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout,
             Seq(Feature(Path('ticker)), Feature(Path('name)))))),
-        new CompanyFiscalYearCombiner).read("test/input/CompanyValuesAndNotes.xlsx")
+        companyFiscalYearCombiner).read("test/input/CompanyValuesAndNotes.xlsx")
 
       assert(results === Seq())
     }

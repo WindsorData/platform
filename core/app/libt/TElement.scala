@@ -47,14 +47,15 @@ case object TBool extends TValue[Boolean]
 case object TXBool extends TValue[Boolean]
 case object TDate extends TValue[Date]
 case object TNumber extends TValue[BigDecimal]
-case class TEnum(values: String*) extends TValue[String] {
+
+case class TGenericEnum[A](valueType: TValue[A], values: Seq[A]) extends TValue[A] {
   
   private val valuesSet = values.toSet
   
   private def isValue = valuesSet.contains(_)
   
   override def validate(element: Element) = umatch(element) {
-    case v: Value[String] => assert(v.value.forall(isValue(_)))
+    case v: Value[A] => assert(v.value.forall(isValue(_)))
   }
 }
 
