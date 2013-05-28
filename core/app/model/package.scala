@@ -19,6 +19,7 @@ package object model {
     'name -> TString,
     'disclosureFiscalYear -> TInt,
 
+    'grantTypes -> TGrantTypes,
     'usageAndSVTData -> TUsageAndSVTData,
     'bsInputs -> TBlackScholesInputs,
     'dilution -> TDilution,

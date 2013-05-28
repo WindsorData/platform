@@ -10,6 +10,32 @@ import libt._
 
 object ExecutivesTop5Mapping {
 
+  def performanceVestingMapping(rootPath: Symbol) =
+    Seq[Strip](Path(rootPath, 'useShares),
+      Path(rootPath, 'neos),
+      Path(rootPath, 'performance, 'period),
+      Path(rootPath, 'performance, 'interval),
+      Path(rootPath, 'timeVest, 'period),
+      Path(rootPath, 'timeVest, 'vesting),
+      Path(rootPath, 'minPayout),
+      Path(rootPath, 'maxPayout)) ++
+      colOfModelsPath(Path(rootPath, 'metrics), 4, 'select, 'typeIn)
+
+  val grantTypesMapping =
+    Seq[Strip](
+      Path('stockOptions, 'use),
+      Path('stockOptions, 'neos),
+      Path('stockOptions, 'maxTerm),
+      Path('stockOptions, 'frecuency),
+      Path('stockOptions, 'years),
+      Path('stockOptions, 'vesting),
+      Path('timeVestingRestrictedShares, 'use),
+      Path('timeVestingRestrictedShares, 'neos),
+      Path('timeVestingRestrictedShares, 'years),
+      Path('timeVestingRestrictedShares, 'vesting)) ++
+      performanceVestingMapping('performanceEquityVesting) ++
+      performanceVestingMapping('performanceCashVesting)
+
   val executiveMapping =
     Seq[Strip](Path('firstName),
       Path('lastName),
@@ -51,13 +77,14 @@ object ExecutivesTop5Mapping {
     WorkbookMapping(
       Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name))))
         #::
-        AreaGap
+        Area(TGrantTypes, Offset(3, 1), Some(1), ColumnOrientedLayout, grantTypesMapping)
         #::
         Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping))),
     companyFiscalYearCombiner)
 
   def companyFiscalYearCombiner =
     DocSrcCombiner(
+      (10, 'grantTypes, singleModelWrapping),
       (25, 'executives, colWrapping),
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
