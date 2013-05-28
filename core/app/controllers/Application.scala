@@ -30,7 +30,8 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   
   val readersAndValidSuffixes = 
     Seq((CompanyFiscalYearReader, "Exec Top5 and Grants.xls"),
-        (GuidelineReader, "Exec Top5 ST Bonus and Exec Guidelines.xls"))
+        (GuidelineReader, "Exec Top5 ST Bonus and Exec Guidelines.xls"),
+        (SVTBSDilutionReader, "Company SVT BS Dilution.xls"))
         
   val companyForm = Form(
     tuple(
