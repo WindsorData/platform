@@ -23,7 +23,7 @@ package object mapping {
     for (index <- 0 to times; valuePath <- paths) yield Feature((basePath :+ Index(index)) :+ Route(valuePath))
   
   val colWrapping = ((x:Seq[ModelOrErrors]) => Col(x.map(_.get).toList: _*))
-  
+  val singleModelWrapping = ((x:Seq[ModelOrErrors]) => Model(x.head.get.elements))
 
   class DocSrcCombiner(yearsPositionWithKeys: Seq[(Int, Symbol, Seq[ModelOrErrors] => Element)]) extends Combiner[Seq[ModelOrErrors]] {
     import scala.collection.JavaConversions._

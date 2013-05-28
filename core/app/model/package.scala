@@ -19,9 +19,9 @@ package object model {
     'name -> TString,
     'disclosureFiscalYear -> TInt,
 
-    'usageAndSVTData -> TCol(TUsageAndSVTData),
-    'bsInputs -> TCol(TBlackScholesInputs),
-    'dilution -> TCol(TDilution),
+    'usageAndSVTData -> TUsageAndSVTData,
+    'bsInputs -> TBlackScholesInputs,
+    'dilution -> TDilution,
     
     'executives -> TCol(TExecutive),
     'guidelines -> TCol(TExecGuidelines),

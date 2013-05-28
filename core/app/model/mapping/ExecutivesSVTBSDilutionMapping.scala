@@ -58,7 +58,7 @@ object ExecutivesSVTBSDilutionMapping {
   
   def execSVTBSDilutionCombiner =
     DocSrcCombiner(
-      (10, 'usageAndSVTData, colWrapping),
-      (25, 'bsInputs, colWrapping),
-      (40, 'dilution, colWrapping))
+      (10, 'usageAndSVTData, singleModelWrapping),
+      (25, 'bsInputs, singleModelWrapping),
+      (40, 'dilution, singleModelWrapping))
 }
