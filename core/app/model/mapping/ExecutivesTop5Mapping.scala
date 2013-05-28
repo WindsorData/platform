@@ -55,6 +55,10 @@ object ExecutivesTop5Mapping {
         #::
         Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping))),
     companyFiscalYearCombiner)
-  
-  def companyFiscalYearCombiner = DocSrcCombiner(25 -> 'executives, 40 -> 'executives, 55 -> 'executives)
+
+  def companyFiscalYearCombiner =
+    DocSrcCombiner(
+      (25, 'executives, colWrapping),
+      (40, 'executives, colWrapping),
+      (55, 'executives, colWrapping))
 }

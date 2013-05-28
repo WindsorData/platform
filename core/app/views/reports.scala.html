@@ -29,6 +29,19 @@
     </div>
     
     <div>
+        @form(action = routes.Application.newSVTBSDilution, 'enctype -> "multipart/form-data") {
+            <!--  -->
+            <div>
+                <p>Upload a single Exec SVT BS Dilution data set</p>
+            </div>
+            <input type="file" name="dataset">
+            <p>
+                <input type="submit">
+            </p>
+        }
+    </div>
+    
+    <div>
         @form(action = routes.Application.newCompanies, 'enctype -> "multipart/form-data") {
             <!--  -->
             <div>

@@ -48,9 +48,8 @@ object ExecutivesGuidelinesMapping {
       Path('scope, 'busUnit, 'weight),
       Path('scope, 'individual, 'use),
       Path('scope, 'individual, 'weight)) ++
-      colOfModelsPath(Path('metrics,'select), 5, 'use, 'weight) ++
-      colOfModelsPath(Path('metrics,'typeIn), 5, 'type, 'weight)
-
+      colOfModelsPath(Path('metrics, 'select), 5, 'use, 'weight) ++
+      colOfModelsPath(Path('metrics, 'typeIn), 5, 'type, 'weight)
 
   val GuidelineReader = new WorkbookReader(
     WorkbookMapping(
@@ -58,6 +57,9 @@ object ExecutivesGuidelinesMapping {
         Area(TExecGuidelines, Offset(3, 1), Some(5), ColumnOrientedLayout, execGuidelinesMapping),
         Area(TExecSTBonusPlan, Offset(5, 1), Some(5), ColumnOrientedLayout, execSTBonusPlanMapping))),
     execGuidelinesCombiner)
-  
-  	def execGuidelinesCombiner = DocSrcCombiner(10 -> 'guidelines, 25 -> 'stBonusPlan)
+
+  def execGuidelinesCombiner =
+    DocSrcCombiner(
+      (10, 'guidelines, colWrapping),
+      (25, 'stBonusPlan, colWrapping))
 }

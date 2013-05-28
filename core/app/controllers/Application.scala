@@ -22,6 +22,7 @@ import play.api.libs.Files.TemporaryFile
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
 
+  import model.mapping.ExecutivesSVTBSDilutionMapping._
   import model.mapping.ExecutivesTop5Mapping._
   import model.mapping.ExecutivesGuidelinesMapping._
 
@@ -29,7 +30,8 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   
   val readersAndValidSuffixes = 
     Seq((CompanyFiscalYearReader, "Exec Top5 and Grants.xls"),
-        (GuidelineReader, "Exec Top5 ST Bonus and Exec Guidelines.xls"))
+        (GuidelineReader, "Exec Top5 ST Bonus and Exec Guidelines.xls"),
+        (SVTBSDilutionReader, "Company SVT BS Dilution.xls"))
         
   val companyForm = Form(
     tuple(
@@ -62,6 +64,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def newCompany = uploadSingleSpreadsheet(CompanyFiscalYearReader)
   def newExecGuideline = uploadSingleSpreadsheet(GuidelineReader)
+  def newSVTBSDilution = uploadSingleSpreadsheet(SVTBSDilutionReader)
 
   def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[libt.ModelOrErrors]]) =
     UploadSpreadsheetAction { dataset =>
