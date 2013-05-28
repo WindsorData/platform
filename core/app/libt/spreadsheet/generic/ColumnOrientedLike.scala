@@ -5,7 +5,8 @@ import org.apache.poi.ss.usermodel.Row
 
 /**
  * statefull mixin for writers or readers that fetch cells
- * by iterating over columns
+ * by iterating over columns, that is, each {{{Value}}} is placed in 
+ * a single column
  * */
 trait ColumnOrientedLike extends SkipeableLike {
   val columnOffset: Int
