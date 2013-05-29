@@ -31,6 +31,7 @@ trait CellReader extends SkipeableLike {
     cell.getCellType() match {
     	case Cell.CELL_TYPE_BOOLEAN => cell.getBooleanCellValue().toString
     	case Cell.CELL_TYPE_NUMERIC => cell.getNumericCellValue().toString
+    	case Cell.CELL_TYPE_FORMULA => cell.getCellFormula().toString
     	case _ => cell.getStringCellValue()
     }
   
@@ -78,10 +79,10 @@ class RowOrientedReader(
     override val rows: Seq[Row]) extends CellReader with RowOrientedLike {
   
   override protected def next = rowIterator.next.cells.drop(offset.columnIndex) 
-  override protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
+  override protected def newValue[T](value: Option[T], nextValue: Int => Option[String]) =
     Value(value,
       None,
       None,
-      nextStringValue(1),
-      nextStringValue(2))
+      nextValue(1),
+      nextValue(2))
 }
