@@ -55,6 +55,17 @@ legend {
   }
 }
 
+.nav {
+  margin-left: 10px;
+  .nav-link {
+    position: relative;
+    margin-left: -4px;
+    display: inline-block;
+    padding: 0 20px;
+    border-left: 1px solid lighten($blue, 20%);
+  }
+}
+
 /* dashboard */
 .side-container {
   margin-bottom: 20px;

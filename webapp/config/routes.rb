@@ -13,6 +13,7 @@ WindosorFrontend::Application.routes.draw do
   end
 
   get "dashboard/index"
+  get "dashboard/search"
   post "search/results"
 
 end

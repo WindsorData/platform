@@ -2,6 +2,10 @@
   <div class="left">
     <%= link_to "Windsor", root_path, class: 'brand' %>
   </div>
+  <div class="nav left">
+    <%= link_to('search', dashboard_search_path, class: 'nav-link') %>
+    <%= link_to('peers', new_group_path, class: 'nav-link') %>
+  </div>
   <div class="right">
     <% if user_signed_in? %>
       <%= current_user.email %>
