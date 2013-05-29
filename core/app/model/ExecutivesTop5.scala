@@ -135,7 +135,7 @@ object ExecutivesTop5 {
         'unvestedRestrictedStock -> TNumber,
         'disclaimBeneficialOwnership -> TNumber,
         'heldByTrust -> TNumber,
-        'other -> TString),
+        'other -> TAny),
       'outstandingEquityAwards -> TModel(
         'vestedOptions -> TNumber,
         'unvestedOptions -> TNumber,

@@ -1,5 +1,6 @@
 package libt.spreadsheet.reader
 
+import util.FileManager
 import org.scalatest.FunSpec
 import libt.spreadsheet.util._
 import libt._
@@ -13,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import java.util.Date
 import java.io.FileOutputStream
 import libt.error.Valid
+import org.apache.poi.ss.usermodel.WorkbookFactory
 
 @RunWith(classOf[JUnitRunner])
 class ReadTElementSpec extends FunSpec with BeforeAndAfter {
@@ -45,6 +47,13 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
       assert(result.head.toList === Seq(Valid(Model('key -> Value("22.0")))))
     }
 
+    it("should read formulas as a string") {
+      sheet.cellAt(0, 0).setCellFormula("2+2")
+      val result = reader.read(workbook)
+      assert(result.head.toList === Seq(Valid(Model('key -> Value("2+2")))))
+    }
+
+    
     it("should read boolean values as a string") {
       sheet.cellAt(0, 0).setCellValue(true)
       val result = reader.read(workbook)
@@ -57,6 +66,28 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
       assert(result.head.toList === Seq(Valid(Model('key -> Value("something")))))
     }
 
+  }
+  
+  describe("TNumber") {
+    
+    val reader = createWbReader(TNumber)
+    
+    it("should read numeric values") {
+      sheet.cellAt(0,0).setCellValue(10)
+      val result = reader.read(workbook)
+      assert(result.head.toList === Seq(Valid(Model('key -> Value(10)))))
+    }
+    
+    it("should read percentage values as a number") {
+       FileManager.load("test/input/Percentage.xlsx") { x =>
+         workbook = WorkbookFactory.create(x)
+         sheet = workbook.getSheetAt(0)
+         (1 to 4).foreach(sheet.cellAt(_, 0).setAsActiveCell())
+       }
+       val result = reader.read(workbook)
+       assert(result.head.toList === Seq(Valid(Model('key -> Value(0.1: BigDecimal)))))
+    }
+    
   }
 
   describe("TGenericEnum") {

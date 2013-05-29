@@ -25,22 +25,24 @@ trait CellReader extends SkipeableLike {
   def boolean = createValue(blankToNone(_.getBooleanCellValue))
   def xBoolean = string.orDefault("").map(_=="X")
   def date = createValue(blankToNone(_.getDateCellValue))
-  def any: Value[String] = createValue(blankToNone { cell =>
+  def any: Value[String] = createValue(blankToNone(readAnyValue))
+  
+  def readAnyValue(cell: Cell) = 
     cell.getCellType() match {
     	case Cell.CELL_TYPE_BOOLEAN => cell.getBooleanCellValue().toString
     	case Cell.CELL_TYPE_NUMERIC => cell.getNumericCellValue().toString
+    	case Cell.CELL_TYPE_FORMULA => cell.getCellFormula().toString
     	case _ => cell.getStringCellValue()
     }
-  })
   
   protected def next: Seq[Cell]
 
   private def createValue[T](valueMapper: Cell => Option[T]): Value[T] = {
     val nextCells = next
-    def nextStringValue(index: Int) = blankToNone(_.getStringCellValue)(nextCells(index))
+    def nextValue(index: Int) = blankToNone(readAnyValue)(nextCells(index))
     
     try {
-      newValue(valueMapper(nextCells(0)), nextStringValue)
+      newValue(valueMapper(nextCells(0)), nextValue)
     } catch {
       case e: RuntimeException =>
         throw new RuntimeException(ReaderError(e.getMessage()).description(nextCells(0)))
@@ -48,12 +50,12 @@ trait CellReader extends SkipeableLike {
 
   }
 
-  protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
+  protected def newValue[T](value: Option[T], nextValue: Int => Option[String]) =
     Value(value,
-      nextStringValue(1),
-      nextStringValue(2),
-      nextStringValue(3),
-      nextStringValue(4))
+      nextValue(1),
+      nextValue(2),
+      nextValue(3),
+      nextValue(4))
 }
 
 /**
@@ -77,10 +79,10 @@ class RowOrientedReader(
     override val rows: Seq[Row]) extends CellReader with RowOrientedLike {
   
   override protected def next = rowIterator.next.cells.drop(offset.columnIndex) 
-  override protected def newValue[T](value: Option[T], nextStringValue: Int => Option[String]) =
+  override protected def newValue[T](value: Option[T], nextValue: Int => Option[String]) =
     Value(value,
       None,
       None,
-      nextStringValue(1),
-      nextStringValue(2))
+      nextValue(1),
+      nextValue(2))
 }
