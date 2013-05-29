@@ -13,10 +13,12 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.tokeninput
+//= require jquery.placeholder.min
 //= require_tree
 
 $(function() {
   $(".close").click(function () {
     $(".alert").remove();
   });
+  $('input, textarea').placeholder();
 });
