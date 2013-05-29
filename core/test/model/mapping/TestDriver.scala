@@ -31,21 +31,15 @@ class TestDriver extends FunSpec {
 
       val results = CompanyFiscalYearReader.read("test/input/FullValuesOnly.xlsx").map(_.get)
       
-      assert(results.size === 3)
+      assert(results.size === 4)
       
       assert(results.head('ticker) === Value("something"))
       assert(results.head('name) === Value("something"))
       
-      (0 to 2).zip(Seq(2005, 2012, 2013)).foreach{ case (index, year) => 
-        validateCompanyYear(results(index), year)
+      (1 to 3).zip(Seq(2005, 2012, 2013)).foreach{ case (index, year) =>
+        assert(results(index)('disclosureFiscalYear) === Value(year))
         validateExecutive(results(index).c('executives).take(1).head.asModel)
       }
-    }
-    
-    def validateCompanyYear(company: Model, year: Int) {
-      assert(company('disclosureFiscalYear) === Value(year))
-      val firstExecFirstCompany = company.c('executives).take(1).head
-      validateExecutive(firstExecFirstCompany.asModel)
     }
     
     def validateExecutive(exec: Model) {
