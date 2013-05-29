@@ -1,20 +1,24 @@
 
 <!-- sidebar -->
-<div class="span3">
+<div class="span9">
   <!-- quick launch -->
   <div class="side-container quick-launch">
     <h2 class="title">Quick Launch</h2>
     <div class="content">
       <%= form_tag('/groups') do %>
-        <p>Select peer group</p>
+        <label class="label">Select peer group
           <%= select_tag :group, options_from_collection_for_select(Group.all, "id", "name") %>
-        <p>Select report</p>
-        <%= select_tag :report, options_for_select(Constants::REPORTS) %>
-        <a href="<%= new_group_path %>">Create new</a>
+        </label>
+        <label class="label">Select report
+          <%= select_tag :report, options_for_select(Constants::REPORTS) %>
+        </label>
         <%= submit_tag "Select" %>
+        <%= link_to('Create new peer group', new_group_path, class: 'right') %>
       <% end %>
     </div>
   </div>
+</div>
+<div class="span3">
   <!-- activity log -->
   <div class="side-container activity-log">
     <h2 class="title">Activity Log</h2>
@@ -27,159 +31,4 @@
       </ul>
     </div>
   </div>
-</div>
-
-<!-- main form -->
-<div class="span9">
-  <%= form_tag(search_results_path, class: "main-form" ) do %>
-    <div class="relative">
-      <legend>Executive compensation</legend>
-      <a class="add-new-role absolute btn" href="#" id="js-new-form">Add another role</a>
-    </div>
-    <div class="form-container" id="forms-container">      
-      <div class="basic-group hidden">
-        <div class="role-selector">
-          <label>ROLE *</label>
-          <%= select_tag :role, options_for_select(Constants::ROLES) %>
-          <label>PAY RANK</label>
-          <%= select_tag :pay_rank, options_for_select(Constants::ROLES) %>
-        </div>
-        <div class="filters">
-          <!-- cash compensation -->
-          <div class="item-form">
-            <p class="label">cash compensation</p>
-            <%= select_tag :cash_comp, options_for_select(Constants::CRITERIA) %>
-            <input type="text" placeholder="Greater than ($)">
-            <input type="text" placeholder="Less than ($)">
-          </div>
-          <!-- equity compensation -->
-          <div class="item-form">      
-            <p class="label">equity compensation</p>
-            <%= select_tag :eq_comp, options_for_select(Constants::CRITERIA) %>          
-            <input type="text" placeholder="Greater than ($)">
-            <input type="text" placeholder="Less than ($)">
-          </div>
-          
-          <!-- incentive plan compensation -->
-          <div class="item-form">
-            <p class="label">incentive plan compensation</p>
-            <%= select_tag :incent_comp, options_for_select(Constants::CRITERIA) %>
-            <input type="text" placeholder="Greater than ($)">
-            <input type="text" placeholder="Less than ($)">
-          </div>
-          <!-- equity holdings -->
-          <div class="item-form">
-            <p class="label">equity holdings</p>
-            <%= select_tag :eq_holdings, options_for_select(Constants::CRITERIA) %>
-            <input type="text" placeholder="Greater than ($)">
-            <input type="text" placeholder="Less than ($)">
-          </div>
-          <!-- compensation arrangements -->
-          <div class="item-form">      
-            <p class="label">compensation arrangements</p>
-            <%= select_tag :comp_arrang, options_for_select(["Yes", "No", "N/A"]) %>
-          </div>
-          <!-- reload options -->
-          <div class="item-form">
-            <p class="label">reload options</p>
-            <%= select_tag :reload_opt, options_for_select(["Yes", "No", "N/A"]) %>
-          </div>
-          <!-- CEO tenure -->
-          <div class="item-form">
-            <p class="label">CEO tenure</p>
-            <input type="text" name='[ceo][$gt]' placeholder="Greater than (yrs)">
-            <input type="text" name='[ceo][$lt]' placeholder="Less than (yrs)">
-          </div>
-          <!-- other criteria -->
-          <div class="item-form">
-          <p class="label">other criteria</p>
-          <label>Founder</label>
-          <%= select_tag :founder, options_for_select(["Yes", "No", "N/A"]) %>
-          <label>Director</label>
-          <%= select_tag :director, options_for_select(["Yes", "No", "N/A"]) %>
-          <label>New hire</label>
-          <%= select_tag :new_hire, options_for_select(["Yes", "No", "N/A"]) %>
-          <label>Transition period</label>
-          <%= select_tag :trans_period, options_for_select(["Yes", "No", "N/A"]) %>          
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <legend class="advanced-search-button btn" id="advanced-search">Advanced search</legend>
-
-    <!-- advanced search -->
-    <div class="advanced-search">
-      <!-- general criteria -->
-      <div class="general-criteria">
-        <h4>GENERAL CRITERIA</h4>
-        <p>COMPANY</p>
-        <div class="item-form">
-          <p class="label">reload options</p>
-          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
-          <span>help</span>
-        </div>
-        <div class="item-form">      
-          <p class="label">Add more tickers</p>
-          <input type="text" placeholder="Add tickers">
-          <span>help</span>
-        </div>
-        <p>INDUSTRY</p>
-        <div class="item-form">
-          <p class="label">Sectors</p>
-          <%= select_tag :report, options_for_select(["Yes", "No", "N/A"]) %>
-          <span>help</span>
-        </div>
-        <div class="item-form">      
-          <p class="label">SIC Codes</p>
-          <input type="text" placeholder="Add tickers">
-          <span>view sic codes</span>
-        </div>
-        <p>PROXY FILLING DATE</p>
-        <div class="item-form">
-          <p class="label">Between</p>
-          <%= select_tag :report, options_for_select(["Month", "No", "N/A"]) %>
-          <%= select_tag :report, options_for_select(["Day", "No", "N/A"]) %>
-          <%= select_tag :report, options_for_select(["Year", "No", "N/A"]) %>
-        </div>
-        <div class="item-form">
-          <p class="label">And</p>
-          <%= select_tag :report, options_for_select(["Month", "No", "N/A"]) %>
-          <%= select_tag :report, options_for_select(["Day", "No", "N/A"]) %>
-          <%= select_tag :report, options_for_select(["Year", "No", "N/A"]) %>
-        </div>
-      </div>
-      <!-- financials -->
-      <h4>FINANCIALS</h4>
-      <div class="general-criteria">
-        <div class="item-form">
-          <p class="label">income statement</p>
-          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
-          <input type="text" placeholder="Greater than ($)">
-          <input type="text" placeholder="Less than ($)">
-        </div>
-      </div>
-      <div class="item-form">
-          <p class="label">Valuation</p>
-          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
-          <input type="text" placeholder="Greater than ($)">
-          <input type="text" placeholder="Less than ($)">
-      </div>
-      <div class="item-form">
-          <p class="label">stock price performance</p>
-          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
-          <input type="text" placeholder="Greater than ($)">
-          <input type="text" placeholder="Less than ($)">
-        </div>
-      <div class="item-form">
-          <p class="label">profitability</p>
-          <%= select_tag :report, options_for_select(Constants::CRITERIA) %>
-          <input type="text" placeholder="Greater than ($)">
-          <input type="text" placeholder="Less than ($)">
-        </div>
-    </div>
-    <hr>
-    <button type="submit" class="btn right">Search</button>
-  <% end %>
 </div>
