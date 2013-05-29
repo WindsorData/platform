@@ -17,6 +17,7 @@ import libt.TString
 import libt.Value
 import org.scalatest.junit.JUnitRunner
 import com.mongodb.DBObject
+import libt.TGenericEnum
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
@@ -44,6 +45,16 @@ class TestDriver extends FunSpec {
     it("can unmarshall values") {
       val schema = TString
       assert(schema.unmarshall(MongoDBObject("value" -> "foo")) === Value("foo"))
+    }
+    
+    it("can unmarshall BigDecimal") {
+      val schema = TNumber
+      assert(schema.unmarshall(MongoDBObject("value" -> "1.0")) === Value(1.0))
+    }
+    
+    it("can unmarshall Numeric Enums") {
+      val schema = TGenericEnum[BigDecimal](TNumber, Seq(1.0,2.0,3.0))
+      assert(schema.unmarshall(MongoDBObject("value" -> "1.0")) === Value(1.0))
     }
 
     it("can marshall empty models") {

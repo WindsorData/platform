@@ -77,5 +77,5 @@ case class Area(
 
 object AreaGap extends SheetDefinition {
   def read(sheet: Sheet) = Nil
-  def write(models: Seq[Model])(sheet: Sheet): Unit = ???
+  def write(models: Seq[Model])(sheet: Sheet): Unit = ()
 }
