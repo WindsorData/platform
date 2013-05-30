@@ -30,7 +30,7 @@ object ExecutivesSVTBSDilution {
    * Sheet Usage and SVT Data
    */
 
-  val TValuationModel = TEnum(
+  val TValuationModel = TStringEnum(
     "Valuation Model",
     "Black-Scholes",
     "Monte Carlo",

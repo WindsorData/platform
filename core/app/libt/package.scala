@@ -29,8 +29,5 @@ package object libt {
   object PK {
     def apply(elements: Path*) : PK = elements
   }
-  
-  object TEnum {
-    def apply(values: String*) = TGenericEnum(TString, values)
-  }
+
 }

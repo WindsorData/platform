@@ -99,7 +99,7 @@ class TestDriver extends FunSpec {
     }
 
     it("should let read sheets with enum values") {
-      val schema = TModel('foo -> TEnum("foo", "value"))
+      val schema = TModel('foo -> TStringEnum("foo", "value"))
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("foo", "calc", "comment", "not", "link")
       val area = TestArea(schema, Seq(Gap, Feature(Path('foo))))
       area.read(sheet)

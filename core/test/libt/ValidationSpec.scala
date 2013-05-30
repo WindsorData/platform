@@ -26,26 +26,26 @@ class ValidationSpec extends FlatSpec {
   }
 
   it should "pass for valid enums" in {
-    TModel('foo -> TEnum("foo", "bar")).validate(Model('foo -> Value("foo")))
+    TModel('foo -> TStringEnum("foo", "bar")).validate(Model('foo -> Value("foo")))
   }
 
   it should "pass for empty enums" in {
-    TModel('foo -> TEnum("foo", "bar")).validate(Model('foo -> Value()))
+    TModel('foo -> TStringEnum("foo", "bar")).validate(Model('foo -> Value()))
   }
 
   it should "fail for invalid enum values" in {
     intercept[Throwable] {
-      TModel('foo -> TEnum("foo", "bar")).validate(Model('foo -> Value("foobar")))
+      TModel('foo -> TStringEnum("foo", "bar")).validate(Model('foo -> Value("foobar")))
     }
   }
 
   it should "fail for invalid enums in cols" in {
     intercept[Throwable] {
-      TModel('foo -> TCol(TEnum("foo", "bar"))).validate(Model('foo -> Col(Value("baz"))))
+      TModel('foo -> TCol(TStringEnum("foo", "bar"))).validate(Model('foo -> Col(Value("baz"))))
     }
   }
 
   it should "pass for valid enum values in cols" in {
-    TModel('foo -> TCol(TEnum("foo", "bar"))).validate(Model('foo -> Col(Value("foo"), Value("bar"))))
+    TModel('foo -> TCol(TStringEnum("foo", "bar"))).validate(Model('foo -> Col(Value("foo"), Value("bar"))))
   }
 }

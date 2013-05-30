@@ -3,7 +3,7 @@ import libt._
 
 object Commons {
 
-  val TPrimaryValues = TEnum("CEO (Chief Executive Officer)",
+  val TPrimaryValues = TStringEnum("CEO (Chief Executive Officer)",
     "CFO (Chief Financial Officer)",
     "COO (Chief Operating Officer)",
     "Sales",
@@ -25,7 +25,7 @@ object Commons {
     "Executive Chairman",
     "Other")
 
-  val TSecondaryValues = TEnum(
+  val TSecondaryValues = TStringEnum(
     "Sales",
     "Bus Dev (Business Development)",
     "CAO (Chief Admin Officer)",
@@ -45,7 +45,7 @@ object Commons {
     "GM (General Manager)",
     "Other")
 
-  val TLevelValues = TEnum(
+  val TLevelValues = TStringEnum(
     "President",
     "EVP (Executive Vice President)",
     "SVP (Senior Vice President)",
@@ -53,7 +53,7 @@ object Commons {
     "GM (General Manager)",
     "Group President")
 
-  val TScopeValues = TEnum(
+  val TScopeValues = TStringEnum(
     "WW/Global/International",
     "US",
     "North America",
@@ -61,7 +61,7 @@ object Commons {
     "Asia",
     "Americas")
 
-  val TBodValues = TEnum("Chairman",
+  val TBodValues = TStringEnum("Chairman",
     "Vice Chairman",
     "Director")
 

@@ -17,7 +17,7 @@ object TMapping {
   def apply[A](tValue: TValue[A]): TMapping[A] = tValue match {
     case TString => TStringMapping
     case TAny => TAnyMapping
-    case TGenericEnum(valueType, _) => this(valueType)
+    case TEnum(valueType, _) => this(valueType)
     case TNumber => TNumberMapping
     case TWithDefault(baseReader, default) => TWithDefaultMapping(this(baseReader), default)
     case TInt => TIntMapping

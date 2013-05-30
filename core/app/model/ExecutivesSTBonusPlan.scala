@@ -6,19 +6,19 @@ object ExecutivesSTBonusPlan {
 
   import model.Commons._
 
-  val TBonusType = TEnum("Target",
+  val TBonusType = TStringEnum("Target",
     "Discretionary",
     "Commission",
     "Shared Profit-Pool",
     "No Plan",
     "Other")
 
-  val TPayoutFrecuency = TEnum("Annual",
+  val TPayoutFrecuency = TStringEnum("Annual",
     "Semi-Annual",
     "Quarterly",
     "Other")
 
-  val TPerfPeriod = TGenericEnum[BigDecimal](TNumber,Seq(
+  val TPerfPeriod = TNumberEnum(
     0.25,
     0.5,
     0.75,
@@ -30,13 +30,13 @@ object ExecutivesSTBonusPlan {
     2.25,
     2.5,
     2.75,
-    3))
-
+    3)
+    
   val TWeightedUse = TModel(
     'use -> TXBool,
     'weight -> TNumber)
 
-  val TTypeOptions = TEnum("Revenue",
+  val TTypeOptions = TStringEnum("Revenue",
     "EPS",
     "EBITDA",
     "Operating Income",

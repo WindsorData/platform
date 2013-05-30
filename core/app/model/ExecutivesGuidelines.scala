@@ -4,7 +4,7 @@ import libt._
 object ExecutivesGuidelines {
   import model.Commons._
 
-  val TGuidelinesPeriod = TEnum(
+  val TGuidelinesPeriod = TStringEnum(
     "Until guidelines are met",
     "Retention Period",
     "Entire employment",
