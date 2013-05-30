@@ -56,7 +56,7 @@ object ExecutivesSTBonusPlan {
 
   val TExecSTBonusPlan = TModel(
     'title -> TString,
-    'functionalMatches -> functionalMatches,
+    'functionalMatches -> TFunctionalMatch,
     'useCash -> TXBool,
     'useShares -> TXBool,
     'bonusType -> TBonusType,

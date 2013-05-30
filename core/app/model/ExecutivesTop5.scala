@@ -80,7 +80,7 @@ object ExecutivesTop5 {
     'firstName -> TString,
     'lastName -> TString,
     'title -> TString,
-    'functionalMatches -> functionalMatches,
+    'functionalMatches -> TFunctionalMatch,
     'founder -> TString,
     'transitionPeriod -> TString,
 

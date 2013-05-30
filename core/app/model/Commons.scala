@@ -65,7 +65,7 @@ object Commons {
     "Vice Chairman",
     "Director")
 
-  val functionalMatches =
+  val TFunctionalMatch =
     TModel(
       'primary -> TPrimaryValues,
       'secondary -> TSecondaryValues,
