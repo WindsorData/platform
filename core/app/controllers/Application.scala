@@ -18,6 +18,7 @@ import libt._
 import libt.spreadsheet.reader.WorkbookReader
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.libs.Files.TemporaryFile
+import views.html.defaultpages.badRequest
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
@@ -43,7 +44,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   }
   
   //TODO: repeated code with newCompany
-  def newCompanies = UploadSpreadsheetAction {  dataset =>
+  def newCompanies = UploadSpreadsheetAction { (request,  dataset) =>
       var response = Ok(views.html.companyUploadSuccess())
 
       val results = readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes)
@@ -67,18 +68,22 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newSVTBSDilution = uploadSingleSpreadsheet(SVTBSDilutionReader)
 
   def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[Validated[Model]]]) =
-    UploadSpreadsheetAction { dataset =>
-      var response = Ok(views.html.companyUploadSuccess())
+    UploadSpreadsheetAction { (request, dataset) =>
 
       val result = reader.read(dataset.ref.file.getAbsolutePath)
-
-      if (result.hasErrors) {
-        response = BadRequest(
-          views.html.parsingError(Seq((dataset.ref.file.getName, result.errors))))
-      } else {
+      
+      if (result.hasErrors)
+        request match {
+          case Accepts.Html() => BadRequest(views.html.parsingError(Seq((dataset.ref.file.getName, result.errors))))
+          case Accepts.Json() => BadRequest("")
+        }
+      else {
         result.foreach(company => updateCompany(company.get))
+        request match {
+          case Accepts.Html() => Ok(views.html.companyUploadSuccess())
+          case Accepts.Json() => Ok("")
+        }
       }
-      response
     }
 
   def reports = Action {
