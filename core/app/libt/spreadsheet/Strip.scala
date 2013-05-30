@@ -79,6 +79,24 @@ case class Calc(reduction: Reduction) extends Strip {
   }
 }
 
+/**
+ * A strip that checks a value if it 
+ * exists on the valid ones inside an specific TEnum
+ * Supports writing only
+ * */
+case class EnumCheck(path: Path, check: String) extends Strip {
+  override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
+  override def writeOps(schema: TElement, model: Element) = new WriteOps {
+    override def value = {
+      val selectedValues = model.applySeq(path).flatMap(_.asValue[String].value)
+      if (selectedValues.contains(check))
+        String(Some("X"))
+      else
+        Skip
+    }
+  }
+}
+
 /**A column whose value is not important and should be skipped*/
 case object Gap extends Strip {
 
