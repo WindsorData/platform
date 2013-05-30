@@ -22,10 +22,10 @@ package object mapping {
   def colOfModelsPath(basePath: Path, times: Int, paths: Symbol*): Seq[Strip] =
     for (index <- 0 to times; valuePath <- paths) yield Feature((basePath :+ Index(index)) :+ Route(valuePath))
   
-  val colWrapping = ((x:Seq[ModelOrErrors]) => Col(x.map(_.get).toList: _*))
-  val singleModelWrapping = ((x:Seq[ModelOrErrors]) => Model(x.head.get.elements))
+  val colWrapping = ((x:Seq[Validated[Model]]) => Col(x.map(_.get).toList: _*))
+  val singleModelWrapping = ((x:Seq[Validated[Model]]) => Model(x.head.get.elements))
 
-  class DocSrcCombiner(yearsPositionWithKeys: Seq[(Int, Symbol, Seq[ModelOrErrors] => Element)]) extends Combiner[Seq[ModelOrErrors]] {
+  class DocSrcCombiner(yearsPositionWithKeys: Seq[(Int, Symbol, Seq[Validated[Model]] => Element)]) extends Combiner[Seq[Validated[Model]]] {
     import scala.collection.JavaConversions._
     import libt.spreadsheet.util._
 
@@ -46,7 +46,7 @@ package object mapping {
         case (yearIndex, key, elemWrap) => (dateCellToYear(sheet.rows.drop(yearIndex)), key, elemWrap)
       }
 
-    def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = {
+    def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = {
       val flattenResults = results.flatten
       val yearsWithKeys = years(wb.getSheetAt(0))
 
@@ -63,7 +63,7 @@ package object mapping {
   }
 
   object DocSrcCombiner {
-    def apply(years: (Int, Symbol, Seq[ModelOrErrors] => Element)*) = new DocSrcCombiner(years.toSeq)
+    def apply(years: (Int, Symbol, Seq[Validated[Model]] => Element)*) = new DocSrcCombiner(years.toSeq)
   }
   
 }

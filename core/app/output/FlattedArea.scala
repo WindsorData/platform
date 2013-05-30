@@ -1,17 +1,14 @@
 package output
 
-import libt._
-import libt.spreadsheet.Strip
-import libt.spreadsheet.reader.SheetDefinition
-import org.apache.poi.ss.usermodel.Sheet
-import libt.spreadsheet.util._
-import libt.spreadsheet.Feature
-import libt.spreadsheet.writer.CellWriter
 import org.apache.poi.ss.usermodel.Row
-import libt.spreadsheet.writer.ColumnOrientedWriter
-import libt.spreadsheet.writer.RowOrientedWriter
-import libt.spreadsheet.Offset
-import libt.spreadsheet.LibtSizes
+import org.apache.poi.ss.usermodel.Sheet
+
+import libt.spreadsheet.util._
+import libt.spreadsheet.reader._
+import libt.spreadsheet.writer._
+import libt.spreadsheet._
+import libt.error._
+import libt._
 
 //TODO refactor packages
 /**
@@ -60,7 +57,7 @@ case class FlattedArea(
 
   protected def flattedSchema = schema(flatteningPath)(Path(*))
   
-  def read(sheet: Sheet): Seq[ModelOrErrors] = ???
+  def read(sheet: Sheet): Seq[Validated[Model]] = ???
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 

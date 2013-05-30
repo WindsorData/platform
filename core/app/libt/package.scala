@@ -30,9 +30,6 @@ package object libt {
     def apply(elements: Path*) : PK = elements
   }
   
-  import error._
-  type ModelOrErrors = Validated[Model]
-
   object TEnum {
     def apply(values: String*) = TGenericEnum(TString, values)
   }

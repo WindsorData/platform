@@ -19,8 +19,8 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class WorkbookReaderSpec extends FunSpec {
 
-  class IdentityCombiner extends Combiner[Seq[Seq[ModelOrErrors]]] {
-    def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = results
+  class IdentityCombiner extends Combiner[Seq[Seq[Validated[Model]]]] {
+    def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = results
   }
 
   describe("WorkbookReader creation") {

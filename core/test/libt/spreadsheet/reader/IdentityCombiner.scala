@@ -1,8 +1,9 @@
 package libt.spreadsheet.reader
 
-import libt.ModelOrErrors
+import libt.error._
+import libt._
 import org.apache.poi.ss.usermodel.Workbook
 
-class IdentityCombiner extends Combiner[Seq[Seq[ModelOrErrors]]] {
-  def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]) = results
+class IdentityCombiner extends Combiner[Seq[Seq[Validated[Model]]]] {
+  def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = results
 }
