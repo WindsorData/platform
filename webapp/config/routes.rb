@@ -1,7 +1,6 @@
 WindosorFrontend::Application.routes.draw do
 
   resources :companies
-  #resources :users, only: [:new, :create, :index, :destroy]
 
   root to: "home#index"
 
@@ -15,5 +14,6 @@ WindosorFrontend::Application.routes.draw do
   get "dashboard/index"
   get "dashboard/search"
   post "search/results"
+  resources :users, only: [:new, :create, :index, :destroy]
 
 end

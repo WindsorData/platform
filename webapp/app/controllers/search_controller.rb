@@ -1,5 +1,5 @@
 class SearchController < ApplicationController
-  before_filter :authenticate_user!  
+  before_filter :authenticate_user!
   def results
     # get from backend
     mapping_values = Hash[ "role" => "executives.functionalMatches.primary.value" ]
