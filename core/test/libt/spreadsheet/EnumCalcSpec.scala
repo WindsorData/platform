@@ -62,35 +62,25 @@ class EnumCalcSpec extends FlatSpec {
     sheet
   }
 
-  ignore should "check simple TEnum" in {
+  it should "check simple TEnum" in {
     mapping = Seq(
       EnumCheck(Path('foo, 'bar, *, 'b), "A"),
-      Gap,
       EnumCheck(Path('foo, 'bar, *, 'b), "B"),
-      Gap,
       EnumCheck(Path('foo, 'bar, *, 'b), "C"))
     val sheet = writeSheet
     assert(sheet.cellAt(1, 0).getStringCellValue === "X")
     assert(sheet.cellAt(1, 1).getCellType() === Cell.CELL_TYPE_BLANK)
-    assert(sheet.cellAt(1, 2).getCellType() === Cell.CELL_TYPE_BLANK)
-    assert(sheet.cellAt(1, 3).getCellType() === Cell.CELL_TYPE_BLANK)
-    assert(sheet.cellAt(1, 4).getStringCellValue === "X")
+    assert(sheet.cellAt(1, 2).getStringCellValue === "X")
   }
 
   it should "check complex TEnum based schema" in {
 	mapping = Seq(
-	  EnumCheck(Path('foo, 'bar, *, 'b), "A"),
       ComplexEnumCheck(Path('foo, 'bar, *), Path('b), Path('a), "A"),
-      EnumCheck(Path('foo, 'bar, *, 'b), "B"),
       ComplexEnumCheck(Path('foo, 'bar, *), Path('b), Path('a), "B"),
-      EnumCheck(Path('foo, 'bar, *, 'b), "C"),
       ComplexEnumCheck(Path('foo, 'bar, *), Path('b), Path('a), "C"))
     val sheet = writeSheet
-    assert(sheet.cellAt(1, 0).getStringCellValue === "X")
-    assert(sheet.cellAt(1, 1).getNumericCellValue === 1)
-    assert(sheet.cellAt(1, 2).getCellType() === Cell.CELL_TYPE_BLANK)
-    assert(sheet.cellAt(1, 3).getCellType() === Cell.CELL_TYPE_BLANK)
-    assert(sheet.cellAt(1, 4).getStringCellValue === "X")
-    assert(sheet.cellAt(1, 5).getNumericCellValue === 2)
+    assert(sheet.cellAt(1, 0).getNumericCellValue === 1)
+    assert(sheet.cellAt(1, 1).getCellType() === Cell.CELL_TYPE_BLANK)
+    assert(sheet.cellAt(1, 2).getNumericCellValue === 2)
   }
 }

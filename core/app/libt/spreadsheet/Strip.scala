@@ -106,22 +106,26 @@ case class EnumCheck(path: Path, check: String) extends CheckStrip {
  * A strip that write an specific value if its corresponding value to check
  * exists on the valid ones inside an specific TEnum
  * Supports writing only
+ * 
+ * @parm basePath the path that points to the collection of models
+ * @parm checkPath the path relative to base path whose value will be checked against the check string
+ * @param writePath the path of the value that will be written when the check path value matches the check string
  */
 case class ComplexEnumCheck(
     basePath: Path,
-    toCheckPath: Path,
-    toWritePath: Path,
+    checkPath: Path,
+    writePath: Path,
     check: String) extends CheckStrip {
   override def checkColumn(schema: TElement, model: Element) = {
     implicit def models2RichModels(models: Seq[Model]) = new {
       def modelToWrite = 
-        models.find(_.apply(toCheckPath).asValue[String].value.exists(_ == check))
+        models.find(_.apply(checkPath).asValue[String].value.exists(_ == check))
     }
     
     val selectedModels = model.applySeq(basePath).map(_.asModel)
-    val mapping = TMapping[AnyRef](schema(basePath ++ toWritePath).asValue)
+    val mapping = TMapping(schema(basePath ++ writePath).asValue)
     selectedModels.modelToWrite match {
-      case Some(m) => mapping.writeOp(m(toWritePath).asValue.value)
+      case Some(m) => mapping.writeOp(m(writePath).asValue.value)
       case None => Skip
     } 
   }
