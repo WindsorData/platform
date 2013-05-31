@@ -57,10 +57,30 @@ object ExecutivesTop5Mapping {
       Path('cashCompensations, 'maxBonus),
       Path('cashCompensations, 'nextFiscalYearData, 'baseSalary),
       Path('cashCompensations, 'nextFiscalYearData, 'targetBonus)) ++
-      colOfModelsPath(Path('optionGrants), 5, 'grantDate, 'expireDate, 'number, 'price, 'value, 'perf, 'type) ++
-      colOfModelsPath(Path('timeVestRS), 5, 'grantDate, 'number, 'price, 'value, 'type) ++
-      colOfModelsPath(Path('performanceVestRS), 2, 'grantDate, 'targetNumber, 'grantDatePrice, 'targetValue, 'type) ++
-      colOfModelsPath(Path('performanceCash), 2, 'grantDate, 'targetValue, 'payout) ++
+      Multi(Path('optionGrants), 5, 
+          Path('grantDate), 
+          Path('expireDate), 
+          Path('number), 
+          Path('price), 
+          Path('value), 
+          Path('perf), 
+          Path('type)) ++
+      Multi(Path('timeVestRS), 5, 
+          Path('grantDate), 
+          Path('number), 
+          Path('price), 
+          Path('value), 
+          Path('type)) ++
+      Multi(Path('performanceVestRS), 2,
+          Path('grantDate), 
+          Path('targetNumber), 
+          Path('grantDatePrice), 
+          Path('targetValue), 
+          Path('type)) ++
+      Multi(Path('performanceCash), 2, 
+          Path('grantDate), 
+          Path('targetValue), 
+          Path('payout)) ++
       Seq[Strip](
         Path('carriedInterest, 'ownedShares, 'beneficialOwnership),
         Path('carriedInterest, 'ownedShares, 'options),
