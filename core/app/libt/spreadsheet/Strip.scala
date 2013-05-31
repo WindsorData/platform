@@ -12,7 +12,7 @@ import libt._
 
 /**
  * The declaration of the content of a column, that may be important - Feature  -, unimportant - Gap,
- * calculated - Calc - or a tag over an existing strip - Tag
+ * calculated - Calc - or a tag over an existing strip - Tag - CheckStrip
  */
 sealed trait Strip {
   /**
@@ -79,21 +79,51 @@ case class Calc(reduction: Reduction) extends Strip {
   }
 }
 
-/**
- * A strip that checks a value if it 
- * exists on the valid ones inside an specific TEnum
- * Supports writing only
- * */
-case class EnumCheck(path: Path, check: String) extends Strip {
+trait CheckStrip extends Strip {
   override def read(reader: CellReader, schema: TElement, modelBuilder: ModelBuilder) = ???
   override def writeOps(schema: TElement, model: Element) = new WriteOps {
-    override def value = {
-      val selectedValues = model.applySeq(path).flatMap(_.asValue[String].value)
-      if (selectedValues.contains(check))
-        String(Some("X"))
-      else
-        Skip
+    override def value = checkColumn(schema, model)
+  }
+  def checkColumn(schema: TElement, model: Element) : WriteOp
+}
+
+/**
+ * A strip that checks a value if it
+ * exists on the valid ones inside an specific TEnum
+ * Supports writing only
+ */
+case class EnumCheck(path: Path, check: String) extends CheckStrip {
+  override def checkColumn(schema: TElement, model: Element) = {
+    val selectedValues = model.applySeq(path).flatMap(_.asValue[String].value)
+    if (selectedValues.contains(check))
+      String(Some("X"))
+    else
+      Skip
+  }
+}
+
+/**
+ * A strip that write an specific value if its corresponding value to check
+ * exists on the valid ones inside an specific TEnum
+ * Supports writing only
+ */
+case class ComplexEnumCheck(
+    basePath: Path,
+    toCheckPath: Path,
+    toWritePath: Path,
+    check: String) extends CheckStrip {
+  override def checkColumn(schema: TElement, model: Element) = {
+    implicit def models2RichModels(models: Seq[Model]) = new {
+      def modelToWrite = 
+        models.find(_.apply(toCheckPath).asValue[String].value.exists(_ == check))
     }
+    
+    val selectedModels = model.applySeq(basePath).map(_.asModel)
+    val mapping = TMapping[AnyRef](schema(basePath ++ toWritePath).asValue)
+    selectedModels.modelToWrite match {
+      case Some(m) => mapping.writeOp(m(toWritePath).asValue.value)
+      case None => Skip
+    } 
   }
 }
 

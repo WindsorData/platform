@@ -3,6 +3,7 @@ package output
 import libt.spreadsheet._
 import libt.reduction._
 import libt._
+import model.ExecutivesSTBonusPlan._
 
 package object mapping {
 
@@ -27,7 +28,15 @@ package object mapping {
     Feature('scope, 'busUnit, 'use),
     Feature('scope, 'busUnit, 'weight),
     Feature('scope, 'individual, 'use),
-    Feature('scope, 'individual, 'weight))
+    Feature('scope, 'individual, 'weight)) ++
+    TTypeOptions.values.flatMap(value =>
+      Seq(EnumCheck(Path('metrics, 'select, *, 'use), value),
+        ComplexEnumCheck(Path('metrics, 'select, *), Path('use), Path('weight), value))) ++
+    Seq(
+      Feature('metrics, 'typeIn, 0, 'type),
+      Feature('metrics, 'typeIn, 0, 'weight),
+      Feature('metrics, 'typeIn, 1, 'type),
+      Feature('metrics, 'typeIn, 1, 'weight))
 
   val execDbOutputMapping = Seq(
     Gap,
