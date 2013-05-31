@@ -3,17 +3,17 @@ $(function() {
 
   $('#user_role').change(function(){
     if($('#user_role').val() != "client") {
-      hideCompanyCombo();
+      hideCompanyFields();
     }else {
-      showCompanyCombo();
+      showCompanyFields();
     }    
   });
 
-  function showCompanyCombo(){
-    $('#user_company').removeClass('hidden');
+  function showCompanyFields(){
+    $('#company_fields').removeClass('hidden');
   }
-  function hideCompanyCombo(){
-    $('#user_company').addClass('hidden');
+  function hideCompanyFields(){
+    $('#company_fields').addClass('hidden');
   }
 
 });

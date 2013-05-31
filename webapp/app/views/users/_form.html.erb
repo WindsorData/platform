@@ -11,7 +11,10 @@
     </div>
   <% end %>
   <%= f.select(:role, options_for_select(User::ROLES)) %>
-  <%= f.select(:company, options_from_collection_for_select(Company.all, :id, :name)) %>
+  <div id="company_fields">
+     <%= f.select(:company, options_from_collection_for_select(Company.all, :id, :name)) %> <%= link_to 'new company', new_company_path %>
+  </div>
+  
   <%= f.email_field :email %>
   
   <div class="actions">
