@@ -22,6 +22,7 @@ sealed trait Element extends ElementLike[Element] {
   
   def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
     case (* :: tail, self: Col) => self.elements.map(_.apply(tail))
+    case (Route(field) :: Nil, self: Model) => Seq(self(field))
     case (Route(field) :: tail, self: Model) => self(field).applySeq(tail)
   }
 }

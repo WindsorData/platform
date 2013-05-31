@@ -19,7 +19,7 @@ object ExecutivesTop5Mapping {
       Path(rootPath, 'timeVest, 'vesting),
       Path(rootPath, 'minPayout),
       Path(rootPath, 'maxPayout)) ++
-      colOfModelsPath(Path(rootPath, 'metrics), 4, 'select, 'typeIn)
+      Multi(Path(rootPath, 'metrics), 4, Path('select), Path('typeIn))
 
   val grantTypesMapping =
     Seq[Strip](

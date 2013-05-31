@@ -4,8 +4,24 @@ import libt.spreadsheet._
 import libt.reduction._
 import libt._
 import model.ExecutivesSTBonusPlan._
+import model.ExecutivesGuidelines._
 
 package object mapping {
+
+  val executiveOwnershipMapping = Seq(
+    Gap, //GICS Industry
+    Gap,
+    Gap,
+    //Exec Data
+    Feature('title),
+    Feature('functionalMatches, 'primary),
+    Feature('use),
+    Feature('yearsToAchieve),
+    Feature('numberOfShares),
+    Feature('multipleOfSalary),
+    Feature('retention, 'ratio)) ++
+    TGuidelinesPeriod.values.map(value =>
+      EnumCheck(Path('retention, 'period), value))
 
   val stBonusPlanOutputMapping = Seq(
     Gap, //GICS Industry
