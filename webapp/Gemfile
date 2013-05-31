@@ -8,8 +8,7 @@ gem 'devise'
 gem 'pg'
 gem 'cancan'
 gem 'annotate'
-gem 'activeadmin'
-
+gem 'inherited_resources'
 
 # Gems used only for assets and not required
 # in production environments by default.

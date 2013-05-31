@@ -1,9 +1,9 @@
 WindosorFrontend::Application.routes.draw do
 
-  root to: "home#index"
+  resources :companies
+  #resources :users, only: [:new, :create, :index, :destroy]
 
-  ActiveAdmin.routes(self)
-  devise_for :admin_users, ActiveAdmin::Devise.config
+  root to: "home#index"
 
   devise_for :users
   resources :groups, only: [:new, :create] do
