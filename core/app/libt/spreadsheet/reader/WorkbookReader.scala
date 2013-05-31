@@ -55,15 +55,12 @@ case class Area(
   orientation: Layout,
   columns: Seq[Strip]) extends SheetDefinition {
 
-  import libt.spreadsheet.util._
-
   def read(sheet: Sheet): Seq[Validated[Model]] =
     orientation.read(this, sheet)
 
   def write(models: Seq[Model])(sheet: Sheet) = 
     orientation.write(this, sheet, models)
   
-  import libt.error._
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
