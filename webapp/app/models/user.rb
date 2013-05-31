@@ -20,7 +20,7 @@
 #
 
 class User < ActiveRecord::Base
-  ROLES = %w[admin client user]
+  ROLES = %w[super admin client]
   before_validation :generate_random_password
   
   devise :database_authenticatable,

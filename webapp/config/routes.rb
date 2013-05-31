@@ -14,6 +14,6 @@ WindosorFrontend::Application.routes.draw do
   get "dashboard/index"
   get "dashboard/search"
   post "search/results"
-  resources :users, only: [:new, :create, :index, :destroy]
+  resources :users, except: [:show]
 
 end
