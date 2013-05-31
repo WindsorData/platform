@@ -10,8 +10,6 @@ import libt.spreadsheet._
 import libt._
 import libt.spreadsheet.Offset
 
-import org.joda.time.DateTime
-
 object ExecutivesGuidelinesMapping {
 
   val execGuidelinesMapping =
