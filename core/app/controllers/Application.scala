@@ -43,24 +43,28 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
     Redirect(routes.Application.companies)
   }
   
-  //TODO: repeated code with newCompany
   def newCompanies = UploadSpreadsheetAction { (request,  dataset) =>
-      var response = Ok(views.html.companyUploadSuccess())
-
       val results = readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes)
 
-      if (results.exists { case (_, result) => result.hasErrors }) {
-        val errors =
-          results.filter { case (_, result) => result.hasErrors }
-            .map {
-              case (entryName, result) => (entryName, result.errors)
-            }.toSeq
-
-        response = BadRequest(views.html.parsingError(errors))
-      } else {
+      if (results.exists { case (_, result) => result.hasErrors })
+        request match {
+          case Accepts.Html() => {
+            val errors =
+              results.filter { case (_, result) => result.hasErrors }
+                .map {
+                case (entryName, result) => (entryName, result.errors)
+              }.toSeq
+            BadRequest(views.html.parsingError(errors))
+          }
+          case Accepts.Json() => BadRequest("")
+        }
+      else {
         results.foreach { case (_, result) => result.foreach(company => updateCompany(company.get)) }
+        request match {
+          case Accepts.Html() => Ok(views.html.companyUploadSuccess())
+          case Accepts.Json() => Ok("")
+        }
       }
-      response
   }
 
   def newCompany = uploadSingleSpreadsheet(CompanyFiscalYearReader)
