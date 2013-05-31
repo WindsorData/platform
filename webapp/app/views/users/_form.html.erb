@@ -10,7 +10,10 @@
       </ul>
     </div>
   <% end %>
-
+  <%= f.select(:role, options_for_select(User::ROLES)) %>
+  <%= f.select(:company, options_from_collection_for_select(Company.all, :id, :name)) %>
+  <%= f.email_field :email %>
+  
   <div class="actions">
     <%= f.submit %>
   </div>
