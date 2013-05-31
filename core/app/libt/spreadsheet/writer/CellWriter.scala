@@ -23,6 +23,7 @@ package object op {
   val String = WriteOp((cell, value : String ) => cell.setCellValue(value)) _ 
   val Boolean = WriteOp((cell, value : Boolean) => cell.setCellValue(value)) _
   val Date = WriteOp((cell, value : Date) => cell.setCellValue(value)) _
+  val XBoolean = WriteOp((cell, value: Boolean) => if(value) cell.setCellValue("X")) _
 }
 
 

@@ -11,6 +11,7 @@ package object persistence {
   type DBO = DBObject
 
   implicit def tElement2PersitentTElement(telement: TElement): TElementConverter = telement match {
+    case TGenericEnum(v, _) => new TValueConverter(v)
     case v: TValue[_] => new TValueConverter(v)
     case m: TModel => new TModelConverter(m)
     case c: TCol => new TColConverter(c)

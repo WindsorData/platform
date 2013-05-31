@@ -12,6 +12,7 @@ import org.scalatest.FlatSpec
 import libt.spreadsheet.Offset
 import scala.math.BigDecimal.int2bigDecimal
 import org.scalatest.junit.JUnitRunner
+import java.io.FileOutputStream
 
 @RunWith(classOf[JUnitRunner])
 class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
@@ -90,7 +91,7 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
   it should "write values of flattened models" in {
     assert(sheet.cellAt(0, 2).getStringCellValue() === "someValue")
     assert(sheet.cellAt(0, 3).getStringCellValue() === "foo")
-    assert(sheet.cellAt(0, 4).getBooleanCellValue())
+    assert(sheet.cellAt(0, 4).getStringCellValue() === "X")
   }
 
   it should "write a row for each flatted model" in {

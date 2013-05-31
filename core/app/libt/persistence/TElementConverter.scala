@@ -27,35 +27,35 @@ class TModelConverter(tModel: TModel) extends TElementConverter {
     val model = it.asModel
     MongoDBObject(
       tModel.elementTypes
-      .filter {
-        case (key, _) => model.hasElement(key)
-      }
-      .map {
-        case (key, telement) =>
-          (key.name -> telement.marshall(model(key)))
-      }: _*)
+        .filter {
+          case (key, _) => model.hasElement(key)
+        }
+        .map {
+          case (key, telement) =>
+            (key.name -> telement.marshall(model(key)))
+        }: _*)
   }
 
   def unmarshall(it: DBO) =
     Model(tModel.elementTypes
       .filter {
-      	case (key, _) => it.contains(key.name)
-      }  
+        case (key, _) => it.contains(key.name)
+      }
       .map {
-      	case (key, telement) =>
-        (key -> telement.unmarshall(it(key.name).asInstanceOf[DBO]))
-    }: _*)
+        case (key, telement) =>
+          (key -> telement.unmarshall(it(key.name).asInstanceOf[DBO]))
+      }: _*)
 }
 
 class TValueConverter(v: TValue[_]) extends TElementConverter {
   def marshall(it: Element) = {
     val value = it.asValue
-    
+
     def convert(v: Option[_]) = v match {
-      case Some(value : BigDecimal) => Some(value.toString)
+      case Some(value: BigDecimal) => Some(value.toString)
       case _ => v
     }
-    
+
     MongoDBObject(
       "value" -> convert(value.value),
       "calc" -> value.calc,
@@ -67,17 +67,21 @@ class TValueConverter(v: TValue[_]) extends TElementConverter {
       }
   }
 
-  def unmarshall(it: DBO): Element = Value(
-    convert(it.get("value")),
-    Option(it.get("calc").asInstanceOf[String]),
-    Option(it.get("comment").asInstanceOf[String]),
-    Option(it.get("note").asInstanceOf[String]),
-    Option(it.get("link").asInstanceOf[String]))
+  def unmarshall(it: DBO): Element = {
 
-  def convert(value: AnyRef) = v match {
-    case TNumber => Option(value).map {
-      it => BigDecimal(it.asInstanceOf[String])
+    def convert(value: AnyRef): Option[AnyRef] = v match {
+      case TNumber => Option(value).map {
+        it => BigDecimal(it.asInstanceOf[String])
+      }
+      case _ => Option(value)
     }
-    case _ => Option(value)
+
+    Value(
+      convert(it.get("value")),
+      Option(it.get("calc").asInstanceOf[String]),
+      Option(it.get("comment").asInstanceOf[String]),
+      Option(it.get("note").asInstanceOf[String]),
+      Option(it.get("link").asInstanceOf[String]))
   }
+
 }

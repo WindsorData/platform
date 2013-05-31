@@ -11,80 +11,39 @@ import libt.spreadsheet._
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.reduction._
+import output.mapping._
 
 object SpreadsheetWriter {
 
-  val outputMapping = Seq(
-    Gap,
-    //Exec Data
-    Feature('lastName),
-    Feature('title),
-    Gap, //Leave Blank
-    Feature('functionalMatches, 'primary),
-    Feature('founder),
-    Gap, //TTDC Pay Rank Calculation
-
-    //Cash Compensation
-    //Current Year
-    Gap,
-    Feature('cashCompensations, 'baseSalary),
-    Feature('cashCompensations, 'actualBonus),
-    
-    Gap, // TTDC Pay calculation
-    Feature('cashCompensations, 'targetBonus),
-    Feature('cashCompensations, 'thresholdBonus),
-    Feature('cashCompensations, 'maxBonus),
-    //New 8-K Data
-    Feature('cashCompensations, 'nextFiscalYearData, 'baseSalary),
-    Feature('cashCompensations, 'nextFiscalYearData, 'targetBonus),
-
-    //Equity Comp Value
-    Gap,
-    Tag("Options Value", Calc(Sum(Path('optionGrants, *, 'value)))),
-    Calc(Sum(Path('optionGrants, *, 'number))),
-    Calc(Average(Path('optionGrants, *, 'price))),
-    Gap, //Leave Blank
-    //Time Vest RS
-    Calc(Sum(Path('timeVestRS, *, 'value))),
-    Calc(Sum(Path('timeVestRS, *, 'number))),
-    Calc(Average(Path('timeVestRS, *, 'price))),
-    //Perf RS
-    Calc(Sum(Path('performanceVestRS, *, 'targetValue))),
-    Calc(Sum(Path('performanceVestRS, *, 'targetNumber))),
-    Calc(Average(Path('performanceVestRS, *, 'grantDatePrice))),
-    //Perf Cash
-    Calc(Sum(Path('performanceCash, *, 'targetValue))),
-
-    //Carried Interest
-    Gap,
-    Calc(SubstractAll(
-      Path('carriedInterest, 'ownedShares),
-      Path('beneficialOwnership),
-      Path('options),
-      Path('unvestedRestrictedStock),
-      Path('disclaimBeneficialOwnership))),
-    Feature('carriedInterest, 'outstandingEquityAwards, 'vestedOptions),
-    Feature('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions),
-    Feature('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
-    Feature('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
-
-  def outputArea(layout: FlattedAreaLayout, outputMapping: Seq[Strip]) =
+  def outputArea(layout: FlattedAreaLayout, outputMapping: Seq[Strip], flatteningPK: Path, flatteningPath: Path) =
     FlattedArea(
       PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
-      PK(Path('lastName)),
-      Path('executives),
+      PK(flatteningPK),
+      flatteningPath,
       TCompanyFiscalYear,
       layout,
       outputMapping)
 
-  def valueArea = outputArea(ValueAreaLayout(Offset(6, 2)), outputMapping)
-  def metadataArea = outputArea(MetadataAreaLayout(Offset(1, 0)), outputMapping.filter(_ match {
+  def execDBArea = outputArea(ValueAreaLayout(Offset(6, 2)), execDbOutputMapping, Path('lastName), Path('executives))
+  
+  def stBonusPlanArea = 
+    outputArea(
+        ValueAreaLayout(Offset(6, 2)), 
+        stBonusPlanOutputMapping, 
+        Path('functionalMatches, 'primary), 
+        Path('stBonusPlan))
+  
+  def metadataArea = outputArea(MetadataAreaLayout(Offset(1, 0)), execDbOutputMapping.filter(_ match {
     case Gap => false
     case _ => true
-  }))
+  }), Path('lastName), Path('executives))
 
   def write(out: Workbook, companies: Seq[Model]): Unit = {
-    WorkbookMapping(Seq(valueArea, metadataArea)).write(companies, out)
+    WorkbookMapping(
+      Seq(
+        execDBArea, //ExecDB
+        stBonusPlanArea, 
+        metadataArea)).write(companies, out)
   }
 
   def loadTemplateInto(out: OutputStream) = {

@@ -54,7 +54,7 @@ case object TDateMapping extends TMapping[Date] {
 
 case object TXBoolMapping extends TMapping[Boolean] {
   def read(reader: CellReader) = reader.xBoolean
-  override def writeOp(value: Option[Boolean]) = op.Boolean(value)
+  override def writeOp(value: Option[Boolean]) = op.XBoolean(value)
 }
 
 case class TWithDefaultMapping[A](
