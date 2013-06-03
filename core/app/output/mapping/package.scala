@@ -3,10 +3,25 @@ package output
 import libt.spreadsheet._
 import libt.reduction._
 import libt._
+import model.mapping._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
+import libt.spreadsheet.reader.SheetDefinition
 
 package object mapping {
+
+  val usageAndSVTDataMapping =
+    Seq[Strip](Gap) ++
+      addTYears(
+        Path('avgSharesOutstanding),
+        Path('optionsSARs, 'granted),
+        Path('optionsSARs, 'exPrice),
+        Path('optionsSARs, 'cancelled),
+        Path('fullValue, 'sharesGranted),
+        Path('fullValue, 'grantPrice),
+        Path('fullValue, 'sharesCancelled),
+        Path('cashLTIP, 'grants),
+        Path('cashLTIP, 'payouts))
 
   val executiveOwnershipMapping = Seq(
     Gap, //GICS Industry
@@ -22,7 +37,6 @@ package object mapping {
     Feature('retention, 'ratio)) ++
     TGuidelinesPeriod.values.map(value =>
       EnumCheck(Path('retention, 'period), value))
-
   val stBonusPlanOutputMapping = Seq(
     Gap, //GICS Industry
     Gap,

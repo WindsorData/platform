@@ -10,12 +10,6 @@ import libt._
 
 object ExecutivesSVTBSDilutionMapping {
 
-  def addTYears(paths: Path*): Seq[Strip] =
-    paths.flatMap(path => Seq[Strip](
-      pathToFeature(path :+ Route('year1)),
-      pathToFeature(path :+ Route('year2)),
-      pathToFeature(path :+ Route('year3))))
-
   val usageAndSVTDataMapping =
     addTYears(
       Path('avgSharesOutstanding),

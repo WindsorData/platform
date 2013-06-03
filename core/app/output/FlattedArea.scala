@@ -1,6 +1,10 @@
 package output
 
 import org.apache.poi.ss.usermodel.Row
+import libt.util._
+import libt._
+import libt.spreadsheet.Strip
+import libt.spreadsheet.reader.SheetDefinition
 import org.apache.poi.ss.usermodel.Sheet
 
 import libt.spreadsheet.util._
@@ -46,7 +50,12 @@ case class FlattedArea(
   def headerSize = completePKSize + TitlesSize 
 
   def flatteningColSize(models: Seq[Model]) =
-    models.map(_.apply(flatteningPath).asCol.size).sum
+    models.map { model =>
+      umatch(model.apply(flatteningPath)) {
+        case c: Col => c.size
+        case m: Model => 1
+      }
+    }.sum
 
   /**
    * Flattens the given model using the root primary
@@ -55,7 +64,12 @@ case class FlattedArea(
   def flatten(models: Seq[Model]) =
     Model.flattenWith(models, rootPK, flatteningPath)
 
-  protected def flattedSchema = schema(flatteningPath)(Path(*))
+  //TODO: refactor this 
+  protected def flattedSchema =  
+    umatch(schema(flatteningPath)) {
+      case c: TCol => c(Path(*))
+      case m: TModel => m
+    }
   
   def read(sheet: Sheet): Seq[Validated[Model]] = ???
 

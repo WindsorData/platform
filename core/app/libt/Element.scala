@@ -109,8 +109,14 @@ case class Model(elements: Set[(Symbol, Element)])
    * plus the elements that conform the pk of this model - the rootPK.
    */
   def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
-    for (element <- this(flatteningPath).asCol.elements)
-      yield element.asModel ++ this.subModel(rootPk)
+    umatch(this(flatteningPath)) {
+      case c: Col =>
+        for (element <- c.elements)
+          yield element.asModel ++ this.subModel(rootPk)
+      case m: Model =>
+        Seq(m ++ this.subModel(rootPk))
+    }
+
 
   /**
    * Model addition
