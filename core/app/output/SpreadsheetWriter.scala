@@ -49,7 +49,7 @@ object SpreadsheetWriter {
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       usageAndSVTDataMapping,
-      Path('avgSharesOutstanding),
+      Path(),
       Path('usageAndSVTData))
 
   def bsInputsArea =
@@ -58,6 +58,20 @@ object SpreadsheetWriter {
       bsInputsMapping,
       Path(),
       Path('bsInputs))
+
+  def dilutionArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      dilutionMapping,
+      Path(),
+      Path('dilution))
+
+  def grantTypesArea =
+    outputArea(
+      ValueAreaLayout(Offset(7, 2)),
+      grantTypesMapping,
+      Path(),
+      Path('grantTypes))
 
   def metadataArea = outputArea(MetadataAreaLayout(Offset(1, 0)), execDbOutputMapping.filter(_ match {
     case Gap => false
@@ -72,6 +86,8 @@ object SpreadsheetWriter {
         executiveOwnershipArea,
         usageAndSVTDataArea,
         bsInputsArea,
+        dilutionArea,
+        grantTypesArea,
         metadataArea)).write(companies, out)
   }
 

@@ -6,23 +6,76 @@ import libt._
 import model.mapping._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
+import model.ExecutivesTop5._
 import libt.spreadsheet.reader.SheetDefinition
 
 package object mapping {
 
-  val bsInputsMapping =
-    Seq[Strip](Gap) ++
+  def performanceVestingMapping(base: Symbol) =
+    Seq[Strip](
+      Path(base, 'useShares),
+      Path(base, 'neos),
+      Path(base, 'performance, 'period),
+      Path(base, 'performance, 'interval),
+      Path(base, 'timeVest, 'period)) ++
+      TVesting.values.map(value =>
+        EnumCheck(Path(base, 'timeVest, 'vesting), value)) ++
       Seq[Strip](
-        Path('valuationModel, 'year1),
-        Path('valuationModel, 'year2),
-        Path('valuationModel, 'year3)) ++
-        addTYears(
-          Path('volatility),
-          Path('expectedTerm),
-          Path('riskFreeRate),
-          Path('dividendYield),
-          Path('bs))
-          
+        Path(base, 'minPayout),
+        Path(base, 'maxPayout)) ++
+        TMetricsSelect.values.map(value =>
+          EnumCheck(Path(base, 'metrics, *, 'select), value)) ++
+        Seq[Strip](
+          Path(base, 'metrics, 0, 'typeIn),
+          Path(base, 'metrics, 1, 'typeIn),
+          Path(base, 'metrics, 2, 'typeIn),
+          Path(base, 'metrics, 3, 'typeIn))
+
+  val grantTypesMapping =
+    Seq[Strip](
+      Gap,
+      Path('stockOptions, 'use),
+      Path('stockOptions, 'neos),
+      Path('stockOptions, 'maxTerm),
+      Path('stockOptions, 'frecuency),
+      Path('stockOptions, 'years)) ++
+      TVesting.values.map(value =>
+        EnumCheck(Path('stockOptions, 'vesting), value)) ++
+      Seq[Strip](
+        Path('timeVestingRestrictedShares, 'use),
+        Path('timeVestingRestrictedShares, 'neos),
+        Path('timeVestingRestrictedShares, 'years)) ++
+        TVesting.values.map(value =>
+          EnumCheck(Path('timeVestingRestrictedShares, 'vesting), value)) ++
+        performanceVestingMapping('performanceEquityVesting) ++
+        performanceVestingMapping('performanceCashVesting)
+
+  val dilutionMapping =
+    Seq[Strip](
+      Gap,
+      Path('awardsOutstandings, 'option),
+      Path('awardsOutstandings, 'fullValue),
+      Path('awardsOutstandings, 'total),
+      Path('sharesAvailable, 'current),
+      Path('sharesAvailable, 'new),
+      Path('sharesAvailable, 'everGreen, 'anual),
+      Path('sharesAvailable, 'everGreen, 'yearsLeft),
+      Path('sharesAvailable, 'fungible, 'ratio),
+      Path('sharesAvailable, 'fungible, 'fullValue))
+
+  val bsInputsMapping =
+    Seq[Strip](
+      Gap,
+      Path('valuationModel, 'year1),
+      Path('valuationModel, 'year2),
+      Path('valuationModel, 'year3)) ++
+      addTYears(
+        Path('volatility),
+        Path('expectedTerm),
+        Path('riskFreeRate),
+        Path('dividendYield),
+        Path('bs))
+
   val usageAndSVTDataMapping =
     Seq[Strip](Gap) ++
       addTYears(
