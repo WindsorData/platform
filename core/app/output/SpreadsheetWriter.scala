@@ -24,15 +24,27 @@ object SpreadsheetWriter {
       layout,
       outputMapping)
 
-  def execDBArea = outputArea(ValueAreaLayout(Offset(6, 2)), execDbOutputMapping, Path('lastName), Path('executives))
-  
-  def stBonusPlanArea = 
+  def execDBArea =
     outputArea(
-        ValueAreaLayout(Offset(6, 2)), 
-        stBonusPlanOutputMapping, 
-        Path('functionalMatches, 'primary), 
-        Path('stBonusPlan))
-  
+      ValueAreaLayout(Offset(6, 2)),
+      execDbOutputMapping,
+      Path('lastName),
+      Path('executives))
+
+  def stBonusPlanArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      stBonusPlanOutputMapping,
+      Path('functionalMatches, 'primary),
+      Path('stBonusPlan))
+
+  def executiveOwnershipArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      executiveOwnershipMapping,
+      Path('functionalMatches, 'primary),
+      Path('guidelines))
+
   def metadataArea = outputArea(MetadataAreaLayout(Offset(1, 0)), execDbOutputMapping.filter(_ match {
     case Gap => false
     case _ => true
@@ -42,7 +54,8 @@ object SpreadsheetWriter {
     WorkbookMapping(
       Seq(
         execDBArea, //ExecDB
-        stBonusPlanArea, 
+        stBonusPlanArea,
+        executiveOwnershipArea,
         metadataArea)).write(companies, out)
   }
 
