@@ -1,0 +1,4 @@
+<%= form_tag('/files/send_single', multipart: true) do %>
+  <%= file_field_tag 'single_file', required: :true %>
+  <%= submit_tag "Upload" %>
+<% end %>

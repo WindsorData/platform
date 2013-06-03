@@ -12,6 +12,9 @@ WindosorFrontend::Application.routes.draw do
 
   get "search/quick_search", as: :quick_search
   get "search/full_search", as: :full_search
-  post "search/results"
+  post "search/results"  
+
+  get   "files/single_file", as: 'single_file_upload'
+  post  "files/send_single"
 
 end
