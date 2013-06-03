@@ -44,14 +44,21 @@ object SpreadsheetWriter {
       executiveOwnershipMapping,
       Path('functionalMatches, 'primary),
       Path('guidelines))
-        
-  def usageAndSVTDataArea = 
+
+  def usageAndSVTDataArea =
     outputArea(
-        ValueAreaLayout(Offset(6, 2)),
-        usageAndSVTDataMapping,
-        Path('avgSharesOutstanding),
-        Path('usageAndSVTData))
-  
+      ValueAreaLayout(Offset(6, 2)),
+      usageAndSVTDataMapping,
+      Path('avgSharesOutstanding),
+      Path('usageAndSVTData))
+
+  def bsInputsArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      bsInputsMapping,
+      Path(),
+      Path('bsInputs))
+
   def metadataArea = outputArea(MetadataAreaLayout(Offset(1, 0)), execDbOutputMapping.filter(_ match {
     case Gap => false
     case _ => true
@@ -64,6 +71,7 @@ object SpreadsheetWriter {
         stBonusPlanArea,
         executiveOwnershipArea,
         usageAndSVTDataArea,
+        bsInputsArea,
         metadataArea)).write(companies, out)
   }
 

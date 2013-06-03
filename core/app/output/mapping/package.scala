@@ -10,6 +10,19 @@ import libt.spreadsheet.reader.SheetDefinition
 
 package object mapping {
 
+  val bsInputsMapping =
+    Seq[Strip](Gap) ++
+      Seq[Strip](
+        Path('valuationModel, 'year1),
+        Path('valuationModel, 'year2),
+        Path('valuationModel, 'year3)) ++
+        addTYears(
+          Path('volatility),
+          Path('expectedTerm),
+          Path('riskFreeRate),
+          Path('dividendYield),
+          Path('bs))
+          
   val usageAndSVTDataMapping =
     Seq[Strip](Gap) ++
       addTYears(
@@ -37,6 +50,7 @@ package object mapping {
     Feature('retention, 'ratio)) ++
     TGuidelinesPeriod.values.map(value =>
       EnumCheck(Path('retention, 'period), value))
+
   val stBonusPlanOutputMapping = Seq(
     Gap, //GICS Industry
     Gap,
