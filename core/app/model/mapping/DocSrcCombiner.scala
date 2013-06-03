@@ -50,10 +50,12 @@ class DocSrcCombiner(
 
   def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = {
     val flattenResults = results.flatten
+    val m = flattenResults.join
     val yearsWithKeys = years(wb.getSheetAt(0))
+    val y = yearsWithKeys.map(_._1).join
 
-    if (yearsWithKeys.map(_._1).hasErrors || flattenResults.hasErrors) {
-      flattenResults :+ Invalid(yearsWithKeys.map(_._1).errors: _*)
+    if (y.isInvalid || m.isInvalid) {
+      (flattenResults :+ Invalid(y.toErrorSeq: _*))
     } else {
       (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped
         .map {

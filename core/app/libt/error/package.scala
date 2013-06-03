@@ -2,6 +2,11 @@ package libt
 
 package object error {
   
+  type Validated[A] = generic.Validated[String, A]
+  val Valid = generic.Valid
+  val Validated = generic.Validated
+  val Invalid = generic.Invalid
+  
   //TODO this should be in another place
   implicit def traverable2ImpureMapOps[A](self: Seq[A]) = new {
     def impureMap[B](f: A => B) = self.map(f)
@@ -20,7 +25,7 @@ package object error {
      */
     def join: Validated[Seq[A]] =
       self.partition(_.isInvalid) match {
-        case (Nil, valids) => Valid(valids.flatMap(_.toOption))
+        case (Nil, valids) => Valid(valids.map(_.get))
         case (invalids, _) => Invalid(invalids.flatMap(_.toErrorSeq): _*)
       }
   }
