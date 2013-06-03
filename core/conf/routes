@@ -6,7 +6,9 @@
 GET     /                                       controllers.Application.index
 
 #REST API
+
 ##Company
+GET     /api/tickers                            controllers.Api.tickers
 
 ##Main page
 GET     /companies                              controllers.Application.companies
