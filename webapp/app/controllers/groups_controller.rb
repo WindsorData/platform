@@ -3,8 +3,9 @@ class GroupsController < ApplicationController
   inherit_resources
   
   def create
-    create! { dashboard_index_path }
+    create! { quick_search_path }
   end
+  
   # GET /groups/tickers.json
   def tickers
     @tickers = Ticker.where("name like ?", "%#{params[:q]}%")

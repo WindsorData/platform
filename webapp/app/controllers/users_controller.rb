@@ -5,7 +5,7 @@ class UsersController < ApplicationController
 
   def create
     ensamble_company
-    create! { dashboard_index_path }
+    create!
   end
 
   private
