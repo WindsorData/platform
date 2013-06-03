@@ -5,10 +5,10 @@
 # Home page
 GET     /                                       controllers.Application.index
 
-#REST API
-
-##Company
+## REST API
 GET     /api/tickers                            controllers.Api.tickers
+GET     /api/schema/values/roles                controllers.Api.roles
+
 
 ##Main page
 GET     /companies                              controllers.Application.companies
