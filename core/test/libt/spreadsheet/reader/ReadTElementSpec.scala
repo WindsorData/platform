@@ -93,14 +93,14 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
   describe("TGenericEnum") {
 
     it("should read valid Strings") {
-      val reader = createWbReader(TEnum("a","b","c"))
+      val reader = createWbReader(TStringEnum("a","b","c"))
       sheet.cellAt(0, 0).setCellValue("b")
       val result = reader.read(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("b")))))
     }
     
     ignore("should read valid Numbers") {
-      val reader = createWbReader(TGenericEnum[BigDecimal](TNumber, Seq(1,2,3)))      
+      val reader = createWbReader(TNumberEnum(1,2,3))      
       sheet.cellAt(0, 0).setCellValue(1)
       val result = reader.read(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value(1)))))
@@ -108,7 +108,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
 
     it("should not let read invalid entries") {
       intercept[Throwable] {
-        val schema = TEnum("a","b","c")
+        val schema = TStringEnum("a","b","c")
         val reader = createWbReader(schema)
         sheet.cellAt(0, 0).setCellValue("x")
         val result = reader.read(workbook)

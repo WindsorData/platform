@@ -1,9 +1,11 @@
 package libt
 
 import org.scalatest.FlatSpec
-import libt._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
+
+import libt.error._
+import libt._
 
 @RunWith(classOf[JUnitRunner])
 class FlattenerSpec extends FlatSpec {
@@ -53,7 +55,7 @@ class FlattenerSpec extends FlatSpec {
   }
 
   it should "work with multiple roots" in {
-    val s: Seq[ModelOrErrors] = Seq()
+    val s: Seq[Validated[Model]] = Seq()
     val models = Seq(
       Model(
         'key -> Value("hello"),

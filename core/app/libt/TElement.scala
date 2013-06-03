@@ -48,7 +48,7 @@ case object TXBool extends TValue[Boolean]
 case object TDate extends TValue[Date]
 case object TNumber extends TValue[BigDecimal]
 
-case class TGenericEnum[A](valueType: TValue[A], values: Seq[A]) extends TValue[A] {
+case class TEnum[A](valueType: TValue[A], values: Seq[A]) extends TValue[A] {
   
   private val valuesSet = values.toSet
   
@@ -57,6 +57,14 @@ case class TGenericEnum[A](valueType: TValue[A], values: Seq[A]) extends TValue[
   override def validate(element: Element) = umatch(element) {
     case v: Value[A] => assert(v.value.forall(isValue(_)))
   }
+}
+
+object TStringEnum {
+  def apply(values: String*) = TEnum(TString, values)
+}
+
+object TNumberEnum {
+  def apply(values: BigDecimal*) = TEnum(TNumber, values)
 }
 
 /*=======Col=======*/

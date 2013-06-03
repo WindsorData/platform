@@ -9,8 +9,6 @@ import libt._
 import libt.spreadsheet.reader.CellReader
 import libt.builder.ModelBuilder
 import libt.spreadsheet.writer._
-import libt.spreadsheet.writer.op._
-import libt.spreadsheet.writer.op
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import libt.spreadsheet.reader.Area
@@ -21,7 +19,7 @@ import java.io.FileOutputStream
 @RunWith(classOf[JUnitRunner])
 class EnumCalcSpec extends FlatSpec {
 
-  val TOptions = TEnum("A", "B", "C")
+  val TOptions = TStringEnum("A", "B", "C")
   var mapping: Seq[Strip] = _
   val model = Seq(
     Model('foo -> Model(

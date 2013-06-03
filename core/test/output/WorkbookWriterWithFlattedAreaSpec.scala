@@ -23,7 +23,7 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
     'values -> TCol(
       TModel(
         'c -> TString,
-        'd -> TEnum("foo", "bar"),
+        'd -> TStringEnum("foo", "bar"),
         'e -> TXBool)))
 
   val models = Seq(

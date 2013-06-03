@@ -9,14 +9,14 @@ object ExecutivesTop5 {
    * Sheet Grant Types
    */
 
-  val TNeos = TGenericEnum(TNumber, Range.BigDecimal(1, 5, 1))
-  val TMaxTerm = TGenericEnum(TNumber, Range.BigDecimal(0, 10, 1))
-  val TFrecuency = TGenericEnum(TNumber, Range.BigDecimal(1, 4, 1))
-  val TYears = TGenericEnum(TNumber, Range.BigDecimal(1, 8, 1))
-  val TPeriod = TGenericEnum(TNumber, Range.BigDecimal(1, 8, 1))
-  val TInterval = TGenericEnum(TNumber, Range.BigDecimal(1, 8, 1).+:(0.5: BigDecimal))
+  val TNeos = TEnum(TNumber, Range.BigDecimal(1, 5, 1))
+  val TMaxTerm = TEnum(TNumber, Range.BigDecimal(0, 10, 1))
+  val TFrecuency = TEnum(TNumber, Range.BigDecimal(1, 4, 1))
+  val TYears = TEnum(TNumber, Range.BigDecimal(1, 8, 1))
+  val TPeriod = TEnum(TNumber, Range.BigDecimal(1, 8, 1))
+  val TInterval = TEnum(TNumber, Range.BigDecimal(1, 8, 1).+:(0.5: BigDecimal))
 
-  val TVesting = TEnum("Annual",
+  val TVesting = TStringEnum("Annual",
     "Semi-annual",
     "Quarterly",
     "Monthly",
@@ -25,7 +25,7 @@ object ExecutivesTop5 {
     "Other (not combo)")
 
   val TMetrics = TCol(TModel(
-    'select -> TEnum(
+    'select -> TStringEnum(
           "Revenue",
           "TSR",
           "EPS",
@@ -74,13 +74,13 @@ object ExecutivesTop5 {
    * Sheet ExecDB
    */
     
-  val TTypes = TEnum("Annual", "Retention", "Hire", "Promotion", "Special", "Acquisition", "Other")
+  val TTypes = TStringEnum("Annual", "Retention", "Hire", "Promotion", "Special", "Acquisition", "Other")
 
   val TExecutive = TModel(
     'firstName -> TString,
     'lastName -> TString,
     'title -> TString,
-    'functionalMatches -> functionalMatches,
+    'functionalMatches -> TFunctionalMatch,
     'founder -> TString,
     'transitionPeriod -> TString,
 

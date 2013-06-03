@@ -48,8 +48,12 @@ object ExecutivesGuidelinesMapping {
       Path('scope, 'busUnit, 'weight),
       Path('scope, 'individual, 'use),
       Path('scope, 'individual, 'weight)) ++
-      colOfModelsPath(Path('metrics, 'select), 5, 'use, 'weight) ++
-      colOfModelsPath(Path('metrics, 'typeIn), 5, 'type, 'weight)
+      Multi(Path('metrics, 'select), 5, 
+          Path('use), 
+          Path('weight)) ++
+      Multi(Path('metrics, 'typeIn), 5, 
+          Path('type), 
+          Path('weight))
 
   val GuidelineReader = new WorkbookReader(
     WorkbookMapping(

@@ -66,7 +66,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newExecGuideline = uploadSingleSpreadsheet(GuidelineReader)
   def newSVTBSDilution = uploadSingleSpreadsheet(SVTBSDilutionReader)
 
-  def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[libt.ModelOrErrors]]) =
+  def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[Validated[Model]]]) =
     UploadSpreadsheetAction { dataset =>
       var response = Ok(views.html.companyUploadSuccess())
 

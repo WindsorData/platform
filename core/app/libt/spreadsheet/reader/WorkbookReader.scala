@@ -1,7 +1,7 @@
 package libt.spreadsheet.reader
 
 import util.FileManager._
-import libt._
+import libt.error._
 import libt.util._
 import libt.spreadsheet._
 import java.io.InputStream
@@ -13,6 +13,7 @@ import libt.builder.ModelBuilder
 import libt.spreadsheet.util.sheet2RichSheet
 import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet._
+import libt._
 
 class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
   //TODO move to WBMapping
@@ -32,11 +33,11 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 }
 
 trait Combiner[A] {
-  def combineReadResult(wb: Workbook, results: Seq[Seq[ModelOrErrors]]): A
+  def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]): A
 }
 
 trait SheetDefinition {
-  def read(sheet: Sheet): Seq[ModelOrErrors]
+  def read(sheet: Sheet): Seq[Validated[Model]]
   def write(models: Seq[Model])(sheet: Sheet): Unit
 }
 
@@ -54,15 +55,12 @@ case class Area(
   orientation: Layout,
   columns: Seq[Strip]) extends SheetDefinition {
 
-  import libt.spreadsheet.util._
-
-  def read(sheet: Sheet): Seq[ModelOrErrors] =
+  def read(sheet: Sheet): Seq[Validated[Model]] =
     orientation.read(this, sheet)
 
   def write(models: Seq[Model])(sheet: Sheet) = 
     orientation.write(this, sheet, models)
   
-  import libt.error._
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)

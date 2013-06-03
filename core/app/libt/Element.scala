@@ -1,5 +1,5 @@
 package libt
-import sys.error
+import sys._
 import util._
 import output._
 
