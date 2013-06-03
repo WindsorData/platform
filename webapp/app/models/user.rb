@@ -32,6 +32,8 @@ class User < ActiveRecord::Base
 
   private
   def generate_random_password
-    self.password = self.password_confirmation = Devise.friendly_token.first(Rails.application.config.devise.password_length.min)
+    unless self.password && self.password_confirmation && self.password == self.password_confirmation
+      self.password = self.password_confirmation = Devise.friendly_token.first(Rails.application.config.devise.password_length.min)  
+    end
   end
 end

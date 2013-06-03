@@ -1,5 +1,12 @@
-# Regular User
-User.create(email: "user@windsor.com", password: "123456", password_confirmation: "123456")
+# Client User
+User.create(email: "user@windsor.com", password: "123456", password_confirmation: "123456", role: "client")
+
+# Admin User
+User.create(email: "admin@windsor.com", password: "123456", password_confirmation: "123456", role: "admin")
+
+# Super User
+User.create(email: "super@windsor.com", password: "123456", password_confirmation: "123456", role: "super")
+
 
 Ticker.create([{name: "aapl"},{name: "fb"}, {name: "goog"}])
 

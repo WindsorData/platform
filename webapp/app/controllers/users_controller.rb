@@ -1,6 +1,7 @@
 # bundle exec rails g scaffold_controller users --no-test-framework
 class UsersController < ApplicationController
   inherit_resources
+  load_and_authorize_resource
 
   def create
     ensamble_company
