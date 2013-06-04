@@ -34,7 +34,8 @@ trait ElementLike[ElementType] { self : ElementType =>
   def apply(path: Path): ElementType = umatch((path, this)) {
     case (Nil, _) => this
     case (Index(index) :: tail, self: ColLike[ElementType]) => self(index)(tail)
-    case (* :: tail, self: ColLike[ElementType]) => self(0)(tail)  
+    case (* :: tail, self: ColLike[ElementType]) => self(0)(tail)
+    case (* :: tail, self) => self(tail)
     case (Route(field) :: tail, self: ModelLike[ElementType]) => self(field)(tail)
   }
 }

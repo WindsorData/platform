@@ -57,7 +57,7 @@ class MetadataAreaLayoutSpec extends FlatSpec with BeforeAndAfter {
         FlattedArea(
           PK(Path('key)),
           PK(Path('foo, 'value)),
-          Path('values),
+          Path('values, *),
           TSchema,
           MetadataAreaLayout(Offset(0, 0)),
           Seq(

@@ -22,9 +22,11 @@ sealed trait Element extends ElementLike[Element] {
   
   def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
     case (* :: tail, self: Col) => self.elements.map(_.apply(tail))
+    case (* :: tail, self) => Seq(self.apply(tail))
     case (Route(field) :: Nil, self: Model) => Seq(self(field))
     case (Route(field) :: tail, self: Model) => self(field).applySeq(tail)
   }
+  
 }
 
 /*=======Value=======*/
@@ -60,6 +62,7 @@ case class Value[A](
 
   /**Answers the seq of metadata elements of this value*/
   def metadataSeq = Seq(calc, comment, note, link)   
+  
 }
 object Value {
   
@@ -102,20 +105,16 @@ case class Model(elements: Set[(Symbol, Element)])
 
   /**
    * Flattens this model based on a path - flatteningPath - that points
-   * to a Col of Models inside this model.
+   * to a Col of Models inside this model or to other element that can be converted
+   * to a Col of a single Element.
    *
    * It converts this model into a sequence
    * of new models, where each of them is built from the elements in the col of model,
    * plus the elements that conform the pk of this model - the rootPK.
    */
   def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
-    umatch(this(flatteningPath)) {
-      case c: Col =>
-        for (element <- c.elements)
-          yield element.asModel ++ this.subModel(rootPk)
-      case m: Model =>
-        Seq(m ++ this.subModel(rootPk))
-    }
+    for (element <- applySeq(flatteningPath))
+     yield element.asModel ++ this.subModel(rootPk)
 
 
   /**
@@ -126,6 +125,8 @@ case class Model(elements: Set[(Symbol, Element)])
    * take precedence
    * */
   def ++(that: Model) = Model(elements ++ that.elements)
+  
+  def toCol = Col(this)
 }
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)

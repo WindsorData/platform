@@ -72,7 +72,7 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
       FlattedArea(
         PK(Path('key1), Path('key2)),
         PK(Path('c)),
-        Path('values),
+        Path('values, *),
         TSimpleSchema,
         ValueAreaLayout(offset),
         Seq(
