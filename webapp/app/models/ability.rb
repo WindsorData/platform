@@ -5,10 +5,10 @@ class Ability
     user ||= User.new
     case user.role
     when 'super'
-      can     :manage, User
+      can   :manage, :all
     when 'admin'
+      can   :upload, :file
     when 'client'
-      
     end
   end
 end
