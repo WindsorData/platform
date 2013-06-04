@@ -62,4 +62,22 @@ object Validated {
   def apply[A](action: => A): Validated[String, A] = try Valid(action) catch {
     case e: Exception => Invalid(e.getMessage)
   }
+
+  /**
+   * Merges this seq of validated values into
+   * a single validated value, by answering a
+   * Valid seq of the valid values, if all the values are valid, or an Invalid
+   * with all the errors, otherwise
+   */
+  def join[E, A](elements: Seq[Validated[E, A]]): Validated[E, Seq[A]] =
+    elements.partition(_.isInvalid) match {
+      case (Nil, valids) => Valid(valids.map(_.get))
+      case (invalids, _) => Invalid(invalids.flatMap(_.toErrorSeq): _*)
+    }
+
+  def flatJoin[E, A](elements: Seq[Validated[E, Seq[A]]]): Validated[E, Seq[A]] =
+    join(elements) match {
+      case Valid(v) => Valid(v.flatten)
+      case i: Invalid[A] => i
+    }
 }

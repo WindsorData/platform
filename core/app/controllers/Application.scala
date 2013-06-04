@@ -53,34 +53,17 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newExecGuideline = uploadSingleSpreadsheet(GuidelineReader)
   def newSVTBSDilution = uploadSingleSpreadsheet(SVTBSDilutionReader)
 
-  type GroupedMessage = (String, Seq[String])
-  type GroupedValidated = generic.Validated[GroupedMessage, Seq[Model]]
-
-  def Plain(entry: String, results: Seq[Validated[Model]]) : GroupedValidated =
-    results.join match {
-      case v @ Valid(_) => v
-      case i @ Invalid(_) => Invalid(entry -> i.toErrorSeq)
-    }
-
-  def ByEntry(results: Seq[(String, Seq[Validated[Model]])]): GroupedValidated =
-    results.map {
-      case (key, values) => key -> values.join
-    }.partition(_._2.isInvalid) match {
-      case (Nil, valids) => Valid(valids.flatMap(_._2.get))
-      case (invalids, _) => Invalid(invalids.map { x => x._1 -> x._2.toErrorSeq }: _*)
-    }
-
   def newCompanies =
     UploadAndReadAction {
-      (request, dataset) => ByEntry(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
+      (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
   def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[Validated[Model]]]) =
     UploadAndReadAction {
-      (request, dataset) => Plain(dataset.ref.file.getName, reader.read(dataset.ref.file.getAbsolutePath))
+      (request, dataset) => keyed.flatJoin(Seq(dataset.ref.file.getName -> reader.read(dataset.ref.file.getAbsolutePath)))
     }
   
-  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => GroupedValidated) = UploadSpreadsheetAction { (request, dataset) =>
+  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) = UploadSpreadsheetAction { (request, dataset) =>
       val result = readOp(request, dataset)
       if (result.isValid) {
         request match {
