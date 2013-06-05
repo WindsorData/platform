@@ -8,7 +8,9 @@
         <%= link_to('users', users_path, class: 'nav-link') %>
       <% end %>
       <%= link_to('search', full_search_path, class: 'nav-link') %>
-      <%= link_to('peers', new_group_path, class: 'nav-link') %>
+      <% if can? :create, Group %>
+        <%= link_to('peers', new_group_path, class: 'nav-link') %>
+      <% end %>
       <% if can? :upload, :file %>
         <%= link_to 'single file upload', single_file_upload_path %>
       <% end %>

@@ -2,7 +2,6 @@
 class UsersController < ApplicationController
   inherit_resources
   load_and_authorize_resource
-  load_and_authorize_resource :ticker
 
   def create
     ensamble_company
