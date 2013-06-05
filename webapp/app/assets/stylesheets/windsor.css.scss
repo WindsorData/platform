@@ -1,3 +1,10 @@
+@import "bourbon";
+@import "neat";
+
+.container {
+  @include outer-container;
+}
+
 /* variables */
 $black: #000000;
 $white: #FFFFFF;
