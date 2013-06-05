@@ -5,7 +5,7 @@ class ApplicationController < ActionController::Base
     if resource.role == 'super'
       users_path
     elsif resource.role == 'admin'
-      quick_search_path # Change for upload file page
+      single_file_upload_path # Change for upload file page
     elsif resource.role == 'client'
       quick_search_path      
     end
