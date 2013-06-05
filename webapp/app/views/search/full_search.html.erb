@@ -1,37 +1,12 @@
 <div class="span3">
-  <!-- quick launch -->
-  <div class="side-container quick-launch">
-    <h2 class="title">Quick Launch</h2>
-    <div class="content">
-      <%= form_tag('/groups') do %>
-        <p>Select peer group</p>
-          <%= select_tag :group, options_from_collection_for_select(Group.all, "id", "name") %>
-        <p>Select report</p>
-        <%= select_tag :report, options_for_select(Constants::REPORTS) %>
-        <a href="<%= new_group_path %>">Create new</a>
-        <%= submit_tag "Select" %>
-      <% end %>
-    </div>
-  </div>
-  <!-- activity log -->
-  <div class="side-container activity-log">
-    <h2 class="title">Activity Log</h2>
-    <div class="content">
-      <ul class="documents-list">
-        <li class="document"><a href="#">Document 01</a></li>
-        <li class="document"><a href="#">Document 02</a></li>
-        <li class="document"><a href="#">Document 03</a></li>
-        <li class="document"><a href="#">Document 04</a></li>
-      </ul>
-    </div>
-  </div>
+  <%= render 'search/quick_search' %>
 </div>
 
 <!-- main form -->
 <div class="span9">
   <%= form_tag(search_results_path, class: "main-form" ) do %>
     <div class="relative">
-      <legend>Executive compensation</legend>
+      <div class="legend">Executive compensation</div>
       <a class="add-new-role absolute btn" href="#" id="js-new-form">Add another role</a>
     </div>
     <div class="form-container" id="forms-container">      
@@ -105,7 +80,7 @@
 
     </div>
 
-    <legend class="advanced-search-button btn" id="advanced-search">Advanced search</legend>
+    <div class=" legend advanced-search-button btn" id="advanced-search">Advanced search</div>
 
     <!-- advanced search -->
     <div class="advanced-search">
