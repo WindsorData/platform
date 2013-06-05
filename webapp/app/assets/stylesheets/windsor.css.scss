@@ -19,7 +19,7 @@ body {
   margin: 0;
 }
 
-legend {
+.legend {
   display: block;
   width: 100%;
 }
@@ -114,56 +114,54 @@ legend {
   }
 }
 
-.main-form {
-  .add-new-role {
+
+
+.form-container {
+  margin-bottom: 20px;
+}
+
+.legend {
+  color: $white;
+  background-color: $blue;
+  padding: 20px 10px;
+  margin-bottom: 10px;
+  .cto {
     top: 0;
     right: 0;
-    line-height: 40px;
     color: $white;
-    padding: 0 10px;
+    padding: 20px 10px;
     border-left: 1px solid darken($blue, 10%);
     text-decoration: none;
+    cursor: pointer;
     &:hover {
       background-color: darken($blue, 10%);
     }
   }
+}
 
-  .form-container {
-    margin-bottom: 20px;
+label {
+  font-size: 11px;
+}
+
+.basic-group {
+  &:not(:nth-child(2)) {
+    border-top: 1px solid lighten($black, 80%);
+    margin-top: 10px;
+    padding-top: 10px;
   }
-
-  legend {
-    color: $white;
-    background-color: $blue;
-    line-height: 40px;
-    padding-left: 10px;
-    margin-bottom: 10px;
-  }
-
-  label {
+}
+.item-form {
+  padding: 5px 0;
+  .label {
     font-size: 11px;
+    width: 200px;
+    display: inline-block;
+    text-transform: uppercase;
   }
+}
 
-  .basic-group {
-    &:not(:nth-child(2)) {
-      border-top: 1px solid lighten($black, 80%);
-      margin-bottom: 10px;
-      padding-bottom: 10px;
-    }
-  }
-  .item-form {
-    padding: 5px 0;
-    .label {
-      font-size: 11px;
-      width: 200px;
-      display: inline-block;
-      text-transform: uppercase;
-    }
-  }
-
-  .advanced-search-button:hover {
-    background-color: darken($blue, 10%);
-  }
+.advanced-search-button:hover {
+  background-color: darken($blue, 10%);
 }
 
 /* alert */
