@@ -8,7 +8,7 @@ $(function() {
   $("#js-new-form").click(function() {
     addExecutiveForm();
   });
-  $("#advanced-search").click(function() {
+  $(".cto").click(function() {
     $(".advanced-search").toggleClass('hidden');
   });
 });
