@@ -1,6 +1,8 @@
 <div class="container cf">
   <div class="left">
-    <%= link_to "Windsor", root_path, class: 'brand' %>
+    <% if user_signed_in? %>
+      <%= link_to "Home", user_root_path(current_user), class: 'brand' %>
+    <% end %>
   </div>
   <div class="nav left">
     <% if user_signed_in? %>  
