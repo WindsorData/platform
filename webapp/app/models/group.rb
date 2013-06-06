@@ -10,7 +10,7 @@
 #
 
 class Group < ActiveRecord::Base
-  attr_accessible :name, :tickers_tokens
+  attr_accessible :name, :tickers_tokens, :company
   has_and_belongs_to_many :tickers
   belongs_to :company
   
