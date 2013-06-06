@@ -125,8 +125,6 @@ case class Model(elements: Set[(Symbol, Element)])
    * take precedence
    * */
   def ++(that: Model) = Model(elements ++ that.elements)
-  
-  def toCol = Col(this)
 }
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)
