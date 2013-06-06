@@ -1,10 +1,13 @@
 package controllers
 
 import com.mongodb.casbah.MongoClient
-import model.Commons
+import libt.util.Symbols.richWord
+import model.ExecutivesTop5._
+import model.Commons._
 import play.api.libs.json.Json._
 import persistence._
 import play.api.mvc._
+
 
 object Api extends Controller {
 
@@ -15,7 +18,15 @@ object Api extends Controller {
   }
 
   def roles = Action {
-    Ok(toJson(Commons.TPrimaryValues.values))
+    Ok(toJson(TPrimaryValues.values))
+  }
+
+  def cashCompensations = Action {
+    Ok(toJson {
+      TExecutive('cashCompensations).asModel.elementTypes.map {
+        case (key, _) => Map("field" -> key.name, "description" -> key.upperCaseFromCamelCase)
+      }
+    })
   }
 
 }
