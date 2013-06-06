@@ -19,7 +19,7 @@ class FlattenerSpec extends FlatSpec {
         Model('value -> Value("world")),
         Model('value -> Value("!"))))
 
-    val flattenedModel = model.flattenWith(PK(Path('key)), Path('value))
+    val flattenedModel = model.flattenWith(PK(Path('key)), Path('value, *))
 
     assert(flattenedModel === Seq(
       Model(
@@ -39,7 +39,7 @@ class FlattenerSpec extends FlatSpec {
         Model('value -> Value("world")),
         Model('value -> Value("!"))))
 
-    val flattenedModel = model.flattenWith(PK(Path('key1), Path('key2), Path('key3)), Path('value))
+    val flattenedModel = model.flattenWith(PK(Path('key1), Path('key2), Path('key3)), Path('value, *))
 
     assert(flattenedModel === Seq(
       Model(
@@ -69,7 +69,7 @@ class FlattenerSpec extends FlatSpec {
           Model('value -> Value("bye")),
           Model('value -> Value("day")))))
 
-    val flattenedModels = Model.flattenWith(models, PK(Path('key)), Path('value))
+    val flattenedModels = Model.flattenWith(models, PK(Path('key)), Path('value, *))
 
     assert(flattenedModels === Seq(
       Model(

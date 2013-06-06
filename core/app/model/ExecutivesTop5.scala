@@ -24,8 +24,7 @@ object ExecutivesTop5 {
     "Cliff",
     "Other (not combo)")
 
-  val TMetrics = TCol(TModel(
-    'select -> TStringEnum(
+  val TMetricsSelect = TStringEnum(
           "Revenue",
           "TSR",
           "EPS",
@@ -37,7 +36,10 @@ object ExecutivesTop5 {
           "ROA",
           "Cash Flow",
           "ROI",
-          "Working Capital"),
+          "Working Capital")
+          
+  val TMetrics = TCol(TModel(
+    'select -> TMetricsSelect,
     'typeIn -> TString))
 
   val TPerformanceVesting = TModel(

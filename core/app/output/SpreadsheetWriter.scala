@@ -29,26 +29,54 @@ object SpreadsheetWriter {
       ValueAreaLayout(Offset(6, 2)),
       execDbOutputMapping,
       Path('lastName),
-      Path('executives))
+      Path('executives, *))
 
   def stBonusPlanArea =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       stBonusPlanOutputMapping,
       Path('functionalMatches, 'primary),
-      Path('stBonusPlan))
+      Path('stBonusPlan, *))
 
   def executiveOwnershipArea =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       executiveOwnershipMapping,
       Path('functionalMatches, 'primary),
-      Path('guidelines))
+      Path('guidelines, *))
+
+  def usageAndSVTDataArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      usageAndSVTDataMapping,
+      Path(),
+      Path('usageAndSVTData, *))
+
+  def bsInputsArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      bsInputsMapping,
+      Path(),
+      Path('bsInputs, *))
+
+  def dilutionArea =
+    outputArea(
+      ValueAreaLayout(Offset(6, 2)),
+      dilutionMapping,
+      Path(),
+      Path('dilution, *))
+
+  def grantTypesArea =
+    outputArea(
+      ValueAreaLayout(Offset(7, 2)),
+      grantTypesMapping,
+      Path(),
+      Path('grantTypes, *))
 
   def metadataArea = outputArea(MetadataAreaLayout(Offset(1, 0)), execDbOutputMapping.filter(_ match {
     case Gap => false
     case _ => true
-  }), Path('lastName), Path('executives))
+  }), Path('lastName), Path('executives, *))
 
   def write(out: Workbook, companies: Seq[Model]): Unit = {
     WorkbookMapping(
@@ -56,6 +84,10 @@ object SpreadsheetWriter {
         execDBArea, //ExecDB
         stBonusPlanArea,
         executiveOwnershipArea,
+        usageAndSVTDataArea,
+        bsInputsArea,
+        dilutionArea,
+        grantTypesArea,
         metadataArea)).write(companies, out)
   }
 

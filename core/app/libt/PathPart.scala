@@ -26,7 +26,8 @@ case class Route(symbol: Symbol) extends PathPart {
 case class Index(position: Int) extends PathPart {
   override def name = position.toString
 }
-/**A path part that points to the elements of a Col*/
+/**A wilcard path part. This PathPart has no specific semantic, it's actual meaning 
+ * depends on the context*/
 case object * extends PathPart {
   def name = "*"
 }

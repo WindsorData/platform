@@ -1,6 +1,10 @@
 package output
 
 import org.apache.poi.ss.usermodel.Row
+import libt.util._
+import libt._
+import libt.spreadsheet.Strip
+import libt.spreadsheet.reader.SheetDefinition
 import org.apache.poi.ss.usermodel.Sheet
 
 import libt.spreadsheet.util._
@@ -42,11 +46,11 @@ case class FlattedArea(
   def rootPKSize = rootPK.size
 
   def completePKSize = rootPKSize + flatteningPK.size
-  
-  def headerSize = completePKSize + TitlesSize 
+
+  def headerSize = completePKSize + TitlesSize
 
   def flatteningColSize(models: Seq[Model]) =
-    models.map(_.apply(flatteningPath).asCol.size).sum
+    models.map(_.applySeq(flatteningPath).size).sum
 
   /**
    * Flattens the given model using the root primary
@@ -56,7 +60,7 @@ case class FlattedArea(
     Model.flattenWith(models, rootPK, flatteningPath)
 
   protected def flattedSchema = schema(flatteningPath)(Path(*))
-  
+
   def read(sheet: Sheet): Seq[Validated[Model]] = ???
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
@@ -107,16 +111,16 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
     sheet.defineLimits(offset,
       area.flatteningColSize(models) * area.featuresSize,
       area.headerSize + MetadataSize)
-    (sheet.rows(offset).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach { 
+    (sheet.rows(offset).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach {
       (rows, flattedModel) =>
-      rows.foreach { row =>
-        val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)), flattedModel)
-        headersWriter.writeRootPKHeaders
-        headersWriter.writeFlattedPKHeaders
-      }
+        rows.foreach { row =>
+          val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)), flattedModel)
+          headersWriter.writeRootPKHeaders
+          headersWriter.writeFlattedPKHeaders
+        }
 
-      val writer = area.newWriter(new RowOrientedWriter(Offset(0, area.completePKSize + offset.columnIndex), rows), flattedModel)
-      writer.writeFlattedModelFeaturesMetadataWithTitle
+        val writer = area.newWriter(new RowOrientedWriter(Offset(0, area.completePKSize + offset.columnIndex), rows), flattedModel)
+        writer.writeFlattedModelFeaturesMetadataWithTitle
     }
   }
 }
