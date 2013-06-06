@@ -49,13 +49,17 @@
           </div>
           <!-- compensation arrangements -->
           <div class="item-form">      
-            <p class="label">compensation arrangements</p>
-            <%= select_tag :comp_arrang, options_for_select(["Yes", "No", "N/A"]) %>
+            <p>Compensation arrangements</p>
+            <%= label_tag 'Yes' %> <%= radio_button_tag 'comp_arrang', 'Yes' %>
+            <%= label_tag 'No' %> <%= radio_button_tag 'comp_arrang', 'No' %>
+            <%= label_tag 'N/A' %> <%= radio_button_tag 'comp_arrang', 'N/A' %>
           </div>
           <!-- reload options -->
           <div class="item-form">
-            <p class="label">reload options</p>
-            <%= select_tag :reload_opt, options_for_select(["Yes", "No", "N/A"]) %>
+            <p>Reload options</p>
+            <%= label_tag 'Yes' %> <%= radio_button_tag 'reload_opt', 'Yes' %>
+            <%= label_tag 'No' %> <%= radio_button_tag 'reload_opt', 'No' %>
+            <%= label_tag 'N/A' %> <%= radio_button_tag 'reload_opt', 'N/A' %>
           </div>
           <!-- CEO tenure -->
           <div class="item-form">
