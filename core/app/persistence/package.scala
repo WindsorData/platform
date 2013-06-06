@@ -14,7 +14,6 @@ package object persistence {
   private def companies(implicit db: MongoDB) = db("companies")
 
   val allCompanies = "All Companies"
-  val allYears = "All Years"
 
   def saveCompany(company: Model)(implicit db: MongoDB) {
     companies.insert(TCompanyFiscalYear.marshall(company))
@@ -30,8 +29,8 @@ package object persistence {
 
   def findAllCompanies(implicit db: MongoDB) = companies.toList.map(TCompanyFiscalYear.unmarshall(_))
 
-  def findCompaniesBy(name: String, year: String)(implicit db: MongoDB) = {
-    companies.find(createQuery(year, name)).toSeq.map(TCompanyFiscalYear.unmarshall(_).asModel) match {
+  def findCompaniesBy(names: Seq[String], yearRange: Int)(implicit db: MongoDB) = {
+    companies.find(createQuery(names)).toSeq.map(TCompanyFiscalYear.unmarshall(_).asModel) match {
       case Seq() => None
       case results => Some(results)
     }
@@ -44,10 +43,10 @@ package object persistence {
   def findAllCompaniesFiscalYears(implicit db: MongoDB): Seq[Int] =
     companies.toSet[DBO].map(_.get("disclosureFiscalYear").asInstanceOf[DBO].get("value").asInstanceOf[Int]).toSeq
 
-  def createQuery(year: String, name: String): MongoDBObject = {
-    val builder = new MongoDBObjectBuilder()
-    if (year != allYears) builder += ("disclosureFiscalYear.value" -> year.toInt)
-    if (name != allCompanies) builder += ("ticker.value" -> name)
-    builder.result
-  }
+  def createQuery(names: Seq[String]): MongoDBObject =
+    if (!names.contains(allCompanies))
+      MongoDBObject("ticker.value" -> MongoDBObject("$in" -> names))
+    else
+      MongoDBObject()
+
 }
