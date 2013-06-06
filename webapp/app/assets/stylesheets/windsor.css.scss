@@ -3,6 +3,10 @@
 
 .container {
   @include outer-container;
+
+  .home-column { 
+    @include span-columns(4); 
+  }
 }
 
 /* variables */
