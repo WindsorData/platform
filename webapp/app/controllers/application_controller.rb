@@ -1,6 +1,5 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery
-  helper_method :user_root_path # Available for views
 
   def after_sign_in_path_for(resource)
     user_root_path(resource)
@@ -14,6 +13,7 @@ class ApplicationController < ActionController::Base
     render "#{Rails.root}/public/401"
   end
 
+  helper_method :user_root_path # Available for views
   def user_root_path(user)
     case user.role
     when 'super'

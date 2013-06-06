@@ -5,7 +5,7 @@
     <div class="content">
       <%= form_tag('/groups') do %>
         <label class="label">Select peer group
-          <%= select_tag :group, options_from_collection_for_select(Group.all, "id", "name") %>
+          <%= select_tag :group, options_from_collection_for_select(groups, "id", "name") %>
         </label>
         <label class="label">Select report
           <%= select_tag :report, options_for_select(Constants::REPORTS) %>

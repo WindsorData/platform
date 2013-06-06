@@ -16,6 +16,8 @@ class Group < ActiveRecord::Base
   
   attr_reader :tickers_tokens
 
+  scope :by_company, lambda { |company| where(company_id: company.id) }
+
   def tickers_tokens=(ids)
     self.ticker_ids =  ids.split(",")
   end
