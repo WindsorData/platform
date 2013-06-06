@@ -1,19 +1,16 @@
 $(function() {
-  $('#user_role').val("client");
+  hide_or_show_company_fields();
 
   $('#user_role').change(function(){
-    if($('#user_role').val() != "client") {
-      hideCompanyFields();
-    }else {
-      showCompanyFields();
-    }    
+    hide_or_show_company_fields();    
   });
 
-  function showCompanyFields(){
-    $('#company_fields').removeClass('hidden');
-  }
-  function hideCompanyFields(){
-    $('#company_fields').addClass('hidden');
+  function hide_or_show_company_fields(){
+    if($('#user_role').val() != "client") {
+      $('#company_fields').addClass('hidden');
+    }else {
+      $('#company_fields').removeClass('hidden');
+    }
   }
 
 });

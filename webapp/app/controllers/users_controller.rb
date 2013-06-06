@@ -1,11 +1,15 @@
 # bundle exec rails g scaffold_controller users --no-test-framework
 class UsersController < ApplicationController
   inherit_resources
-  load_and_authorize_resource
+  authorize_resource
+  before_filter :ensamble_company, only:[:update, :create]
+
+  def update
+    update! { users_path }
+  end
 
   def create
-    ensamble_company
-    create!
+    create! { users_path }
   end
 
   private
