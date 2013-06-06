@@ -3,8 +3,7 @@ class SearchController < ApplicationController
   before_filter :find_groups, only: [:quick_search, :full_search]
 
   def quick_search
-  end
-  
+  end  
   def full_search
   end
 
@@ -18,6 +17,10 @@ class SearchController < ApplicationController
 
   private
   def find_groups
-    @groups = Group.by_company(current_user.company)
+    if current_user.is_client?
+      @groups = Group.by_company(current_user.company)
+    else
+      @groups = Group.all
+    end
   end
 end

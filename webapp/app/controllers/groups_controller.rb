@@ -6,13 +6,13 @@ class GroupsController < ApplicationController
 
   def create
     @group = Group.new(params[:group])
-    @group.company = current_user.company #current_user is always a client
+    @group.company = current_user.company if current_user.is_client?
     create! { quick_search_path }
   end
   
   # GET /groups/tickers.json
   def tickers    
-    @tickers = Ticker.where("name like ?", "%#{params[:q]}%")
+    @tickers = Ticker.containing_chars(params[:q])
     respond_to do |format|
       format.html
       format.json { render json: @tickers.map(&:attributes) }

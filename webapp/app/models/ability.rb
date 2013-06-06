@@ -6,6 +6,7 @@ class Ability
     case user.role
     when 'super'
       can   :manage, User
+      can   :create, Group      
     when 'admin'
       can   :upload, :file
     when 'client'

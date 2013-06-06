@@ -30,6 +30,13 @@ class User < ActiveRecord::Base
 
   belongs_to :company
 
+  # Dynamic role methods definition
+  ROLES.each do |k|
+    define_method "is_#{k}?" do
+      role == k
+    end
+  end
+  
   private
   def generate_random_password
     unless self.password && self.password_confirmation && self.password == self.password_confirmation
