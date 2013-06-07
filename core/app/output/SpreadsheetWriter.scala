@@ -16,11 +16,11 @@ import output.mapping._
 object SpreadsheetWriter {
 
   def outputArea(
-      layout: FlattedAreaLayout, 
-      outputMapping: Seq[Strip], 
-      flatteningPK: Path, 
-      flatteningPath: Path,
-      writeStrategy: WriteStrategy) =
+    layout: FlattedAreaLayout,
+    outputMapping: Seq[Strip],
+    flatteningPK: Path,
+    flatteningPath: Path,
+    writeStrategy: WriteStrategy) =
     FlattedArea(
       PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
       PK(flatteningPK),
@@ -30,13 +30,13 @@ object SpreadsheetWriter {
       outputMapping,
       writeStrategy)
 
-  def execDBArea(range: Int) =
+  def execDBArea(range: Int, pos: Option[Int]) =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       execDbOutputMapping,
       Path('lastName),
       Path('executives, *),
-      ExecutivesStrategy(range))
+      ExecutivesStrategy(range, pos))
 
   def stBonusPlanArea =
     outputArea(
@@ -95,12 +95,14 @@ object SpreadsheetWriter {
       }),
       Path('lastName),
       Path('executives, *),
-      ExecutivesStrategy(range))
+      ExecutivesStrategy(range, None))
 
   def write(out: Workbook, companies: Seq[Model], executivesRange: Int): Unit = {
     WorkbookMapping(
       Seq(
-        execDBArea(executivesRange),
+        execDBArea(executivesRange - 1, Some(0)), //ExecDB
+        execDBArea(executivesRange - 2, Some(1)), //ExecDB -1 
+        execDBArea(executivesRange - 3, Some(2)), //ExecDB -2
         stBonusPlanArea,
         executiveOwnershipArea,
         usageAndSVTDataArea,
@@ -126,20 +128,26 @@ object SpreadsheetWriter {
     }
   }
 
-  case class ExecutivesStrategy(range: Int) extends WriteStrategy {
+  case class ExecutivesStrategy(range: Int, pos: Option[Int]) extends WriteStrategy {
     override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit = {
       def Desc[T: Ordering] = implicitly[Ordering[T]].reverse
+      if (range >= 0) {
         val validModels =
           models.groupBy(model => model('ticker).asValue[String].value.get)
             .map {
               case (ticker, ms) =>
                 (ticker,
                   ms
-                  .sortBy(_.apply('disclosureFiscalYear).asValue[Int].value.get)(Desc)
-                  .take(range))
+                  .sortBy(_.apply('disclosureFiscalYear).asValue[Int].value.get)(Desc))
             }
-
-        area.layout.write(validModels.values.toSeq.flatten, sheet, area)
+        pos match {
+        	case Some(p) => 
+        	  area.layout.write(validModels.values.toSeq.flatMap { models =>
+        	    Seq(models(p))
+        	  }, sheet, area)
+        	case None => area.layout.write(validModels.values.toSeq.flatten, sheet, area) 
+        }		
+      }
     }
   }
 
