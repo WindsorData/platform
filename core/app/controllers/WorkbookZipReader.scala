@@ -1,17 +1,16 @@
 package controllers
 
 import java.util.zip._
-
 import scala.collection.JavaConversions._
-
 import libt.spreadsheet.reader._
+import libt.error._
 import libt._
 
 /**Trait that provides behavior for reading zipped spreadsheet sets */
 trait WorkbookZipReader {
   
   var file : ZipFile = _
-
+  
   /**answers a seq of file names and read results*/
   def readZipFileEntries[A](filePath: String, readers: Seq[(WorkbookReader[A], String)]) = {
     file = new ZipFile(filePath)

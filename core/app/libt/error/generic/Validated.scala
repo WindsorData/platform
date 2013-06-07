@@ -1,4 +1,4 @@
-package libt.error
+package libt.error.generic
 
 /**
  * A validated functor, that either holds a value, or a list of error messages
@@ -11,7 +11,7 @@ package libt.error
  * 
  * @author flbulgarelli
  */
-sealed trait Validated[+A] {
+sealed trait Validated[+ErrorMessage, +A] {
   /**
    * Validated value extractor. Will fail when this is
    * not Valid
@@ -32,18 +32,20 @@ sealed trait Validated[+A] {
    * Valid is converted to the empty list, while
    * Invalid is converted to a non-empty list
    */
-  def toErrorSeq: Seq[String]
+  def toErrorSeq: Seq[ErrorMessage]
   
-  def map[B](f: A => B): Validated[B]
+  def map[B](f: A => B): Validated[ErrorMessage, B]
 }
-case class Valid[+A](value: A) extends Validated[A] {
+
+
+case class Valid[+A](value: A) extends Validated[Nothing, A] {
   override def isValid = true
   override def toOption = Some(value)
   override def get = value
   override def toErrorSeq = Nil
   override def map[B](f: A => B) = Valid(f(value))
 }
-case class Invalid(errors: String*) extends Validated[Nothing] {
+case class Invalid[ErrorMessage](errors: ErrorMessage*) extends Validated[ErrorMessage, Nothing] {
   override def isValid = false
   override def toOption = None
   override def get = sys.error("Invald value " + errors.mkString(","))
@@ -57,7 +59,25 @@ object Validated {
    * 
    * This constructor is similar to that it {{{Try}}}
    **/
-  def apply[A](action: => A): Validated[A] = try Valid(action) catch {
+  def apply[A](action: => A): Validated[String, A] = try Valid(action) catch {
     case e: Exception => Invalid(e.getMessage)
   }
+
+  /**
+   * Merges this seq of validated values into
+   * a single validated value, by answering a
+   * Valid seq of the valid values, if all the values are valid, or an Invalid
+   * with all the errors, otherwise
+   */
+  def join[E, A](elements: Seq[Validated[E, A]]): Validated[E, Seq[A]] =
+    elements.partition(_.isInvalid) match {
+      case (Nil, valids) => Valid(valids.map(_.get))
+      case (invalids, _) => Invalid(invalids.flatMap(_.toErrorSeq): _*)
+    }
+
+  def flatJoin[E, A](elements: Seq[Validated[E, Seq[A]]]): Validated[E, Seq[A]] =
+    join(elements) match {
+      case Valid(v) => Valid(v.flatten)
+      case i: Invalid[A] => i
+    }
 }

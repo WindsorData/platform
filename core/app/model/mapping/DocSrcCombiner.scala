@@ -6,15 +6,13 @@ import libt.spreadsheet.util._
 import libt.spreadsheet._
 import libt.error._
 import libt._
-
 import scala.collection.JavaConversions._
-
 import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Workbook
-
 import org.joda.time.DateTime
+import libt.error._
 
 /**
  * *
@@ -51,11 +49,10 @@ class DocSrcCombiner(
   def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = {
     val flattenResults = results.flatten
     val yearsWithKeys = years(wb.getSheetAt(0))
-
-    if (yearsWithKeys.map(_._1).hasErrors || flattenResults.hasErrors) {
-      flattenResults :+ Invalid(yearsWithKeys.map(_._1).errors: _*)
-    } else {
-      (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped
+    (Validated.join(yearsWithKeys.map(_._1)), Validated.join(flattenResults)) match {
+      case (i: Invalid, _) => Seq(i)
+      case (_, i: Invalid) => flattenResults
+      case _ => (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped
         .map {
           case ((year, key, elemWrap), executives, company) =>
             Valid(Model(company.get.elements

@@ -1,31 +1,37 @@
 package controllers
 
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.libs.Files.TemporaryFile
 import play.api.templates.Html
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
 import play.api._
-import java.io.ByteArrayOutputStream
-import util.Closeables
-import util.FileManager._
+
+import views.html.defaultpages.badRequest
+
 import com.mongodb.casbah.MongoClient
 import com.mongodb.DBObject
-import output.SpreadsheetWriter
+
+import java.io.ByteArrayOutputStream
+
 import persistence._
+import model.mapping.ExecutivesSVTBSDilutionMapping._
+import model.mapping.ExecutivesTop5Mapping._
+import model.mapping.ExecutivesGuidelinesMapping._
 import model._
+import output._
+import util.Closeables
+import util.FileManager._
+
+import libt.spreadsheet.reader._
 import libt.error._
 import libt._
-import libt.spreadsheet.reader.WorkbookReader
-import play.api.mvc.MultipartFormData.FilePart
-import play.api.libs.Files.TemporaryFile
-import views.html.defaultpages.badRequest
+
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
 
-  import model.mapping.ExecutivesSVTBSDilutionMapping._
-  import model.mapping.ExecutivesTop5Mapping._
-  import model.mapping.ExecutivesGuidelinesMapping._
 
   implicit val db = MongoClient()("windsor")
   
@@ -43,46 +49,29 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
     Redirect(routes.Application.companies)
   }
   
-  def newCompanies = UploadSpreadsheetAction { (request,  dataset) =>
-      val results = readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes)
-
-      if (results.exists { case (_, result) => result.hasErrors })
-        request match {
-          case Accepts.Html() => {
-            val errors =
-              results.filter { case (_, result) => result.hasErrors }
-                .map {
-                case (entryName, result) => (entryName, result.errors)
-              }.toSeq
-            BadRequest(views.html.parsingError(errors))
-          }
-          case Accepts.Json() => BadRequest("")
-        }
-      else {
-        results.foreach { case (_, result) => result.foreach(company => updateCompany(company.get)) }
-        request match {
-          case Accepts.Html() => Ok(views.html.companyUploadSuccess())
-          case Accepts.Json() => Ok("")
-        }
-      }
-  }
-
   def newCompany = uploadSingleSpreadsheet(CompanyFiscalYearReader)
   def newExecGuideline = uploadSingleSpreadsheet(GuidelineReader)
   def newSVTBSDilution = uploadSingleSpreadsheet(SVTBSDilutionReader)
 
-  def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[Validated[Model]]]) =
-    UploadSpreadsheetAction { (request, dataset) =>
+  def newCompanies =
+    UploadAndReadAction {
+      (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
+    }
 
-      val result = reader.read(dataset.ref.file.getAbsolutePath)
-      
-      if (result.hasErrors)
+  def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[Validated[Model]]]) =
+    UploadAndReadAction {
+      (request, dataset) => keyed.flatJoin(Seq(dataset.ref.file.getName -> reader.read(dataset.ref.file.getAbsolutePath)))
+    }
+  
+  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) = UploadSpreadsheetAction { (request, dataset) =>
+      val result = readOp(request, dataset)
+      if (result.isValid) {
         request match {
-          case Accepts.Html() => BadRequest(views.html.parsingError(Seq((dataset.ref.file.getName, result.errors))))
+          case Accepts.Html() => BadRequest(views.html.parsingError(result.toErrorSeq))
           case Accepts.Json() => BadRequest("")
         }
-      else {
-        result.foreach(company => updateCompany(company.get))
+      } else {
+        result.get.foreach(updateCompany(_))
         request match {
           case Accepts.Html() => Ok(views.html.companyUploadSuccess())
           case Accepts.Json() => Ok("")
