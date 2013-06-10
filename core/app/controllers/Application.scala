@@ -3,6 +3,8 @@ package controllers
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.libs.Files.TemporaryFile
 import play.api.templates.Html
+
+import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
@@ -68,7 +70,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       if (result.isValid) {
         request match {
           case Accepts.Html() => BadRequest(views.html.parsingError(result.toErrorSeq))
-          case Accepts.Json() => BadRequest("")
+          case Accepts.Json() => BadRequest(toJson(errorsToJson(result.toErrorSeq)))
         }
       } else {
         result.get.foreach(updateCompany(_))
@@ -77,6 +79,12 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
           case Accepts.Json() => Ok("")
         }
       }
+  }
+
+  def errorsToJson(errors: Seq[keyed.KeyedMessage]) =
+    errors.map {
+        fileResults =>
+          Map("file" -> toJson(fileResults._1), "errors" -> toJson(fileResults._2))
     }
 
   def reports = Action {
