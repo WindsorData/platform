@@ -25,4 +25,49 @@ class ElementSpec extends FunSpec {
     }
   }
 
+  describe("merge") {
+    it("should be equivalent to ++ for models when there are no collisions") {
+      val aModel = Model('a -> Value("a"))
+      val otherModel = Model('b -> Value("b"))
+      assert(aModel.merge(otherModel) === aModel ++ otherModel)
+    }
+
+    it("should resolve collisions in models by merging entries") {
+      val aModel = Model('a -> Model('b -> Value("b")))
+      val otherModel = Model('a -> Model('c -> Value("c")))
+      assert(aModel.merge(otherModel) ===
+        Model(
+          'a -> Model(
+            'b -> Value("b"),
+            'c -> Value("c"))))
+    }
+
+    it("should be equivalent to zip with merge for cols of same size") {
+      val aModel = Model('a -> Value("a"))
+      val otherModel = Model('b -> Value("b"))
+      assert(Col(aModel).merge(Col(otherModel)) === Col(aModel merge otherModel))
+    }
+
+    it("should not discard extra values when cols are of different sizes") {
+      val aModel = Model('a -> Value("a"))
+      val otherModel = Model('b -> Value("b"))
+      assert(Col(aModel).merge(Col()) === Col(aModel))
+      assert(Col(aModel).merge(Col(otherModel, otherModel)) === Col(aModel merge otherModel, otherModel))
+    }
+
+    it("should fail for values") {
+      val aValue = Value("a")
+      val otherValue = Value("b")
+      intercept[IllegalArgumentException] {
+        aValue.merge(otherValue)
+      }
+    }
+
+    it("should fail for incompatible types") {
+      intercept[IllegalArgumentException] {
+        Model().merge(Value("a"))
+      }
+    }
+  }
+
 }
