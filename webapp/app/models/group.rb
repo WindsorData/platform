@@ -7,12 +7,14 @@
 #  updated_at :datetime         not null
 #  name       :string(255)
 #  company_id :integer
+#  user_id    :integer
 #
 
 class Group < ActiveRecord::Base
   attr_accessible :name, :tickers_tokens, :company
   has_and_belongs_to_many :tickers
   belongs_to :company
+  belongs_to :user
   
   attr_reader :tickers_tokens
 

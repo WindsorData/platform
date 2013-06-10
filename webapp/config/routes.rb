@@ -4,7 +4,7 @@ WindosorFrontend::Application.routes.draw do
 
   resources :users, except: [:show]
   resources :companies
-  resources :groups, only: [:new, :create] do
+  resources :groups do
     collection do
       get :tickers
     end
