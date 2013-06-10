@@ -67,7 +67,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   
   def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) = UploadSpreadsheetAction { (request, dataset) =>
       val result = readOp(request, dataset)
-      if (result.isValid) {
+      if (result.isInvalid) {
         request match {
           case Accepts.Html() => BadRequest(views.html.parsingError(result.toErrorSeq))
           case Accepts.Json() => BadRequest(toJson(errorsToJson(result.toErrorSeq)))
