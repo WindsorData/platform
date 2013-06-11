@@ -1,3 +1,5 @@
+require 'json' # poner en superclase
+
 class SearchController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_groups, only: [:quick_search, :full_search]
@@ -5,6 +7,8 @@ class SearchController < ApplicationController
   def quick_search
   end  
   def full_search
+    @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
+    @cash_comp_values = JSON.parse(RestClient.get('http://192.168.161.176:9000/schema/values/cashCompensations'))
   end
 
   def results
@@ -17,10 +21,6 @@ class SearchController < ApplicationController
 
   private
   def find_groups
-    if current_user.is_client?
-      @groups = Group.by_company(current_user.company)
-    else
-      @groups = Group.all
-    end
+    @groups = current_user.is_client? ? Group.by_company(current_user.company) : @groups = Group.all
   end
 end

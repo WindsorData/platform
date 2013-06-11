@@ -13,4 +13,9 @@
 class Company < ActiveRecord::Base
   attr_accessible :address, :contact_email, :name
   has_many :groups
+
+  validates :name, presence: true, uniqueness: true
+  validates :contact_email, presence: true
+  validates :address, presence: true  
+
 end
