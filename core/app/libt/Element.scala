@@ -106,8 +106,11 @@ case class Value[A](
     } mkString (":")
   }
 
-  def merge(other: Element) = throw new IllegalArgumentException("values can not be merged")
-  
+  def merge(other: Element) = other match {
+  	case v: Value[_] => v
+  	case _ => incompatibleTypes
+  }
+
 }
 object Value {
   

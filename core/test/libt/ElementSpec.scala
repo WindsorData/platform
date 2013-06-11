@@ -55,12 +55,10 @@ class ElementSpec extends FunSpec {
       assert(Col(aModel).merge(Col(otherModel, otherModel)) === Col(aModel merge otherModel, otherModel))
     }
 
-    it("should fail for values") {
+    it("should keep the value to merge for values") {
       val aValue = Value("a")
       val otherValue = Value("b")
-      intercept[IllegalArgumentException] {
-        aValue.merge(otherValue)
-      }
+      assert(aValue.merge(otherValue) === Value("b"))
     }
 
     it("should fail for incompatible types") {
