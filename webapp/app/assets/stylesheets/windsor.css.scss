@@ -53,6 +53,15 @@ body {
   display: none;
 }
 
+.width-100 {
+  width: 100%;
+}
+
+input {
+  padding: 10px;
+  font-size: 16px;
+}
+
 /* header */
 .navbar {
   line-height: 3em;
@@ -197,4 +206,11 @@ label {
   & > a:hover {
     color: $black;
   }
+}
+
+/* login */
+.login {
+  width: 350px;
+  padding: 20px;
+  margin: 100px auto;
 }

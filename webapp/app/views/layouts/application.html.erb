@@ -13,9 +13,11 @@
   </head>
   <body>
     <%= render 'layouts/messages' %>
-    <div class="navbar">
-      <%= render 'layouts/navigation' %>
-    </div>
+    <% if controller_name != 'sessions' %>
+      <div class="navbar">
+        <%= render 'layouts/navigation' %>
+      </div>
+    <% end %>
     <div id="main" role="main">
       <div class="container">
         <div class="row">

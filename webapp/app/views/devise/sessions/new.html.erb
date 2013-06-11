@@ -1,17 +1,20 @@
-<h2>Sign in</h2>
+<div class="login">
 
-<%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
-  <div><%= f.label :email %><br />
-  <%= f.email_field :email, :autofocus => true %></div>
+  <%= link_to "WindsorData", root_path %>
 
-  <div><%= f.label :password %><br />
-  <%= f.password_field :password %></div>
+  <%= form_for(resource, :as => resource_name, :url => session_path(resource_name)) do |f| %>
+    <%= f.email_field :email, :autofocus => true, placeholder: 'email', class: "width-100" %>
 
-  <% if devise_mapping.rememberable? -%>
-    <div><%= f.check_box :remember_me %> <%= f.label :remember_me %></div>
-  <% end -%>
+    <%= f.password_field :password, placeholder: 'password', class: "width-100" %>
 
-  <div><%= f.submit "Sign in" %></div>
-<% end %>
+    <div>
+      <% if devise_mapping.rememberable? -%>
+        <%= f.check_box :remember_me %> <%= f.label :remember_me %>
+      <% end -%>
+      <%= f.submit "Sign in", class: "right" %>
+    </div>
 
-<%= render "devise/shared/links" %>
+    <%= render "devise/shared/links" %>
+
+  <% end %>
+</div>
