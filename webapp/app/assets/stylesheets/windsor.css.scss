@@ -1,6 +1,9 @@
 @import "bourbon";
 @import "neat";
 
+// Change the grid settings
+$max-width: 800px;
+
 .container {
   @include outer-container;
 
