@@ -2,16 +2,26 @@
 class GroupsController < ApplicationController
   before_filter :authenticate_user!
   inherit_resources
-  before_filter {|c| c.authorize!(:create, Group)}
 
   def create
+    authorize!(:create, Group)
     @group = Group.new(params[:group])
     @group.company = current_user.company if current_user.is_client?
-    create! { quick_search_path }
+    create! { groups_path }
   end
   
+  def index
+    @group = Group.new
+    @groups = current_user.is_client? ? Group.by_company(current_user.company).to_a : Group.all
+    authorize!(:read_multiple, @groups)
+  end
+  def update
+    update! { groups_path }
+  end
+
   # GET /groups/tickers.json
-  def tickers    
+  def tickers
+    authorize!(:create, Group)
     @tickers = Ticker.containing_chars(params[:q])
     respond_to do |format|
       format.html
