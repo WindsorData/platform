@@ -12,11 +12,9 @@
   <% end %>
 
   <div class="field">
-    <%= f.text_field :name %>
-    <%= f.text_field :tickers_tokens, id: "tickers_tokens", "data-pre" => @group.tickers.map(&:attributes).to_json %>
+    <%= f.text_field :name, placeholder: 'Group name', class: 'group-name inline-block' %>
+    <%= f.text_field :tickers_tokens, id: 'tickers_tokens', "data-pre" => @group.tickers.map(&:attributes).to_json %>
+    <%= f.submit 'Create group', class: 'group-create' %>
   </div>
-  
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+
 <% end %>
