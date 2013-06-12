@@ -1,27 +1,17 @@
 class FilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter {|c| c.authorize!(:upload, :file)}
+  after_filter :authorize, :only => :delete
 
   def upload
   end
 
   def send_file
-    case params[:type]
-    when 'top5'
-      path = '/api/companies/top5'
-    when 'guidelines'
-      path = '/api/companies/guidelines'
-    when 'dilution'
-      path = '/api/companies/dilution'
-    when 'batch'
-      path = '/api/companies/batch'
-    end
-    url = Rails.application.config.backend_host + path
-    RestClient.post url, dataset: File.new(params[:file].path, 'r')
+    BackendService.post_file(params[:type], params[:file])
+    BackendService.load_tickers
     redirect_to :back
   end
-  
   rescue_from RestClient::InternalServerError do |exception|
     render "#{Rails.root}/public/500"
-  end  
+  end 
 end

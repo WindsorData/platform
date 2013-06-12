@@ -65,6 +65,11 @@ WindosorFrontend::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
-  # Backend root url
+  # Backend params
   config.backend_host = 'http://192.168.161.176:9000'
+  config.get_tickers_path = '/api/tickers'
+  config.post_top5_path = '/api/companies/top5'
+  config.post_guidelines_path = '/api/companies/guidelines'
+  config.post_dilution_path = '/api/companies/dilution'
+  config.post_batch_path = '/api/companies/batc'
 end
