@@ -5,10 +5,11 @@ class SearchController < ApplicationController
   before_filter :find_groups, only: [:quick_search, :full_search]
 
   def quick_search
+    authorize!(:perform, :quick_search)
   end  
   def full_search
-    @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
-    @cash_comp_values = JSON.parse(RestClient.get('http://192.168.161.176:9000/schema/values/cashCompensations'))
+    # @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
+    # @cash_comp_values = JSON.parse(RestClient.get('http://192.168.161.176:9000/schema/values/cashCompensations'))
   end
 
   def results

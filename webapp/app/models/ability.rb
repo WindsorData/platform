@@ -10,7 +10,8 @@ class Ability
       can   :upload, :file
       can   :read_multiple, Array do |arr|
         arr.inject(true){|r, el| r && can?(:read, el)}
-      end            
+      end
+      can   :perform, :quick_search
     when 'admin'
       can   :upload, :file
     when 'client'
@@ -24,6 +25,7 @@ class Ability
       can   :read_multiple, Array do |arr|
         arr.inject(true){|r, el| r && can?(:read, el)}
       end
+      can   :perform, :quick_search
     end
   end
 end
