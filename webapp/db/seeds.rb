@@ -19,3 +19,5 @@ group2 =  Group.new(name: 'group without company')
 group1.tickers << ticker_aapl
 group1.tickers << ticker_fb
 group2.save()
+
+Role.create([{name: "CTO"},{name: "CFO"}])

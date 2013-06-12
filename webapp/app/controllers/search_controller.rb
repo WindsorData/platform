@@ -8,7 +8,7 @@ class SearchController < ApplicationController
     authorize!(:perform, :quick_search)
   end  
   def full_search
-    # @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
+    @roles = Role.all
     # @cash_comp_values = JSON.parse(RestClient.get('http://192.168.161.176:9000/schema/values/cashCompensations'))
   end
 

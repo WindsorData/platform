@@ -8,7 +8,7 @@
       <div class="basic-group hidden">
         <div class="role-selector">
           <label>ROLE *</label>
-          <%= select_tag :role, options_for_select(Constants::ROLES) %>
+          <%= select_tag :role, options_from_collection_for_select(@roles, "id", "name") %>
           <label>PAY RANK</label>
           <%= select_tag :pay_rank, options_for_select(Constants::ROLES) %>
         </div>
