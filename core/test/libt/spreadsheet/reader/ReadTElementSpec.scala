@@ -3,7 +3,9 @@ package libt.spreadsheet.reader
 import util.FileManager
 import org.scalatest.FunSpec
 import libt.spreadsheet.util._
+import libt.workflow._
 import libt._
+
 import libt.spreadsheet.Offset
 import libt.spreadsheet.Feature
 import org.junit.runner.RunWith
@@ -24,12 +26,12 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
   var sheet: Sheet = _
 
   def createWbReader[A](tValue: TValue[A]) =
-    new WorkbookReader(
-      WorkbookMapping(
+    InputWorkflow(
+      MappingPhase(WorkbookMapping(
         Seq(
           Area(
-            TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout, Seq(Feature(Path('key)))))),
-      new IdentityCombiner)
+            TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout, Seq(Feature(Path('key))))))
+      ) >>  IdentityCombiner)
 
   before {
     workbook = createNewSingleSheetWorkbook
@@ -43,26 +45,26 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
 
     it("should read numeric values as a string") {
       sheet.cellAt(0, 0).setCellValue(22)
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("22.0")))))
     }
 
     it("should read formulas as a string") {
       sheet.cellAt(0, 0).setCellFormula("2+2")
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("2+2")))))
     }
 
     
     it("should read boolean values as a string") {
       sheet.cellAt(0, 0).setCellValue(true)
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("true")))))
     }
 
     it("should read string values as a string") {
       sheet.cellAt(0, 0).setCellValue("something")
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("something")))))
     }
 
@@ -74,7 +76,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
     
     it("should read numeric values") {
       sheet.cellAt(0,0).setCellValue(10)
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value(10)))))
     }
     
@@ -84,7 +86,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
          sheet = workbook.getSheetAt(0)
          (1 to 4).foreach(sheet.cellAt(_, 0).setAsActiveCell())
        }
-       val result = reader.read(workbook)
+       val result = reader(workbook)
        assert(result.head.toList === Seq(Valid(Model('key -> Value(0.1: BigDecimal)))))
     }
     
@@ -95,14 +97,14 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
     it("should read valid Strings") {
       val reader = createWbReader(TStringEnum("a","b","c"))
       sheet.cellAt(0, 0).setCellValue("b")
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("b")))))
     }
     
     ignore("should read valid Numbers") {
       val reader = createWbReader(TNumberEnum(1,2,3))      
       sheet.cellAt(0, 0).setCellValue(1)
-      val result = reader.read(workbook)
+      val result = reader(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value(1)))))
     }
 
@@ -111,7 +113,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
         val schema = TStringEnum("a","b","c")
         val reader = createWbReader(schema)
         sheet.cellAt(0, 0).setCellValue("x")
-        val result = reader.read(workbook)
+        val result = reader(workbook)
         schema.validate(result.head.head.get)
       }
     }

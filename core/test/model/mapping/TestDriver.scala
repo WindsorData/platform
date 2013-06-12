@@ -5,6 +5,7 @@ import org.scalatest.FunSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import libt.error._
+import libt.workflow._
 import libt._
 import model._
 import libt.spreadsheet._
@@ -18,11 +19,12 @@ class TestDriver extends FunSpec {
 
     it("should be able to import an empty company fiscal year") {
 
-      val results = new WorkbookReader(
+      val results = InputWorkflow(
+      MappingPhase(
         WorkbookMapping(
           Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout,
-            Seq(Feature(Path('ticker)), Feature(Path('name)))))),
-        companyFiscalYearCombiner).read("test/input/CompanyValuesAndNotes.xlsx")
+            Seq(Feature(Path('ticker)), Feature(Path('name))))))) >>
+        ExecutivesTop5Mapping.CombinerPhase).read("test/input/CompanyValuesAndNotes.xlsx")
 
       assert(results === Seq())
     }

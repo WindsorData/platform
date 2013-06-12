@@ -7,8 +7,8 @@ import model._
 import model.mapping._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
+import libt.workflow._
 import libt._
-import libt.spreadsheet.Offset
 
 object ExecutivesGuidelinesMapping {
 
@@ -54,15 +54,15 @@ object ExecutivesGuidelinesMapping {
       Multi(Path('metrics, 'typeIn), 5, 
           Path('type), 
           Path('weight))
-
-  val GuidelineReader = new WorkbookReader(
-    WorkbookMapping(
+          
+  def Mapping = WorkbookMapping(
       Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name)))),
         Area(TExecGuidelines, Offset(3, 1), Some(5), ColumnOrientedLayout, execGuidelinesMapping),
-        Area(TExecSTBonusPlan, Offset(5, 1), Some(5), ColumnOrientedLayout, execSTBonusPlanMapping))),
-    execGuidelinesCombiner)
+        Area(TExecSTBonusPlan, Offset(5, 1), Some(5), ColumnOrientedLayout, execSTBonusPlanMapping)))
 
-  def execGuidelinesCombiner =
+  def GuidelineReader = InputWorkflow(MappingPhase(Mapping) >> CombinerPhase)
+
+  def CombinerPhase =
     DocSrcCombiner(
       (10, 'guidelines, colWrapping),
       (25, 'stBonusPlan, colWrapping))

@@ -28,6 +28,7 @@ import util.FileManager._
 
 import libt.spreadsheet.reader._
 import libt.error._
+import libt.workflow._
 import libt._
 
 
@@ -60,7 +61,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
-  def uploadSingleSpreadsheet(reader: WorkbookReader[Seq[Validated[Model]]]) =
+  def uploadSingleSpreadsheet(reader: InputWorkflow[Seq[Validated[Model]]]) =
     UploadAndReadAction {
       (request, dataset) => keyed.flatJoin(Seq(dataset.ref.file.getName -> reader.read(dataset.ref.file.getAbsolutePath)))
     }

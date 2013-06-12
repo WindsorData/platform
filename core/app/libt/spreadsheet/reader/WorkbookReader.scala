@@ -15,25 +15,17 @@ import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet._
 import libt._
 
-class WorkbookReader[A](wbMapping: WorkbookMapping, combiner: Combiner[A]) {
-  //TODO move to WBMapping
-  def read(in: InputStream): A = read(WorkbookFactory.create(in))
-  def read(wb: Workbook): A =
-    combiner.combineReadResult(wb, wbMapping.read(wb).filter(!_.isEmpty))
-}
-
 case class WorkbookMapping(areas: Seq[SheetDefinition]) {
 
-  def sheetsWithAreas[A](wb: Workbook) = {
+  protected def sheetsWithAreas[A](wb: Workbook) = {
     val sheets = for (sheetIndex <- 0 to wb.getNumberOfSheets() - 1) yield wb.getSheetAt(sheetIndex)
     (sheets, areas).zipped 
   }
-  def read(wb: Workbook) = sheetsWithAreas(wb).map((sheet, area) => area.read(sheet))
-  def write(models: Seq[Model], wb: Workbook) = sheetsWithAreas(wb).foreach((sheet, area) => area.write(models)(sheet)) 
-}
-
-trait Combiner[A] {
-  def combineReadResult(wb: Workbook, results: Seq[Seq[Validated[Model]]]): A
+  def read(wb: Workbook) : Seq[Seq[libt.error.Validated[libt.Model]]] = 
+    sheetsWithAreas(wb).map((sheet, area) => area.read(sheet))
+    
+  def write(models: Seq[Model], wb: Workbook) : Unit =
+    sheetsWithAreas(wb).foreach((sheet, area) => area.write(models)(sheet)) 
 }
 
 trait SheetDefinition {
