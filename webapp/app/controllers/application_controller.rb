@@ -17,7 +17,7 @@ class ApplicationController < ActionController::Base
   def user_root_path(user)
     case user.role
     when 'super'
-      users_path
+      quick_search_path
     when 'admin'
       file_upload_path
     when 'client'
