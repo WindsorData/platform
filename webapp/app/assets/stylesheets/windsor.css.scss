@@ -217,3 +217,28 @@ label {
   padding: 20px;
   margin: 100px auto;
 }
+
+/* tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+
+  thead th {
+    border-bottom: 2px solid #08C;
+    padding: 10px 0;
+  }
+
+  tbody td {
+    padding: 10px 0;
+  }
+
+  tbody tr:nth-child(2n+1) td {
+    border-bottom: 1px solid #3BF;
+  }
+
+  tbody tr:nth-child(2n) td {
+    border-bottom: 1px solid #08C;
+  }
+
+}
