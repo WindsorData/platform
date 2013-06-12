@@ -16,7 +16,7 @@ class Ticker < ActiveRecord::Base
 
   scope :containing_chars, lambda { |s| where("name like ?", "%#{s}%") }
 
-  def self.load_tickers(json)
+  def self.load_json(json)
     Ticker.create(JSON.parse(json))
   end
 end

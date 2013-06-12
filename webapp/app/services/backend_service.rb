@@ -1,8 +1,8 @@
 class BackendService
   def self.load_tickers
     url = Rails.application.config.backend_host + Rails.application.config.get_tickers_path
-    json = RestClient.get url, dataset: File.new(params[:file].path, 'r')
-    Ticker.load_tickers(json)
+    json = RestClient.get url
+    Ticker.load_json(json)
   end
 
   def self.post_file(type, file)
@@ -18,5 +18,11 @@ class BackendService
     end
     url = Rails.application.config.backend_host + path
     RestClient.post url, dataset: File.new(file.path, 'r')
+  end
+
+  def self.load_roles
+    url = Rails.application.config.backend_host + Rails.application.config.get_roles_path
+    json = RestClient.get url
+    @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
   end
 end

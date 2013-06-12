@@ -38,6 +38,8 @@ WindosorFrontend::Application.configure do
   # Backend params
   config.backend_host = 'http://192.168.161.176:9000'
   config.get_tickers_path = '/api/tickers'
+  config.get_roles_path = '/api/schema/values/roles'
+  
   config.post_top5_path = '/api/companies/top5'
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
