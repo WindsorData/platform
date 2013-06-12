@@ -9,7 +9,8 @@ import libt._
 
 /**Trait that provides behavior for reading zipped spreadsheet sets */
 trait WorkbookZipReader {
-  
+
+  //TODO remove conversational state
   var file : ZipFile = _
   
   /**answers a seq of file names and read results*/

@@ -13,6 +13,7 @@ import libt.builder.ModelBuilder
 import libt.spreadsheet.util.sheet2RichSheet
 import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet._
+import libt.error._
 import libt._
 
 case class WorkbookMapping(areas: Seq[SheetDefinition]) {
@@ -21,7 +22,7 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
     val sheets = for (sheetIndex <- 0 to wb.getNumberOfSheets() - 1) yield wb.getSheetAt(sheetIndex)
     (sheets, areas).zipped 
   }
-  def read(wb: Workbook) : Seq[Seq[libt.error.Validated[libt.Model]]] = 
+  def read(wb: Workbook) : Seq[Seq[Validated[libt.Model]]] = 
     sheetsWithAreas(wb).map((sheet, area) => area.read(sheet))
     
   def write(models: Seq[Model], wb: Workbook) : Unit =

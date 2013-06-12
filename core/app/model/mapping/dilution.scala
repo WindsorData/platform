@@ -9,7 +9,7 @@ import libt.spreadsheet._
 import libt.workflow._
 import libt._
 
-object ExecutivesSVTBSDilutionMapping {
+package object dilution extends WorkflowFactory {
 
   val usageAndSVTDataMapping =
     addTYears(
@@ -23,7 +23,7 @@ object ExecutivesSVTBSDilutionMapping {
       Path('cashLTIP, 'grants),
       Path('cashLTIP, 'payouts))
 
-  val blackScholesInputsMapping =
+   val blackScholesInputsMapping =
     addTYears(
       Path('valuationModel),
       Path('volatility),
@@ -49,8 +49,6 @@ object ExecutivesSVTBSDilutionMapping {
         Area(TBlackScholesInputs, Offset(3, 1), Some(1), ColumnOrientedLayout, blackScholesInputsMapping),
         Area(TDilution, Offset(4, 1), Some(1), ColumnOrientedLayout, dilutionMapping))) 
     
-  def SVTBSDilutionReader = InputWorkflow(MappingPhase(Mapping) >> CombinerPhase)
-  
   def CombinerPhase =
     DocSrcCombiner(
       (10, 'usageAndSVTData, singleModelWrapping),

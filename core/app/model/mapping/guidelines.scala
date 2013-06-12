@@ -7,12 +7,11 @@ import model._
 import model.mapping._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
-import libt.workflow._
 import libt._
 
-object ExecutivesGuidelinesMapping {
+package object guidelines extends WorkflowFactory {
 
-  val execGuidelinesMapping =
+  val GuidelinesSheetMapping =
     Seq[Strip](
       Path('title),
       Path('functionalMatches, 'primary),
@@ -27,7 +26,7 @@ object ExecutivesGuidelinesMapping {
       Path('numberOfShares),
       Path('multipleOfSalary))
 
-  val execSTBonusPlanMapping =
+  val STBonusPlanSheetMapping =
     Seq[Strip](
       Path('title),
       Path('functionalMatches, 'primary),
@@ -56,11 +55,22 @@ object ExecutivesGuidelinesMapping {
           Path('weight))
           
   def Mapping = WorkbookMapping(
-      Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name)))),
-        Area(TExecGuidelines, Offset(3, 1), Some(5), ColumnOrientedLayout, execGuidelinesMapping),
-        Area(TExecSTBonusPlan, Offset(5, 1), Some(5), ColumnOrientedLayout, execSTBonusPlanMapping)))
-
-  def GuidelineReader = InputWorkflow(MappingPhase(Mapping) >> CombinerPhase)
+      Seq(
+        Area(TCompanyFiscalYear, 
+            Offset(2, 2), 
+            None, 
+            RowOrientedLayout, 
+            Seq(Feature(Path('ticker)), Feature(Path('name)))),
+        Area(TExecGuidelines, 
+            Offset(3, 1), 
+            Some(5), 
+            ColumnOrientedLayout, 
+            GuidelinesSheetMapping),
+        Area(TExecSTBonusPlan, 
+            Offset(5, 1), 
+            Some(5), 
+            ColumnOrientedLayout, 
+            STBonusPlanSheetMapping)))
 
   def CombinerPhase =
     DocSrcCombiner(

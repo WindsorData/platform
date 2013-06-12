@@ -9,7 +9,7 @@ import libt.spreadsheet._
 import libt.workflow._
 import libt._
 
-object ExecutivesTop5Mapping {
+object top5 extends WorkflowFactory {
 
   def performanceVestingMapping(rootPath: Symbol) =
     Seq[Strip](Path(rootPath, 'useShares),
@@ -94,8 +94,6 @@ object ExecutivesTop5Mapping {
         Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
         Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
 
-  def CompanyFiscalYearReader = InputWorkflow(MappingPhase(Mapping) >> CombinerPhase)
-      
   def  Mapping = 
     WorkbookMapping(
       Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name))))

@@ -4,13 +4,11 @@ import util.FileManager._
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
-import libt.error._
 import libt.workflow._
 import libt._
 import model._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
-import model.mapping.ExecutivesTop5Mapping._
 
 @RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
@@ -19,19 +17,14 @@ class TestDriver extends FunSpec {
 
     it("should be able to import an empty company fiscal year") {
 
-      val results = InputWorkflow(
-      MappingPhase(
-        WorkbookMapping(
-          Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout,
-            Seq(Feature(Path('ticker)), Feature(Path('name))))))) >>
-        ExecutivesTop5Mapping.CombinerPhase).read("test/input/CompanyValuesAndNotes.xlsx")
+      val results = top5.Workflow.read("test/input/CompanyValuesAndNotes.xlsx")
 
       assert(results === Seq())
     }
 
     it("should be able to import 3 company fiscal years with executives") {
 
-      val results = CompanyFiscalYearReader.read("test/input/FullValuesOnly.xlsx").map(_.get)
+      val results = top5.Workflow.read("test/input/FullValuesOnly.xlsx").map(_.get)
       
       assert(results.size === 4)
       
@@ -90,17 +83,17 @@ class TestDriver extends FunSpec {
 
     it("should throw IllegalArgumentException when there's an invalid functional value") {
       intercept[Throwable] {
-        CompanyFiscalYearReader.read("test/input/InvalidFunctionalValue.xlsx")
+        top5.Workflow.read("test/input/InvalidFunctionalValue.xlsx")
         .foreach(company => TCompanyFiscalYear.validate(company.get))
       }
     }
 
     it("should throw an Exception when there's a numeric value on string cell") {
-        assert(CompanyFiscalYearReader.read("test/input/ExpectedStringButWasNumeric.xlsx").hasErrors)
+        assert(top5.Workflow.read("test/input/ExpectedStringButWasNumeric.xlsx").hasErrors)
     }
 
     it("should throw an Exception when there's no value on any fiscal year") {
-        assert(CompanyFiscalYearReader.read("test/input/EmptyFiscalYear.xlsx").hasErrors)
+        assert(top5.Workflow.read("test/input/EmptyFiscalYear.xlsx").hasErrors)
     }
 
   }

@@ -1,32 +1,19 @@
 package controllers
 
-import play.api.mvc.MultipartFormData.FilePart
-import play.api.libs.Files.TemporaryFile
-import play.api.templates.Html
-
 import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
-import play.api._
-
-import views.html.defaultpages.badRequest
 
 import com.mongodb.casbah.MongoClient
-import com.mongodb.DBObject
 
 import java.io.ByteArrayOutputStream
 
 import persistence._
-import model.mapping.ExecutivesSVTBSDilutionMapping._
-import model.mapping.ExecutivesTop5Mapping._
-import model.mapping.ExecutivesGuidelinesMapping._
-import model._
+import model.mapping._
 import output._
-import util.Closeables
 import util.FileManager._
 
-import libt.spreadsheet.reader._
 import libt.error._
 import libt.workflow._
 import libt._
@@ -39,9 +26,9 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   implicit val db = MongoClient()("windsor")
   
   val readersAndValidSuffixes = 
-    Seq((CompanyFiscalYearReader, "Exec Top5 and Grants.xls"),
-        (GuidelineReader, "Exec Top5 ST Bonus and Exec Guidelines.xls"),
-        (SVTBSDilutionReader, "Company SVT BS Dilution.xls"))
+    Seq((top5.Workflow, "Exec Top5 and Grants.xls"),
+        (guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xls"),
+        (dilution.Workflow, "Company SVT BS Dilution.xls"))
         
   val companyForm = Form(
     tuple(
@@ -52,9 +39,9 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
     Redirect(routes.Application.companies)
   }
   
-  def newCompany = uploadSingleSpreadsheet(CompanyFiscalYearReader)
-  def newExecGuideline = uploadSingleSpreadsheet(GuidelineReader)
-  def newSVTBSDilution = uploadSingleSpreadsheet(SVTBSDilutionReader)
+  def newCompany = uploadSingleSpreadsheet(top5.Workflow)
+  def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)
+  def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)
 
   def newCompanies =
     UploadAndReadAction {
