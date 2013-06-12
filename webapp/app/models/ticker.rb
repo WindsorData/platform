@@ -17,9 +17,6 @@ class Ticker < ActiveRecord::Base
   scope :containing_chars, lambda { |s| where("name like ?", "%#{s}%") }
 
   def self.load_tickers(json)
-    # json =  RestClient.get('http://192.168.161.176:9000/api/tickers')
-    # json = [{"name"=>"aapl"},{"name"=>"nueva"}].to_json
-
     Ticker.create(JSON.parse(json))
   end
 end

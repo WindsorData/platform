@@ -8,7 +8,6 @@ class FilesController < ApplicationController
   def send_file
     case params[:type]
     when 'top5'
-      binding.pry
       path = '/api/companies/top5'
     when 'guidelines'
       path = '/api/companies/guidelines'
@@ -21,4 +20,8 @@ class FilesController < ApplicationController
     RestClient.post url, dataset: File.new(params[:file].path, 'r')
     redirect_to :back
   end
+  
+  rescue_from RestClient::InternalServerError do |exception|
+    render "#{Rails.root}/public/500"
+  end  
 end
