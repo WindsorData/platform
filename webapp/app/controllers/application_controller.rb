@@ -19,7 +19,7 @@ class ApplicationController < ActionController::Base
     when 'super'
       users_path
     when 'admin'
-      single_file_upload_path
+      file_upload_path
     when 'client'
       quick_search_path
     end

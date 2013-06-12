@@ -34,4 +34,7 @@ WindosorFrontend::Application.configure do
 
   # Expands the lines which load the assets
   config.assets.debug = true
+
+  # Backend root url
+  config.backend_host = 'http://192.168.161.176:9000'
 end
