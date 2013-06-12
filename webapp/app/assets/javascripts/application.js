@@ -12,6 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require modernizr
+//= require css_browser_selector
 //= require jquery.tokeninput
 //= require jquery.placeholder.min
 //= require_tree
