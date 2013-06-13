@@ -7,7 +7,9 @@ import model.mapping._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt.workflow._
+import libt.util._
 import libt._
+import libt.error._
 
 object top5 extends WorkflowFactory {
 
@@ -94,18 +96,73 @@ object top5 extends WorkflowFactory {
         Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
         Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
 
-  def  Mapping = 
+  override def Mapping =
     WorkbookMapping(
       Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name))))
         #::
         Area(TGrantTypes, Offset(3, 1), Some(1), ColumnOrientedLayout, grantTypesMapping)
         #::
         Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping)))
-  
-  def CombinerPhase =
+
+  override def CombinerPhase =
     DocSrcCombiner(
       (10, 'grantTypes, singleModelWrapping),
       (25, 'executives, colWrapping),
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
+
+  override def ValidationPhase =
+    (_, models) => {
+
+      val results = models.map { model =>
+        umatch(model) {
+          case validModel @ Valid(m) => {
+            grantTypeValidation(m)
+          }
+          case Invalid(msg) => Seq(msg)
+        }
+      }.flatten
+
+      if (results.isEmpty)
+        models
+      else
+        results.map(Invalid(_))
+    }
+
+  def grantTypeValidation(model: Model): Seq[String] = {
+    def validateGrantTypeUse(path: Path): Option[String] =
+      umatch(model(path).asValue[Boolean].value) {
+        case Some(use) =>
+          if (!use || (use && model(path.init).asModel.without(path.last.routeValue).isComplete))
+            None
+          else
+            Some("Error on " + path.titles.mkString(" - ") + ": Incomplete data")
+      }
+
+    if (model.hasElement('grantTypes))
+      Seq(Path('grantTypes, 'stockOptions, 'use))
+        .foldLeft(Seq[String]()) {
+          case (acc, path) =>
+            validateGrantTypeUse(path) match {
+              case None => acc
+              case Some(error) => acc :+ error
+            }
+        } ++
+        Seq(Path('grantTypes, 'performanceEquityVesting, 'minPayout))
+        .foldLeft(Seq[String]()) {
+          case (acc, path) =>
+            model(path).asValue[Number].value match {
+              case Some(value) =>
+                if (value != 0)
+                  acc :+ "Error on " + path.titles.mkString(" - ") + ": value is not 0%"
+                else
+                  acc
+              case None =>
+                acc
+            }
+        }
+        
+    else
+      Seq()
+  }
 }

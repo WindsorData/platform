@@ -29,6 +29,11 @@ sealed trait Element extends ElementLike[Element] {
    */
   def applySeq(pathPart: Symbol) : Seq[Element] = this.applySeq(Path(pathPart, *))
   
+  /**
+   * Answers true if all elements of this specific element has values.
+   */
+  def isComplete : Boolean
+  
 }
 
 /*=======Value=======*/
@@ -63,7 +68,9 @@ case class Value[A](
       Value(Some(alternative), calc, comment, note, link)
 
   /**Answers the seq of metadata elements of this value*/
-  def metadataSeq = Seq(calc, comment, note, link)   
+  def metadataSeq = Seq(calc, comment, note, link)
+  
+  def isComplete = !value.isEmpty
   
 }
 object Value {
@@ -86,6 +93,7 @@ case class Col(elements: Element*)
   
   override def apply(index: Int) = elements(index)
   def size = elements.size
+  def isComplete = elements.forall(_.isComplete)
 }
 
 /*=======Model=======*/
@@ -104,6 +112,9 @@ case class Model(elements: Set[(Symbol, Element)])
    * contains the elements of the given pk*/
   def subModel(pk: PK) = 
     Model(pk.map(path => (path.last.routeValue -> this(path))).toSet)
+    
+  def without(key: Symbol): Model =
+    Model(elements.filter{ case (k, _) => k != key })        
 
   /**
    * Flattens this model based on a path - flatteningPath - that points
@@ -127,6 +138,8 @@ case class Model(elements: Set[(Symbol, Element)])
    * take precedence
    * */
   def ++(that: Model) = Model(elements ++ that.elements)
+  
+  def isComplete = elements.forall { case (_, element) => element.isComplete }
 }
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)

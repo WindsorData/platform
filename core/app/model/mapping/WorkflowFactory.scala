@@ -11,7 +11,8 @@ trait WorkflowFactory {
   def MappingPhase(mapping: WorkbookMapping): Phase[Workbook, Seq[Seq[Validated[Model]]]] =
     (wb, _) => mapping.read(wb).filter(!_.isEmpty)
 
-  def Workflow = InputWorkflow(MappingPhase(Mapping) >> CombinerPhase)
-  def CombinerPhase : Phase[Seq[Seq[Validated[Model]]], Seq[Validated[Model]]] 
+  def Workflow = InputWorkflow(MappingPhase(Mapping) >> CombinerPhase >> ValidationPhase)
+  def ValidationPhase : Phase[Seq[Validated[Model]], Seq[Validated[Model]]]  = (x, y) => y
+  def CombinerPhase : Phase[Seq[Seq[Validated[Model]]], Seq[Validated[Model]]]
   def Mapping : WorkbookMapping 
 }
