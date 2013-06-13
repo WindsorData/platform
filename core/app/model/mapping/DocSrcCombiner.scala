@@ -23,7 +23,7 @@ import libt.error._
  * For instance, when a DOC_SRC states that there are three years  - 2008, 2009, and 2010 -
  * then this combiner will look for up to 3 other sheets with data, and zip them with those years
  *
- * @author metalkorva
+ * @author mcorbanini
  */
 class DocSrcCombiner(
     yearsPositionWithKeys: Seq[(Int, Symbol, Seq[Validated[Model]] => Element)]) 

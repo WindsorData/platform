@@ -6,7 +6,7 @@ import scala.collection.mutable.Buffer
 /***
  * A mutable object for building immutable Models, by inserting values at given Paths
  * @author flbulgarelli
- * @author metalkorva
+ * @author mcorbanini
  * */
 class ModelBuilder {
   /**The mutable representation of Model*/

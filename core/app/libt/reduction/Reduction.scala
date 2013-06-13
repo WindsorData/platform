@@ -4,7 +4,7 @@ import libt._
 
 /**
  * A numeric reduction - aggregation - over an element
- * @author metalkorva
+ * @author mcorbanini
  * */
 sealed trait Reduction {
   
