@@ -7,6 +7,7 @@ class QueryGenerator
   end
 
   def self.json_query(params_hash)
+    has_advanced = false
     a = Hash.new
     a[:basics] = Array.new
     params_hash.each_with_index { |(k1, v1), i1|
@@ -37,6 +38,8 @@ class QueryGenerator
           a[:basics][i1][:filters][i2] = hash
         }
       else # advanced search
+        a[:advanced] = Hash.new unless a[:advanced]
+        a[:advanced][k1] = params_hash[k1]
         #params_hash[k1] field: k1, value: 
       end
     }

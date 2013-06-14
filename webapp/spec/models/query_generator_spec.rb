@@ -8,10 +8,11 @@ describe QueryGenerator do
       Hash[
         "role_form_1"=> {
           "pay_rank"=>"CTO"
-        }
+        },
+        'adv_1' => '4'
       ] 
     }
-    it { should ==  "{'basics':[{'filters':[{'field':'pay_rank','value':'CTO'}]}]}" }
+    it { should ==  "{'basics':[{'filters':[{'field':'pay_rank','value':'CTO'}]}],'advanced':{'adv_1': 4}}" }
   end
 
   context "When there are multiple forms with only key-value fields" do
