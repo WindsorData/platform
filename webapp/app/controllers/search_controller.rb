@@ -14,7 +14,7 @@ class SearchController < ApplicationController
 
   def results
     params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
-    json_query = Mapping.json_query(params_hash)
+    json_query = QueryGenerator.json_query(params_hash)
   end
 
   private
