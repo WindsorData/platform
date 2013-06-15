@@ -94,7 +94,7 @@ case class Model(elements: Set[(Symbol, Element)])
 
   private val elementsMap = elements.toMap
   
-  override def apply(key: Symbol) = elementsMap(key)
+  override def apply(key: Symbol) = elementsMap.getOrElse(key, sys.error(s"key $key not found in $this"))
   
   def hasElement(key: Symbol) = elementsMap.contains(key)
   
