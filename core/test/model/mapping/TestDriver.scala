@@ -31,7 +31,7 @@ class TestDriver extends FunSpec {
       assert(results.head('ticker) === Value("something"))
       assert(results.head('name) === Value("something"))
       
-      (1 to 3).zip(Seq(2005, 2012, 2013)).foreach{ case (index, year) =>
+      (1 to 3).zip(Seq(2012, 2011, 2010)).foreach{ case (index, year) =>
         assert(results(index)('disclosureFiscalYear) === Value(year))
         validateExecutive(results(index).applySeq('executives).take(1).head.asModel)
       }

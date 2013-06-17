@@ -10,6 +10,7 @@ package object keyed {
     Validated.flatJoin(results.map {
       case (key, values) => Validated.concat(values) match {
         case v @ Valid(_) => v
+        case Doubtful(v, w) => Doubtful(v, key -> Seq(w))
         case i => Invalid(key -> i.toErrorSeq)
       }
     })

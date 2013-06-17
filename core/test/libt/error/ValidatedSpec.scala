@@ -1,6 +1,7 @@
 package libt.error
 
 import org.scalatest.FunSpec
+import libt.error.generic.{Invalid, Doubtful, Valid}
 
 class ValidatedSpec extends FunSpec {
 
@@ -66,6 +67,17 @@ class ValidatedSpec extends FunSpec {
     it("should be valid when both are valid") {
       assert( (Valid(1) andThen Valid(3))  === Valid(3))
     }
-  }
 
+    it("should be doubtful value when first is doubtful") {
+      assert((Doubtful(1, "mmm") andThen Valid(2)) === Doubtful(2, "mmm"))
+    }
+
+    it("should be doubtful with merged messages when both are doubtful") {
+      assert((Doubtful(1, "mmm") andThen Doubtful(2, "aaa")) === Doubtful(2, "mmm", "aaa"))
+    }
+
+    it("should be Invalid when first is invalid and second is doubtful") {
+      assert((Invalid("mmm") andThen Doubtful(2, "aaa")) === Invalid("mmm", "aaa"))
+    }
+  }
 }

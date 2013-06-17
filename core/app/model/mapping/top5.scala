@@ -78,7 +78,7 @@ object top5 extends WorkflowFactory {
           Path('grantDate), 
           Path('targetNumber), 
           Path('grantDatePrice), 
-          Path('targetValue), 
+          Path('targetValue),  
           Path('type)) ++
       Multi(Path('performanceCash), 2, 
           Path('grantDate), 
@@ -113,56 +113,72 @@ object top5 extends WorkflowFactory {
 
   override def ValidationPhase =
     (_, models) => {
-
-      val results = models.map { model =>
-        umatch(model) {
-          case validModel @ Valid(m) => {
-            grantTypeValidation(m)
+      if (!models.concat.isInvalid) {
+        models.map { model =>
+          umatch(model) {
+            case validModel @ Valid(m) => {
+              grantTypeValidation(m) andThen top5Validation(m)
+            }
           }
-          case Invalid(msg) => Seq(msg)
         }
-      }.flatten
-
-      if (results.isEmpty)
-        models
+      }
       else
-        results.map(Invalid(_))
+        models
     }
-
-  def grantTypeValidation(model: Model): Seq[String] = {
-    def validateGrantTypeUse(path: Path): Option[String] =
+    
+  def top5Validation(model: Model): Validated[Model] = 
+    if (model.hasElement('executives)) {
+      val path = Path('executives, *, 'functionalMatches)
+      val results : Seq[Validated[Model]] = model.applySeq(path)
+      .zip(Seq("ExecDb", "ExecDb-1", "ExecDb-2")).map { case (m, tab) =>
+        m.asModel(Path('primary)).asValue[String].value match {
+          case Some(rol) =>
+            if (rol == "CEO (Chief Executive Officer)"
+              && m(Path('bod)).asValue[String].value.isEmpty)
+              Doubtful(model, 
+                  "Warning on " + tab + " - " 
+                  + Path('bod).titles.mkString(" - ") 
+                  + ": CEO with no BOD")
+            else
+              Valid(model)
+          case None => 
+            Valid(model)
+        }
+      }
+      results.reduce( (a,b) => a andThen b)
+    }
+    else
+      Valid(model)
+      
+  
+  def grantTypeValidation(model: Model): Validated[Model] = {
+    def validateGrantTypeUse(path: Path): Validated[Model] =
       umatch(model(path).asValue[Boolean].value) {
         case Some(use) =>
           if (!use || (use && model(path.init).asModel.without(path.last.routeValue).isComplete))
-            None
+            validateGrantTypeMinPayout(model)
           else
-            Some("Error on " + path.titles.mkString(" - ") + ": Incomplete data")
+            Invalid("Error on " + path.titles.mkString(" - ") + ": Incomplete data")
       }
+    
+    def validateGrantTypeMinPayout(model: Model) = {
+      val path = Path('grantTypes, 'performanceEquityVesting, 'minPayout)
+      model(path).asValue[Number].value match {
+        case Some(value) =>
+          if (value != 0)
+            Doubtful(model,
+              "Warning on " + path.titles.mkString(" - ") + ": value is not 0%")
+          else
+            Valid(model)
+        case None =>
+          Valid(model)
+      }
+    }
 
-    if (model.hasElement('grantTypes))
-      Seq(Path('grantTypes, 'stockOptions, 'use))
-        .foldLeft(Seq[String]()) {
-          case (acc, path) =>
-            validateGrantTypeUse(path) match {
-              case None => acc
-              case Some(error) => acc :+ error
-            }
-        } ++
-        Seq(Path('grantTypes, 'performanceEquityVesting, 'minPayout))
-        .foldLeft(Seq[String]()) {
-          case (acc, path) =>
-            model(path).asValue[Number].value match {
-              case Some(value) =>
-                if (value != 0)
-                  acc :+ "Error on " + path.titles.mkString(" - ") + ": value is not 0%"
-                else
-                  acc
-              case None =>
-                acc
-            }
-        }
-        
+    if (model.hasElement('grantTypes)) {
+      validateGrantTypeUse(Path('grantTypes, 'stockOptions, 'use))
+    }
     else
-      Seq()
+      Valid(model)
   }
 }
