@@ -2,6 +2,7 @@ package libt.builder
 import libt._
 import scala.collection.mutable.{ Map => MutableMap }
 import scala.collection.mutable.Buffer
+import scala.annotation.tailrec
 
 /***
  * A mutable object for building immutable Models, by inserting values at given Paths
@@ -24,7 +25,7 @@ class ModelBuilder {
    * */
   def +=(modelEntry: (Path, Value[_])) = setWithRoot(model, modelEntry._1, modelEntry._2)
 
-  private def setWithRoot(untypedRoot: AnyRef, path: Path, value: Value[_]): Unit = {
+  @tailrec private def setWithRoot(untypedRoot: AnyRef, path: Path, value: Value[_]): Unit = {
     val root = untypedRoot.asInstanceOf[MModel]
     path match {
       //Set value at root's field

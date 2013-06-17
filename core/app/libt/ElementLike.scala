@@ -5,7 +5,7 @@ import libt.util._
  * Mixin that provides rescursive structure trasversing code and casting code for
  * hierarchies that implement Model-Value-Col Algebraic Data Types 
  * 
- * @param ElementType the type of the actual class that is including this mixin
+ * @tparam ElementType the type of the actual class that is including this mixin
  *  
  * @author flbulgarelli
  */
@@ -28,7 +28,7 @@ trait ElementLike[ElementType] { self : ElementType =>
   /*===Traversing===*/
 
   /**
-   * Answers the ElementLike element at the given path.
+   * Answers the [[libt.ElementLike]] element at the given path.
    * Fails if the path points to something else
    */
   def apply(path: Path): ElementType = umatch((path, this)) {
@@ -38,6 +38,14 @@ trait ElementLike[ElementType] { self : ElementType =>
     case (* :: tail, self) => self(tail)
     case (Route(field) :: tail, self: ModelLike[ElementType]) => self(field)(tail)
   }
+
+  /**
+   * Answers the [[libt.ElementLike]] at the given path parth. This is just a shortcut
+   * for the more general [[libt.ElementLike.apply]]  that takes a Path, when
+   * it is a single [[libt.PathPart]] path
+   */
+  def apply(pathPart:PathPart) : ElementType = apply(Path(pathPart))
+
 }
 trait ModelLike[ElementType] {
   /**Answers the element at the given key*/

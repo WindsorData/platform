@@ -33,7 +33,7 @@ class TestDriver extends FunSpec {
       
       (1 to 3).zip(Seq(2005, 2012, 2013)).foreach{ case (index, year) =>
         assert(results(index)('disclosureFiscalYear) === Value(year))
-        validateExecutive(results(index).c('executives).take(1).head.asModel)
+        validateExecutive(results(index).applySeq('executives).take(1).head.asModel)
       }
     }
     
@@ -89,11 +89,11 @@ class TestDriver extends FunSpec {
     }
 
     it("should throw an Exception when there's a numeric value on string cell") {
-        assert(top5.Workflow.read("test/input/ExpectedStringButWasNumeric.xlsx").hasErrors)
+        assert(top5.Workflow.read("test/input/ExpectedStringButWasNumeric.xlsx").concat.isInvalid)
     }
 
     it("should throw an Exception when there's no value on any fiscal year") {
-        assert(top5.Workflow.read("test/input/EmptyFiscalYear.xlsx").hasErrors)
+        assert(top5.Workflow.read("test/input/EmptyFiscalYear.xlsx").concat.isInvalid)
     }
 
   }

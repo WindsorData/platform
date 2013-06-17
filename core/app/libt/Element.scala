@@ -11,21 +11,23 @@ sealed trait Element extends ElementLike[Element] {
   override type ColType = Col
   override type ValueType[A] = Value[A]
 
-  /**
-   * *
-   * Answers the elements at given field key.
-   * Fails when the key points to something else than a Col.
-   *
-   * This method only works for keyed elements - Models.
-   */
-  def c(key: Symbol) = this(Path(key)).asCol.elements
-  
+  /** Answers the elements at the given key,
+    * spreading at the {{{*}}} path parth, if present.
+    * */
   def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
     case (* :: tail, self: Col) => self.elements.map(_.apply(tail))
     case (* :: tail, self) => Seq(self.apply(tail))
     case (Route(field) :: Nil, self: Model) => Seq(self(field))
     case (Route(field) :: tail, self: Model) => self(field).applySeq(tail)
   }
+
+  /**
+   * Answers the elements at given pathPart, spreding at such pathPart.
+   *
+   *This method is a shortcut  for the more general [[libt.Element.applySeq]]  that takes a Path, when
+   * it is a single [[libt.PathPart]] path followed by a {{{*}}}
+   */
+  def applySeq(pathPart: Symbol) : Seq[Element] = this.applySeq(Path(pathPart, *))
   
 }
 
