@@ -6,9 +6,10 @@ import model.ExecutivesSVTBSDilution._
 import model.mapping._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
+import libt.workflow._
 import libt._
 
-object ExecutivesSVTBSDilutionMapping {
+package object dilution extends WorkflowFactory {
 
   val usageAndSVTDataMapping =
     addTYears(
@@ -22,7 +23,7 @@ object ExecutivesSVTBSDilutionMapping {
       Path('cashLTIP, 'grants),
       Path('cashLTIP, 'payouts))
 
-  val blackScholesInputsMapping =
+   val blackScholesInputsMapping =
     addTYears(
       Path('valuationModel),
       Path('volatility),
@@ -42,15 +43,13 @@ object ExecutivesSVTBSDilutionMapping {
     Path('sharesAvailable, 'fungible, 'ratio),
     Path('sharesAvailable, 'fungible, 'fullValue))
 
-  val SVTBSDilutionReader = new WorkbookReader(
-    WorkbookMapping(
+  def Mapping = WorkbookMapping(
       Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name)))),
         Area(TUsageAndSVTData, Offset(3, 1), Some(1), ColumnOrientedLayout, usageAndSVTDataMapping),
         Area(TBlackScholesInputs, Offset(3, 1), Some(1), ColumnOrientedLayout, blackScholesInputsMapping),
-        Area(TDilution, Offset(4, 1), Some(1), ColumnOrientedLayout, dilutionMapping))),
-    execSVTBSDilutionCombiner)
-  
-  def execSVTBSDilutionCombiner =
+        Area(TDilution, Offset(4, 1), Some(1), ColumnOrientedLayout, dilutionMapping))) 
+    
+  def CombinerPhase =
     DocSrcCombiner(
       (10, 'usageAndSVTData, singleModelWrapping),
       (25, 'bsInputs, singleModelWrapping),

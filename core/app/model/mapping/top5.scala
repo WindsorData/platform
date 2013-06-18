@@ -6,9 +6,10 @@ import model.ExecutivesTop5._
 import model.mapping._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
+import libt.workflow._
 import libt._
 
-object ExecutivesTop5Mapping {
+object top5 extends WorkflowFactory {
 
   def performanceVestingMapping(rootPath: Symbol) =
     Seq[Strip](Path(rootPath, 'useShares),
@@ -93,16 +94,15 @@ object ExecutivesTop5Mapping {
         Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
         Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
 
-  val CompanyFiscalYearReader = new WorkbookReader(
+  def  Mapping = 
     WorkbookMapping(
       Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name))))
         #::
         Area(TGrantTypes, Offset(3, 1), Some(1), ColumnOrientedLayout, grantTypesMapping)
         #::
-        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping))),
-    companyFiscalYearCombiner)
-
-  def companyFiscalYearCombiner =
+        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping)))
+  
+  def CombinerPhase =
     DocSrcCombiner(
       (10, 'grantTypes, singleModelWrapping),
       (25, 'executives, colWrapping),

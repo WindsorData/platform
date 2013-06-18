@@ -3,7 +3,9 @@ package libt.spreadsheet.reader
 import util.FileManager
 import org.scalatest.FunSpec
 import libt.spreadsheet.util._
+import libt.workflow._
 import libt._
+
 import libt.spreadsheet.Offset
 import libt.spreadsheet.Feature
 import org.junit.runner.RunWith
@@ -20,16 +22,16 @@ import org.apache.poi.ss.usermodel.WorkbookFactory
 class ReadTElementSpec extends FunSpec with BeforeAndAfter {
 
   import MyWorkbookFactory._
+
   var workbook: Workbook = _
   var sheet: Sheet = _
 
   def createWbReader[A](tValue: TValue[A]) =
-    new WorkbookReader(
-      WorkbookMapping(
-        Seq(
-          Area(
-            TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout, Seq(Feature(Path('key)))))),
-      new IdentityCombiner)
+    WorkbookMapping(
+      Seq(
+        Area(
+          TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout, Seq(Feature(Path('key))))))
+
 
   before {
     workbook = createNewSingleSheetWorkbook
@@ -53,7 +55,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
       assert(result.head.toList === Seq(Valid(Model('key -> Value("2+2")))))
     }
 
-    
+
     it("should read boolean values as a string") {
       sheet.cellAt(0, 0).setCellValue(true)
       val result = reader.read(workbook)
@@ -67,40 +69,41 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
     }
 
   }
-  
+
   describe("TNumber") {
-    
+
     val reader = createWbReader(TNumber)
-    
+
     it("should read numeric values") {
-      sheet.cellAt(0,0).setCellValue(10)
+      sheet.cellAt(0, 0).setCellValue(10)
       val result = reader.read(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value(10)))))
     }
-    
+
     it("should read percentage values as a number") {
-       FileManager.load("test/input/Percentage.xlsx") { x =>
-         workbook = WorkbookFactory.create(x)
-         sheet = workbook.getSheetAt(0)
-         (1 to 4).foreach(sheet.cellAt(_, 0).setAsActiveCell())
-       }
-       val result = reader.read(workbook)
-       assert(result.head.toList === Seq(Valid(Model('key -> Value(0.1: BigDecimal)))))
+      FileManager.load("test/input/Percentage.xlsx") {
+        x =>
+          workbook = WorkbookFactory.create(x)
+          sheet = workbook.getSheetAt(0)
+          (1 to 4).foreach(sheet.cellAt(_, 0).setAsActiveCell())
+      }
+      val result = reader.read(workbook)
+      assert(result.head.toList === Seq(Valid(Model('key -> Value(0.1: BigDecimal)))))
     }
-    
+
   }
 
   describe("TGenericEnum") {
 
     it("should read valid Strings") {
-      val reader = createWbReader(TStringEnum("a","b","c"))
+      val reader = createWbReader(TStringEnum("a", "b", "c"))
       sheet.cellAt(0, 0).setCellValue("b")
       val result = reader.read(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value("b")))))
     }
-    
+
     ignore("should read valid Numbers") {
-      val reader = createWbReader(TNumberEnum(1,2,3))      
+      val reader = createWbReader(TNumberEnum(1, 2, 3))
       sheet.cellAt(0, 0).setCellValue(1)
       val result = reader.read(workbook)
       assert(result.head.toList === Seq(Valid(Model('key -> Value(1)))))
@@ -108,7 +111,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
 
     it("should not let read invalid entries") {
       intercept[Throwable] {
-        val schema = TStringEnum("a","b","c")
+        val schema = TStringEnum("a", "b", "c")
         val reader = createWbReader(schema)
         sheet.cellAt(0, 0).setCellValue("x")
         val result = reader.read(workbook)

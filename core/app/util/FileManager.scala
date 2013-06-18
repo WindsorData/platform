@@ -7,9 +7,9 @@ import java.io.FileOutputStream
 import java.io.OutputStream
 import model._
 import libt.Model
-import libt.spreadsheet.reader.WorkbookReader
-import libt.spreadsheet.reader.WorkbookReader
+import libt.workflow._
 import output.SpreadsheetWriter
+
 
 object FileManager {
 
@@ -20,10 +20,10 @@ object FileManager {
     }
   }
   
-  implicit def reader2RichReader[A](wb: WorkbookReader[A]) = new {
+  implicit def reader2RichReader[A](wb: InputWorkflow[A]) = new {
     def read(filePath: String): A =
-    load(filePath) { x =>
-      wb.read(x)
+    load(filePath) { in =>
+      wb(in)
     }
   }
   
