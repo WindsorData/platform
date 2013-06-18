@@ -33,8 +33,20 @@ sealed trait Validated[+ErrorMessage, +A] {
    * Invalid is converted to a non-empty list
    */
   def toErrorSeq: Seq[ErrorMessage]
-  
+
+  /**Applies the given function to the value of the validad, if not invalid*/
   def map[B](f: A => B): Validated[ErrorMessage, B]
+  def flatMap[E >: ErrorMessage, B](f: A => Validated[E, B]): Validated[E, B]
+  /**
+   * Combines this and other validated, by returning an invalid
+   * when any of theses are invalid, or combining values with the given function, otherwise
+   * */
+  def andAlso[E>:ErrorMessage, B, C](other: Validated[E,B])(f:(A, B) => C) : Validated[E, C]
+  /**
+   * Similar to andAlso, but discarding the the first value when both this and other are not invalid
+   * */
+  def andThen[E>:Nothing, B](other: Validated[E,B]) =
+    andAlso(other) { (v1, v2) => v2  }
 }
 
 
@@ -44,6 +56,12 @@ case class Valid[+A](value: A) extends Validated[Nothing, A] {
   override def get = value
   override def toErrorSeq = Nil
   override def map[B](f: A => B) = Valid(f(value))
+  override def flatMap[E >: Nothing, B](f: A => Validated[E, B]) = f(value)
+  override def andAlso[E>:Nothing, B, C](other: Validated[E,B])(f:(A, B) => C) =
+    other match {
+      case Valid(value) => Valid(f(this.value, value))
+      case i : Invalid[E] => i
+    }
 }
 case class Invalid[ErrorMessage](errors: ErrorMessage*) extends Validated[ErrorMessage, Nothing] {
   override def isValid = false
@@ -51,6 +69,14 @@ case class Invalid[ErrorMessage](errors: ErrorMessage*) extends Validated[ErrorM
   override def get = sys.error("Invald value " + errors.mkString(","))
   override def toErrorSeq = errors
   override def map[B](f: Nothing => B) = this
+  override def flatMap[E >: ErrorMessage, B](f: Nothing => Validated[E, B]) = this
+  override def andAlso[E>:ErrorMessage, B, C](other: Validated[E,B])(f:(Nothing, B) => C) : Validated[E, C] =
+    other match {
+      case i : Invalid[E] => addErrors(i.errors)
+      case _ => this
+    }
+  def addErrors[E >: ErrorMessage](errors: Seq[E]) = Invalid(this.errors ++ errors: _*)
+
 }
 object Validated {
   /**
@@ -69,15 +95,21 @@ object Validated {
    * Valid seq of the valid values, if all the values are valid, or an Invalid
    * with all the errors, otherwise
    */
-  def join[E, A](elements: Seq[Validated[E, A]]): Validated[E, Seq[A]] =
+  def concat[E, A](elements: Seq[Validated[E, A]]): Validated[E, Seq[A]] =
     elements.partition(_.isInvalid) match {
       case (Nil, valids) => Valid(valids.map(_.get))
       case (invalids, _) => Invalid(invalids.flatMap(_.toErrorSeq): _*)
     }
 
+  //TODO remove
   def flatJoin[E, A](elements: Seq[Validated[E, Seq[A]]]): Validated[E, Seq[A]] =
-    join(elements) match {
+    concat(elements) match {
       case Valid(v) => Valid(v.flatten)
       case i: Invalid[A] => i
     }
+    
+  implicit def seq2SeqOfValidated[M, A](self:Seq[Validated[M, A]]) = new {
+    def concat = Validated.concat(self)
+  }
+
 }

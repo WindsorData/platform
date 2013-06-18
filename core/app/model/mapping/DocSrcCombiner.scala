@@ -50,7 +50,7 @@ class DocSrcCombiner(
   def apply(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = {
     val flattenResults = results.flatten
     val yearsWithKeys = years(wb.getSheetAt(0))
-    (Validated.join(yearsWithKeys.map(_._1)), Validated.join(flattenResults)) match {
+    (Validated.concat(yearsWithKeys.map(_._1)), Validated.concat(flattenResults)) match {
       case (i: Invalid, _) => Seq(i)
       case (_, i: Invalid) => flattenResults
       case _ => (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped

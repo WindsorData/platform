@@ -55,7 +55,6 @@ class FlattenerSpec extends FlatSpec {
   }
 
   it should "work with multiple roots" in {
-    val s: Seq[Validated[Model]] = Seq()
     val models = Seq(
       Model(
         'key -> Value("hello"),

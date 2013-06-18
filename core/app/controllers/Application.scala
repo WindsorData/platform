@@ -54,19 +54,20 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
     }
   
   def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) = UploadSpreadsheetAction { (request, dataset) =>
-      val result = readOp(request, dataset)
-      if (result.isInvalid) {
+    readOp(request, dataset) match {
+      case Invalid(errors@_*) =>
         request match {
-          case Accepts.Html() => BadRequest(views.html.parsingError(result.toErrorSeq))
-          case Accepts.Json() => BadRequest(toJson(errorsToJson(result.toErrorSeq)))
+          case Accepts.Html() => BadRequest(views.html.parsingError(errors))
+          case Accepts.Json() => BadRequest(toJson(errorsToJson(errors)))
         }
-      } else {
-        result.get.foreach(updateCompany(_))
+      case Valid(value) => {
+        value.foreach(updateCompany(_))
         request match {
           case Accepts.Html() => Ok(views.html.companyUploadSuccess())
           case Accepts.Json() => Ok("")
         }
       }
+    }
   }
 
   def errorsToJson(errors: Seq[keyed.KeyedMessage]) =

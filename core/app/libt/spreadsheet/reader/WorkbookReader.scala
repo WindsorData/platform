@@ -57,8 +57,9 @@ case class Area(
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
-    Validated
-    	.join(columns.impureMap(column => Validated(column.read(reader, schema, modelBuilder))))
+    columns
+      .impureMap(column => Validated(column.read(reader, schema, modelBuilder)))
+    	.concat
     	.map(_ => modelBuilder.build)
   }
 
