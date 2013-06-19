@@ -10,6 +10,9 @@ sealed trait Element extends ElementLike[Element] {
   override type ModelType = Model
   override type ColType = Col
   override type ValueType[A] = Value[A]
+  
+  def rawValue[A]  : Option[A] =  asValue[A].value
+  def getRawValue[A] : A = rawValue[A].get
 
   /** Answers the elements at the given key,
     * spreading at the {{{*}}} path parth, if present.

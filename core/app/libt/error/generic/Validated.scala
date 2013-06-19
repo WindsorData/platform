@@ -18,10 +18,10 @@ sealed trait Validated[+ErrorMessage, +A] {
    */
   def get: A
   
-  /**Whether this is a Valid instance*/
+  /**Whether this is a ValidLike instance*/
   def isValid: Boolean
+  def isDoubtful : Boolean
   def isInvalid = !isValid
-  def hasWarnings : Boolean
 
   /**
    * Converts to an option: Valid values are converted to Some,
@@ -62,13 +62,13 @@ trait ValidLike[+ErrorMessage, +A] extends Validated[ErrorMessage, A] {
   val value : A
   override def toOption = Some(value)
   override def get = value
+  override def isValid = true
 
 }
 
 case class Valid[+A](value: A) extends ValidLike[Nothing, A] {
-  override def isValid = true
   override def toErrorSeq = Nil
-  override def hasWarnings = false
+  override def isDoubtful = false
   override def map[B](f: A => B) = Valid(f(value))
   override def flatMap[E >: Nothing, B](f: A => Validated[E, B]) = f(value)
   override def ++=[E >: Nothing](messages : Seq[E]) =
@@ -77,12 +77,12 @@ case class Valid[+A](value: A) extends ValidLike[Nothing, A] {
 
 case class Doubtful[+WarningMessage, +A](value: A, warnings: WarningMessage*) 
   extends ValidLike[WarningMessage, A] {
-  override def isValid = true
   override def toErrorSeq = warnings
-  override def hasWarnings = true
+  override def isDoubtful = true
   override def map[B](f: A => B) = Doubtful(f(value), warnings:_*)
   override def flatMap[E >: WarningMessage, B](f: A => Validated[E, B]) = f(value)  ++= this.warnings
   override def ++=[E >: WarningMessage](messages : Seq[E]) = Doubtful(value, this.warnings ++ messages:_*)
+  override def isValid = true
 }
 
 case class Invalid[ErrorMessage](errors: ErrorMessage*) extends Validated[ErrorMessage, Nothing] {
@@ -94,7 +94,7 @@ case class Invalid[ErrorMessage](errors: ErrorMessage*) extends Validated[ErrorM
   override def flatMap[E >: ErrorMessage, B](f: Nothing => Validated[E, B]) = this
   override def ++=[E >: ErrorMessage](messages : Seq[E]) = Invalid(this.errors ++ messages :_*)
 
-  override def hasWarnings = false
+  override def isDoubtful = false
 }
 
 object Validated {
@@ -117,7 +117,7 @@ object Validated {
   def concat[E, A](elements: Seq[Validated[E, A]]): Validated[E, Seq[A]] =
     elements.partition(_.isInvalid) match {
       case (Nil, valids) => {
-        if (valids.exists(_.hasWarnings))
+        if (valids.exists(_.isDoubtful))
           Doubtful(valids.map(_.get), valids.flatMap(_.toErrorSeq): _*)
         else
           Valid(valids.map(_.get))

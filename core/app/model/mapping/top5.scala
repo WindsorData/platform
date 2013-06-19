@@ -117,53 +117,164 @@ object top5 extends WorkflowFactory {
         models.map { model =>
           umatch(model) {
             case validModel @ Valid(m) => {
-              grantTypeValidation(m) andThen top5Validation(m)
+              grantTypeValidation(m) andThen 
+              executivesValidation(m)
             }
           }
         }
+        
       }
       else
         models
     }
     
-  def top5Validation(model: Model): Validated[Model] = 
-    if (model.hasElement('executives)) {
-      val path = Path('executives, *, 'functionalMatches)
-      val results : Seq[Validated[Model]] = model.applySeq(path)
-      .zip(Seq("ExecDb", "ExecDb-1", "ExecDb-2")).map { case (m, tab) =>
-        m.asModel(Path('primary)).asValue[String].value match {
-          case Some(rol) =>
-            if (rol == "CEO (Chief Executive Officer)"
-              && m(Path('bod)).asValue[String].value.isEmpty)
-              Doubtful(model, 
-                  "Warning on " + tab + " - " 
-                  + Path('bod).titles.mkString(" - ") 
-                  + ": CEO with no BOD")
-            else
-              Valid(model)
-          case None => 
-            Valid(model)
-        }
-      }
+    def execMsg(year: Int, m: Model) = 
+      year + " - " + m(Path('firstName)).getRawValue[String] + m(Path('lastName)).getRawValue[String] + " - "
+      
+    def reduceExecutiveValidations(model: Model)(action: (Element) => Validated[Model]) = {
+      val results: Seq[Validated[Model]] = model.applySeq(Path('executives, *)) .map { m => action(m)  }
       results.reduce( (a,b) => a andThen b)
     }
+    
+    def nextFiscalYearDataValidation(model: Model): Validated[Model] = 
+      reduceExecutiveValidations(model)(
+        (m) =>
+          (m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal], 
+           m(Path('cashCompensations, 'nextFiscalYearData, 'baseSalary)).rawValue[BigDecimal],
+           m(Path('cashCompensations, 'targetBonus)).rawValue[BigDecimal],
+           m(Path('cashCompensations, 'nextFiscalYearData, 'targetBonus)).rawValue[BigDecimal]) match {
+            case (Some(baseSalary), Some(nextBaseSalary), Some(targetBonus), Some(nextTargetBonus))
+            if (baseSalary <= nextBaseSalary && targetBonus <= nextTargetBonus) =>
+              Valid(model)
+            case (_,None, _, None) => Valid(model) 
+            case (_,_,_,_) =>
+              Doubtful(model,
+                  "Warning on ExecDb " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + 
+                  ": current base salary and target bonus are equal or greater that next fiscal year data")
+          })
+    
+
+    def bodValidation(model: Model): Validated[Model] =
+      reduceExecutiveValidations(model)(
+        (m) =>
+          (m(Path('functionalMatches, 'primary)).rawValue[String],
+            m(Path('functionalMatches, 'bod)).rawValue[String].isEmpty) match {
+              case (Some("CEO (Chief Executive Officer)"), true) =>
+                Doubtful(model,
+                  "Warning on ExecDb " + model(Path('disclosureFiscalYear)).getRawValue[Int] + " - "
+                    + Path('bod).titles.mkString(" - ")
+                    + ": CEO with no BOD")
+              case (_, _) => Valid(model)
+            })
+
+    def founderValidation(model: Model): Validated[Model] =
+      reduceExecutiveValidations(model)(
+        (m) =>
+          (m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal],
+            m(Path('founder)).rawValue[Boolean]) match {
+              case (Some(baseSalary), None) if baseSalary == 1 =>
+                Doubtful(model,
+                  "Warning on ExecDb " + model(Path('disclosureFiscalYear)).getRawValue[Int] + " - "
+                    + Path('founder).titles.mkString(" - ")
+                    + ": base salary is 1 and executive is not a founder")
+              case (_, _) =>
+                Valid(model)
+            })
+    
+    def perfCashValidation(model: Model): Validated[Model] =
+      reduceExecutiveValidations(model)(
+        (m) => {
+          val results: Seq[Validated[Model]] =
+            m.applySeq(Path('performanceCash, *))
+              .map { perfCash =>
+                (perfCash('targetValue).rawValue[BigDecimal],
+                  perfCash('payout).rawValue[BigDecimal]) match {
+                    case (Some(_), Some(_)) =>
+                      Invalid("Error on ExecDb " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+                        ": in PerfCash Both target value and Payout can’t be filled for the same grant")
+                    case (_, _) => Valid(model)
+                  }
+              }
+          results.reduce((a, b) => a andThen b)
+        })
+   
+    def ownedSharesValidation(model: Model): Validated[Model] =
+      reduceExecutiveValidations(model)(
+        (m) => {
+          val ownedShares = m(Path('carriedInterest, 'ownedShares)).asModel
+          val beneficial = ownedShares(Path('beneficialOwnership)).rawValue[BigDecimal]
+          val results: Seq[Validated[Model]] =
+            Seq(ownedShares(Path('options)).rawValue[BigDecimal],
+              ownedShares(Path('unvestedRestrictedStock)).rawValue[BigDecimal],
+              ownedShares(Path('disclaimBeneficialOwnership)).rawValue[BigDecimal],
+              ownedShares(Path('heldByTrust)).rawValue[BigDecimal]).zip(Stream.continually(beneficial))
+              .map {
+                case (Some(value), Some(benef)) if value > benef =>
+                  Doubtful(model,
+                    "Warning on ExecDb " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+                      ": Some Owned Shares values cannot be greater than Beneficial Ownership")
+                case (_, _) => Valid(model)
+              }
+          results.reduce((a, b) => a andThen b)
+        })
+     
+    def salaryValidation(model: Model): Validated[Model] = 
+      reduceExecutiveValidations(model)(
+        (m) => 
+          m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal] match {
+            case Some(salary) if salary.compare(BigDecimal(100)) < 0 =>
+              Doubtful(model,
+                    "Warning on ExecDb " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+                      ": Base Salary should be 3 digits or more")
+            case _ => Valid(model)
+          })
+
+    def optionGrantsValidation(model: Model): Validated[Model] =
+      reduceExecutiveValidations(model)(
+        (m) => {
+          val results: Seq[Validated[Model]] =
+            m.applySeq(Path('optionGrants, *))
+              .map { grant =>
+                val elements = grant.asModel.without('perf).elements
+                if (elements.forall(!_._2.asValue.value.isEmpty)
+                  || elements.forall(_._2.asValue.value.isEmpty))
+                  Valid(model)
+                else
+                  Doubtful(model,
+                    "Warning on ExecDb " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+                      ": Option grants ")
+              }
+
+          results.reduce((a, b) => a andThen b)
+        })
+
+
+  def executivesValidation(model: Model): Validated[Model] = {
+    if (model.hasElement('executives))
+      founderValidation(model) andThen 
+      bodValidation(model) andThen 
+      nextFiscalYearDataValidation(model) andThen
+      perfCashValidation(model) andThen
+      ownedSharesValidation(model) andThen
+      salaryValidation(model)
     else
       Valid(model)
-      
+
+  }
   
   def grantTypeValidation(model: Model): Validated[Model] = {
-    def validateGrantTypeUse(path: Path): Validated[Model] =
-      umatch(model(path).asValue[Boolean].value) {
-        case Some(use) =>
-          if (!use || (use && model(path.init).asModel.without(path.last.routeValue).isComplete))
-            validateGrantTypeMinPayout(model)
-          else
-            Invalid("Error on " + path.titles.mkString(" - ") + ": Incomplete data")
-      }
+    def validateGrantTypeUse: Validated[Model] = {
+      val path = Path('grantTypes, 'stockOptions, 'use)
+      val use = model(path).getRawValue[Boolean]
+      if (!use || model(path.init).asModel.without(path.last.routeValue).isComplete)
+        Valid(model)
+      else
+        Invalid("Error on " + path.titles.mkString(" - ") + ": Incomplete data")
+    }
     
-    def validateGrantTypeMinPayout(model: Model) = {
+    def validateGrantTypeMinPayout = {
       val path = Path('grantTypes, 'performanceEquityVesting, 'minPayout)
-      model(path).asValue[Number].value match {
+      model(path).rawValue[Number] match {
         case Some(value) =>
           if (value != 0)
             Doubtful(model,
@@ -176,7 +287,7 @@ object top5 extends WorkflowFactory {
     }
 
     if (model.hasElement('grantTypes)) {
-      validateGrantTypeUse(Path('grantTypes, 'stockOptions, 'use))
+      validateGrantTypeUse andThen validateGrantTypeMinPayout 
     }
     else
       Valid(model)
