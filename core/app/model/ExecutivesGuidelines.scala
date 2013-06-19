@@ -12,6 +12,8 @@ object ExecutivesGuidelines {
     "Other")
 
   val TExecGuidelines = TModel(
+    'firstName -> TString,
+    'lastName -> TString,
     'title -> TString,
     'functionalMatches -> TFunctionalMatch,
     'use -> TXBool,
