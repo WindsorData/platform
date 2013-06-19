@@ -1,7 +1,6 @@
 package libt.error
 
 import org.scalatest.FunSpec
-import libt.error.generic.{Invalid, Doubtful, Valid}
 
 class ValidatedSpec extends FunSpec {
 

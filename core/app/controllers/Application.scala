@@ -63,7 +63,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       case result => {
         result.get.foreach(updateCompany(_))
         request match {
-          case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.toErrorSeq))
+          case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
           case Accepts.Json() => Ok("")
         }
       }
