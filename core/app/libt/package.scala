@@ -14,10 +14,16 @@ package object libt {
   implicit def path2RichPath(path: Path) = new {
     def titles = path.map(_.name)
   }
-  
+
+  implicit def richJoinPath(path: Path) = new {
+    def joinWithDots = path.map(_.routeValue.name).mkString(".")
+  }
+
   object Path {
     def apply(parts: PathPart*): Path = List(parts: _*)
   }
+
+  def Relative(base: Path, relativePaths: Path*) = relativePaths.map {base ++ _}
 
   /**
    * A PK is just a sequence of Paths that represent

@@ -1,6 +1,6 @@
 package libt
 
-import libt.util.Symbols.richWord
+import libt.util.Strings.richWord
 import libt.util._
 
 /**
@@ -19,7 +19,7 @@ sealed trait PathPart {
 }
 /**A path part that points to a field in a Model */
 case class Route(symbol: Symbol) extends PathPart {
-  override def name = symbol.upperCaseFromCamelCase
+  override def name = symbol.name.upperCaseFromCamelCase
 }
 
 /**A path part that points to an element of a Col*/
