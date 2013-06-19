@@ -13,6 +13,8 @@ package object guidelines extends WorkflowFactory {
 
   val GuidelinesSheetMapping =
     Seq[Strip](
+      Path('firstName),
+      Path('lastName),
       Path('title),
       Path('functionalMatches, 'primary),
       Path('functionalMatches, 'secondary),
@@ -28,6 +30,8 @@ package object guidelines extends WorkflowFactory {
 
   val STBonusPlanSheetMapping =
     Seq[Strip](
+      Path('firstName),
+      Path('lastName),
       Path('title),
       Path('functionalMatches, 'primary),
       Path('functionalMatches, 'secondary),
