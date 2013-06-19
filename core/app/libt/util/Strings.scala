@@ -1,17 +1,17 @@
 package libt.util
 
-object Symbols {
+object Strings {
 
-  implicit def richWord(symbol : Symbol) = new {
+  implicit def richWord(aString : String) = new {
 
 
     /**
      * Convert a word in camelcase into words
      * split by spaces in uppercase
      *
-     * "pathPart".fromCamelCase       = "Path Part"
+     * {{{ "pathPart".upperCaseFromCamelCase  = "Path Part" }}}
      */
-    def upperCaseFromCamelCase() = symbol.name.foldLeft("") {
+    def upperCaseFromCamelCase() = aString.foldLeft("") {
       (acc, ch) =>
         if (ch.isUpper) acc ++ " " ++ Seq(ch)
         else acc ++ Seq(ch)
