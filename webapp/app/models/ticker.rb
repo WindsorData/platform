@@ -11,4 +11,6 @@
 class Ticker < ActiveRecord::Base
   attr_accessible :name
   has_and_belongs_to_many :groups
+
+  scope :containing_chars, lambda { |s| where("name like ?", "%#{s}%") }
 end

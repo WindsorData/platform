@@ -1,0 +1,32 @@
+<div class="span9">
+  <!-- quick launch -->
+  <div class="side-container quick-launch">
+    <h2 class="title">Quick Launch</h2>
+    <div class="content">
+      <%= form_tag('/groups') do %>
+        <label class="label">Select peer group
+          <%= select_tag :group, options_from_collection_for_select(groups, "id", "name") %>
+        </label>
+        <label class="label">Select report
+          <%= select_tag :report, options_for_select(Constants::REPORTS) %>
+        </label>
+        <%= submit_tag "Select" %>
+        <%= link_to('Create new peer group', new_group_path, class: 'right') %>
+      <% end %>
+    </div>
+  </div>
+</div>
+<div class="span3">
+  <!-- activity log -->
+  <div class="side-container activity-log">
+    <h2 class="title">Activity Log</h2>
+    <div class="content">
+      <ul class="documents-list">
+        <li class="document"><a href="#">Document 01</a></li>
+        <li class="document"><a href="#">Document 02</a></li>
+        <li class="document"><a href="#">Document 03</a></li>
+        <li class="document"><a href="#">Document 04</a></li>
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,15 +1,20 @@
 WindosorFrontend::Application.routes.draw do
   root to: "home#index"
-  get "dashboard/index"
-
-  ActiveAdmin.routes(self)
-
-  devise_for :admin_users, ActiveAdmin::Devise.config
-
   devise_for :users
-  resources :groups, only: [:new, :index, :create] do
+
+  resources :users, except: [:show]
+  resources :companies
+  resources :groups do
     collection do
       get :tickers
     end
-  end  
+  end
+
+  get "search/quick_search", as: :quick_search
+  get "search/full_search", as: :full_search
+  post "search/results"  
+
+  get   "files/single_file", as: 'single_file_upload'
+  post  "files/send_single"
+
 end

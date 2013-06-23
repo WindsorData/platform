@@ -1,36 +1,33 @@
 # bundle exec rails g scaffold_controller groups index new --no-test-framework
 class GroupsController < ApplicationController
- 
-  # GET /groups/new
-  # GET /groups/new.json
-  def new
-    @group = Group.new
+  before_filter :authenticate_user!
+  inherit_resources
 
-    respond_to do |format|
-      format.html # new.html.erb
-    end
-  end
-
-  # POST /groups
-  # POST /groups.json
   def create
+    authorize!(:create, Group)
     @group = Group.new(params[:group])
-    respond_to do |format|
-      if @group.save
-        format.html { redirect_to dashboard_index_path, notice: 'Group was successfully created.' }
-      else
-        format.html { render action: "new" }
-      end
-    end
+    @group.company = current_user.company if current_user.is_client?
+    create! { groups_path }
+  end
+  
+  def index
+    @group = Group.new
+    @groups = current_user.is_client? ? Group.by_company(current_user.company).to_a : Group.all
+    authorize!(:read_multiple, @groups)
+  end
+  def update
+    update! { groups_path }
   end
 
   # GET /groups/tickers.json
   def tickers
-
-    @tickers = Ticker.where("name like ?", "%#{params[:q]}%")
+    authorize!(:create, Group)
+    @tickers = Ticker.containing_chars(params[:q])
     respond_to do |format|
       format.html
       format.json { render json: @tickers.map(&:attributes) }
     end
+    # traer y guardar en la base periodicamente
+    # RestClient.get('http://192.168.161.176:9000/api/tickers')
   end
 end

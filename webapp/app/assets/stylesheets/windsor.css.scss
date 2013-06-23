@@ -1,0 +1,196 @@
+@import "bourbon";
+@import "neat";
+
+.container {
+  @include outer-container;
+}
+
+/* variables */
+$black: #000000;
+$white: #FFFFFF;
+$blue:  #0088CC;
+
+/* common styles */
+html {
+  font-family: sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.legend {
+  display: block;
+  width: 100%;
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.btn {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.hidden {
+  display: none;
+}
+
+/* header */
+.navbar {
+  line-height: 3em;
+  background: lighten($blue, 20%);
+  border-bottom: 3px solid $blue;
+  margin-bottom: 1em;
+  color: $white;
+  a {
+    color: $white;
+    text-decoration: none;
+  }
+}
+
+.nav {
+  margin-left: 10px;
+  .nav-link {
+    position: relative;
+    margin-left: -4px;
+    display: inline-block;
+    padding: 0 20px;
+    border-left: 1px solid lighten($blue, 20%);
+  }
+}
+
+/* dashboard */
+.side-container {
+  margin-bottom: 20px;
+  background: lighten($black, 90%);
+
+  .title {
+    font-size: 1em;
+    font-weight: normal;
+    color: $white;
+    background-color: lighten($black, 60%);
+    padding-left: 10px;
+    line-height: 40px;
+  }
+}
+
+.quick-launch {
+  .content {
+    padding: 10px;
+  }
+}
+
+.documents-list {
+  .document {
+    border-bottom: 1px solid lighten($black, 80%);
+    line-height: 40px;
+    a {
+      display: block;
+      padding: 0 10px;
+
+      &:hover {
+        color: lighten($black, 20%);
+        background-color: lighten($black, 80%);
+        text-decoration: none;
+      }
+    }
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+}
+
+
+
+.form-container {
+  margin-bottom: 20px;
+}
+
+.legend {
+  color: $white;
+  background-color: $blue;
+  padding: 20px 10px;
+  margin-bottom: 10px;
+  .cto {
+    top: 0;
+    right: 0;
+    color: $white;
+    padding: 20px 10px;
+    border-left: 1px solid darken($blue, 10%);
+    text-decoration: none;
+    cursor: pointer;
+    &:hover {
+      background-color: darken($blue, 10%);
+    }
+  }
+}
+
+label {
+  font-size: 11px;
+}
+
+.basic-group {
+  &:not(:nth-child(2)) {
+    border-top: 1px solid lighten($black, 80%);
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+}
+.item-form {
+  padding: 5px 0;
+  .label {
+    font-size: 11px;
+    width: 200px;
+    display: inline-block;
+    text-transform: uppercase;
+  }
+}
+
+.advanced-search-button:hover {
+  background-color: darken($blue, 10%);
+}
+
+/* alert */
+.alert {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  background: #F7F775;
+  margin-left: -150px;
+  font-size: 14px;
+  color: #666;
+  height: 48px;
+  display: table;
+  width: 300px;
+  padding-left: 10px;
+  & > div,
+  & > a {
+    display: table-cell;
+    vertical-align: middle;
+    color: lighten($black, 30%);
+
+  }
+
+  & > a {
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  & > a:hover {
+    color: $black;
+  }
+}

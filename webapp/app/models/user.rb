@@ -16,16 +16,31 @@
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  role                   :string(255)
+#  company_id             :integer
 #
 
 class User < ActiveRecord::Base
-
-  ROLES = %w[admin client user]
+  ROLES = %w[super admin client]
+  before_validation :generate_random_password
   
   devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable
 
-  # Setup accessible (or protected) attributes for your model
-  attr_accessible :email, :password, :password_confirmation, :remember_me
+  attr_accessible :email, :password, :password_confirmation, :remember_me, :role, :company
 
+  belongs_to :company
+
+  # Dynamic role methods definition
+  ROLES.each do |k|
+    define_method "is_#{k}?" do
+      role == k
+    end
+  end
+  
+  private
+  def generate_random_password
+    unless self.password && self.password_confirmation && self.password == self.password_confirmation
+      self.password = self.password_confirmation = Devise.friendly_token.first(Rails.application.config.devise.password_length.min)  
+    end
+  end
 end

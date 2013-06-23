@@ -13,7 +13,7 @@
 
   <div class="field">
     <%= f.text_field :name %>
-    <%= f.text_field :tickers_tokens, id: "tickers_tokens" %>
+    <%= f.text_field :tickers_tokens, id: "tickers_tokens", "data-pre" => @group.tickers.map(&:attributes).to_json %>
   </div>
   
   <div class="actions">
