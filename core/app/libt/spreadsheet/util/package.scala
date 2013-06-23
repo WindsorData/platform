@@ -11,10 +11,10 @@ package object util {
     def cellAt(rowIndex: Int, columnIndex: Int): Cell =
       CellUtil.getCell(CellUtil.getRow(rowIndex, sheet), columnIndex)
 
-    def rows(offset:Offset) : Seq[Row] = rows.drop(offset.rowIndex)   
-      
-    def rows: Seq[Row] = for (rowIndex <- 0 to sheet.getLastRowNum())
-      yield CellUtil.getRow(rowIndex, sheet)
+    def rows(offset:Offset) : Seq[Row] = rows.drop(offset.rowIndex)
+
+    def rows: Seq[Row] =
+      (0 to sheet.getLastRowNum()).view.map(CellUtil.getRow(_, sheet))
 
     def defineLimits(offset: Offset, rowLimit: Int, columnLimit: Int) =
       for {

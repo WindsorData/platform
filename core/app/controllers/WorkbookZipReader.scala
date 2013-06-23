@@ -26,7 +26,10 @@ trait WorkbookZipReader {
 
   protected def getValidEntries[A](readers: Seq[(InputWorkflow[A], String)]) = {
     def suffix(entry: ZipEntry) = entry.getName().split("-").last
-    def isValidEntry(validSuffix: String, entry: ZipEntry) = !entry.isDirectory() && validSuffix == suffix(entry)
+    def isValidEntry(validSuffix: String, entry: ZipEntry) = {
+      !entry.isDirectory() && validSuffix == suffix(entry) && !entry.getName.contains("__MACOSX")
+    }
+
 
     def validEntryWithReader[A](readers: Seq[(InputWorkflow[A], String)], entry: ZipEntry) =
       readers

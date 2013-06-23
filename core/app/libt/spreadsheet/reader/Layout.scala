@@ -45,6 +45,6 @@ object ColumnOrientedLayout extends Layout with LibtSizes {
     }
   }
     
-  def effectiveRowGroups(area: Area, sheet: Sheet) = 
-     sheet.rows(area.offset).grouped(ValueSizeWithSeparator)
+  def effectiveRowGroups(area: Area, sheet: Sheet) =
+    sheet.rows(area.offset).grouped(ValueSizeWithSeparator).map(_.toList)
 }

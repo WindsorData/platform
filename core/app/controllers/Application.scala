@@ -26,9 +26,9 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   implicit val db = MongoClient()("windsor")
   
   val readersAndValidSuffixes = 
-    Seq((top5.Workflow, "Exec Top5 and Grants.xls"),
-        (guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xls"),
-        (dilution.Workflow, "Company SVT BS Dilution.xls"))
+    Seq((top5.Workflow, "Exec Top5 and Grants.xlsx"),
+        (guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xlsx"),
+        (dilution.Workflow, "Company SVT BS Dilution.xlsx"))
         
   val companyForm = Form(
     tuple(
