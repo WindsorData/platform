@@ -1,15 +1,31 @@
-import com.mongodb.DBObject
+
+import com.mongodb.casbah.commons.MongoDBObjectBuilder
 import model._
-import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
-import com.mongodb.casbah.commons.MongoDBList
-import util._
 import libt.persistence._
 import libt._
-import com.mongodb.casbah.commons.MongoDBObjectBuilder
 
 package object persistence {
   type DBO = DBObject
+
+  type Filter = Seq[Condition]
+  type Operator = (String, Any)
+
+  case class Query(basics: Seq[Filter]) {
+    def basicConditions = basics.map(_.flatMap(_.conditions).reduce(_ ++ _))
+  }
+
+  trait Condition {
+    def conditions : Seq[DBO]
+  }
+
+  case class EqualCondition(property: String, value: Any) extends Condition {
+    def conditions = Seq(MongoDBObject(property -> value))
+  }
+
+  case class ConditionWithOperators(property: String, operators: Seq[Operator]) extends Condition {
+    def conditions = operators.map(operator => operatorExpression(property, operator._1, operator._2))
+  }
 
   private def companies(implicit db: MongoDB) = db("companies")
 
@@ -45,8 +61,10 @@ package object persistence {
 
   def createQuery(names: Seq[String]): MongoDBObject =
     if (!names.contains(allCompanies))
-      MongoDBObject("ticker.value" -> MongoDBObject("$in" -> names))
+      operatorExpression("ticker.value", "$in", names)
     else
       MongoDBObject()
 
+
+  def operatorExpression(property: String, operator: String, values: Any) = MongoDBObject(property -> MongoDBObject(operator -> values))
 }

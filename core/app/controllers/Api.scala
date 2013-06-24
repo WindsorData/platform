@@ -1,12 +1,15 @@
 package controllers
 
+import play.api.libs.json.JsValue
 import com.mongodb.casbah.MongoClient
+import filter._
 import libt.util.Strings._
 import model.Commons._
 import play.api.libs.json.Json._
 import persistence._
 import play.api.mvc._
 import libt._
+
 
 object Api extends Controller {
 
@@ -56,6 +59,13 @@ object Api extends Controller {
         name => Map("name" -> name)
       }))
     }
+  }
+
+
+  def query = Action { request =>
+    val json : JsValue = request.body.asJson.get
+    ParserJsonQuery.query(json).basics.foreach(println(_))
+    Ok("")
   }
 
 }
