@@ -1,5 +1,6 @@
 @import "bourbon";
 @import "neat";
+@import "vars.css.scss";
 
 .table {
   width: 100%;
@@ -13,14 +14,7 @@
 
   tbody td {
     padding: 10px 0;
-  }
-
-  tbody tr:nth-child(2n+1) td {
-    border-bottom: 1px solid #3BF;
-  }
-
-  tbody tr:nth-child(2n) td {
-    border-bottom: 1px solid #08C;
+    border-bottom: 1px solid lighten($black, 90%);
   }
 
 }
