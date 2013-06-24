@@ -50,7 +50,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def uploadSingleSpreadsheet(reader: InputWorkflow[Seq[Validated[Model]]]) =
     UploadAndReadAction {
-      (request, dataset) => keyed.flatJoin(Seq(dataset.ref.file.getName -> reader.read(dataset.ref.file.getAbsolutePath)))
+      (request, dataset) => keyed.flatJoin(Seq(dataset.ref.file.getName -> reader.readFile(dataset.ref.file.getAbsolutePath)))
     }
   
   def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) = UploadSpreadsheetAction { (request, dataset) =>

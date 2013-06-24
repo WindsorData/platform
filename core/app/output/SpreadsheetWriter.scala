@@ -91,14 +91,13 @@ object SpreadsheetWriter {
         metadataArea)).write(companies, out)
   }
 
-  def loadTemplateInto(out: OutputStream) = {
-    FileManager.load("docs/external/EmptyOutputTemplate.xls") {
+  def loadTemplateInto(out: OutputStream) =
+    FileManager.loadResource("EmptyOutputTemplate.xls") {
       x => WorkbookFactory.create(x).write(out)
     }
-  }
 
   def write(out: OutputStream, companies: Seq[Model]): Unit = {
-    FileManager.load("docs/external/EmptyOutputTemplate.xls") {
+    FileManager.loadResource("EmptyOutputTemplate.xls") {
       x =>
         {
           val wb = WorkbookFactory.create(x)

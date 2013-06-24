@@ -3,6 +3,6 @@ import java.io.InputStream
 import util._
 
 trait TestSpreadsheetLoader  {
-  def load[T](name: String)(action: InputStream => T) = FileManager.load("test/input/" + name)(action)
+  def loadResource[T](name: String)(action: InputStream => T) = FileManager.loadResource(s"input/$name")(action)
   
 }

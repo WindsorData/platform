@@ -10,34 +10,21 @@ import libt.Model
 import libt.workflow._
 import output.SpreadsheetWriter
 
+import Closeables._
 
 object FileManager {
 
-  def load[T](name: String)(action: InputStream => T) = {
-    import Closeables._
-    new FileInputStream(name).processWith {
-      x => action(x)
-    }
-  }
-  
-  implicit def reader2RichReader[A](wb: InputWorkflow[A]) = new {
-    def read(filePath: String): A =
-    load(filePath) { in =>
-      wb(in)
-    }
-  }
-  
-  def write[T](name: String)(action: OutputStream => T) = {
-    import Closeables._
-    new FileOutputStream(name).processWith {
-      x => action(x)
-    }
+  def loadResource[T](name: String)(action: InputStream => T) = {
+    val stream = Thread.currentThread().getContextClassLoader.getResourceAsStream(name)
+    assert(stream != null, s"No resource for $name")
+    stream.processWith(action)
   }
 
-  def generateNewFileWith(name: String, company: Model) = {
-    write(name) { x => 
-      SpreadsheetWriter.write(x, Seq(company))
-    }
-  }
+  def loadFile[T](fileName: String)(action: InputStream => T) =
+    new FileInputStream(fileName).processWith(action)
 
+  implicit def reader2RichReader[A](self: InputWorkflow[A]) = new {
+    def readResource(filePath: String): A = loadResource(filePath)(self(_))
+    def readFile(fileName: String): A = loadFile(fileName)(self(_))
+  }
 }

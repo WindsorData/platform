@@ -81,7 +81,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
     }
 
     it("should read percentage values as a number") {
-      FileManager.load("test/input/Percentage.xlsx") {
+      FileManager.loadResource("input/Percentage.xlsx") {  //TODO bad test
         x =>
           workbook = WorkbookFactory.create(x)
           sheet = workbook.getSheetAt(0)
