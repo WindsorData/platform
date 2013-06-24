@@ -100,13 +100,15 @@ input {
 
 .nav {
   margin-left: 10px;
+
   .nav-link {
     position: relative;
-    margin-left: -4px;
     display: inline-block;
-    padding: 0 20px;
-    border-left: 1px solid lighten($blue, 20%);
+    padding: 0 5px;
+    text-transform: uppercase;
+    font-weight: bold;
   }
+
 }
 
 /* dashboard */
