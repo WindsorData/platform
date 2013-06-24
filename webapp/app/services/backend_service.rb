@@ -23,6 +23,6 @@ class BackendService
   def self.load_roles
     url = Rails.application.config.backend_host + Rails.application.config.get_roles_path
     json = RestClient.get url
-    @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
+    Role.load_json(json)
   end
 end

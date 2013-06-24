@@ -8,12 +8,10 @@
 #  updated_at :datetime         not null
 #
 
+require 'json_loadable.rb'
 class Role < ActiveRecord::Base
+  extend JSONLoadable
+
   attr_accessible :name
-
   validates :name, presence: true
-
-  def self.load_json(json)
-    Role.create(JSON.parse(json))
-  end
 end
