@@ -1,5 +1,3 @@
-require 'json' # poner en superclase
-
 class SearchController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_groups, only: [:quick_search, :full_search]
