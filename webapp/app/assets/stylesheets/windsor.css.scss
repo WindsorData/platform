@@ -1,45 +1,10 @@
 @import "bourbon";
 @import "neat";
-
-// Change the grid settings
-$max-width: 800px;
-
-.container {
-  @include outer-container;
-
-  .home-column { 
-    @include span-columns(4); 
-  }
-
-  .column-3 {
-    @include span-columns(3);
-  }
-
-  .column-6 {
-    @include span-columns(6);
-  }
-
-  .column-9 {
-    @include span-columns(9);
-  }
-
-  .column-12 {
-    @include span-columns(12);
-  }
-}
-
-/* variables */
-$black: #000000;
-$white: #FFFFFF;
-$blue:  #0088CC;
+@import "vars.css.scss";
 
 /* common styles */
 html {
   font-family: sans-serif;
-}
-
-body {
-  margin: 0;
 }
 
 .legend {
@@ -89,11 +54,6 @@ body {
 
 .width-100 {
   width: 100%;
-}
-
-input {
-  padding: 10px;
-  font-size: 16px;
 }
 
 .main-title {
@@ -177,56 +137,6 @@ input {
   }
 }
 
-
-
-.form-container {
-  margin-bottom: 20px;
-}
-
-.legend {
-  color: $white;
-  background-color: $blue;
-  padding: 20px 10px;
-  margin-bottom: 10px;
-  .cto {
-    top: 0;
-    right: 0;
-    color: $white;
-    padding: 20px 10px;
-    border-left: 1px solid darken($blue, 10%);
-    text-decoration: none;
-    cursor: pointer;
-    &:hover {
-      background-color: darken($blue, 10%);
-    }
-  }
-}
-
-label {
-  font-size: 11px;
-}
-
-.basic-group {
-  &:not(:nth-child(2)) {
-    border-top: 1px solid lighten($black, 80%);
-    margin-top: 10px;
-    padding-top: 10px;
-  }
-}
-.item-form {
-  padding: 5px 0;
-  .label {
-    font-size: 11px;
-    width: 200px;
-    display: inline-block;
-    text-transform: uppercase;
-  }
-}
-
-.advanced-search-button:hover {
-  background-color: darken($blue, 10%);
-}
-
 /* alert */
 .alert {
   position: absolute;
@@ -264,31 +174,6 @@ label {
   width: 350px;
   padding: 20px;
   margin: 100px auto;
-}
-
-/* tables */
-.table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-
-  thead th {
-    border-bottom: 2px solid #08C;
-    padding: 10px 0;
-  }
-
-  tbody td {
-    padding: 10px 0;
-  }
-
-  tbody tr:nth-child(2n+1) td {
-    border-bottom: 1px solid #3BF;
-  }
-
-  tbody tr:nth-child(2n) td {
-    border-bottom: 1px solid #08C;
-  }
-
 }
 
 /* peer users group form */

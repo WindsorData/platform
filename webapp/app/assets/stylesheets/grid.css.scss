@@ -1,0 +1,29 @@
+@import "bourbon";
+@import "neat";
+
+// Change the grid settings
+$max-width: 800px;
+
+.container {
+  @include outer-container;
+
+  .home-column { 
+    @include span-columns(4); 
+  }
+
+  .column-3 {
+    @include span-columns(3);
+  }
+
+  .column-6 {
+    @include span-columns(6);
+  }
+
+  .column-9 {
+    @include span-columns(9);
+  }
+
+  .column-12 {
+    @include span-columns(12);
+  }
+}
