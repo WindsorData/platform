@@ -64,6 +64,11 @@ html {
   width: 70px;
 }
 
+/* main */
+.main {
+  margin: 4em 0 2em;
+}
+
 /* header */
 .navbar {
   line-height: 3em;
@@ -71,10 +76,16 @@ html {
   border-bottom: 3px solid $blue;
   margin-bottom: 1em;
   color: $white;
+  position: fixed;
+  top: 0;
+  z-index: 1;
+
+
   a {
     color: $white;
     text-decoration: none;
   }
+
 }
 
 .nav {

@@ -14,11 +14,11 @@
   <body>
     <%= render 'layouts/messages' %>
     <% if controller_name != 'sessions' %>
-      <div class="navbar">
+      <div class="navbar width-100">
         <%= render 'layouts/navigation' %>
       </div>
     <% end %>
-    <div id="main" role="main">
+    <div class="main" id="main" role="main">
       <div class="container">
         <div class="row">
           <%= yield %>
