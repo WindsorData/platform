@@ -16,6 +16,7 @@
 //= require css_browser_selector
 //= require jquery.tokeninput
 //= require jquery.placeholder.min
+//= require prefixfree.min
 //= require_tree
 
 $(function() {
