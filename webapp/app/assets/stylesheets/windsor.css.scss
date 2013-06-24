@@ -72,6 +72,17 @@ body {
   transition: 0.2s;
 }
 
+.btn-icon {
+  color: lighten($black, 20%);;
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover {
+    color: lighten($black, 40%);
+  }
+}
+
 .hidden {
   display: none;
 }
@@ -83,6 +94,19 @@ body {
 input {
   padding: 10px;
   font-size: 16px;
+}
+
+.main-title {
+  text-transform: uppercase;
+  font-size: 1.5em;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.icon-column {
+  width: 70px;
 }
 
 /* header */

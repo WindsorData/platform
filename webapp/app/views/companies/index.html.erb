@@ -16,8 +16,8 @@
     <td><%= company.address %></td>
     <td><%= company.contact_email %></td>
     <td><%= link_to 'Show', company %></td>
-    <td><%= link_to 'Edit', edit_company_path(company) %></td>
-    <td><%= link_to 'Destroy', company, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+    <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_company_path(company), class: 'btn-icon' %></td>
+    <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, company, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
   </tr>
 <% end %>
 </table>
