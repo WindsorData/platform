@@ -115,3 +115,23 @@ input {
 .field_with_errors input {
   border: 1px solid lighten($red, 20%);
 }
+
+
+/* peer users group form */
+.group-name {
+  width: 29%;
+}
+
+ul.token-input-list-facebook {
+  display: inline-table;
+  padding: 6px;
+  font-size: 16px;
+  margin: 8px 0;
+  height: 40px;
+}
+
+.group-create {
+  width: 20%;
+  border: 0;
+  padding: 12px;
+}
