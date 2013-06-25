@@ -7,7 +7,7 @@ class FilesController < ApplicationController
 
   def send_file
     #BackendService.post_file(params[:type], params[:file])
-    BackendService.load_values
+    BackendService.update_search_values
     redirect_to :back
   end
 

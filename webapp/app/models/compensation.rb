@@ -10,6 +10,11 @@
 #  type       :string(255)
 #
 
-class CashCompensation < Compensation
-
+require 'json_loadable.rb'
+class Compensation < ActiveRecord::Base
+  extend JSONLoadable
+  
+  attr_accessible :field, :value
+  validates :field, presence: true
+  validates :value, presence: true
 end

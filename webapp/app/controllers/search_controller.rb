@@ -7,6 +7,7 @@ class SearchController < ApplicationController
   end  
   def full_search
     @roles = Role.all
+    @eq_comp_values = EquityCompensation.all
     @cash_comp_values = CashCompensation.all
   end
 

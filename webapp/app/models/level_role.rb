@@ -1,0 +1,3 @@
+class LevelRole < Role
+
+end

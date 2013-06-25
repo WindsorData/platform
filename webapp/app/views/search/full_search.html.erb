@@ -23,7 +23,7 @@
           <!-- equity compensation -->
           <div class="item-form">      
             <p class="label">equity compensation</p>
-            <%= select_tag '[role_form][eq_comp][type]', options_for_select(Constants::CRITERIA) %>
+            <%= select_tag '[role_form][eq_comp][type]', options_from_collection_for_select(@eq_comp_values, "field", "value") %>
             <input type="text" placeholder="Greater than ($)" name='[role_form][eq_comp][gt]'>
             <input type="text" placeholder="Less than ($)" name='[role_form][eq_comp][gt]'>
           </div>

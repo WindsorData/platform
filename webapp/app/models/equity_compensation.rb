@@ -10,6 +10,6 @@
 #  type       :string(255)
 #
 
-class CashCompensation < Compensation
+class EquityCompensation < Compensation
 
 end

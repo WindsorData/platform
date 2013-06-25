@@ -41,6 +41,10 @@ WindosorFrontend::Application.configure do
   config.get_primary_roles_path = '/api/schema/values/roles/primary'
   config.get_secondary_roles_path = '/api/schema/values/roles/secondary'  
   config.get_cash_compensations_path = '/api/schema/values/cashCompensations'
+  config.get_equity_compensations_path = '/api/schema/values/equityCompensations'
+  config.get_level_roles_path = '/api/schema/values/roles/level'
+  config.get_scope_roles_path = '/api/schema/values/roles/scope'
+  config.get_bod_roles_path = '/api/schema/values/roles/bod'
   
   config.post_top5_path = '/api/companies/top5'
   config.post_guidelines_path = '/api/companies/guidelines'
