@@ -6,7 +6,6 @@ import libt._
 import libt.spreadsheet.Strip
 import libt.spreadsheet.reader.SheetDefinition
 import org.apache.poi.ss.usermodel.Sheet
-
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.writer._
@@ -34,12 +33,14 @@ case class FlattedArea(
    */
   flatteningPath: Path,
   schema: TModel,
-  layout: FlattedAreaLayout,
-  columns: Seq[Strip])
+  layout: FlattedAreaLayout, 
+  columns: Seq[Strip],
+  writeStrategy: WriteStrategy = FullWriteStrategy)
   extends SheetDefinition with LibtSizes {
 
-  def write(models: Seq[Model])(sheet: Sheet) =
-    layout.write(models, sheet, this)
+  def write(models: Seq[Model])(sheet: Sheet) = {
+    writeStrategy.write(models, this, sheet)
+  }
 
   def featuresSize = columns.size
 
@@ -125,5 +126,16 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
   }
 }
 
+trait WriteStrategy {
+  def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit
+}
 
+/**
+ * [[output.WriteStrategy]] that completelty delegates on the layout and
+ * simply writes everything
+ */
+object FullWriteStrategy extends WriteStrategy {
+  override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) =
+    area.layout.write(models, sheet, area)
+}
 

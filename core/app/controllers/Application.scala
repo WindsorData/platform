@@ -22,7 +22,7 @@ import libt._
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
 
-
+  val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
   
   val readersAndValidSuffixes = 
@@ -32,8 +32,8 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
         
   val companyForm = Form(
     tuple(
-      "Company Name" -> nonEmptyText,
-      "Company Fiscal Year" -> nonEmptyText))
+      "checkMe" -> seq(text),
+      "Company Fiscal Year" -> number))
 
   def index = Action {
     Redirect(routes.Application.companies)
@@ -83,7 +83,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def searchCompany = Action {
     Ok(views.html.searchCompanies(companyForm,
       allCompanies :: findAllCompaniesNames.toList,
-      allYears :: findAllCompaniesFiscalYears.map(_.toString).toList))
+      YearRanges))
   }
 
   def doSearch = Action { implicit request =>
@@ -91,14 +91,14 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       formWithErrors =>
         BadRequest(views.html.searchCompanies(formWithErrors,
           findAllCompaniesNames,
-          findAllCompaniesFiscalYears.map(_.toString))),
+          YearRanges)),
       values => {
-        val name = values._1
-        val year = values._2
+        val names = values._1
+        val range = values._2
         val out = new ByteArrayOutputStream()
-        findCompaniesBy(name, year) match {
+        findCompaniesBy(names, range) match {
           case Some(founded: Seq[Model]) => {
-            SpreadsheetWriter.write(out, founded)
+            SpreadsheetWriter.write(out, founded, range)
             Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
               CONTENT_DISPOSITION -> "attachment; filename=company.xls")
           }
