@@ -22,7 +22,7 @@ import libt._
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
 
-
+  val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
   
   val readersAndValidSuffixes = 
@@ -83,7 +83,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def searchCompany = Action {
     Ok(views.html.searchCompanies(companyForm,
       allCompanies :: findAllCompaniesNames.toList,
-      List(1,2,3)))
+      YearRanges))
   }
 
   def doSearch = Action { implicit request =>
@@ -91,7 +91,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       formWithErrors =>
         BadRequest(views.html.searchCompanies(formWithErrors,
           findAllCompaniesNames,
-          List(1,2,3))),
+          YearRanges)),
       values => {
         val names = values._1
         val range = values._2
