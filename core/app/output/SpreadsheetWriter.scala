@@ -30,13 +30,13 @@ object SpreadsheetWriter {
       outputMapping,
       writeStrategy)
 
-  def execDBArea(range: Int, pos: Option[Int]) =
+  def execDBArea(range: Int, yearOffset: Option[Int]) =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       execDbOutputMapping,
       Path('lastName),
       Path('executives, *),
-      ExecutivesStrategy(range, pos))
+      ExecutivesWriteStrategy(range, yearOffset))
 
   def stBonusPlanArea =
     outputArea(
@@ -44,7 +44,7 @@ object SpreadsheetWriter {
       stBonusPlanOutputMapping,
       Path('functionalMatches, 'primary),
       Path('stBonusPlan, *),
-      LastYearStrategy)
+      LastYearWriteStrategy)
 
   def executiveOwnershipArea =
     outputArea(
@@ -52,7 +52,7 @@ object SpreadsheetWriter {
       executiveOwnershipMapping,
       Path('functionalMatches, 'primary),
       Path('guidelines, *),
-      LastYearStrategy)
+      LastYearWriteStrategy)
 
   def usageAndSVTDataArea =
     outputArea(
@@ -60,7 +60,7 @@ object SpreadsheetWriter {
       usageAndSVTDataMapping,
       Path(),
       Path('usageAndSVTData, *),
-      LastYearStrategy)
+      LastYearWriteStrategy)
 
   def bsInputsArea =
     outputArea(
@@ -68,7 +68,7 @@ object SpreadsheetWriter {
       bsInputsMapping,
       Path(),
       Path('bsInputs, *),
-      LastYearStrategy)
+      LastYearWriteStrategy)
 
   def dilutionArea =
     outputArea(
@@ -76,7 +76,7 @@ object SpreadsheetWriter {
       dilutionMapping,
       Path(),
       Path('dilution, *),
-      LastYearStrategy)
+      LastYearWriteStrategy)
 
   def grantTypesArea =
     outputArea(
@@ -84,7 +84,7 @@ object SpreadsheetWriter {
       grantTypesMapping,
       Path(),
       Path('grantTypes, *),
-      LastYearStrategy)
+      LastYearWriteStrategy)
 
   def metadataArea(range: Int) =
     outputArea(
@@ -95,7 +95,7 @@ object SpreadsheetWriter {
       }),
       Path('lastName),
       Path('executives, *),
-      ExecutivesStrategy(range, None))
+      ExecutivesWriteStrategy(range, None))
 
   def write(out: Workbook, companies: Seq[Model], executivesRange: Int): Unit = {
     WorkbookMapping(
@@ -128,40 +128,34 @@ object SpreadsheetWriter {
     }
   }
 
-  case class ExecutivesStrategy(range: Int, pos: Option[Int]) extends WriteStrategy {
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit = {
+  /**
+    * [[output.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
+    * @param range
+    * @param yearOffset the negative year offset (0 is last year, 1 is previous year, and so on)
+    */
+  case class ExecutivesWriteStrategy(/*TODO remove*/range: Int, yearOffset: Option[Int]) extends WriteStrategy {
+    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet)  {
       def Desc[T: Ordering] = implicitly[Ordering[T]].reverse
       if (range >= 0) {
-        val validModels =
-          models.groupBy(model => model('ticker).asValue[String].value.get)
-            .map {
-              case (ticker, ms) =>
-                (ticker,
-                  ms
-                  .sortBy(_.apply('disclosureFiscalYear).asValue[Int].value.get)(Desc))
-            }
-        pos match {
-        	case Some(p) => 
-        	  area.layout.write(validModels.values.toSeq.flatMap { models =>
-        	    Seq(models(p))
-        	  }, sheet, area)
+        val validModels = models
+          .groupBy(model => model('ticker).asValue[String].value.get)
+          .map { case (ticker, ms) => (ticker, ms.sortBy(_('disclosureFiscalYear).asValue[Int].value.get)(Desc)) }
+        yearOffset match {
+        	case Some(p) => area.layout.write(validModels.values.toSeq.map(_(p)), sheet, area)
         	case None => area.layout.write(validModels.values.toSeq.flatten, sheet, area) 
         }		
       }
     }
   }
 
-  object LastYearStrategy extends WriteStrategy {
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit = {
-      def Desc[T: Ordering] = implicitly[Ordering[T]].reverse
-      val lastYear =
-        models
-          .map(_.apply('disclosureFiscalYear).asValue[Int].value.get)
-          .sortBy(v => v)(Desc)
-          .head
-
+  /**
+    * [[output.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
+    */
+  object LastYearWriteStrategy extends WriteStrategy {
+    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) {
+      val lastYear = models.map(_('disclosureFiscalYear).asValue[Int].value.get).max
       area.layout.write(
-        models.filter(_.apply('disclosureFiscalYear).asValue[Int].value.get == lastYear),
+        models.filter(_('disclosureFiscalYear).asValue[Int].value.get == lastYear),
         sheet,
         area)
     }
