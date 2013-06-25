@@ -12,7 +12,12 @@ class FilesController < ApplicationController
     BackendService.load_roles
     redirect_to :back
   end
-  rescue_from RestClient::InternalServerError do |exception|
+
+  rescue_from Errno::EHOSTUNREACH do
+    render "#{Rails.root}/public/500"
+  end
+
+  rescue_from RestClient::InternalServerError do
     render "#{Rails.root}/public/500"
   end 
 end

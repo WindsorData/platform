@@ -1,9 +1,4 @@
 class BackendService
-  def self.load_tickers
-    url = Rails.application.config.backend_host + Rails.application.config.get_tickers_path
-    json = RestClient.get url
-    Ticker.load_json(json)
-  end
 
   def self.post_file(type, file)
     case type
@@ -18,6 +13,12 @@ class BackendService
     end
     url = Rails.application.config.backend_host + path
     RestClient.post url, dataset: File.new(file.path, 'r')
+  end
+
+  def self.load_tickers
+    url = Rails.application.config.backend_host + Rails.application.config.get_tickers_path
+    json = RestClient.get url
+    Ticker.load_json(json)
   end
 
   def self.load_roles
