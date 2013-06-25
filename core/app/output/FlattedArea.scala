@@ -35,7 +35,7 @@ case class FlattedArea(
   schema: TModel,
   layout: FlattedAreaLayout, 
   columns: Seq[Strip],
-  writeStrategy: WriteStrategy = DefaultStrategy)
+  writeStrategy: WriteStrategy = FullWriteStrategy)
   extends SheetDefinition with LibtSizes {
 
   def write(models: Seq[Model])(sheet: Sheet) = {
@@ -127,12 +127,15 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
 }
 
 trait WriteStrategy {
-  def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) : Unit
+  def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit
 }
 
-object DefaultStrategy extends WriteStrategy{
-  override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit = {
-    area.layout.write(models,sheet, area)
-  }
+/**
+ * [[output.WriteStrategy]] that completelty delegates on the layout and
+ * simply writes everything
+ */
+object FullWriteStrategy extends WriteStrategy {
+  override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) =
+    area.layout.write(models, sheet, area)
 }
 
