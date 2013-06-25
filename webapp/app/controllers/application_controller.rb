@@ -9,9 +9,6 @@ class ApplicationController < ActionController::Base
     new_user_session_path
   end
 
-  rescue_from CanCan::AccessDenied do |exception|
-    render "#{Rails.root}/public/401"
-  end
 
   helper_method :user_root_path # Available for views
   def user_root_path(user)
@@ -24,5 +21,15 @@ class ApplicationController < ActionController::Base
       quick_search_path
     end
   end
+
+  rescue_from CanCan::AccessDenied do |exception|
+    render "#{Rails.root}/public/401"
+  end
+
+  def render_500
+    render "#{Rails.root}/public/500"
+  end
+  
+  rescue_from Exception, with: :render_500
 
 end

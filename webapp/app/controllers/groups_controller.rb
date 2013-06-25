@@ -27,7 +27,5 @@ class GroupsController < ApplicationController
       format.html
       format.json { render json: @tickers.map(&:attributes) }
     end
-    # traer y guardar en la base periodicamente
-    # RestClient.get('http://192.168.161.176:9000/api/tickers')
   end
 end

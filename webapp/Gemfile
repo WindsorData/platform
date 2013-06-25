@@ -24,7 +24,6 @@ group :assets do
 end
 
 group :test, :development do
-  # Debugging
   gem 'pry'
   gem 'debugger'
   gem 'debugger-pry'

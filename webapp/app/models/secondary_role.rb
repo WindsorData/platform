@@ -9,10 +9,6 @@
 #  type       :string(255)
 #
 
-require 'json_loadable.rb'
-class Role < ActiveRecord::Base
-  extend JSONLoadable
+class SecondaryRole < Role
 
-  attr_accessible :name
-  validates :name, presence: true
 end
