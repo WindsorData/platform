@@ -12,7 +12,7 @@ class CellsParsingSpec extends FunSpec with TestSpreadsheetLoader {
 
   describe("cells parsing") {
     it("should not ommit blanks") {
-      FileManager.load("test/input/MatrixWithBlanks.xlsx") {
+      loadResource("MatrixWithBlanks.xlsx") {
         x =>
           {
             val wb = WorkbookFactory.create(x)
