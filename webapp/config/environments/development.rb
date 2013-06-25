@@ -46,4 +46,6 @@ WindosorFrontend::Application.configure do
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
   config.post_batch_path = '/api/companies/batc'
+
+  config.post_query_path = '/api/schema/query'
 end

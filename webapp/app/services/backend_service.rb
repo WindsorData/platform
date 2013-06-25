@@ -12,8 +12,11 @@ class BackendService
     when 'batch'
       path = Rails.application.config.post_batch_path
     end
-    url = Rails.application.config.backend_host + path
-    RestClient.post url, dataset: File.new(file.path, 'r')
+    RestClient.post(HOST_URL + path, dataset: File.new(file.path, 'r'))
+  end
+
+  def self.perform_search(query)
+    RestClient.post(HOST_URL + path, query: query)
   end
 
   def self.load_values

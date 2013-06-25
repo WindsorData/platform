@@ -30,6 +30,6 @@ class ApplicationController < ActionController::Base
     render "#{Rails.root}/public/500"
   end
   
-  rescue_from Exception, with: :render_500
+  # rescue_from Exception, with: :render_500
 
 end
