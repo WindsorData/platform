@@ -10,7 +10,7 @@ import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt.util._
 import libt._
-import libt.error.generic.Valid
+import libt.error._
 
 package object guidelines extends WorkflowFactory {
 
@@ -89,6 +89,14 @@ package object guidelines extends WorkflowFactory {
       Path('guidelines, *),
       Seq(Path('numberOfShares), Path('multipleOfSalary)),
       model)
+  
+  def guidelinesValidations(model: Model): Validated[Model] = {
+    if(model.hasElement('guidelines)) {
+      guidelinesThreeDigitValidation(model)
+    }
+    else
+      Valid(model)
+  } 
 
   override def ValidationPhase =
     (_, models) => {
@@ -96,7 +104,7 @@ package object guidelines extends WorkflowFactory {
         models.map { model =>
           umatch(model) {
             case validModel @ Valid(m) => {
-              guidelinesThreeDigitValidation(m)
+              guidelinesValidations(m)
             }
           }
         }

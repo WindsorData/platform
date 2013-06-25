@@ -23,4 +23,19 @@ class DilutionValidations extends FunSpec {
       assert(!dilution.averageSharesValidation(model(3000000,2000000,1000000)).isDoubtful)
     }
   }
+  
+  describe("dilution validations") {
+    it("should validate Awards Outstanding: Total") {
+      def model(option: BigDecimal, fullValue: BigDecimal, total: BigDecimal) =
+        Model(
+          'dilution ->
+            Model('awardsOutstandings -> Model(
+              'option -> Value(option),
+              'fullValue -> Value(fullValue),
+              'total -> Value(total))))
+
+      assert(dilution.totalValidation(model(2,2,2)).isInvalid)
+      assert(dilution.totalValidation(model(1,2,3)).isValid)
+    }
+  }
 }

@@ -70,9 +70,27 @@ package object dilution extends WorkflowFactory {
     results.reduce((a, b) => a andThen b)
   }
 
+  def totalValidation(model: Model) = {
+    (model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal],
+     model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal],
+     model(Path('dilution, 'awardsOutstandings, 'total)).rawValue[BigDecimal]) match {
+      case (Some(option), Some(fullValue), Some(total)) 
+      	if option + fullValue == total => Valid(model)
+      case (_,_,_) => 
+        Invalid("Error on Dilution and ISS SVT Data - Awards Outstandings: column total must be equal to option + full value")
+    }
+  }
+  
   def usageAndSVTValidations(model: Model): Validated[Model] = {
     if (model.hasElement('usageAndSVTData)) {
       averageSharesValidation(model)
+    } else
+      Valid(model)
+  }
+  
+  def dilutionValidations(model: Model): Validated[Model] = {
+    if (model.hasElement('dilution)) {
+      totalValidation(model)
     } else
       Valid(model)
   }
@@ -83,7 +101,8 @@ package object dilution extends WorkflowFactory {
         models.map { model =>
           umatch(model) {
             case validModel @ Valid(m) => {
-              usageAndSVTValidations(m)
+              usageAndSVTValidations(m) andThen
+              dilutionValidations(m)
             }
           }
         }
