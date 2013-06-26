@@ -15,13 +15,4 @@ package object keyed {
       }
     })
   }
-
-  def join[A](results: Seq[(String, generic.Validated[String, A])]): Validated[A] = {
-    Validated.concat(results.map {
-      case (key, value) => value match {
-        case v @ Valid(_) => v
-        case i => Invalid(key -> i.messages)
-      }
-    })
-  }
 }
