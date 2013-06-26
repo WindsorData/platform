@@ -135,3 +135,17 @@ ul.token-input-list-facebook {
   border: 0;
   padding: 12px;
 }
+
+/* other criteria items */
+
+.inline-item {
+
+  margin-bottom: 10px;
+
+  p {
+    display: inline-block;
+    width: 200px;
+    font-size: 14px;
+  }
+
+}
