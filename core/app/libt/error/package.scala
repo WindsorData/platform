@@ -4,7 +4,10 @@ package object error {
   
   type Validated[A] = generic.Validated[String, A]
   type Invalid = generic.Invalid[String]
+  type Doubtful[+A] = generic.Doubtful[String, A]
+  
   val Valid = generic.Valid
+  val Doubtful = generic.Doubtful
   val Validated = generic.Validated
   val Invalid = generic.Invalid
   

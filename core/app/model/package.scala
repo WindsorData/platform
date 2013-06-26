@@ -18,6 +18,8 @@ package object model {
     'ticker -> TString,
     'name -> TString,
     'disclosureFiscalYear -> TInt,
+    'def14a -> TInt,
+    'tenK -> TInt,
 
     'grantTypes -> TGrantTypes,
     'usageAndSVTData -> TUsageAndSVTData,
