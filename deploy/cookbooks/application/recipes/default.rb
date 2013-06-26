@@ -2,19 +2,39 @@
 # Cookbook Name:: application
 # Recipe:: default
 #
-# Copyright 2012, YOUR_COMPANY_NAME
+# Copyright 2013, Windsor
 #
 # All rights reserved - Do Not Redistribute
 #
+java_version = "7"
+play_version = "2.1.0"
+
 include_recipe "set_locale"
 include_recipe "rbenv::default"
 include_recipe "rbenv::ruby_build"
+include_recipe "mongodb::default"
 
 package "tree"
 package "vim"
 package "libxml2-dev"
 package "libxslt1-dev"
 package "wget"
+package "unzip"
+package "openjdk-#{java_version}-jdk"
+
+
+
+################### Setting up Play Backend  ###################################
+execute "Install Play" do
+  play_archive = "play-#{play_version}"
+  command """wget http://downloads.typesafe.com/play/#{play_version}/#{play_archive}.zip && \
+             unzip #{play_archive}.zip && \
+             mv #{play_archive} play"""
+end
+
+execute "Compile Backend" do
+  command "cd core && play/play clean compile stage"
+end
 
 ################### Setting up PostgresSQL databases ###########################
 include_recipe "postgresql_server_utf8"

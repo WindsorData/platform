@@ -1,5 +1,5 @@
 {
-  "sha": "c98972ddded82ff9cfab5daa7948667558cd232e",
+  "sha": "54b8267ea1997f1513262e87c240c268ee3d7fb8",
   "sources": {
     "apt": {
       "locked_version": "1.9.2"
@@ -15,6 +15,9 @@
     },
     "rbenv": {
       "locked_version": "1.4.1"
+    },
+    "mongodb": {
+      "locked_version": "0.11.0"
     },
     "application": {
       "path": "./deploy/cookbooks/application"
