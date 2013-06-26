@@ -62,7 +62,7 @@ package object dilution extends WorkflowFactory {
       Seq(Path('year1), Path('year2), Path('year3)).map {
         year =>
           model(Path('usageAndSVTData, 'avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
-            case Some(value) if value.compare(BigDecimal(1000000)) < 0 =>
+            case Some(value) if value < 1000000 =>
               Doubtful(model, "Warning on Usage And SVT Data: Average Shares should be in millions")
             case _ => Valid(model)
           }
@@ -71,14 +71,15 @@ package object dilution extends WorkflowFactory {
   }
 
   def totalValidation(model: Model) = {
-    (model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal],
-     model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal],
-     model(Path('dilution, 'awardsOutstandings, 'total)).rawValue[BigDecimal]) match {
-      case (Some(option), Some(fullValue), Some(total)) 
-      	if option + fullValue == total => Valid(model)
-      case (_,_,_) => 
-        Invalid("Error on Dilution and ISS SVT Data - Awards Outstandings: column total must be equal to option + full value")
-    }
+    val option = model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal]
+    val full = model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+    val total = model(Path('dilution, 'awardsOutstandings, 'total)).rawValue[BigDecimal]
+    
+    (for( optionv <- option; fullv <- full; totalv <- total; if optionv + fullv == totalv )
+      yield Valid(model))
+      .getOrElse(
+          Invalid("Error on Dilution and ISS SVT Data - " +
+              "Awards Outstandings: column total must be equal to option + full value"))
   }
   
   def usageAndSVTValidations(model: Model): Validated[Model] = {
@@ -95,19 +96,8 @@ package object dilution extends WorkflowFactory {
       Valid(model)
   }
 
-  override def ValidationPhase =
-    (_, models) => {
-      if (!models.concat.isInvalid) {
-        models.map { model =>
-          umatch(model) {
-            case validModel @ Valid(m) => {
-              usageAndSVTValidations(m) andThen
-              dilutionValidations(m)
-            }
-          }
-        }
-
-      } else
-        models
-    }
+  override def Validation =
+    model => 
+      usageAndSVTValidations(model.get) andThen
+      dilutionValidations(model.get)
 }

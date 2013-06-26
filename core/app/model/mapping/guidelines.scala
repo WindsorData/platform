@@ -96,18 +96,5 @@ package object guidelines extends WorkflowFactory {
       Valid(model)
   } 
 
-  override def ValidationPhase =
-    (_, models) => {
-      if (!models.concat.isInvalid) {
-        models.map { model =>
-          umatch(model) {
-            case validModel @ Valid(m) => {
-              guidelinesValidations(m)
-            }
-          }
-        }
-
-      } else
-        models
-    }
+  override def Validation = model => guidelinesValidations(model.get)
 }
