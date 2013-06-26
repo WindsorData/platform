@@ -8,7 +8,6 @@
 #  updated_at :datetime         not null
 #
 
-require 'json_loadable.rb'
 class Ticker < ActiveRecord::Base
   extend JSONLoadable
 

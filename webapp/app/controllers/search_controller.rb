@@ -12,7 +12,6 @@ class SearchController < ApplicationController
   end
 
   def results
-    binding.pry
     params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
     json_query = QueryGenerator.json_query(params_hash)
     BackendService.perform_search(json_query)

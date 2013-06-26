@@ -10,7 +10,6 @@
 #  type       :string(255)
 #
 
-require 'json_loadable.rb'
 class Compensation < ActiveRecord::Base
   extend JSONLoadable
   

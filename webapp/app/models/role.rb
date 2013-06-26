@@ -9,7 +9,6 @@
 #  type       :string(255)
 #
 
-require 'json_loadable.rb'
 class Role < ActiveRecord::Base
   extend JSONLoadable
 
