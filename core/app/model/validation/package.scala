@@ -13,12 +13,15 @@ package object validation {
     results.reduce((a, b) => a andThen b)
   }
 
-  def threeDigitValidation(basePath: Path, valuePaths: Seq[Path], model: Model) =
+  def threeDigitValidation(basePath: Path, valuePaths: Seq[Path], model: Model) = 
+    digitValidation(basePath, valuePaths, model)(_ >= 100)
+    
+  def digitValidation(basePath: Path, valuePaths: Seq[Path], model: Model)(digitValidation: (BigDecimal => Boolean)) =
     reduceExecutiveValidations(basePath, model)(
       (m) => {
         val results: Seq[Validated[Model]] =
           valuePaths.map(path => m(path).rawValue[BigDecimal] match {
-            case Some(salary) if salary.compare(BigDecimal(100)) < 0 =>
+            case Some(salary) if !digitValidation(salary) =>
               Doubtful(model,
                 "Warning on ExecDb " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
                   ": " + valuePaths.map(_.titles).mkString(" - ") + " should be 3 digits or more")

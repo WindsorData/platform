@@ -84,15 +84,13 @@ package object guidelines extends WorkflowFactory {
       (10, 'guidelines, colWrapping),
       (25, 'stBonusPlan, colWrapping))
 
-  def guidelinesThreeDigitValidation(model: Model) =
-    threeDigitValidation(
-      Path('guidelines, *),
-      Seq(Path('numberOfShares), Path('multipleOfSalary)),
-      model)
+  def guidelinesDigitValidation(model: Model) =
+    digitValidation(Path('guidelines, *), Seq(Path('numberOfShares)),model)(_ >= 10) andThen
+    digitValidation(Path('guidelines, *), Seq(Path('multipleOfSalary)),model)(_ < 10)
   
   def guidelinesValidations(model: Model): Validated[Model] = {
     if(model.hasElement('guidelines)) {
-      guidelinesThreeDigitValidation(model)
+      guidelinesDigitValidation(model)
     }
     else
       Valid(model)

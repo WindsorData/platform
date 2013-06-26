@@ -25,10 +25,10 @@ class GuidelinesValidations extends FunSpec{
 	              'numberOfShares -> Value(numberOfShares),
 	              'multipleOfSalary -> Value(multOfSalary)))
 	              
-	    assert(guidelines.guidelinesThreeDigitValidation(model(1,1)).isDoubtful)
-	    assert(guidelines.guidelinesThreeDigitValidation(model(100,1)).isDoubtful)
-	    assert(guidelines.guidelinesThreeDigitValidation(model(1,100)).isDoubtful)
-	    assert(!guidelines.guidelinesThreeDigitValidation(model(100,100)).isDoubtful)
+	    assert(guidelines.guidelinesDigitValidation(model(1,1)).isDoubtful)
+	    assert(!guidelines.guidelinesDigitValidation(model(100,1)).isDoubtful)
+	    assert(guidelines.guidelinesDigitValidation(model(1,100)).isDoubtful)
+	    assert(guidelines.guidelinesDigitValidation(model(100,100)).isDoubtful)
 	  }
 	}
 }
