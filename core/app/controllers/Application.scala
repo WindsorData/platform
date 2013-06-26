@@ -48,7 +48,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
-  def uploadSingleSpreadsheet(reader: InputWorkflow[Seq[Validated[Model]]]) =
+  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Validated[Model]]]) =
     UploadAndReadAction {
       (request, dataset) => keyed.flatJoin(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
     }

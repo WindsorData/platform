@@ -14,24 +14,24 @@ trait WorkbookZipReader {
   var file : ZipFile = _
   
   /**answers a seq of file names and read results*/
-  def readZipFileEntries[A](filePath: String, readers: Seq[(InputWorkflow[A], String)]) = {
+  def readZipFileEntries[A](filePath: String, readers: Seq[(FrontPhase[A], String)]) = {
     file = new ZipFile(filePath)
     readZipFile(getValidEntries(readers))
   }
 
-  protected def readZipFile[A](readersWithEntries: Seq[(InputWorkflow[A], ZipEntry)]) =
+  protected def readZipFile[A](readersWithEntries: Seq[(FrontPhase[A], ZipEntry)]) =
     readersWithEntries
       .map { case (reader, entry) => (entry.getName(), reader(file.getInputStream(entry))) }
       .toSeq
 
-  protected def getValidEntries[A](readers: Seq[(InputWorkflow[A], String)]) = {
+  protected def getValidEntries[A](readers: Seq[(FrontPhase[A], String)]) = {
     def suffix(entry: ZipEntry) = entry.getName().split("-").last
     def isValidEntry(validSuffix: String, entry: ZipEntry) = {
       !entry.isDirectory() && validSuffix == suffix(entry) && !entry.getName.contains("__MACOSX")
     }
 
 
-    def validEntryWithReader[A](readers: Seq[(InputWorkflow[A], String)], entry: ZipEntry) =
+    def validEntryWithReader[A](readers: Seq[(FrontPhase[A], String)], entry: ZipEntry) =
       readers
         .collectFirst {
           case (reader, validSuffix) if isValidEntry(validSuffix, entry) => (reader, entry)

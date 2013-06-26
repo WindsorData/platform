@@ -23,7 +23,7 @@ object FileManager {
   def loadFile[T](fileName: String)(action: InputStream => T) =
     new FileInputStream(fileName).processWith(action)
 
-  implicit def reader2RichReader[A](self: InputWorkflow[A]) = new {
+  implicit def reader2RichReader[A](self: FrontPhase[A]) = new {
     def readResource(filePath: String): A = loadResource(filePath)(self(_))
     def readFile(fileName: String): A = loadFile(fileName)(self(_))
   }
