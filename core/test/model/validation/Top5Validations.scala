@@ -98,5 +98,35 @@ class Top5Validations extends FunSpec {
       assert(!top5.salaryValidation(model(9999)).isDoubtful)
     }
     
+    it("should validate on time vest rs, if price * number == value") {
+      def model(price: BigDecimal, number: BigDecimal, value: BigDecimal) =
+        createModel(Model(
+            'timeVestRS -> Col(
+                Model(
+                    'number -> Value(number),
+                    'price -> Value(price),
+                    'value -> Value(value)))))
+      assert(top5.timeVestRsValidation(model(2,2,4)).isValid)
+      assert(top5.timeVestRsValidation(model(2.24,3.76,8)).isValid)
+      assert(top5.timeVestRsValidation(model(2,3,4)).isInvalid)
+      assert(top5.timeVestRsValidation(model(2.55,3.92,9)).isInvalid)
+    }
+    
+    it("should validate Options Exercisable") {
+      def model(options: Value[BigDecimal], vested: Value[BigDecimal], unvested: Value[BigDecimal]) =
+        createModel(Model(
+            'carriedInterest -> Model(
+                'ownedShares -> Model(
+                    'options -> options),
+                'outstandingEquityAwards -> Model(
+                    'vestedOptions -> vested,
+                    'unvestedOptions -> unvested))))
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(), Value())).isValid)
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(), Value(0))).isValid)
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(0), Value())).isValid)
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(0), Value(0))).isValid)
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(1), Value(2))).isInvalid)
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(), Value(2))).isInvalid)
+    }
   }
 }

@@ -11,6 +11,7 @@ import libt.workflow._
 import libt.util._
 import libt._
 import libt.error._
+import java.math.MathContext
 
 object top5 extends WorkflowFactory {
 
@@ -200,6 +201,44 @@ object top5 extends WorkflowFactory {
           results.reduce((a, b) => a andThen b)
         }
     }
+ 
+  def optionsExercisableValidation(model: Model): Validated[Model] =
+    reduceExecutiveValidations(Path('executives, *), model) {
+      m => {
+        (m(Path('carriedInterest, 'ownedShares, 'options)).rawValue[BigDecimal],
+         m(Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions)).rawValue[BigDecimal],
+    	 m(Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions)).rawValue[BigDecimal]) match {
+          case (Some(options), vested, unvested) 
+          	if options == 0 && Seq(vested, unvested).flatten.sum > 0 => 
+          	  Invalid(err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+          	      Path('carriedInterest, 'ownedShares, 'options).titles + 
+          	      " is 0, so vested options and unvested options should be 0 or should be empty")
+          case _ => Valid(model)
+        }
+      }
+  }
+  
+  def timeVestRsValidation(model: Model): Validated[Model] =
+    reduceExecutiveValidations(Path('executives, *), model) {
+	  m => {
+	    val results: Seq[Validated[Model]] = 
+	    m.applySeq(Path('timeVestRS, *))
+	    .map { timeVest =>
+	      (for {
+	        n <- timeVest(Path('number)).rawValue[BigDecimal]
+	        p <- timeVest(Path('price)).rawValue[BigDecimal]
+	        v <- timeVest(Path('value)).rawValue[BigDecimal]
+	        product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) 
+	        if product != v 
+	      }
+	      yield 
+	      Invalid(
+	          err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs: " +
+	          "Number multiplied by price should be equal to value") ).getOrElse(Valid(model))
+	    }
+	    results.reduce( (a, b) => a andThen b)
+	  }
+  	}
 
   def salaryValidation(model: Model): Validated[Model] =
     threeDigitValidation(Path('executives, *), Seq(Path('cashCompensations, 'baseSalary)), model)
@@ -232,7 +271,9 @@ object top5 extends WorkflowFactory {
         nextFiscalYearDataValidation(model) andThen
         perfCashValidation(model) andThen
         ownedSharesValidation(model) andThen
-        salaryValidation(model)
+        salaryValidation(model) andThen
+        timeVestRsValidation(model) andThen
+        optionsExercisableValidation(model)
     else
       Valid(model)
   }
