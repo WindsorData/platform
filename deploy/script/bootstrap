@@ -1,0 +1,36 @@
+#/bin/bash
+
+set -e
+
+#
+# Check for vagrant
+#
+if test ! $(which vagrant)
+then
+  echo "  x You need to install vagrant. You should download and install from vagrants site"
+  exit 1
+else
+  echo "  + Vagrant found."
+fi
+
+#
+# Check for Berkshelf
+#
+if test ! $(which berks)
+then
+  echo "  x You need to install Berkshelf. You can install it by running: "
+  echo ""
+  echo "    vagrant plugin install vagrant-berkshelf"
+  vagrant plugin install vagrant-berkshelf
+else
+  echo "  + Berkshelf found."
+fi
+
+# Everything is OK!!
+#
+echo ""
+echo "  You are ready to run windsor"
+echo "  Run: "
+echo ""
+echo "    vagrant up"
+echo "    vagrant ssh"

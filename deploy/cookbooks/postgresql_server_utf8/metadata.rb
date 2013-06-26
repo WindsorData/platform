@@ -1,0 +1,6 @@
+maintainer       "Zauber"
+maintainer_email "guido@zauberlabs.com"
+license          "All rights reserved"
+description      "Installs PostgreSQL server with UTF-8 locale"
+version          "0.1.0"
+depends          "postgresql"

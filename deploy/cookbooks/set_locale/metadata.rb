@@ -1,0 +1,5 @@
+maintainer       "Zauber"
+maintainer_email "guido@zauberlabs.com"
+license          "All rights reserved"
+description      "Sets system locale to UTF-8"
+version          "0.1.0"
