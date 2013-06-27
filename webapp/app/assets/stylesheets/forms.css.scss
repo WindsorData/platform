@@ -42,21 +42,6 @@
   font-weight: bold;
   color: lighten($black, 40%);
   font-size: 14px;
-
-  .cto {
-    top: 0;
-    right: 0;
-    color: $white;
-    border-left: 1px solid darken($blue, 10%);
-    text-decoration: none;
-    cursor: pointer;
-
-    &:hover {
-      background-color: darken($blue, 10%);
-    }
-
-  }
-
 }
 
 label {

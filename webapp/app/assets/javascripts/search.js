@@ -14,7 +14,7 @@ $(function() {
     addExecutiveForm();
   });
 
-  $(".cto").click(function() {
+  $("#advanced-search-button").click(function() {
     $(".advanced-search").toggleClass('hidden');
   });
 
