@@ -62,7 +62,7 @@ package object dilution extends WorkflowFactory {
     val results: Seq[Validated[Model]] =
       Seq(Path('year1), Path('year2), Path('year3)).map {
         year =>
-          model(Path('usageAndSVTData, 'avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
+          model(Path('avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
             case Some(value) if value < 1000000 =>
               Doubtful(model, "Warning on Usage And SVT Data: Average Shares should be in millions")
             case _ => Valid(model)
@@ -88,32 +88,42 @@ package object dilution extends WorkflowFactory {
       results.reduce( (a, b) => a andThen b)
   }
 
-  def totalValidation(model: Model) = {
-    val option = model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal]
-    val full = model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
-    val total = model(Path('dilution, 'awardsOutstandings, 'total)).rawValue[BigDecimal]
-    
-    (for( optionv <- option; fullv <- full; totalv <- total; if optionv + fullv == totalv )
-      yield Valid(model))
+  def totalValidation(model: Model) = 
+    (for {
+      option <- model(Path('awardsOutstandings, 'option)).rawValue[BigDecimal]
+      full <- model(Path('awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+      total <- model(Path('awardsOutstandings, 'total)).rawValue[BigDecimal]
+      if option + full == total
+    }
+    yield Valid(model))
       .getOrElse(
           Invalid("Error on Dilution and ISS SVT Data - " +
               "Awards Outstandings: column total must be equal to option + full value"))
-  }
+              
+  def optionAndFullValuesValidation(model: Model) = 
+      ( for {
+    	  option <- model(Path('awardsOutstandings, 'option)).rawValue[BigDecimal]
+    	  fullvalue <- model(Path('awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+    	  if option == 0 || fullvalue == 0
+      	}
+      	yield Doubtful(model, 
+      	    warning("Dilution and ISS SVT Data") 
+      	    + "- Awards Outstandings: Options and Full values should not be 0")) 
+      	.getOrElse(Valid(model))
   
-  def usageAndSVTValidations(model: Model): Validated[Model] = {
+  def usageAndSVTValidations(model: Model): Validated[Model] = 
     if (model.hasElement('usageAndSVTData)) {
-      averageSharesValidation(model) andThen
-      optionsAndFullValueValidation(model)
+      averageSharesValidation(model(Path('usageAndSVTData)).asModel) andThen
+      optionsAndFullValueValidation(model(Path('usageAndSVTData)).asModel)
     } else
       Valid(model)
-  }
   
-  def dilutionValidations(model: Model): Validated[Model] = {
+  def dilutionValidations(model: Model): Validated[Model] = 
     if (model.hasElement('dilution)) {
-      totalValidation(model)
+      totalValidation(model(Path('dilution)).asModel) andThen 
+      optionAndFullValuesValidation(model(Path('dilution)).asModel)
     } else
       Valid(model)
-  }
 
   override def Validation =
     model => 
