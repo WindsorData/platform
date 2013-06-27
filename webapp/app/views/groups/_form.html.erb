@@ -1,14 +1,6 @@
 <%= form_for(@group) do |f| %>
   <% if @group.errors.any? %>
-    <div id="error_explanation" class="form-error cf">
-      <h2 class="left"><%= pluralize(@group.errors.count, "error") %> prohibited this group from being saved:</h2>
-
-      <ul class="left">
-      <% @group.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
-    </div>
+    <%= render 'layouts/model_errors', errors: @group.errors %>
   <% end %>
 
   <div class="field">
