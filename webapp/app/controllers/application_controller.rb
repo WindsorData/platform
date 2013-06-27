@@ -9,8 +9,7 @@ class ApplicationController < ActionController::Base
     new_user_session_path
   end
 
-
-  helper_method :user_root_path # Available for views
+  helper_method :user_root_path
   def user_root_path(user)
     case user.role
     when 'super'
@@ -22,14 +21,12 @@ class ApplicationController < ActionController::Base
     end
   end
 
-  rescue_from CanCan::AccessDenied do |exception|
+  rescue_from CanCan::AccessDenied do
     render "#{Rails.root}/public/401"
   end
 
-  def render_500
+  rescue_from RestClient::InternalServerError do
     render "#{Rails.root}/public/500"
   end
   
-  # rescue_from Exception, with: :render_500
-
 end

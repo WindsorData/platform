@@ -6,13 +6,41 @@ class FilesController < ApplicationController
   end
 
   def send_file
-    #BackendService.post_file(params[:type], params[:file])
+    post_file(params[:type], params[:file])
     BackendService.update_search_values
     redirect_to :back
   end
 
-  rescue_from Errno::EHOSTUNREACH, with: :render_500
-  rescue_from Errno::ECONNREFUSED, with: :render_500
-  rescue_from RestClient::InternalServerError, with: :render_500
+  private
+  def post_file(type, file)
+    path = Rails.application.config.backend_host
+    case type
+    when 'top5'
+      path += Rails.application.config.post_top5_path
+    when 'guidelines'
+      path += Rails.application.config.post_guidelines_path
+    when 'dilution'
+      path += Rails.application.config.post_dilution_path
+    when 'batch'
+      path += Rails.application.config.post_batch_path
+    end
+    RestClient.post(path, dataset: File.new(file.path, 'r')) do |response, request|
+      if response.code == 200
+        flash[:notice] = "Upload successfully completed"
+      else
+        # TODO: complete
+        # flash[:error] = response.body
+      end
+    end    
+  end
 
+  rescue_from Errno::EHOSTUNREACH do |exception|
+    flash[:error] = "Unable to connect to backend host"
+    redirect_to file_upload_path
+  end
+
+  rescue_from Errno::ECONNREFUSED do |exception|
+    flash[:error] = "Backend connection refused"
+    redirect_to file_upload_path
+  end
 end
