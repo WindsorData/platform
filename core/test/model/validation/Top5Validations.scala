@@ -106,10 +106,10 @@ class Top5Validations extends FunSpec {
                     'number -> Value(number),
                     'price -> Value(price),
                     'value -> Value(value)))))
-      assert(top5.timeVestRsValidation(model(2,2,4)).isValid)
-      assert(top5.timeVestRsValidation(model(2.24,3.76,8)).isValid)
-      assert(top5.timeVestRsValidation(model(2,3,4)).isInvalid)
-      assert(top5.timeVestRsValidation(model(2.55,3.92,9)).isInvalid)
+      assert(top5.timeVestRsValueValidation(model(2,2,4)).isValid)
+      assert(top5.timeVestRsValueValidation(model(2.24,3.76,8)).isValid)
+      assert(top5.timeVestRsValueValidation(model(2,3,4)).isInvalid)
+      assert(top5.timeVestRsValueValidation(model(2.55,3.92,9)).isInvalid)
     }
     
     it("should validate Options Exercisable") {
@@ -127,6 +127,7 @@ class Top5Validations extends FunSpec {
       assert(top5.optionsExercisableValidation(model(Value(0), Value(0), Value(0))).isValid)
       assert(top5.optionsExercisableValidation(model(Value(0), Value(1), Value(2))).isInvalid)
       assert(top5.optionsExercisableValidation(model(Value(0), Value(), Value(2))).isInvalid)
+      assert(top5.optionsExercisableValidation(model(Value(0), Value(0), Value(2))).isInvalid)
     }
   }
 }

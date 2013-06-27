@@ -89,12 +89,48 @@ package object guidelines extends WorkflowFactory {
     digitValidation(Path('guidelines, *), Seq(Path('multipleOfSalary)),model)(_ < 10)
   
   def guidelinesValidations(model: Model): Validated[Model] = {
-    if(model.hasElement('guidelines)) {
+    if(model.hasElement('guidelines))
       guidelinesDigitValidation(model)
-    }
     else
       Valid(model)
   } 
 
-  override def Validation = model => guidelinesValidations(model.get)
+  def scopeValidation(model: Model) =
+    reduceExecutiveValidations(Path('guidelines, *), model) {
+      m =>
+        (for {
+          corporate <- m(Path('scope, 'corporate, 'use)).rawValue[Boolean]
+          if corporate
+        } yield Valid(model))
+          .getOrElse(
+            Doubtful(model,
+              warning(execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel))
+                + Path('scope, 'corporate, 'use).titles.mkString(" - ")
+                + "Almost always the scope would include Corporate"))
+  	}
+    
+  def metricsValidation(model: Model) =
+    reduceExecutiveValidations(Path('guidelines, *), model) {
+      m =>
+        {
+          val results = m.applySeq(Path('metrics, 'select, *)) ++ m.applySeq(Path('metrics, 'typeIn, *))
+          if (results.isEmpty)
+            Doubtful(model, "lala")
+          else
+            Valid(model)
+        }
+  	}
+  
+  def stBonusValidations(model: Model): Validated[Model] = {
+    if(model.hasElement('stBonusPlan)) 
+      scopeValidation(model) andThen
+      metricsValidation(model)
+    else
+      Valid(model)
+  }
+  
+  override def Validation = 
+    model => 
+      guidelinesValidations(model.get) andThen
+      stBonusValidations(model.get)
 }

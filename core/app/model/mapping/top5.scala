@@ -12,6 +12,7 @@ import libt.util._
 import libt._
 import libt.error._
 import java.math.MathContext
+import java.util.Date
 
 object top5 extends WorkflowFactory {
 
@@ -119,7 +120,7 @@ object top5 extends WorkflowFactory {
       executivesValidation(model.get)
 
   def nextFiscalYearDataValidation(model: Model): Validated[Model] =
-    reduceExecutiveValidations(Path('executives, *), model)(
+    reduceExecutiveValidations(Path('executives, *), model) {
       m =>
         (m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal],
           m(Path('cashCompensations, 'nextFiscalYearData, 'baseSalary)).rawValue[BigDecimal],
@@ -132,7 +133,8 @@ object top5 extends WorkflowFactory {
               Doubtful(model,
                 warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
                 		": current base salary and target bonus are equal or greater that next fiscal year data")
-          })
+          }
+      }
 
   def bodValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
@@ -212,13 +214,13 @@ object top5 extends WorkflowFactory {
           	if options == 0 && Seq(vested, unvested).flatten.sum > 0 => 
           	  Invalid(err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
           	      Path('carriedInterest, 'ownedShares, 'options).titles + 
-          	      " is 0, so vested options and unvested options should be 0 or should be empty")
+          	      " is 0, so vested options and unvested options should be 0 or empty")
           case _ => Valid(model)
         }
       }
   }
   
-  def timeVestRsValidation(model: Model): Validated[Model] =
+  def timeVestRsValueValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
 	  m => {
 	    val results: Seq[Validated[Model]] = 
@@ -228,7 +230,7 @@ object top5 extends WorkflowFactory {
 	        n <- timeVest(Path('number)).rawValue[BigDecimal]
 	        p <- timeVest(Path('price)).rawValue[BigDecimal]
 	        v <- timeVest(Path('value)).rawValue[BigDecimal]
-	        product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) 
+	        product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP)
 	        if product != v 
 	      }
 	      yield 
@@ -239,6 +241,17 @@ object top5 extends WorkflowFactory {
 	    results.reduce( (a, b) => a andThen b)
 	  }
   	}
+ 
+  def timeVestRsGrantValidation(model: Model): Validated[Model] =
+    reduceExecutiveValidations(Path('executives, *), model) {
+	  m => {
+	    (m(Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS)).rawValue[Date],
+	     m.applySeq(Path('timeVestRS, *, 'grantDate)).flatMap(_.rawValue[Date])) match {
+	      case (None, dates) if dates.nonEmpty => Doubtful(model, "asda")
+	      case _ => Valid(model)  
+	    }
+	  }
+  }
 
   def salaryValidation(model: Model): Validated[Model] =
     threeDigitValidation(Path('executives, *), Seq(Path('cashCompensations, 'baseSalary)), model)
@@ -272,7 +285,7 @@ object top5 extends WorkflowFactory {
         perfCashValidation(model) andThen
         ownedSharesValidation(model) andThen
         salaryValidation(model) andThen
-        timeVestRsValidation(model) andThen
+        timeVestRsValueValidation(model) andThen
         optionsExercisableValidation(model)
     else
       Valid(model)

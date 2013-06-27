@@ -4,6 +4,7 @@ import libt.Path
 import model._
 import model.ExecutivesSVTBSDilution._
 import model.mapping._
+import model.validation._
 import libt.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
@@ -69,6 +70,23 @@ package object dilution extends WorkflowFactory {
       }
     results.reduce((a, b) => a andThen b)
   }
+  
+  def optionsAndFullValueValidation(model: Model) = {
+      val results : Seq[Validated[Model]] = 
+      Seq(model(Path('optionsSARs, 'granted)),
+          model(Path('optionsSARs, 'cancelled)),
+          model(Path('fullValue, 'sharesGranted)),
+          model(Path('fullValue, 'sharesCancelled)))
+      .flatMap(model => Seq(model(Path('year1)).rawValue[BigDecimal], 
+    		  				model(Path('year2)).rawValue[BigDecimal], 
+    		  				model(Path('year3)).rawValue[BigDecimal])).flatten
+      .map (value => if( value < 1000) 
+    	  				Doubtful(model, 
+    	  				    warning("Options and Full Value: granted and cancelled values should not be less than 1000")) 
+    	  			 else Valid(model))
+      
+      results.reduce( (a, b) => a andThen b)
+  }
 
   def totalValidation(model: Model) = {
     val option = model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal]
@@ -84,7 +102,8 @@ package object dilution extends WorkflowFactory {
   
   def usageAndSVTValidations(model: Model): Validated[Model] = {
     if (model.hasElement('usageAndSVTData)) {
-      averageSharesValidation(model)
+      averageSharesValidation(model) andThen
+      optionsAndFullValueValidation(model)
     } else
       Valid(model)
   }

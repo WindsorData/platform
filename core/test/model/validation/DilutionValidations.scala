@@ -22,6 +22,33 @@ class DilutionValidations extends FunSpec {
       assert(dilution.averageSharesValidation(model(100,10,1)).isDoubtful)
       assert(!dilution.averageSharesValidation(model(3000000,2000000,1000000)).isDoubtful)
     }
+    
+    it("should validate options and full values") {
+      def model(y1: BigDecimal, y2: BigDecimal, y3: BigDecimal) =
+        Model(
+            'optionsSARs -> Model(
+                'granted -> Model(
+                    'year1 -> Value(y1),
+                    'year2 -> Value(y2),
+                    'year3 -> Value(y3)),
+                'cancelled -> Model(
+                    'year1 -> Value(10000: BigDecimal),
+                    'year2 -> Value(10000: BigDecimal),
+                    'year3 -> Value(10000: BigDecimal))),
+            'fullValue -> Model(
+            		'sharesGranted -> Model(
+            		    'year1 -> Value(10000: BigDecimal),
+            		    'year2 -> Value(10000: BigDecimal),
+            		    'year3 -> Value(10000: BigDecimal)),
+            		'sharesCancelled -> Model(
+            		    'year1 -> Value(10000: BigDecimal),
+            		    'year2 -> Value(10000: BigDecimal),
+            		    'year3 -> Value(10000: BigDecimal))))
+            		    
+       assert(dilution.optionsAndFullValueValidation(model(1, 1, 1)).isDoubtful)
+       assert(dilution.optionsAndFullValueValidation(model(10000, 100, 10)).isDoubtful)
+       assert(!dilution.optionsAndFullValueValidation(model(10000, 10000, 10000)).isDoubtful)
+    }
   }
   
   describe("dilution validations") {
