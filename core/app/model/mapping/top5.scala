@@ -230,7 +230,7 @@ object top5 extends WorkflowFactory {
 	        n <- timeVest(Path('number)).rawValue[BigDecimal]
 	        p <- timeVest(Path('price)).rawValue[BigDecimal]
 	        v <- timeVest(Path('value)).rawValue[BigDecimal]
-	        product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP)
+	        product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) / 1000
 	        if product != v 
 	      }
 	      yield 
