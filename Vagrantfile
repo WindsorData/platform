@@ -16,13 +16,13 @@ Vagrant.configure("2") do |config|
   config.vm.provider :aws do |aws, override|
     aws.access_key_id = "ACCESS KEY ID"
     aws.secret_access_key = "SECRET ACCESS KEY"
-    aws.keypair_name = "KEY PAIR NAME"
+    aws.keypair_name = "zauber"
     aws.region = "us-west-2"
     aws.instance_type = "m1.small"
     aws.ami = "windsor"
 
     override.ssh.username = "ubuntu"
-    override.ssh.private_key_path = "PRIVATE KEY PATH"
+    override.ssh.private_key_path = "zauber.pem"
   end
 
 
