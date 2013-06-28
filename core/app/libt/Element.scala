@@ -73,7 +73,7 @@ case class Value[A](
   /**Answers the seq of metadata elements of this value*/
   def metadataSeq = Seq(calc, comment, note, link)
   
-  def isComplete = !value.isEmpty
+  def isComplete = value.nonEmpty
   
 }
 object Value {
@@ -116,6 +116,9 @@ case class Model(elements: Set[(Symbol, Element)])
   def subModel(pk: PK) = 
     Model(pk.map(path => (path.last.routeValue -> this(path))).toSet)
     
+  /**
+   * Answers a copy of this Model without the specified element
+   */
   def without(key: Symbol): Model =
     Model(elements.filter{ case (k, _) => k != key })        
 

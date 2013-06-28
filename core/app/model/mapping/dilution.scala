@@ -4,6 +4,7 @@ import libt.Path
 import model._
 import model.ExecutivesSVTBSDilution._
 import model.mapping._
+import model.validation._
 import libt.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
@@ -61,53 +62,71 @@ package object dilution extends WorkflowFactory {
     val results: Seq[Validated[Model]] =
       Seq(Path('year1), Path('year2), Path('year3)).map {
         year =>
-          model(Path('usageAndSVTData, 'avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
-            case Some(value) if value.compare(BigDecimal(1000000)) < 0 =>
+          model(Path('avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
+            case Some(value) if value < 1000000 =>
               Doubtful(model, "Warning on Usage And SVT Data: Average Shares should be in millions")
             case _ => Valid(model)
           }
       }
     results.reduce((a, b) => a andThen b)
   }
-
-  def totalValidation(model: Model) = {
-    (model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal],
-     model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal],
-     model(Path('dilution, 'awardsOutstandings, 'total)).rawValue[BigDecimal]) match {
-      case (Some(option), Some(fullValue), Some(total)) 
-      	if option + fullValue == total => Valid(model)
-      case (_,_,_) => 
-        Invalid("Error on Dilution and ISS SVT Data - Awards Outstandings: column total must be equal to option + full value")
-    }
-  }
   
-  def usageAndSVTValidations(model: Model): Validated[Model] = {
+  def optionsAndFullValueValidation(model: Model) = {
+      val results : Seq[Validated[Model]] = 
+      Seq(model(Path('optionsSARs, 'granted)),
+          model(Path('optionsSARs, 'cancelled)),
+          model(Path('fullValue, 'sharesGranted)),
+          model(Path('fullValue, 'sharesCancelled)))
+      .flatMap(model => Seq(model(Path('year1)).rawValue[BigDecimal], 
+    		  				model(Path('year2)).rawValue[BigDecimal], 
+    		  				model(Path('year3)).rawValue[BigDecimal])).flatten
+      .map (value => if( value < 1000) 
+    	  				Doubtful(model, 
+    	  				    warning("Options and Full Value: granted and cancelled values should not be less than 1000")) 
+    	  			 else Valid(model))
+      
+      results.reduce( (a, b) => a andThen b)
+  }
+
+  def totalValidation(model: Model) = 
+    (for {
+      option <- model(Path('awardsOutstandings, 'option)).rawValue[BigDecimal]
+      full <- model(Path('awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+      total <- model(Path('awardsOutstandings, 'total)).rawValue[BigDecimal]
+      if option + full == total
+    }
+    yield Valid(model))
+      .getOrElse(
+          Invalid("Error on Dilution and ISS SVT Data - " +
+              "Awards Outstandings: column total must be equal to option + full value"))
+              
+  def optionAndFullValuesValidation(model: Model) = 
+      ( for {
+    	  option <- model(Path('awardsOutstandings, 'option)).rawValue[BigDecimal]
+    	  fullvalue <- model(Path('awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+    	  if option == 0 || fullvalue == 0
+      	}
+      	yield Doubtful(model, 
+      	    warning("Dilution and ISS SVT Data") 
+      	    + "- Awards Outstandings: Options and Full values should not be 0")) 
+      	.getOrElse(Valid(model))
+  
+  def usageAndSVTValidations(model: Model): Validated[Model] = 
     if (model.hasElement('usageAndSVTData)) {
-      averageSharesValidation(model)
+      averageSharesValidation(model(Path('usageAndSVTData)).asModel) andThen
+      optionsAndFullValueValidation(model(Path('usageAndSVTData)).asModel)
     } else
       Valid(model)
-  }
   
-  def dilutionValidations(model: Model): Validated[Model] = {
+  def dilutionValidations(model: Model): Validated[Model] = 
     if (model.hasElement('dilution)) {
-      totalValidation(model)
+      totalValidation(model(Path('dilution)).asModel) andThen 
+      optionAndFullValuesValidation(model(Path('dilution)).asModel)
     } else
       Valid(model)
-  }
 
-  override def ValidationPhase =
-    (_, models) => {
-      if (!models.concat.isInvalid) {
-        models.map { model =>
-          umatch(model) {
-            case validModel @ Valid(m) => {
-              usageAndSVTValidations(m) andThen
-              dilutionValidations(m)
-            }
-          }
-        }
-
-      } else
-        models
-    }
+  override def Validation =
+    model => 
+      usageAndSVTValidations(model.get) andThen
+      dilutionValidations(model.get)
 }
