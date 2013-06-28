@@ -99,17 +99,18 @@ class Top5Validations extends FunSpec {
     }
     
     it("should validate on time vest rs, if price * number == value") {
-      def model(price: BigDecimal, number: BigDecimal, value: BigDecimal) =
+      def model(price: Value[BigDecimal], number: Value[BigDecimal], value: Value[BigDecimal]) =
         createModel(Model(
             'timeVestRS -> Col(
                 Model(
-                    'number -> Value(number),
-                    'price -> Value(price),
-                    'value -> Value(value)))))
-      assert(top5.timeVestRsValueValidation(model(2,2,4)).isValid)
-      assert(top5.timeVestRsValueValidation(model(2.24,3.76,8)).isValid)
-      assert(top5.timeVestRsValueValidation(model(2,3,4)).isInvalid)
-      assert(top5.timeVestRsValueValidation(model(2.55,3.92,9)).isInvalid)
+                    'number -> number,
+                    'price -> price,
+                    'value -> value))))
+      assert(top5.timeVestRsValueValidation(model(Value(2),Value(2000),Value(4))).isValid)
+      assert(top5.timeVestRsValueValidation(model(Value(),Value(),Value())).isValid)
+      assert(top5.timeVestRsValueValidation(model(Value(),Value(1),Value(2))).isValid)
+      assert(top5.timeVestRsValueValidation(model(Value(2.24),Value(3000.76),Value(6.722))).isValid)
+      assert(top5.timeVestRsValueValidation(model(Value(2),Value(3000),Value(4))).isInvalid)
     }
     
     it("should validate Options Exercisable") {
