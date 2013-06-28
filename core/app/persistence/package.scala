@@ -11,19 +11,19 @@ package object persistence {
   type Operator = (String, Any)
 
   case class Query(basics: Seq[Filter]) {
-    def basicConditions = basics.map(_.flatMap(_.conditions).reduce(_ ++ _))
+    def basicConditions = basics.map(_.flatMap(_.condition))
   }
 
   trait Condition {
-    def conditions : Seq[DBO]
+    def condition : DBO
   }
 
   case class EqualCondition(property: String, value: Any) extends Condition {
-    def conditions = Seq(MongoDBObject(property -> value))
+    def condition = MongoDBObject(property -> value)
   }
 
   case class ConditionWithOperators(property: String, operators: Seq[Operator]) extends Condition {
-    def conditions = Seq(MongoDBObject(property -> MongoDBObject(operators.toList)))
+    def condition = MongoDBObject(property -> MongoDBObject(operators.toList))
   }
 
   private def companies(implicit db: MongoDB) = db("companies")
