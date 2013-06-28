@@ -1,4 +1,19 @@
-<div class="span9">
+<div class="column-3">
+  <!-- activity log -->
+  <div class="side-container activity-log">
+    <h2 class="title">Activity Log</h2>
+    <div class="content">
+      <ul class="documents-list">
+        <li class="document"><a href="#">Document 01</a></li>
+        <li class="document"><a href="#">Document 02</a></li>
+        <li class="document"><a href="#">Document 03</a></li>
+        <li class="document"><a href="#">Document 04</a></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="column-9">
   <!-- quick launch -->
   <div class="side-container quick-launch">
     <h2 class="title">Quick Launch</h2>
@@ -13,20 +28,6 @@
         <%= submit_tag "Select" %>
         <%= link_to('Create new peer group', new_group_path, class: 'right') %>
       <% end %>
-    </div>
-  </div>
-</div>
-<div class="span3">
-  <!-- activity log -->
-  <div class="side-container activity-log">
-    <h2 class="title">Activity Log</h2>
-    <div class="content">
-      <ul class="documents-list">
-        <li class="document"><a href="#">Document 01</a></li>
-        <li class="document"><a href="#">Document 02</a></li>
-        <li class="document"><a href="#">Document 03</a></li>
-        <li class="document"><a href="#">Document 04</a></li>
-      </ul>
     </div>
   </div>
 </div>

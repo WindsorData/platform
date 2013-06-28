@@ -9,20 +9,24 @@ class ApplicationController < ActionController::Base
     new_user_session_path
   end
 
-  rescue_from CanCan::AccessDenied do |exception|
-    render "#{Rails.root}/public/401"
-  end
-
-  helper_method :user_root_path # Available for views
+  helper_method :user_root_path
   def user_root_path(user)
     case user.role
     when 'super'
-      users_path
+      quick_search_path
     when 'admin'
-      single_file_upload_path
+      file_upload_path
     when 'client'
       quick_search_path
     end
   end
 
+  rescue_from CanCan::AccessDenied do
+    render "#{Rails.root}/public/401"
+  end
+
+  rescue_from RestClient::InternalServerError do
+    render "#{Rails.root}/public/500"
+  end
+  
 end

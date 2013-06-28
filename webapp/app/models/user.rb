@@ -30,7 +30,6 @@ class User < ActiveRecord::Base
 
   belongs_to :company
 
-  # Dynamic role methods definition
   ROLES.each do |k|
     define_method "is_#{k}?" do
       role == k

@@ -1,22 +1,23 @@
-require 'json' # poner en superclase
-
 class SearchController < ApplicationController
   before_filter :authenticate_user!
   before_filter :find_groups, only: [:quick_search, :full_search]
 
   def quick_search
+    authorize!(:perform, :quick_search)
   end  
   def full_search
-    @roles = JSON.parse(RestClient.get('http://192.168.161.176:9000/api/schema/values/roles'))
-    @cash_comp_values = JSON.parse(RestClient.get('http://192.168.161.176:9000/schema/values/cashCompensations'))
+    @roles = Role.all
+    @eq_comp_values = EquityCompensation.all
+    @cash_comp_values = CashCompensation.all
   end
 
   def results
-    # get from backend
-    mapping_values = Hash[ "role" => "executives.functionalMatches.primary.value" ]
-    
-    # send to backend
-    json_query = Mapping.json_query(params.except(:controller, :action, :authenticity_token, :utf8), mapping_values)
+    params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
+    json_query = QueryGenerator.json_query(params_hash)
+
+    RestClient.post(HOST_URL + path, query: query) do |response, request|
+      # do something with the response
+    end
   end
 
   private

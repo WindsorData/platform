@@ -2,11 +2,45 @@ class FilesController < ApplicationController
   before_filter :authenticate_user!
   before_filter {|c| c.authorize!(:upload, :file)}
 
-  def single_file
+  def upload
   end
 
-  def send_single
-    RestClient.post 'http://192.168.161.176:9000/companies/reports', dataset: File.new(params[:single_file].path, 'r')
+  def send_file
+    post_file(params[:type], params[:file])
+    BackendService.update_search_values
     redirect_to :back
+  end
+
+  private
+  def post_file(type, file)
+    path = Rails.application.config.backend_host
+    case type
+    when 'top5'
+      path += Rails.application.config.post_top5_path
+    when 'guidelines'
+      path += Rails.application.config.post_guidelines_path
+    when 'dilution'
+      path += Rails.application.config.post_dilution_path
+    when 'batch'
+      path += Rails.application.config.post_batch_path
+    end
+    RestClient.post(path, dataset: File.new(file.path, 'r')) do |response, request|
+      if response.code == 200
+        flash[:notice] = "Upload successfully completed"
+      else
+        # TODO: complete
+        # flash[:error] = response.body
+      end
+    end    
+  end
+
+  rescue_from Errno::EHOSTUNREACH do |exception|
+    flash[:error] = "Unable to connect to backend host"
+    redirect_to file_upload_path
+  end
+
+  rescue_from Errno::ECONNREFUSED do |exception|
+    flash[:error] = "Backend connection refused"
+    redirect_to file_upload_path
   end
 end

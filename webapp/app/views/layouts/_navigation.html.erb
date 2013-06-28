@@ -6,16 +6,10 @@
   </div>
   <div class="nav left">
     <% if user_signed_in? %>  
-      <% if can? :manage, User %>
-        <%= link_to('users', users_path, class: 'nav-link') %>
-      <% end %>
-      <%= link_to('search', full_search_path, class: 'nav-link') %>
-      <% if can? :create, Group %>
-        <%= link_to('peers', groups_path, class: 'nav-link') %>
-      <% end %>
-      <% if can? :upload, :file %>
-        <%= link_to 'single file upload', single_file_upload_path %>
-      <% end %>
+      <%= link_to('users', users_path, class: 'nav-link') if can? :manage, User %>
+      <%= link_to('search', full_search_path, class: 'nav-link') if can? :perform, :quick_search %>
+      <%= link_to('peers', groups_path, class: 'nav-link') if can? :create, Group %>
+      <%= link_to('file upload', file_upload_path, class: 'nav-link') if can? :upload, :file %>
     <% end %>
   </div>
   <div class="right">

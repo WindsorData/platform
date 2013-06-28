@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130606210426) do
+ActiveRecord::Schema.define(:version => 20130625191920) do
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -19,6 +19,14 @@ ActiveRecord::Schema.define(:version => 20130606210426) do
     t.string   "contact_email"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "compensations", :force => true do |t|
+    t.string   "field"
+    t.string   "value"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.string   "type"
   end
 
   create_table "groups", :force => true do |t|
@@ -36,6 +44,13 @@ ActiveRecord::Schema.define(:version => 20130606210426) do
 
   add_index "groups_tickers", ["group_id", "ticker_id"], :name => "index_groups_tickers_on_group_id_and_ticker_id"
   add_index "groups_tickers", ["ticker_id", "group_id"], :name => "index_groups_tickers_on_ticker_id_and_group_id"
+
+  create_table "roles", :force => true do |t|
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.string   "type"
+  end
 
   create_table "tickers", :force => true do |t|
     t.string   "name"

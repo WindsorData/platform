@@ -1,0 +1,6 @@
+<%= form_tag('/files/send_file', multipart: true) do %>
+  <%= render 'layouts/messages' %>
+  <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
+  <%= file_field_tag 'file', required: :true %>
+  <%= submit_tag 'Upload', class: 'big-button' %>
+<% end %>

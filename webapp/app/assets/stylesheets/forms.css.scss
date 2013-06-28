@@ -1,0 +1,134 @@
+@import "bourbon";
+@import "neat";
+@import "vars.css.scss";
+
+/* form styles */
+.form-el {
+  width: 200px;
+  border: 1px solid #999;
+  height: 30px;
+  background: #FFF;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #333;
+}
+
+.input {
+  border-radius: 3px;
+  padding: 0 10px;
+}
+
+.btn {
+  @include button;
+  height: 40px;
+  border-radius: 0;
+}
+
+.success {
+  background: green;
+  color: white;
+}
+
+.form-container {
+  margin-bottom: 20px;
+}
+
+.legend {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+  border-bottom: 1px solid lighten($black, 60%);
+  text-transform: uppercase;
+  font-weight: bold;
+  color: lighten($black, 40%);
+  font-size: 14px;
+}
+
+label {
+  font-size: 11px;
+}
+
+input[type=text] {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.basic-group {
+
+  &:not(:nth-child(2)) {
+    border-top: 1px solid lighten($black, 80%);
+    margin-top: 10px;
+    padding-top: 10px;
+  }
+
+}
+
+.item-form {
+  padding: 5px 0;
+
+  .label {
+    font-size: 11px;
+    width: 200px;
+    display: inline-block;
+    text-transform: uppercase;
+  }
+
+}
+
+.advanced-search-button:hover {
+  background-color: darken($blue, 10%);
+}
+
+/* errors */
+
+.form-error {
+  background-color: lighten($red, 40%);
+  padding: 10px;
+  margin: 10px 0;
+
+  h2 {
+    font-size: 0.9em;
+  }
+
+  li {
+    font-size: 0.9em;
+  }
+}
+
+.field_with_errors input {
+  border: 1px solid lighten($red, 20%);
+}
+
+
+/* peer users group form */
+.group-name {
+  width: 29%;
+}
+
+ul.token-input-list-facebook {
+  display: inline-table;
+  padding: 6px;
+  font-size: 16px;
+  margin: 8px 0;
+  height: 40px;
+}
+
+.big-button {
+  width: 150px;
+  border: 0;
+  padding: 12px;
+}
+
+/* other criteria items */
+
+.inline-item {
+
+  margin-bottom: 10px;
+
+  p {
+    display: inline-block;
+    width: 200px;
+    font-size: 14px;
+  }
+
+}

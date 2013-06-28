@@ -14,7 +14,7 @@ WindosorFrontend::Application.routes.draw do
   get "search/full_search", as: :full_search
   post "search/results"  
 
-  get   "files/single_file", as: 'single_file_upload'
-  post  "files/send_single"
+  get   "files/upload", as: 'file_upload'
+  post  "files/send_file"
 
 end

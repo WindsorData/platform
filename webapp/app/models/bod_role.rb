@@ -1,0 +1,3 @@
+class BodRole < Role
+
+end

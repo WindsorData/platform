@@ -1,15 +1,26 @@
-<h1>Users</h1>
+<h1 class="main-title">Users</h1>
 
-<table>
-<% @users.each do |user| %>
-  <tr>
-    <td><%= user.email %></td>
-    <td><%= user.company.try(:name) %></td>
-    <td><%= user.role %></td>
-    <td><%= link_to 'Edit', edit_user_path(user) %></td>
-    <td><%= link_to 'Destroy', user, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Company</th>
+      <th>Role</th>
+      <th class="icon-column text-center">Edit</th>
+      <th class="icon-column text-center">Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @users.each do |user| %>
+      <tr>
+        <td><%= user.email %></td>
+        <td><%= user.company.try(:name) %></td>
+        <td><%= user.role %></td>
+        <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_user_path(user), class: 'btn-icon' %></td>
+        <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, user, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
 
 <br />

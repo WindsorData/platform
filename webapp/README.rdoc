@@ -1,9 +1,7 @@
-== Sorwind
-
-This repo should be private!
+== Windsor
 
 1) Install gems
 * bundle
 
 2) Create database, and run migrations and seed.rb
-* bundle exec rake db:setup
+* bundle exec rake db:drop db:create db:migrate db:setup

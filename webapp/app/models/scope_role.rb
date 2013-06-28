@@ -1,0 +1,3 @@
+class ScopeRole < Role
+
+end

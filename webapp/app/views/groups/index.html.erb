@@ -1,11 +1,24 @@
-<h1>Groups</h1>
+<h1 class="main-title">Groups</h1>
+
+<!-- create groups form -->
 <%= render 'form' %>
-<table>
-<% @groups.each do |group| %>
-  <tr>
-    <td><%= group.name %></td>
-    <td><%= link_to 'Edit', edit_group_path(group) %></td>
-    <td><%= link_to 'Destroy', group, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-  </tr>
-<% end %>
+
+<!-- admin groups table -->
+<table class="table">
+  <thead>
+    <tr>
+      <th>Group name</th>
+      <th class="icon-column text-center">Edit</th>
+      <th class="icon-column text-center">Remove</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @groups.each do |group| %>
+      <tr>
+        <td><%= group.name %></td>
+        <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_group_path(group), class: 'btn-icon' %></td>
+        <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, group, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
+      </tr>
+    <% end %>
+  </tbody>
 </table>
