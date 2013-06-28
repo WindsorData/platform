@@ -39,7 +39,7 @@ object Api extends Controller {
       Path('timeVestRS),
       Path('performanceVestRS)
     ),
-    _(2)
+    _.last
   )
 
   def pathsToJson(paths: Seq[Path], description : Path => PathPart) : Action[AnyContent] = {
