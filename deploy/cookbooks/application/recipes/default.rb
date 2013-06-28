@@ -33,7 +33,7 @@ execute "Install Play" do
 end
 
 execute "Compile Backend" do
-  command "cd core && play/play clean compile stage"
+  command "cd core && /play/play clean compile stage"
 end
 
 ################### Setting up PostgresSQL databases ###########################
