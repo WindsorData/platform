@@ -11,6 +11,22 @@ Vagrant.configure("2") do |config|
 
   config.berkshelf.enabled = true
 
+  config.omnibus.chef_version =  "10.14.2"
+
+  config.vm.provider :aws do |aws, override|
+    aws.access_key_id = "ACCESS KEY ID"
+    aws.secret_access_key = "SECRET ACCESS KEY"
+    aws.keypair_name = "KEY PAIR NAME"
+    aws.region = "us-west-2"
+    aws.instance_type = "m1.small"
+    aws.ami = "windsor"
+
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = "PRIVATE KEY PATH"
+  end
+
+
+
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
   # config.vm.box_url = "http://domain.com/path/to/above.box"

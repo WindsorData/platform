@@ -26,6 +26,10 @@ else
   echo "  + Berkshelf found."
 fi
 
+echo " !  don't forget to install omnibus plugin"
+echo " !  don't forget to install aws plugin"
+
+
 # Everything is OK!!
 #
 echo ""
