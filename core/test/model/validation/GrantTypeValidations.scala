@@ -32,8 +32,8 @@ class GrantTypeValidations extends FunSpec {
     }
    
     it("should be valid when stock option - use is false or if stock option is complete") {
-      assert(top5.grantTypeValidation(createModel(Value(3), Value(1), Value(false))).isValid)
-      assert(top5.grantTypeValidation(createModel(Value(3), Value(0))).isValid)
+      assert(top5.grantTypeValidation(createModel(Value(3), Value(1), Value(false))).isValidOrDoubtful)
+      assert(top5.grantTypeValidation(createModel(Value(3), Value(0))).isValidOrDoubtful)
     }
   }
 }

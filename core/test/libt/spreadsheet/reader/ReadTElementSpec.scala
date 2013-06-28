@@ -17,9 +17,10 @@ import java.util.Date
 import java.io.FileOutputStream
 import libt.error.Valid
 import org.apache.poi.ss.usermodel.WorkbookFactory
+import output.mapping.TestSpreadsheetLoader
 
 @RunWith(classOf[JUnitRunner])
-class ReadTElementSpec extends FunSpec with BeforeAndAfter {
+class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetLoader {
 
   import MyWorkbookFactory._
 
@@ -81,7 +82,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter {
     }
 
     it("should read percentage values as a number") {
-      FileManager.loadResource("input/Percentage.xlsx") {  //TODO bad test
+      loadSheet("Percentage.xlsx") {
         x =>
           workbook = WorkbookFactory.create(x)
           sheet = workbook.getSheetAt(0)

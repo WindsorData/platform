@@ -48,7 +48,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
-  def uploadSingleSpreadsheet(reader: InputWorkflow[Seq[Validated[Model]]]) =
+  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Validated[Model]]]) =
     UploadAndReadAction {
       (request, dataset) => keyed.flatJoin(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
     }
@@ -63,7 +63,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       case result => {
         result.get.foreach(updateCompany(_))
         request match {
-          case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.toErrorSeq))
+          case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
           case Accepts.Json() => Ok("")
         }
       }
