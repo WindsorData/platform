@@ -115,9 +115,83 @@ object top5 extends WorkflowFactory {
       (55, 'executives, colWrapping))
 
   override def Validation =
-    model => 
+    model =>
       grantTypeValidation(model.get) andThen
-      executivesValidation(model.get)
+        executivesValidation(model.get)
+
+  override def WorkbookValidationPhase =
+    (_, models) =>
+      if (!models.concat.isInvalid)
+        transitionPeriodValidation(models.map(_.get))
+      else
+        models
+
+  def transitionPeriodValidation(models: Seq[Model]): Seq[Validated[Model]] = {
+
+    def validateTransition(model: Model)(execs: (Element, Element)): Validated[Model] =
+      (execs._1(Path('functionalMatches, 'primary)).rawValue[String],
+        execs._2(Path('functionalMatches, 'primary)).rawValue[String],
+        execs._2(Path('transitionPeriod)).rawValue[String]) match {
+          case (Some(rol0), Some(rol1), Some(isTransition)) if ((rol0 == rol1 && isTransition == "Yes") || (rol0 != rol1 && isTransition == "No")) =>
+            Invalid(
+              s"Error on ExecDb ${model(Path('disclosureFiscalYear)).getRawValue[Int]} " +
+                s"- ${execs._2(Path('firstName)).getRawValue[String]} " +
+                s"${execs._2(Path('lastName)).getRawValue[String]} : Transition Period is wrong")
+          case _ => Valid(model)
+        }
+
+    def validateExecutives(executives: (Model, Seq[(Element, Element)])): Validated[Model] =
+      executives match {
+        case (execDbModel, combinedExecs) =>
+          combinedExecs.map(validateTransition(execDbModel))
+            .foldLeft(Valid(execDbModel): Validated[Model])((acc, e) => acc andThen e)
+      }
+
+    def execId(exec: Element) =
+      exec('firstName).getRawValue[String] +
+        exec('lastName).getRawValue[String]
+
+    def combineSameExecutives(execs: (Model, Seq[Element]), nextExecs: (Model, Seq[Element])) =
+      (execs, nextExecs) match {
+        case ((_, execs0), (model, execs1)) =>
+          (model,
+            (execs0 ++ execs1)
+            .filter { e =>
+              e('firstName).rawValue[String].nonEmpty &&
+                e('lastName).rawValue[String].nonEmpty
+            }
+            .groupBy(execId)
+            .toSeq
+            .flatMap {
+              case (_, exec0 :: exec1 :: Nil) =>
+                Some((exec0.asModel, exec1.asModel))
+              case _ =>
+                None
+            })
+      }
+
+    val inputPartitioned: (Seq[Model], Seq[Model]) =
+      models.partition(_.hasElement('executives))
+
+    val executives: Seq[(Model, Seq[(Element)])] =
+      inputPartitioned._1
+        .sortBy(_.apply('disclosureFiscalYear).getRawValue[Int]).reverse
+        .map { execs =>
+          (execs, execs.applySeq(Path('executives, *)))
+        }
+
+    if (executives.isEmpty)
+      models.map(Valid(_))
+    else {
+      val firstPairsOfExecutives = combineSameExecutives(executives(0), executives(1))
+      val secondPairOfExecutives = combineSameExecutives(executives(1), executives(2))
+
+      inputPartitioned._2.map(Valid(_)) ++
+        Seq(Valid(executives(0)._1),
+          validateExecutives(firstPairsOfExecutives),
+          validateExecutives(secondPairOfExecutives))
+    }
+  }
 
   def nextFiscalYearDataValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
@@ -132,22 +206,22 @@ object top5 extends WorkflowFactory {
             case _ =>
               Doubtful(model,
                 warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                		": current base salary and target bonus are equal or greater that next fiscal year data")
+                  ": current base salary and target bonus are equal or greater that next fiscal year data")
           }
-      }
+    }
 
   def bodValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
-      m => {
-        val primary = m(Path('functionalMatches, 'primary)).rawValue[String]
-        val bod = m(Path('functionalMatches, 'bod)).rawValue[String]
-        (for(primaryv <- primary; if(primaryv == "CEO (Chief Executive Officer)" && bod.isEmpty)) 
-          yield 
-          Doubtful(model,
-                warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Bod: "
-                  + "CEO with no BOD") ).getOrElse(Valid(model))
-          }
-      }
+      m =>
+        {
+          val primary = m(Path('functionalMatches, 'primary)).rawValue[String]
+          val bod = m(Path('functionalMatches, 'bod)).rawValue[String]
+          (for (primaryv <- primary; if (primaryv == "CEO (Chief Executive Officer)" && bod.isEmpty))
+            yield Doubtful(model,
+            warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Bod: "
+              + "CEO with no BOD")).getOrElse(Valid(model))
+        }
+    }
 
   def founderValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
@@ -156,8 +230,7 @@ object top5 extends WorkflowFactory {
           val baseSalary = m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal]
           val founder = m(Path('founder)).rawValue[Boolean]
           (for (salaryv <- baseSalary; if salaryv == 1 && founder.isEmpty)
-            yield 
-            Doubtful(model,
+            yield Doubtful(model,
             warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Founder: "
               + "base salary is 1 and executive is not a founder")).getOrElse(Valid(model))
         }
@@ -165,22 +238,23 @@ object top5 extends WorkflowFactory {
 
   def perfCashValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
-      m => {
-        val results: Seq[Validated[Model]] =
-          m.applySeq(Path('performanceCash, *))
-            .map { perfCash =>
-              (perfCash('targetValue).rawValue[BigDecimal],
-                perfCash('payout).rawValue[BigDecimal]) match {
-                  case (Some(_), Some(_)) =>
-                    Invalid(
+      m =>
+        {
+          val results: Seq[Validated[Model]] =
+            m.applySeq(Path('performanceCash, *))
+              .map { perfCash =>
+                (perfCash('targetValue).rawValue[BigDecimal],
+                  perfCash('payout).rawValue[BigDecimal]) match {
+                    case (Some(_), Some(_)) =>
+                      Invalid(
                         err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                    		": in PerfCash Both target value and Payout can’t be filled for the same grant")
-                  case _ => Valid(model)
-                }
-            }
-        results.reduce((a, b) => a andThen b)
-      }
-  }
+                          ": in PerfCash Both target value and Payout can’t be filled for the same grant")
+                    case _ => Valid(model)
+                  }
+              }
+          results.reduce((a, b) => a andThen b)
+        }
+    }
 
   def ownedSharesValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
@@ -203,55 +277,68 @@ object top5 extends WorkflowFactory {
           results.reduce((a, b) => a andThen b)
         }
     }
- 
+
   def optionsExercisableValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
-      m => {
-        (m(Path('carriedInterest, 'ownedShares, 'options)).rawValue[BigDecimal],
-         m(Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions)).rawValue[BigDecimal],
-    	 m(Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions)).rawValue[BigDecimal]) match {
-          case (Some(options), vested, unvested) 
-          	if options == 0 && Seq(vested, unvested).flatten.sum > 0 => 
-          	  Invalid(err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-          	      Path('carriedInterest, 'ownedShares, 'options).titles + 
-          	      " is 0, so vested options and unvested options should be 0 or empty")
-          case _ => Valid(model)
+      m =>
+        {
+          (m(Path('carriedInterest, 'ownedShares, 'options)).rawValue[BigDecimal],
+            m(Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions)).rawValue[BigDecimal],
+            m(Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions)).rawValue[BigDecimal]) match {
+              case (Some(options), vested, unvested) if options == 0 && Seq(vested, unvested).flatten.sum > 0 =>
+                Invalid(err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+                  Path('carriedInterest, 'ownedShares, 'options).titles.mkString(" - ") +
+                  " is 0, so vested options and unvested options should be 0 or empty")
+              case _ => Valid(model)
+            }
         }
-      }
-  }
-  
+    }
+
   def timeVestRsValueValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
-	  m => {
-	    val results: Seq[Validated[Model]] = 
-	    m.applySeq(Path('timeVestRS, *))
-	    .map { timeVest =>
-	      (for {
-	        n <- timeVest(Path('number)).rawValue[BigDecimal]
-	        p <- timeVest(Path('price)).rawValue[BigDecimal]
-	        v <- timeVest(Path('value)).rawValue[BigDecimal]
-	        product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) / 1000
-	        if product != v 
-	      }
-	      yield 
-	      Invalid(
-	          err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs: " +
-	          "Number multiplied by price should be equal to value") ).getOrElse(Valid(model))
-	    }
-	    results.reduce( (a, b) => a andThen b)
-	  }
-  	}
- 
+      m =>
+        {
+          val results: Seq[Validated[Model]] =
+            m.applySeq(Path('timeVestRS, *))
+              .map { timeVest =>
+                (for {
+                  n <- timeVest(Path('number)).rawValue[BigDecimal]
+                  p <- timeVest(Path('price)).rawValue[BigDecimal]
+                  v <- timeVest(Path('value)).rawValue[BigDecimal]
+                  product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) / 1000
+                  if product != v
+                } yield Invalid(
+                  err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs: " +
+                    "Number multiplied by price should be equal to value")).getOrElse(Valid(model))
+              }
+          results.reduce((a, b) => a andThen b)
+        }
+    }
+
   def timeVestRsGrantValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
-	  m => {
-	    (m(Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS)).rawValue[Date],
-	     m.applySeq(Path('timeVestRS, *, 'grantDate)).flatMap(_.rawValue[Date])) match {
-	      case (None, dates) if dates.nonEmpty => Doubtful(model, "asda")
-	      case _ => Valid(model)  
-	    }
-	  }
-  }
+      m =>
+        {
+          (m(Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS)).rawValue[Date],
+            m.applySeq(Path('timeVestRS, *, 'grantDate)).flatMap(_.rawValue[Date])) match {
+              case (None, dates) if dates.nonEmpty => Doubtful(model, "asda")
+              case _ => Valid(model)
+            }
+        }
+    }
+  
+  //TODO: FIX ME! 
+  def nonEmptyTransitionPeriods(model: Model) =
+    reduceExecutiveValidations(Path('executives, *), model) {
+      m =>
+        if (m(Path('transitionPeriod)).rawValue[String].isEmpty
+            && nonEmptyExecutive(m))
+          Invalid(
+            err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
+              "Transition Period should not be BLANK")
+        else
+          Valid(model)
+    }
 
   def salaryValidation(model: Model): Validated[Model] =
     threeDigitValidation(Path('executives, *), Seq(Path('cashCompensations, 'baseSalary)), model)
@@ -286,7 +373,8 @@ object top5 extends WorkflowFactory {
         ownedSharesValidation(model) andThen
         salaryValidation(model) andThen
         timeVestRsValueValidation(model) andThen
-        optionsExercisableValidation(model)
+        optionsExercisableValidation(model) andThen
+        nonEmptyTransitionPeriods(model)
     else
       Valid(model)
   }
@@ -303,12 +391,11 @@ object top5 extends WorkflowFactory {
 
     def validateGrantTypeMinPayout = {
       val path = Path('grantTypes, 'performanceEquityVesting, 'minPayout)
-      ( for (minPayout <- model(path).rawValue[Number]; if minPayout != 0)
-        yield
-        Doubtful(model,
-              warning(path.titles.mkString(" - ")) + "value is not 0%") )
-              .getOrElse(Valid(model))
-      }
+      (for (minPayout <- model(path).rawValue[Number]; if minPayout != 0)
+        yield Doubtful(model,
+        warning(path.titles.mkString(" - ")) + "value is not 0%"))
+        .getOrElse(Valid(model))
+    }
 
     if (model.hasElement('grantTypes)) {
       validateGrantTypeUse andThen validateGrantTypeMinPayout

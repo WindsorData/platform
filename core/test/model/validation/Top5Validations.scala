@@ -8,15 +8,56 @@ import model.mapping.top5
 
 @RunWith(classOf[JUnitRunner])
 class Top5Validations extends FunSpec {
-  describe("top 5 validations") {
+  def createModel(model: Model, year: Int = 2013, firstName: String = "foo", lastName: String = "bar") =
+    Model(
+      'disclosureFiscalYear -> Value(year),
+      'executives -> Col(
+        Model(
+          'firstName -> Value(firstName),
+          'lastName -> Value(lastName)) ++ model))
+  
+  describe("top 5 workbook validations") {
+    def model(first: String, last: String, year: Int, primary: Value[String], transition: Value[String]) =
+      createModel(
+        Model(
+          'functionalMatches -> Model(
+            'primary -> primary),
+          'transitionPeriod -> transition), year, first, last)
+	it("should validation executive's transition period between different fiscal years") {
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","A",2012, Value("foo"), Value("No")), 
+	          model("Example","A",2011, Value("bar"), Value("Yes")), 
+	          model("Example","A",2010, Value("bar"), Value("no")))).forall(_.isValid))
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","B",2012, Value("foo"), Value("No")), 
+	          model("Example","B",2011, Value("foo"), Value("No")), 
+	          model("Example","B",2010, Value("bar"), Value("Yes")))).forall(_.isValid))
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","C",2012, Value("foo"), Value("No")), 
+	          model("Example","C",2011, Value("bar"), Value("No")), 
+	          model("Example","C",2010, Value("bar"), Value("No")))).exists(_.isInvalid))
+	      
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","D",2012, Value("foo"), Value("No")), 
+	          model("Example","D",2011, Value("foo"), Value("No")), 
+	          model("Example","D",2010, Value("bar"), Value("No")))).exists(_.isInvalid))	          
+	}
 
-    def createModel(model: Model) =
-      Model(
-        'disclosureFiscalYear -> Value(2013),
-        'executives -> Col(
-          Model(
-            'firstName -> Value("foo"),
-            'lastName -> Value("bar")) ++ model))
+    it("should validate executives with the same first name and last name between different fiscal years") {
+      assert(
+        top5.transitionPeriodValidation(
+          Seq(model("Example", "A", 2012, Value("foo"), Value("No")),
+            model("Example", "B", 2011, Value("bar"), Value("No")),
+            model("Example", "B", 2010, Value("bar"), Value("No")))).forall(_.isValid))
+    }
+  }
+  
+  describe("top 5 sheet validations") {
+
 
     it("should validate BOD with CEO primary functional match") {
       def model(primary: String) =
@@ -84,6 +125,17 @@ class Top5Validations extends FunSpec {
         
       assert(top5.ownedSharesValidation(model(5)).isDoubtful)
       assert(!top5.ownedSharesValidation(model(20)).isDoubtful)
+    }
+    
+    it("should validate if transition period is not empty") {
+      def model(transition: Value[String]) =
+        createModel(
+        Model(
+          'transitionPeriod -> transition))
+        
+      assert(top5.nonEmptyTransitionPeriods(model(Value())).isInvalid)
+      assert(top5.nonEmptyTransitionPeriods(model(Value("No"))).isValid)
+      assert(top5.nonEmptyTransitionPeriods(model(Value("Yes"))).isValid)
     }
     
     it("should validate if salary has more than 3 digits or not") {
