@@ -7,9 +7,9 @@ object query {
   type Filter = Seq[Condition]
   type Operator = (String, Any)
 
-  case class Query(basics: Seq[Filter]) {
-    def orConditions = basics.map(_.map(_.condition).reduce(_ ++ _))
-    def query = MongoDBObject("$or" -> orConditions)
+  case class QueryExecutives(executives: Seq[Filter], advanced: Filter) {
+    def exampleExecutives = executives.map {it => (it ++ advanced).map(_.condition).reduce(_ ++ _)}
+    def query = MongoDBObject("$or" -> exampleExecutives)
   }
 
   trait Condition {

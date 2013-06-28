@@ -24,29 +24,34 @@ class ParserJsonQuerySpec extends FunSuite {
   test("can parse a complete query") {
     val json =
       """ {
-          "basics": [
+          "executives": [
               {
-                "filters": [
+                "executivesFilters": [
                           {"key": "firstName", "value": "den"},
                           {"key": "lastName", "value": "ritch"},
                           {"key": "salary", "operators":[ {"operator":"gt","value":5}, {"operator":"lt","value":10} ]}
                       ]
               }
+            ],
+            "advanced": [
+                {"key": "foo", "value": "bar"},
+                {"key": "chi", "operators": [{"operator": "gt", "value": 4}]}
             ]
         }
       """
     val query = ParserJsonQuery.query(stringMultilineToJson(json))
-    assert(query.basics.size === 1)
-    assert(query.basics(0).size === 3)
+    assert(query.executives.size === 1)
+    assert(query.executives(0).size === 3)
+    assert(query.advanced.size === 2)
 
-    val equalCondition = query.basics.head(1).asInstanceOf[EqualCondition]
-    val complexCondition = query.basics.head.last.asInstanceOf[ConditionWithOperators]
-    assert(equalCondition === EqualCondition("lastName", "ritch"))
-    assert(complexCondition === ConditionWithOperators("salary", Seq(("$gt" -> 5), ("$lt" -> 10))))
+    assert(query.executives.head(1).asInstanceOf[EqualCondition] === EqualCondition("lastName", "ritch"))
+    assert(query.executives.head.last.asInstanceOf[ConditionWithOperators] === ConditionWithOperators("salary", Seq("$gt" -> 5, "$lt" -> 10)))
+    assert(query.advanced(0).asInstanceOf[EqualCondition] === EqualCondition("foo", "bar"))
+    assert(query.advanced(1).asInstanceOf[ConditionWithOperators] === ConditionWithOperators("chi", Seq("$gt" -> 4)))
   }
 
-  test("can parse a list of filters") {
-    val json = """[ {"filters": []}, {"filters": []}, {"filters": []}]"""
+  test("can parse a list of executivesFilters") {
+    val json = """[ {"executivesFilters": []}, {"executivesFilters": []}, {"executivesFilters": []}]"""
     val filters = ParserJsonQuery.filtersFromJson(stringMultilineToJson(json).as[List[JsValue]])
     assert(filters.size === 3)
   }

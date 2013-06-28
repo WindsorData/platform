@@ -64,7 +64,7 @@ object Api extends Controller {
 
   def query = Action { request =>
     val json : JsValue = request.body.asJson.get
-    ParserJsonQuery.query(json).basics.foreach(println(_))
+    ParserJsonQuery.query(json).executives.foreach(println(_))
     Ok("")
   }
 

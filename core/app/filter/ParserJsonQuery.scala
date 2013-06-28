@@ -5,8 +5,9 @@ import persistence.query._
 
 object ParserJsonQuery {
 
-  def query(query: JsValue) : Query = Query(filters(query))
-  def filters(json: JsValue) : Seq[Filter] = filtersFromJson(basicsFromJson(json)).map(_.map(conditionFromJson(_)))
+  def query(query: JsValue) : QueryExecutives = QueryExecutives(executivesFilters(query), advancedFilters(query))
+  def executivesFilters(json: JsValue) : Seq[Filter] = filtersFromJson(basicsFromJson(json)).map(_.map(conditionFromJson(_)))
+  def advancedFilters(json: JsValue) : Filter = (json \ "advanced").as[Seq[JsValue]].map(conditionFromJson(_))
 
 
   def conditionFromJson(jsonCondition: JsValue) : Condition = {
@@ -20,8 +21,8 @@ object ParserJsonQuery {
     }
   }
 
-  def filtersFromJson(json: Seq[JsValue]) = json.map(_.\("filters").as[Seq[JsValue]])
-  def basicsFromJson(json: JsValue) : Seq[JsValue] = (json \ "basics").as[Seq[JsValue]]
+  def filtersFromJson(json: Seq[JsValue]) = json.map(_.\("executivesFilters").as[Seq[JsValue]])
+  def basicsFromJson(json: JsValue) : Seq[JsValue] = (json \ "executives").as[Seq[JsValue]]
   def operatorsFromJson(operators: Seq[JsValue]) : Seq[Operator] = operators.map(operatorFromJson(_))
   def operatorFromJson(condition : JsValue) : Operator =  "$" + (condition \ "operator").as[String] -> (condition \ "value").as[Double]
 }
