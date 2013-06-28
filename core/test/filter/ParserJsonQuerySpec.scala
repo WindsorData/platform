@@ -17,8 +17,8 @@ class ParserJsonQuerySpec extends FunSuite {
     val conditions = ParserJsonQuery.operatorsFromJson(jsonValue)
 
     assert(conditions.size === 2)
-    assert(conditions(0) === ("gt" -> 10))
-    assert(conditions(1) === ("lt" -> 22))
+    assert(conditions(0) === ("$gt" -> 10))
+    assert(conditions(1) === ("$lt" -> 22))
   }
 
   test("can parse a complete query") {
@@ -42,7 +42,7 @@ class ParserJsonQuerySpec extends FunSuite {
     val equalCondition = query.basics.head(1).asInstanceOf[EqualCondition]
     val complexCondition = query.basics.head.last.asInstanceOf[ConditionWithOperators]
     assert(equalCondition === EqualCondition("lastName", "ritch"))
-    assert(complexCondition === ConditionWithOperators("salary", Seq(Operator("gt", 5), Operator("lt", 10))))
+    assert(complexCondition === ConditionWithOperators("salary", Seq(("$gt" -> 5), ("$lt" -> 10))))
   }
 
   test("can parse a list of filters") {
@@ -60,7 +60,7 @@ class ParserJsonQuerySpec extends FunSuite {
   test("can parse a condition with operators") {
     val json = """ {"key": "foo.bar", "operators": [{"operator": "lt", "value": 3}]} """
     val complexCondition = ParserJsonQuery.conditionFromJson(stringMultilineToJson(json))
-    assert(complexCondition === ConditionWithOperators("foo.bar", Seq(("lt" -> 3))))
+    assert(complexCondition === ConditionWithOperators("foo.bar", Seq(("$lt" -> 3))))
   }
 
 

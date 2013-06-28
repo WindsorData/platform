@@ -23,5 +23,5 @@ object ParserJsonQuery {
   def filtersFromJson(json: Seq[JsValue]) = json.map(_.\("filters").as[Seq[JsValue]])
   def basicsFromJson(json: JsValue) : Seq[JsValue] = (json \ "basics").as[Seq[JsValue]]
   def operatorsFromJson(operators: Seq[JsValue]) : Seq[Operator] = operators.map(operatorFromJson(_))
-  def operatorFromJson(condition : JsValue) : Operator = (condition.\("operator").as[String] -> condition.\("value").as[Double])
+  def operatorFromJson(condition : JsValue) : Operator = ( "$" + condition.\("operator").as[String] -> condition.\("value").as[Double])
 }

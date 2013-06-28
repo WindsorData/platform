@@ -1,5 +1,4 @@
 
-import com.mongodb.casbah.commons.MongoDBObjectBuilder
 import model._
 import com.mongodb.casbah.Imports._
 import libt.persistence._
@@ -24,7 +23,7 @@ package object persistence {
   }
 
   case class ConditionWithOperators(property: String, operators: Seq[Operator]) extends Condition {
-    def conditions = operators.map(operator => operatorExpression(property, operator._1, operator._2))
+    def conditions = Seq(MongoDBObject(property -> MongoDBObject(operators.toList)))
   }
 
   private def companies(implicit db: MongoDB) = db("companies")
