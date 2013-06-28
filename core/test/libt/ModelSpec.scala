@@ -24,4 +24,10 @@ class ModelSpec extends FunSpec {
     }
   }
 
+  describe("get") {
+    it("should return none for missing keys") {
+      assert(Model().get('a) === None)
+    }
+  }
+
 }
