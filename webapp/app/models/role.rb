@@ -13,5 +13,5 @@ class Role < ActiveRecord::Base
   extend JSONLoadable
 
   attr_accessible :name
-  validates :name, presence: true
+  validates :name, presence: true, uniqueness: true
 end

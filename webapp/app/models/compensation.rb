@@ -14,6 +14,6 @@ class Compensation < ActiveRecord::Base
   extend JSONLoadable
   
   attr_accessible :field, :value
-  validates :field, presence: true
-  validates :value, presence: true
+  validates :field, presence: true, uniqueness: true
+  validates :value, presence: true, uniqueness: true
 end
