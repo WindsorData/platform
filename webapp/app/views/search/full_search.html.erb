@@ -9,7 +9,7 @@
           <label>ROLE *</label>
           <%= select_tag '[role_form][role]', options_from_collection_for_select(@roles, "id", "name") %>
           <label>PAY RANK</label>
-          <%= select_tag '[role_form][pay_rank]', options_for_select(Constants::ROLES) %>
+          <%= select_tag '[role_form][pay_rank]', options_for_select((1..5)), {include_blank: true} %>
         </div>
         <div class="filters">
           <!-- cash compensation -->
@@ -57,22 +57,6 @@
               <%= label_tag 'Yes' %> <%= radio_button_tag 'founder', 'Yes' %>
               <%= label_tag 'No' %> <%= radio_button_tag 'founder', 'No' %>
               <%= label_tag 'N/A' %> <%= radio_button_tag 'founder', 'N/A' %>
-            </div>
-
-            <!-- Director -->
-            <div class="inline-item">
-              <p>Director</p>
-              <%= label_tag 'Yes' %> <%= radio_button_tag 'director', 'Yes' %>
-              <%= label_tag 'No' %> <%= radio_button_tag 'director', 'No' %>
-              <%= label_tag 'N/A' %> <%= radio_button_tag 'director', 'N/A' %>
-            </div>
-
-            <!-- New hire -->
-            <div class="inline-item">
-              <p>New hire</p>
-              <%= label_tag 'Yes' %> <%= radio_button_tag 'new_hire', 'Yes' %>
-              <%= label_tag 'No' %> <%= radio_button_tag 'new_hire', 'No' %>
-              <%= label_tag 'N/A' %> <%= radio_button_tag 'new_hire', 'N/A' %>
             </div>
 
             <!-- transition period -->
