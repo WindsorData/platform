@@ -42,7 +42,7 @@ include_recipe "mongodb::default"
 ######################### Install Backend Server ###############################
 
 execute "Compile Backend" do
-  command "cd core && /play/play clean compile stage"
+  command "cd #{play_app_path} && /play/play clean compile stage"
 end
 
 
