@@ -61,12 +61,12 @@ postgresql_connection = {
 postgresql_database_user 'windsor' do
   connection postgresql_connection
   password 'windsor'
-  database_name 'windsor_dev'
+  database_name 'windsor_development'
   privileges ["ALL"]
   action :create
 end
 
-postgresql_database 'windsor_dev' do
+postgresql_database 'windsor_development' do
   connection postgresql_connection
   encoding 'UTF-8'
   owner 'windsor'
@@ -103,11 +103,11 @@ execute "bundle install" do
 end
 
 execute "rake db:migrate" do
-  command "cd #{rails_app_path} && bundle exec rake db:migrate"
+  command "cd #{rails_app_path} && rbenv exec bundle exec rake db:migrate"
 end
 
 execute "rake db:seed" do
-  command "cd #{rails_app_path} && bundle exec rake db:seed"
+  command "cd #{rails_app_path} && rbenv exec bundle exec rake db:seed"
 end
 
 ############################ Start Play Server  ################################
@@ -117,5 +117,5 @@ end
 
 ############################ Start Rails Server ################################
 execute "Start Rails Server" do
-  command "cd #{rails_app_path} && rails server"
+  command "cd #{rails_app_path} && rbenv exec bundle exec rails server"
 end
