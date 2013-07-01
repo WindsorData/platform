@@ -20,8 +20,8 @@ sealed trait Element extends ElementLike[Element] {
   def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
     case (* :: tail, self: Col) => self.elements.map(_.apply(tail))
     case (* :: tail, self) => Seq(self.apply(tail))
-    case (Route(field) :: Nil, self: Model) => Seq(self(field))
-    case (Route(field) :: tail, self: Model) => self(field).applySeq(tail)
+    case (Route(field) :: Nil, self: Model) => Seq(self.get(field)).flatten
+    case (Route(field) :: tail, self: Model) => self.get(field).toSeq.flatMap(_.applySeq(tail))
   }
 
   /**
@@ -106,7 +106,8 @@ case class Model(elements: Set[(Symbol, Element)])
   with ModelLike[Element] {
 
   private val elementsMap = elements.toMap
-  
+
+  def get(key: Symbol) =  elementsMap.get(key)
   override def apply(key: Symbol) = elementsMap.getOrElse(key, sys.error(s"key $key not found in $this"))
   
   def hasElement(key: Symbol) = elementsMap.contains(key)
