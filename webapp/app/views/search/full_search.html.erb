@@ -1,15 +1,19 @@
 <div class="span9">
   <%= form_tag(search_results_path, class: "main-form" ) do %>
-    <div class="legend relative">
-      Executive compensation
-    </div>
+  <fieldset>
+  <legend class="legend">Executive compensation</legend>
     <div class="form-container" id="forms-container">      
       <div class="basic-group hidden">
         <div class="role-selector">
-          <label>ROLE *</label>
-          <%= select_tag '[role_form][role]', options_from_collection_for_select(@roles, "id", "name") %>
-          <label>PAY RANK</label>
-          <%= select_tag '[role_form][pay_rank]', options_for_select((1..5)), {include_blank: true} %>
+          <div class="item-form">
+            <label class="label">Role</label>
+            <%= select_tag '[role_form][role]', options_from_collection_for_select(@roles, "id", "name") %>
+          </div>
+
+          <div class="item-form">
+            <label class="label">Pay rank</label>
+            <%= select_tag '[role_form][pay_rank]', options_for_select((1..5)), {include_blank: true} %>
+          </div>
         </div>
         <div class="filters">
           <!-- cash compensation -->
@@ -71,14 +75,15 @@
       </div>
 
     </div>
-
+    </fieldset>
     <a class="cto" href="#" id="js-new-form">Add another role</a>
 
     <!-- advanced search -->
     <div class="advanced-search hidden">
       <!-- general criteria -->
+        <fieldset>
       <div class="general-criteria">
-        <h4>GENERAL CRITERIA</h4>
+        <legend class="legend">Advanced Search</legend>
         <p>COMPANY</p>
         <div class="item-form">
           <p class="label">reload options</p>
@@ -156,7 +161,7 @@
           <%= check_box_tag 'profitability', 'Return on Equity' %>          
         </div>
       </div>
-      
+      </fieldset>
     </div>
     <div>
       <button type="submit" class="btn">Search</button>
