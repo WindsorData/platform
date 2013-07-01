@@ -33,14 +33,4 @@ class FilesController < ApplicationController
       end
     end    
   end
-
-  rescue_from Errno::EHOSTUNREACH do |exception|
-    flash[:error] = "Unable to connect to backend host"
-    redirect_to file_upload_path
-  end
-
-  rescue_from Errno::ECONNREFUSED do |exception|
-    flash[:error] = "Backend connection refused"
-    redirect_to file_upload_path
-  end
 end

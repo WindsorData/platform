@@ -14,8 +14,9 @@ class SearchController < ApplicationController
   def results
     params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
     json_query = QueryGenerator.json_query(params_hash)
+    path = Rails.application.config.backend_host
 
-    RestClient.post(HOST_URL + path, query: query) do |response, request|
+    RestClient.post(path, query: json_query) do |response, request|
       # do something with the response
     end
   end

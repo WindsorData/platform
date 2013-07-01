@@ -12,7 +12,7 @@ describe QueryGenerator do
         'adv_1' => '4'
       ] 
     }
-    it { should ==  "{'basics':[{'filters':[{'field':'pay_rank','value':'CTO'}]}],'advanced':{'adv_1': 4}}" }
+    it { should ==  "{'executives':[{'executivesFilters':[{'key':'pay_rank','value':'CTO'}]}],'advanced':[{'key':'adv_1','values': 4}]}" }
   end
 
   context "When there are multiple forms with only key-value fields" do
@@ -26,7 +26,7 @@ describe QueryGenerator do
         }
       ] 
     }
-    it { should ==  "{'basics':[{'filters':[{'field':'pay_rank','value':'CTO'}]},{'filters':[{'field':'pay_rank','value':'CFO'}]}]}" }
+    it { should ==  "{'executives':[{'executivesFilters':[{'key':'pay_rank','value':'CTO'}]},{'executivesFilters':[{'key':'pay_rank','value':'CFO'}]}]}" }
   end
 
   context "When there is one form with key-value and range fields" do
@@ -41,6 +41,6 @@ describe QueryGenerator do
         }
       ] 
     }
-    it { should ==  "{'basics':[{'filters':[{'field':'pay_rank','value':'CTO'},{'field':'ceo_tenure','operators':[{'gt': 1,'lt': 3}]}]},{'filters':[{'field':'role','value': 1}]}]}" }
+    it { should ==  "{'executives':[{'executivesFilters':[{'key':'pay_rank','value':'CTO'},{'key':'ceo_tenure','operators':[{'gt': 1,'lt': 3}]}]},{'executivesFilters':[{'key':'role','value': 1}]}]}" }
   end
 end
