@@ -131,14 +131,14 @@
         <div class="item-form">
           <p class="label">Revenue</p>
           <%= check_box_tag 'income_statement[]', 'Revenue' %>
-          <input type="text" placeholder="Greater than"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than"> <span>$ MMs</span>
+          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>
         <div class="item-form">
           <p class="label">Net Income</p>
-          <%= check_box_tag 'income_statement[]', 'Net Income' %> 
-          <input type="text" placeholder="Greater than"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than"> <span>$ MMs</span>         
+          <%= check_box_tag 'income_statement[]', 'Net Income' %>
+          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>
       </div>
 
@@ -146,15 +146,15 @@
         <p class="subtitle">Valuations</p>
         <div class="item-form">
           <p class="label">Market Cap</p>
-          <%= check_box_tag 'valuations[]', 'Market Cap' %> 
-          <input type="text" placeholder="Greater than"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than"> <span>$ MMs</span>
+          <%= check_box_tag 'valuations[]', 'Market Cap' %>
+          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>
         <div class="item-form">
           <p class="label">Price to Earning (P/E)</p>
           <%= check_box_tag 'valuations[]', 'Price to Earning (P/E)' %>
-          <input type="text" placeholder="Greater than"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than"> <span>$ MMs</span>       
+          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>    
         </div>
       </div>
 
@@ -163,8 +163,8 @@
         <div class="item-form">
           <p class="label">Earnings per Share (EPS)</p>
           <%= check_box_tag 'stock_price_performance', 'Earnings per Share (EPS)' %>
-          <input type="text" placeholder="Greater than"> <span>%</span>
-          <input type="text" placeholder="Lower than"> <span>%</span>        
+          <input type="text" placeholder="Greater than" disabled="disabled"> <span>%</span>
+          <input type="text" placeholder="Lower than" disabled="disabled"> <span>%</span>   
         </div>
       </div>
 
@@ -173,8 +173,8 @@
         <div class="item-form">
           <p class="label">Return on Equity</p>
           <%= check_box_tag 'profitability', 'Return on Equity' %>
-          <input type="text" placeholder="Greater than"> <span>%</span>
-          <input type="text" placeholder="Lower than"> <span>%</span>         
+          <input type="text" placeholder="Greater than" disabled="disabled"> <span>%</span>
+          <input type="text" placeholder="Lower than" disabled="disabled"> <span>%</span>         
         </div>
       </div>
     </fieldset>
