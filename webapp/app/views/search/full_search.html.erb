@@ -5,6 +5,7 @@
     <div class="form-container" id="forms-container">      
       <div class="basic-group hidden">
         <div class="role-selector">
+
           <div class="item-form">
             <label class="label">Role</label>
             <%= select_tag '[role_form][role]', options_from_collection_for_select(@roles, "id", "name") %>
@@ -14,19 +15,20 @@
             <label class="label">Pay rank</label>
             <%= select_tag '[role_form][pay_rank]', options_for_select((1..5)), {include_blank: true} %>
           </div>
+
         </div>
         <div class="filters">
           <!-- cash compensation -->
           <div class="item-form">
             <p class="label">cash compensation</p>
-            <%= select_tag '[role_form][cash_comp][type]', options_from_collection_for_select(@cash_comp_values, "field", "value") %>
+            <%= select_tag '[role_form][cash_comp][type]', options_from_collection_for_select(@cash_comp_values, "field", "value"), {include_blank: true} %>
             <input type="text" placeholder="Greater than ($)" name='[role_form][cash_comp][gt]'>
             <input type="text" placeholder="Less than ($)" name='[role_form][cash_comp][lt]'>
           </div>
           <!-- equity compensation -->
           <div class="item-form">      
             <p class="label">equity compensation</p>
-            <%= select_tag '[role_form][eq_comp][type]', options_from_collection_for_select(@eq_comp_values, "field", "value") %>
+            <%= select_tag '[role_form][eq_comp][type]', options_from_collection_for_select(@eq_comp_values, "field", "value"), {include_blank: true} %>
             <input type="text" placeholder="Greater than ($)" name='[role_form][eq_comp][gt]'>
             <input type="text" placeholder="Less than ($)" name='[role_form][eq_comp][gt]'>
           </div>
@@ -81,7 +83,8 @@
     <!-- advanced search -->
     <div class="advanced-search hidden">
       <!-- general criteria -->
-        <fieldset>
+      <fieldset>
+      <!--
       <div class="general-criteria">
         <legend class="legend">Advanced Search</legend>
         <p>COMPANY</p>
@@ -120,6 +123,7 @@
           <%= select_tag :report, options_for_select(["Year", "No", "N/A"]) %>
         </div>
       </div>
+      -->
       <!-- financials -->
       <h4>FINANCIALS</h4>
       <div class="general-criteria">
@@ -161,7 +165,8 @@
           <%= check_box_tag 'profitability', 'Return on Equity' %>          
         </div>
       </div>
-      </fieldset>
+    </fieldset>
+
     </div>
     <div>
       <button type="submit" class="btn">Search</button>
