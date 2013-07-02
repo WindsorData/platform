@@ -19,7 +19,6 @@ object TMapping {
     case TAny => TAnyMapping
     case TEnum(valueType, _) => this(valueType)
     case TNumber => TNumberMapping
-    case TWithDefault(baseReader, default) => TWithDefaultMapping(this(baseReader), default)
     case TInt => TIntMapping
     case TBool => ???
     case TXBool => TXBoolMapping

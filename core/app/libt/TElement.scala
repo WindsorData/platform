@@ -27,19 +27,6 @@ sealed trait TElement extends ElementLike[TElement] {
  * @author flbulgarelli
  */
 sealed trait TValue[A] extends TElement with ValueLike[TElement, A]
-
-/**
- * *
- * TValue wrapper for introducing default values information
- * into the schema
- *
- * @author flbulgarelli
- */
-case class TWithDefault[A](valueType: TValue[A], defaultValue: A) extends TValue[A] {
-  override def validate(element: Element) = umatch(element) {
-    case v: Value[A] => valueType.validate(v)
-  }
-}
 case object TString extends TValue[String]
 case object TAny extends TValue[String]
 case object TInt extends TValue[Int]
