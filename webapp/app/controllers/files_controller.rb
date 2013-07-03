@@ -24,12 +24,11 @@ class FilesController < ApplicationController
     when 'batch'
       path += Rails.application.config.post_batch_path
     end
-    RestClient.post(path, dataset: File.new(file.path, 'r')) do |response, request|
+    RestClient.post(path, {dataset: File.new(file.path, 'r')}, {accept: :json}) do |response, request|
       if response.code == 200
         flash[:notice] = "Upload successfully completed"
       else
-        # TODO: complete
-        # flash[:error] = response.body
+        flash[:error] = JSON.parse(response.body)['errors'].join("<br/>").html_safe
       end
     end    
   end
