@@ -1,7 +1,6 @@
 package libt
-import sys._
-import util._
-import output._
+
+import libt.util._
 
 /**
  * @author flbulgarelli
@@ -74,7 +73,6 @@ case class Value[A](
   def metadataSeq = Seq(calc, comment, note, link)
   
   def isComplete = value.nonEmpty
-  
 }
 object Value {
   
