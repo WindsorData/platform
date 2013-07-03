@@ -8,17 +8,14 @@ import org.apache.poi.ss.util.CellReference
 
 object WorkbookLogger {
 
-  trait Loggeable {
-    def generateErrorMessage(description: String): String
+  case class ReaderError(baseMessage : String = "") {
+
     def where(cell: Cell) =
       if (cell != null) {
         " on Sheet " + cell.getSheet().getSheetName +
-        " -> Column: " + CellReference.convertNumToColString(cell.getColumnIndex()) +
-        ", Row: " + { cell.getRowIndex + 1 }
+          " -> Column: " + CellReference.convertNumToColString(cell.getColumnIndex()) +
+          ", Row: " + { cell.getRowIndex + 1 }
       }
-  }
-
-  case class ReaderError(baseMessage : String = "") extends Loggeable {
 
     def generateErrorMessage(description: String) =
       "PARSING INPUT" + " - " + description
@@ -29,9 +26,4 @@ object WorkbookLogger {
     def noFiscalYearProvidedAt(cell: Cell) = description(cell, "No Fiscal Year provided ")
   }
 
-  def log(cause: String) = {
-    val completeMsg = "ERROR " + cause
-    Logger.error(completeMsg);
-    completeMsg
-  }
 }

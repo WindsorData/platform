@@ -36,9 +36,9 @@ class DocSrcCombiner(
       Valid(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
     } catch {
       case e: NoSuchElementException =>
-        Invalid(log(ReaderError().noFiscalYearProvidedAt(dateCell)))
+        Invalid(ReaderError().noFiscalYearProvidedAt(dateCell))
       case e: RuntimeException =>
-        Invalid(log(ReaderError(e.getMessage()).description(dateCell)))
+        Invalid(ReaderError(e.getMessage()).description(dateCell))
     }
   }
 
