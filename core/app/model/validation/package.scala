@@ -35,6 +35,6 @@ package object validation {
           results.reduce((a, b) => a andThen b)
         }
     }
-  def warning(tab: String) = s"Warning on $tab: "
-  def err(tab: String) = s"Error on $tab: "
+  def warning(id: String, msg: String) = s"Warning on $id: $msg"
+  def err(id: String, msg: String) = s"Error on $id: $msg"
 }

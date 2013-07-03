@@ -105,9 +105,10 @@ package object guidelines extends WorkflowFactory {
         } yield Valid(model))
           .getOrElse(
             Doubtful(model,
-              warning(execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel))
-                + Path('scope, 'corporate, 'use).titles.mkString(" - ")
-                + "Almost always the scope would include Corporate"))
+              warning(
+                  execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel)
+                  + Path('scope, 'corporate, 'use).titles.mkString(" - "),
+            	  "Almost always the scope would include Corporate")))
   	}
     
   def metricsValidation(model: Model) =

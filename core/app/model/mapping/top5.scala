@@ -12,7 +12,13 @@ import libt.util._
 import libt._
 import libt.error._
 import java.math.MathContext
+import org.joda._
 import java.util.Date
+import org.joda.time.Interval
+import org.joda.time.DateTime
+import org.joda.time.Days
+import org.joda.time.Years
+import play.Logger
 
 object top5 extends WorkflowFactory {
 
@@ -119,20 +125,61 @@ object top5 extends WorkflowFactory {
       grantTypeValidation(model.get) andThen
         executivesValidation(model.get)
 
+  def gzip(sheets: Seq[Seq[Validated[Model]]]): Seq[Seq[Validated[Model]]] = sheets match {
+        case m1 :: m2 :: Nil => m1.zip(m2).map { case (x, y) => Seq(x,y)}
+        case head :: tail => head.zip(gzip(tail)).map { case (x, xs) => x +: xs }
+      }
+  
   override def WorkbookValidationPhase =
     (_, models) =>
-      if (!models.concat.isInvalid)
-        transitionPeriodValidation(models.map(_.get))
+      if (!models.concat.isInvalid) {
+    	  gzip(Seq(
+    	      transitionPeriodValidation(models.map(_.get)),
+    	      optionGrantsVsGrantType(models.map(_.get))))
+    	  .map(_.reduce((a, b) => a andThen b))
+      }
       else
         models
 
+  def optionGrantsVsGrantType(models: Seq[Model]): Seq[Validated[Model]] = {
+      def gap(eDate: Date, gDate: Date) = 
+        Math.abs(new DateTime(eDate).getYear() - new DateTime(gDate).getYear())
+        
+	  models.map { m =>
+	  	val maxTerm = models.find(_.hasElement('grantTypes))
+	  				.get(Path('grantTypes, 'stockOptions, 'maxTerm)).rawValue[BigDecimal]
+		if(m.hasElement('executives)) {
+		  val results : Seq[Validated[Model]] = 
+		  for {
+			  execs <- m.applySeq(Path('executives, *))
+			  grants = execs.applySeq(Path('optionGrants, *))
+			  grant <- grants.zip(Stream.from(1))
+		  }
+		  yield
+		  (grant._1(Path('expireDate)).rawValue[Date], grant._1(Path('grantDate)).rawValue[Date], maxTerm) match {
+		    case (Some(eDate), Some(gDate), Some(term)) 
+		    	if gap(eDate,gDate) != term.toInt => 
+		    	  Doubtful(m,
+		    	      warning("ExecDb - " + execMsg(m(Path('disclosureFiscalYear)).getRawValue[Int], execs.asModel)
+		    	    		  + "grant " + grant._2,
+		    	    		  "option grants should have gap between dates equal to max term on grant types"))
+		    case _ => Valid(m)
+		  }
+		  results.reduce( (a, b) => a andThen b)
+		}
+		else
+		  Valid(m)
+	  }
+  }
+  
   def transitionPeriodValidation(models: Seq[Model]): Seq[Validated[Model]] = {
 
     def validateTransition(model: Model)(execs: (Element, Element)): Validated[Model] =
       (execs._1(Path('functionalMatches, 'primary)).rawValue[String],
         execs._2(Path('functionalMatches, 'primary)).rawValue[String],
         execs._2(Path('transitionPeriod)).rawValue[String]) match {
-          case (Some(rol0), Some(rol1), Some(isTransition)) if ((rol0 == rol1 && isTransition == "Yes") || (rol0 != rol1 && isTransition == "No")) =>
+          case (Some(rol0), Some(rol1), Some(isTransition))
+          if ((rol0 == rol1 && isTransition == "Yes") || (rol0 != rol1 && isTransition == "No")) =>
             Invalid(
               s"Error on ExecDb ${model(Path('disclosureFiscalYear)).getRawValue[Int]} " +
                 s"- ${execs._2(Path('firstName)).getRawValue[String]} " +
@@ -205,8 +252,8 @@ object top5 extends WorkflowFactory {
             case (_, None, _, None) => Valid(model)
             case _ =>
               Doubtful(model,
-                warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                  ": current base salary and target bonus are equal or greater that next fiscal year data")
+                warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                		"current base salary and target bonus are equal or greater that next fiscal year data"))
           }
     }
 
@@ -218,8 +265,8 @@ object top5 extends WorkflowFactory {
           val bod = m(Path('functionalMatches, 'bod)).rawValue[String]
           (for (primaryv <- primary; if (primaryv == "CEO (Chief Executive Officer)" && bod.isEmpty))
             yield Doubtful(model,
-            warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Bod: "
-              + "CEO with no BOD")).getOrElse(Valid(model))
+            warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Bod: ",
+            		"CEO with no BOD"))).getOrElse(Valid(model))
         }
     }
 
@@ -231,8 +278,8 @@ object top5 extends WorkflowFactory {
           val founder = m(Path('founder)).rawValue[Boolean]
           (for (salaryv <- baseSalary; if salaryv == 1 && founder.isEmpty)
             yield Doubtful(model,
-            warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Founder: "
-              + "base salary is 1 and executive is not a founder")).getOrElse(Valid(model))
+            warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Founder: ",
+            		"base salary is 1 and executive is not a founder"))).getOrElse(Valid(model))
         }
     }
 
@@ -247,8 +294,8 @@ object top5 extends WorkflowFactory {
                   perfCash('payout).rawValue[BigDecimal]) match {
                     case (Some(_), Some(_)) =>
                       Invalid(
-                        err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                          ": in PerfCash Both target value and Payout can’t be filled for the same grant")
+                        err("ExecDb - " +execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                          ": in PerfCash Both target value and Payout can’t be filled for the same grant"))
                     case _ => Valid(model)
                   }
               }
@@ -270,8 +317,8 @@ object top5 extends WorkflowFactory {
               .map {
                 case (Some(value), Some(benef)) if value > benef =>
                   Doubtful(model,
-                    warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                      ": Some Owned Shares values cannot be greater than Beneficial Ownership")
+                    warning("ExecDb + " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                    		"Some Owned Shares values cannot be greater than Beneficial Ownership"))
                 case _ => Valid(model)
               }
           results.reduce((a, b) => a andThen b)
@@ -286,9 +333,10 @@ object top5 extends WorkflowFactory {
             m(Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions)).rawValue[BigDecimal],
             m(Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions)).rawValue[BigDecimal]) match {
               case (Some(options), vested, unvested) if options == 0 && Seq(vested, unvested).flatten.sum > 0 =>
-                Invalid(err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                  Path('carriedInterest, 'ownedShares, 'options).titles.mkString(" - ") +
-                  " is 0, so vested options and unvested options should be 0 or empty")
+                Invalid(err("ExecDb - " 
+                    + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel)
+                    + Path('carriedInterest, 'ownedShares, 'options).titles.mkString(" - "),
+                	" is 0, so vested options and unvested options should be 0 or empty"))
               case _ => Valid(model)
             }
         }
@@ -308,8 +356,8 @@ object top5 extends WorkflowFactory {
                   product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) / 1000
                   if product != v
                 } yield Invalid(
-                  err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs: " +
-                    "Number multiplied by price should be equal to value")).getOrElse(Valid(model))
+                  err("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs",
+                    "Number multiplied by price should be equal to value"))).getOrElse(Valid(model))
               }
           results.reduce((a, b) => a andThen b)
         }
@@ -334,8 +382,8 @@ object top5 extends WorkflowFactory {
         if (m(Path('transitionPeriod)).rawValue[String].isEmpty
             && nonEmptyExecutive(m))
           Invalid(
-            err("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-              "Transition Period should not be BLANK")
+            err("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+              "Transition Period should not be BLANK"))
         else
           Valid(model)
     }
@@ -356,8 +404,8 @@ object top5 extends WorkflowFactory {
                   Valid(model)
                 else
                   Doubtful(model,
-                    warning("ExecDb") + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) +
-                      ": Option grants must have all columns filled with data or all empty")
+                    warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                    		"Option grants must have all columns filled with data or all empty"))
               }
 
           results.reduce((a, b) => a andThen b)
@@ -386,14 +434,14 @@ object top5 extends WorkflowFactory {
       if (!use || model(path.init).asModel.without(path.last.routeValue).isComplete)
         Valid(model)
       else
-        Invalid(err(path.titles.mkString(" - ")) + "Incomplete data")
+        Invalid(err(path.titles.mkString(" - "), "Incomplete data"))
     }
 
     def validateGrantTypeMinPayout = {
       val path = Path('grantTypes, 'performanceEquityVesting, 'minPayout)
       (for (minPayout <- model(path).rawValue[Number]; if minPayout != 0)
         yield Doubtful(model,
-        warning(path.titles.mkString(" - ")) + "value is not 0%"))
+        warning(path.titles.mkString(" - "), "value is not 0%")))
         .getOrElse(Valid(model))
     }
 

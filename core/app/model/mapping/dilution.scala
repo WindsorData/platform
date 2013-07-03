@@ -81,7 +81,9 @@ package object dilution extends WorkflowFactory {
     		  				model(Path('year3)).rawValue[BigDecimal])).flatten
       .map (value => if( value < 1000) 
     	  				Doubtful(model, 
-    	  				    warning("Options and Full Value: granted and cancelled values should not be less than 1000")) 
+    	  				    warning(
+    	  				        "Usage And SVT Data", 
+    	  				        "Options and Full Value: granted and cancelled values should not be less than 1000")) 
     	  			 else Valid(model))
       
       results.reduce( (a, b) => a andThen b)
@@ -106,8 +108,9 @@ package object dilution extends WorkflowFactory {
     	  if option == 0 || fullvalue == 0
       	}
       	yield Doubtful(model, 
-      	    warning("Dilution and ISS SVT Data") 
-      	    + "- Awards Outstandings: Options and Full values should not be 0")) 
+      	    warning(
+      	        "Dilution and ISS SVT Data", 
+      	        "Awards Outstandings: Options and Full values should not be 0"))) 
       	.getOrElse(Valid(model))
   
   def usageAndSVTValidations(model: Model): Validated[Model] = 

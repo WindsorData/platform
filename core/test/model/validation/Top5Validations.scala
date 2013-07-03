@@ -5,6 +5,9 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSpec
 import libt._
 import model.mapping.top5
+import java.util.Date
+import java.util.Calendar
+import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
 class Top5Validations extends FunSpec {
@@ -53,6 +56,35 @@ class Top5Validations extends FunSpec {
           Seq(model("Example", "A", 2012, Value("foo"), Value("No")),
             model("Example", "B", 2011, Value("bar"), Value("No")),
             model("Example", "B", 2010, Value("bar"), Value("No")))).forall(_.isValid))
+    }
+    
+    it("should validate options grant dates with grant types max term") {
+     def optionGrant(grantDate: Value[Date], expireDate: Value[Date]) =
+      createModel(
+        model = Model(
+            'optionGrants -> Col(
+                Model(
+                    'grantDate -> grantDate,
+                    'expireDate -> expireDate))))
+     def grantType(maxTerm: Value[BigDecimal]) =
+      Model(
+          'disclosureFiscalYear -> Value(2013),
+          'grantTypes -> Model(
+            'stockOptions -> Model(
+                'maxTerm -> maxTerm)))
+                
+     assert(top5.optionGrantsVsGrantType(
+         Seq(grantType(Value()), optionGrant(Value(),Value()))).forall(_.isValid))
+     assert(top5.optionGrantsVsGrantType(
+         Seq(grantType(Value(1: BigDecimal)), 
+             optionGrant(
+                 Value(new DateTime().plusYears(1).toDate),
+                 Value(new DateTime().toDate)))).forall(_.isValid))
+     assert(top5.optionGrantsVsGrantType(
+         Seq(grantType(Value(1: BigDecimal)), 
+             optionGrant(
+                 Value(new DateTime().plusYears(2).toDate),
+                 Value(new DateTime().toDate)))).exists(_.isDoubtful))
     }
   }
   

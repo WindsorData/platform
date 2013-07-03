@@ -13,7 +13,7 @@ trait WorkflowFactory {
 
   def Workflow: FrontPhase[Seq[Validated[Model]]] = 
 	  MappingPhase(Mapping) >> 
-	  CombinerPhase >> 
+	  CombinerPhase >>
 	  SheetValidationPhase(Validation) >> 
 	  WorkbookValidationPhase
       
