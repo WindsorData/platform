@@ -117,5 +117,5 @@ end
 
 ############################ Start Rails Server ################################
 execute "Start Rails Server" do
-  command "cd #{rails_app_path} && rbenv exec bundle exec rails server"
+  command "cd #{rails_app_path} && rbenv exec bundle exec rails server -d"
 end
