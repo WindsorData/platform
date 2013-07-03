@@ -30,4 +30,79 @@ class ModelSpec extends FunSpec {
     }
   }
 
+  describe("flatten") {
+    it("should be able to flat a single model") {
+      val model = Model(
+        'key -> Value("hello"),
+        'value -> Col(
+          Model('value -> Value("world")),
+          Model('value -> Value("!"))))
+
+      val flattenedModel = model.flattenWith(Seq(Path('key)), Path('value, *))
+
+      assert(flattenedModel === Seq(
+        Model(
+          'key -> Value("hello"),
+          'value -> Value("world")),
+        Model(
+          'key -> Value("hello"),
+          'value -> Value("!"))))
+    }
+
+    it("have root pks in flattened models") {
+      val model = Model(
+        'key1 -> Value("Hey"),
+        'key2 -> Value("!"),
+        'key3 -> Value("hello"),
+        'value -> Col(
+          Model('value -> Value("world")),
+          Model('value -> Value("!"))))
+
+      val flattenedModel = model.flattenWith(Seq(Path('key1), Path('key2), Path('key3)), Path('value, *))
+
+      assert(flattenedModel === Seq(
+        Model(
+          'key1 -> Value("Hey"),
+          'key2 -> Value("!"),
+          'key3 -> Value("hello"),
+          'value -> Value("world")),
+        Model(
+          'key1 -> Value("Hey"),
+          'key2 -> Value("!"),
+          'key3 -> Value("hello"),
+          'value -> Value("!"))))
+    }
+
+    it("work with multiple roots") {
+      val models = Seq(
+        Model(
+          'key -> Value("hello"),
+          'value -> Col(
+            Model('value -> Value("world")),
+            Model('value -> Value("!")))),
+
+        Model(
+          'key -> Value("good"),
+          'value -> Col(
+            Model('value -> Value("bye")),
+            Model('value -> Value("day")))))
+
+      val flattenedModels = Model.flattenWith(models, Seq(Path('key)), Path('value, *))
+
+      assert(flattenedModels === Seq(
+        Model(
+          'key -> Value("hello"),
+          'value -> Value("world")),
+        Model(
+          'key -> Value("hello"),
+          'value -> Value("!")),
+        Model(
+          'key -> Value("good"),
+          'value -> Value("bye")),
+        Model(
+          'key -> Value("good"),
+          'value -> Value("day"))))
+    }
+  }
+
 }
