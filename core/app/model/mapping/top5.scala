@@ -416,7 +416,7 @@ object top5 extends WorkflowFactory {
           val results: Seq[Validated[Model]] =
             m.applySeq(Path('optionGrants, *))
               .map { grant =>
-                val elements = grant.asModel.without('perf).elements
+                val elements = (grant.asModel - 'perf).elements
                 if (elements.forall(!_._2.asValue.isComplete)
                   || elements.forall(_._2.asValue.isComplete))
                   Valid(model)
@@ -449,7 +449,7 @@ object top5 extends WorkflowFactory {
     def validateGrantTypeUse: Validated[Model] = {
       val path = Path('grantTypes, 'stockOptions, 'use)
       val use = model(path).getRawValue[Boolean]
-      if (!use || model(path.init).asModel.without(path.last.routeValue).isComplete)
+      if (!use || (model(path.init).asModel - path.last.routeValue).isComplete)
         Valid(model)
       else
         Invalid(err(path.titles.mkString(" - "), "Incomplete data"))
