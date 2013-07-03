@@ -2,7 +2,7 @@ package filter
 
 import play.api.libs.json._
 import org.scalatest.FunSuite
-import persistence.{ConditionWithOperators, EqualCondition, Operator}
+import persistence.query._
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
@@ -17,8 +17,8 @@ class ParserJsonQuerySpec extends FunSuite {
     val conditions = ParserJsonQuery.operatorsFromJson(jsonValue)
 
     assert(conditions.size === 2)
-    assert(conditions(0) === ("$gt" -> 10))
-    assert(conditions(1) === ("$lt" -> 22))
+    assert(conditions(0) === "$gt" -> 10)
+    assert(conditions(1) === "$lt" -> 22)
   }
 
   test("can parse a complete query") {
@@ -60,7 +60,7 @@ class ParserJsonQuerySpec extends FunSuite {
   test("can parse a condition with operators") {
     val json = """ {"key": "foo.bar", "operators": [{"operator": "lt", "value": 3}]} """
     val complexCondition = ParserJsonQuery.conditionFromJson(stringMultilineToJson(json))
-    assert(complexCondition === ConditionWithOperators("foo.bar", Seq(("$lt" -> 3))))
+    assert(complexCondition === ConditionWithOperators("foo.bar", Seq("$lt" -> 3)))
   }
 
 

@@ -7,25 +7,6 @@ import libt._
 package object persistence {
   type DBO = DBObject
 
-  type Filter = Seq[Condition]
-  type Operator = (String, Any)
-
-  case class Query(basics: Seq[Filter]) {
-    def basicConditions = basics.map(_.flatMap(_.condition))
-  }
-
-  trait Condition {
-    def condition : DBO
-  }
-
-  case class EqualCondition(property: String, value: Any) extends Condition {
-    def condition = MongoDBObject(property -> value)
-  }
-
-  case class ConditionWithOperators(property: String, operators: Seq[Operator]) extends Condition {
-    def condition = MongoDBObject(property -> MongoDBObject(operators.toList))
-  }
-
   private def companies(implicit db: MongoDB) = db("companies")
 
   val allCompanies = "All Companies"
