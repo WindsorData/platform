@@ -47,6 +47,10 @@ trait ElementLike[ElementType] { self : ElementType =>
   def apply(pathPart:PathPart) : ElementType = apply(Path(pathPart))
 
 }
+trait ModelLikeOps[ElementType] {
+  def apply(key: Symbol): ElementType = get(key).getOrElse(sys.error(s"key $key not found in $this"))
+  def get(key: Symbol) : Option[ElementType]
+}
 trait ModelLike[ElementType] {
   /**Answers the element at the given key*/
   def apply(key: Symbol): ElementLike[ElementType]

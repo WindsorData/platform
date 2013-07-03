@@ -126,13 +126,12 @@ trait ModelAlgebraOps {  this : Model =>
 case class Model(elements: Set[(Symbol, Element)])
   extends Element
   with ModelLike[Element]
+  with ModelLikeOps[Element]
   with ModelAlgebraOps {
 
   private val elementsMap = elements.toMap
 
   def get(key: Symbol) =  elementsMap.get(key)
-  override def apply(key: Symbol) = elementsMap.getOrElse(key, sys.error(s"key $key not found in $this"))
-  
   def contains(key: Symbol) = elementsMap.contains(key)
 
   /**
