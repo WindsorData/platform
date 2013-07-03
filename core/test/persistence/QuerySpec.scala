@@ -37,7 +37,7 @@ class QuerySpec extends FunSuite {
         Seq(EqualCondition("executives.firstName.value", "Robert H.")),
         Seq(ConditionWithOperators("disclosureFiscalYear.value", Seq("$gte" -> 2010)))
     ), Seq())
-    val mongoQuery = query.query.toString
+    val mongoQuery = query.toString
 
     assert("""{ "$or" : [ { "executives.firstName.value" : "Robert H."} , { "disclosureFiscalYear.value" : { "$gte" : 2010}}]}""" == mongoQuery)
   }

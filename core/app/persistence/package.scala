@@ -7,6 +7,9 @@ import libt._
 package object persistence {
   type DBO = DBObject
 
+  def unmarshallCompany = TCompanyFiscalYear.unmarshall(_)
+  def marshallCompany = TCompanyFiscalYear.marshall(_)
+
   private def companies(implicit db: MongoDB) = db("companies")
 
   val allCompanies = "All Companies"
@@ -20,13 +23,15 @@ package object persistence {
       MongoDBObject(
         "ticker.value" -> company(Path('ticker)).asValue[String].value.get,
         "disclosureFiscalYear.value" -> company(Path('disclosureFiscalYear)).asValue.value.get),
-      MongoDBObject("$set" -> TCompanyFiscalYear.marshall(company)), true)
+      MongoDBObject("$set" -> marshallCompany(company)), true)
   }
 
-  def findAllCompanies(implicit db: MongoDB) = companies.toList.map(TCompanyFiscalYear.unmarshall(_))
+  def findAllCompanies(implicit db: MongoDB) = companies.toList.map(unmarshallCompany)
+
+  def findByExample(implicit db: MongoDB, example : DBO) = companies.find(example).toList.map(unmarshallCompany)
 
   def findCompaniesBy(names: Seq[String], yearRange: Int)(implicit db: MongoDB) = {
-    companies.find(createQuery(names)).toSeq.map(TCompanyFiscalYear.unmarshall(_).asModel) match {
+    companies.find(createQuery(names)).toSeq.map(unmarshallCompany(_).asModel) match {
       case Seq() => None
       case results => Some(results)
     }

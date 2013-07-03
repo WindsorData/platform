@@ -44,10 +44,10 @@ class ParserJsonQuerySpec extends FunSuite {
     assert(query.executives(0).size === 3)
     assert(query.advanced.size === 2)
 
-    assert(query.executives.head(1).asInstanceOf[EqualCondition] === EqualCondition("lastName", "ritch"))
-    assert(query.executives.head.last.asInstanceOf[ConditionWithOperators] === ConditionWithOperators("salary", Seq("$gt" -> 5, "$lt" -> 10)))
-    assert(query.advanced(0).asInstanceOf[EqualCondition] === EqualCondition("foo", "bar"))
-    assert(query.advanced(1).asInstanceOf[ConditionWithOperators] === ConditionWithOperators("chi", Seq("$gt" -> 4)))
+    assert(query.executives.head(1) === EqualCondition("lastName", "ritch"))
+    assert(query.executives.head.last === ConditionWithOperators("salary", Seq("$gt" -> 5, "$lt" -> 10)))
+    assert(query.advanced(0) === EqualCondition("foo", "bar"))
+    assert(query.advanced(1) === ConditionWithOperators("chi", Seq("$gt" -> 4)))
   }
 
   test("can parse a list of executivesFilters") {
