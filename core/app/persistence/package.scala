@@ -1,15 +1,14 @@
-import com.mongodb.DBObject
+
 import model._
-import com.mongodb.casbah.commons.MongoDBObject
 import com.mongodb.casbah.Imports._
-import com.mongodb.casbah.commons.MongoDBList
-import util._
 import libt.persistence._
 import libt._
-import com.mongodb.casbah.commons.MongoDBObjectBuilder
 
 package object persistence {
   type DBO = DBObject
+
+  def unmarshallCompany = TCompanyFiscalYear.unmarshall(_)
+  def marshallCompany = TCompanyFiscalYear.marshall(_)
 
   private def companies(implicit db: MongoDB) = db("companies")
 
@@ -24,13 +23,15 @@ package object persistence {
       MongoDBObject(
         "ticker.value" -> company(Path('ticker)).asValue[String].value.get,
         "disclosureFiscalYear.value" -> company(Path('disclosureFiscalYear)).asValue.value.get),
-      MongoDBObject("$set" -> TCompanyFiscalYear.marshall(company)), true)
+      MongoDBObject("$set" -> marshallCompany(company)), true)
   }
 
-  def findAllCompanies(implicit db: MongoDB) = companies.toList.map(TCompanyFiscalYear.unmarshall(_))
+  def findAllCompanies(implicit db: MongoDB) = companies.toList.map(unmarshallCompany)
+
+  def findByExample(implicit db: MongoDB, example : DBO) = companies.find(example).toList.map(unmarshallCompany)
 
   def findCompaniesBy(names: Seq[String], yearRange: Int)(implicit db: MongoDB) = {
-    companies.find(createQuery(names)).toSeq.map(TCompanyFiscalYear.unmarshall(_).asModel) match {
+    companies.find(createQuery(names)).toSeq.map(unmarshallCompany(_).asModel) match {
       case Seq() => None
       case results => Some(results)
     }
@@ -45,8 +46,10 @@ package object persistence {
 
   def createQuery(names: Seq[String]): MongoDBObject =
     if (!names.contains(allCompanies))
-      MongoDBObject("ticker.value" -> MongoDBObject("$in" -> names))
+      operatorExpression("ticker.value", "$in", names)
     else
       MongoDBObject()
 
+
+  def operatorExpression(property: String, operator: String, values: Any) = MongoDBObject(property -> MongoDBObject(operator -> values))
 }

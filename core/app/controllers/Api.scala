@@ -1,12 +1,17 @@
 package controllers
 
+import _root_.persistence.query.QueryExecutives
+import play.api.libs.json.JsValue
 import com.mongodb.casbah.MongoClient
+import filter._
 import libt.util.Strings._
 import model.Commons._
 import play.api.libs.json.Json._
 import persistence._
 import play.api.mvc._
 import libt._
+import play.api.Logger
+
 
 object Api extends Controller {
 
@@ -56,6 +61,21 @@ object Api extends Controller {
         name => Map("name" -> name)
       }))
     }
+  }
+
+  def companiesSearch = Action { request =>
+    val json : JsValue = request.body.asJson.get
+    val query: QueryExecutives = ParserJsonQuery.query(json)
+
+    val results = query().map { company =>
+      Map(
+        "name" -> company(Path('name)).getRawValue[String],
+        "ticker" -> company(Path('ticker)).getRawValue[String],
+        "year" -> company(Path('disclosureFiscalYear)).getRawValue[Int].toString
+      )
+    }
+
+    Ok(toJson(results.map(toJson(_))))
   }
 
 }
