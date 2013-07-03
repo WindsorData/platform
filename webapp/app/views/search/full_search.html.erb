@@ -146,15 +146,15 @@
         <p class="subtitle">Valuations</p>
         <div class="item-form">
           <p class="label">Market Cap</p>
-          <%= check_box_tag 'valuations[]', 'Market Cap' %>
-          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
+          <%= check_box_tag 'valuations_market_cap_chk', 'Market Cap' %>
+          <input type="text" name='[valuations][market_cap][gt]' placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" name='[valuations][market_cap][lt]' placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>
         <div class="item-form">
           <p class="label">Price to Earning (P/E)</p>
-          <%= check_box_tag 'valuations[]', 'Price to Earning (P/E)' %>
-          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>    
+          <%= check_box_tag 'valuations_pe_chk', 'Price to Earning (P/E)' %>
+          <input type="text" name='[valuations][pe][gt]' placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" name='[valuations][pe][lt]' placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>    
         </div>
       </div>
 
@@ -162,9 +162,9 @@
         <p class="subtitle">Stock Price Performance</p>
         <div class="item-form">
           <p class="label">Earnings per Share (EPS)</p>
-          <%= check_box_tag 'stock_price_performance', 'Earnings per Share (EPS)' %>
-          <input type="text" placeholder="Greater than" disabled="disabled"> <span>%</span>
-          <input type="text" placeholder="Lower than" disabled="disabled"> <span>%</span>   
+          <%= check_box_tag 'stock_price_performance_eps_chk', 'Earnings per Share (EPS)' %>
+          <input type="text" name='[stock_price_performance][eps][gt]' placeholder="Greater than" disabled="disabled"> <span>%</span>
+          <input type="text" name='[stock_price_performance][eps][lt]' placeholder="Lower than" disabled="disabled"> <span>%</span>   
         </div>
       </div>
 
@@ -172,9 +172,9 @@
         <p class="subtitle">Profitability</p>
         <div class="item-form">
           <p class="label">Return on Equity</p>
-          <%= check_box_tag 'profitability', 'Return on Equity' %>
-          <input type="text" placeholder="Greater than" disabled="disabled"> <span>%</span>
-          <input type="text" placeholder="Lower than" disabled="disabled"> <span>%</span>         
+          <%= check_box_tag 'profitability_roe_chk', 'Return on Equity' %>
+          <input type="text" name='[profitability][roe][gt]' placeholder="Greater than" disabled="disabled"> <span>%</span>
+          <input type="text" name='[profitability][roe][lt]' placeholder="Lower than" disabled="disabled"> <span>%</span>         
         </div>
       </div>
     </fieldset>
