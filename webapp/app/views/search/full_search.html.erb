@@ -8,7 +8,7 @@
 
           <div class="item-form">
             <label class="label">Role</label>
-            <%= select_tag '[role_form][role]', options_from_collection_for_select(@roles, "id", "name") %>
+            <%= select_tag '[role_form][role]', options_from_collection_for_select(@roles, "id", "name"), {include_blank: true} %>
           </div>
 
           <div class="item-form">
@@ -130,13 +130,13 @@
         <p class="subtitle">Income Statement</p>
         <div class="item-form">
           <p class="label">Revenue</p>
-          <%= check_box_tag 'income_statement[]', 'Revenue' %>
-          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
+        <%= check_box_tag 'income_statement_revenue_chk', 'Revenue' %>
+          <input type="text" name='[income_statement][revenue][gt]' placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" name='[income_statement][revenue][lt]' placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>
         <div class="item-form">
           <p class="label">Net Income</p>
-          <%= check_box_tag 'income_statement[]', 'Net Income' %>
+          <%= check_box_tag 'income_statement_net_income_chk', 'Net Income' %>
           <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
           <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>

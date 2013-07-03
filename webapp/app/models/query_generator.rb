@@ -33,7 +33,18 @@ class QueryGenerator
           a[:executives][i1][:executivesFilters][i2] = hash if hash
         }
       else # advanced search
-        a[:advanced] << Hash[key: k1, values: params_hash[k1]]
+        if params_hash[k1].is_a? Hash
+          params_hash[k1].each{|k2, v2|
+            if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
+              hash = Hash[key: k1 + "." + k2, operators: [ Hash[operator: 'gt', value: params_hash[k1][k2]['gt']], Hash[operator: 'lt', value: params_hash[k1][k2]['lt']]] ]
+            elsif !params_hash[k1][k2]['gt'].blank?
+              hash = Hash[key: k1 + "." + k2, operators: [ Hash[operator: 'gt', value: params_hash[k1][k2]['gt']]] ]
+            elsif !params_hash[k1][k2]['lt'].blank?
+              hash = Hash[key: k1 + "." + k2, operators: [ Hash[operator: 'lt', value: params_hash[k1][k2]['lt']]] ]
+            end
+            a[:advanced] << hash
+          }
+        end
       end
     }
     
