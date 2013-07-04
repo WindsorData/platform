@@ -7,9 +7,28 @@ Vagrant.configure("2") do |config|
   # please see the online documentation at vagrantup.com.
 
   # Every Vagrant virtual environment requires a box to build off of.
-  config.vm.box = "precise64"
-
   config.berkshelf.enabled = true
+
+  config.omnibus.chef_version =  "10.14.2"
+
+  config.vm.box = "windsor"
+
+  config.vm.provider :aws do |aws, override|
+    aws.access_key_id = "ACCESS KEY ID"
+    aws.secret_access_key = "SECRET ACCESS KEY"
+    aws.keypair_name = "zauber"
+    aws.region = "us-west-2"
+    aws.instance_type = "m1.small"
+    aws.ami = "ami-70f96e40"
+
+    override.ssh.username = "ubuntu"
+    override.ssh.private_key_path = "zauber.pem"
+  end
+
+
+  config.vm.provider "virtualbox" do |vbox|
+    vbox.customize ["modifyvm", :id, "--memory", "1128"]
+  end
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
