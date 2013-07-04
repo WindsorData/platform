@@ -135,15 +135,40 @@ object top5 extends WorkflowFactory {
       if (!models.concat.isInvalid) {
     	  gzip(Seq(
     	      transitionPeriodValidation(models.map(_.get)),
-    	      optionGrantsVsGrantType(models.map(_.get))))
+    	      optionGrantsVsGrantType(models.map(_.get)),
+            execDbTimeVestValidation(models.map(_.get))))
     	  .map(_.reduce((a, b) => a andThen b))
       }
       else
         models
 
+  def execDbTimeVestValidation(models: Seq[Model]) = {
+    val lastYear = models.maxBy(_(Path('disclosureFiscalYear)).getRawValue[Int])
+    				.apply(Path('disclosureFiscalYear)).getRawValue[Int]
+    models.map { model =>
+      if (model.hasElement('executives) && model(Path('disclosureFiscalYear)).getRawValue[Int] == lastYear) {
+        val results: Seq[Validated[Model]] =
+          model.applySeq(Path('executives, *)).map { exec =>
+            val hasSomeGrantDate = exec.applySeq(Path('timeVestRS, *, 'grantDate)).flatMap(_.rawValue[Date]).nonEmpty
+            val hasNoTimeVestRs = exec(Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS)).rawValue[Int].isEmpty
+            if ( hasSomeGrantDate && hasNoTimeVestRs )
+              Doubtful(model,
+                warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], exec.asModel) +
+                  "Carried Interest - Outstanding Equity Awards - Time Vest RS",
+                  "should not be blank if there's some time vest rs - grant date"))
+            else
+              Valid(model)
+          }
+        results.reduce((a, b) => a andThen b)
+      } else
+        Valid(model)
+    }
+  }
+
+
   def optionGrantsVsGrantType(models: Seq[Model]): Seq[Validated[Model]] = {
-      def gap(eDate: Date, gDate: Date) = 
-        Math.abs(new DateTime(eDate).getYear() - new DateTime(gDate).getYear())
+    def gap(eDate: Date, gDate: Date) =
+      Math.abs(new DateTime(eDate).getYear() - new DateTime(gDate).getYear())
         
 	  models.map { m =>
 	  	val maxTerm = models.find(_.hasElement('grantTypes))

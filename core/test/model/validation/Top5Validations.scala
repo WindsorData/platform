@@ -86,6 +86,28 @@ class Top5Validations extends FunSpec {
                  Value(new DateTime().plusYears(2).toDate),
                  Value(new DateTime().toDate)))).exists(_.isDoubtful))
     }
+    
+    it("should validate timeVestRs in carried interest") {
+      def model(grantDate: Value[Int], timeVest: Value[Int], year: Int) =
+        createModel(
+            year = year,
+            model = Model(
+            'timeVestRS -> Col(
+                Model(
+                'grantDate -> grantDate)),
+            'carriedInterest -> Model(
+                'outstandingEquityAwards -> Model(
+                    'timeVestRS -> timeVest))))
+                   
+       assert(top5.execDbTimeVestValidation(
+           Seq(model(Value(1), Value(1), 2013),
+               model(Value(), Value(), 2012)))
+               .forall(_.isValid))
+       assert(top5.execDbTimeVestValidation(
+           Seq(model(Value(1), Value(), 2013),
+               model(Value(), Value(), 2012)))
+               .exists(_.isDoubtful))
+    }
   }
   
   describe("top 5 sheet validations") {

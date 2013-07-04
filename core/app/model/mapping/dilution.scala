@@ -131,4 +131,7 @@ package object dilution extends WorkflowFactory {
     model => 
       usageAndSVTValidations(model.get) andThen
       dilutionValidations(model.get)
+  
+  override def WorkbookValidationPhase =
+    (_, models) => models
 }
