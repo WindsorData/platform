@@ -1,3 +1,12 @@
-.item-form * {
-  float: left;    
+.ie7 {
+
+  .item-form {
+    width: 100%;
+
+    * {
+      float: left;
+    }
+
+  }
+
 }
