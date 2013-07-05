@@ -6,29 +6,29 @@ class QueryGenerator
     a[:advanced] = []
     params_hash.each_with_index { |(k1, v1), i1|
       if k1.starts_with? 'role'
-        a[:executives][i1] = Hash[executivesFilters: [([])]]
+        a[:executives][i1] = {executivesFilters: [([])]}
         params_hash[k1].each_with_index { |(k2, v2), i2|
           if params_hash[k1][k2].is_a? Hash
             if !params_hash[k1][k2]['type'].blank?
               if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
-                hash = Hash[key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [ Hash[operator: 'gt', value: params_hash[k1][k2]['gt']],
-                  Hash[operator: 'lt', value: params_hash[k1][k2]['lt']]] ]
+                hash = {key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [ {operator: 'gt', value: params_hash[k1][k2]['gt']},
+                  {operator: 'lt', value: params_hash[k1][k2]['lt']}] }
               elsif !params_hash[k1][k2]['gt'].blank?
-                hash = Hash[key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [ Hash[operator: 'gt', value: params_hash[k1][k2]['gt']]] ]
+                hash = {key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [ {operator: 'gt', value: params_hash[k1][k2]['gt']}] }
               elsif !params_hash[k1][k2]['lt'].blank?
-                hash = Hash[key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [ Hash[operator: 'lt', value: params_hash[k1][k2]['lt']]] ]
+                hash = {key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [ {operator: 'lt', value: params_hash[k1][k2]['lt']}] }
               end
             else
               if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
-                hash = Hash[key: k2, operators: Array.new( [Hash[gt: params_hash[k1][k2]['gt'], lt: params_hash[k1][k2]['lt']]] ) ]
+                hash = {key: k2, operators: Array.new( [{gt: params_hash[k1][k2]['gt'], lt: params_hash[k1][k2]['lt']}] ) }
               elsif !params_hash[k1][k2]['gt'].blank?
-                hash = Hash[key: k2, operators: Array.new( [Hash[gt: params_hash[k1][k2]['gt']]])]
+                hash = {key: k2, operators: Array.new( [{gt: params_hash[k1][k2]['gt']}])}
               elsif !params_hash[k1][k2]['lt'].blank?
-                hash = Hash[key: k2, operators: Array.new( [Hash[lt: params_hash[k1][k2]['lt']]])]
+                hash = {key: k2, operators: Array.new( [{lt: params_hash[k1][k2]['lt']}])}
               end
             end     
           else
-            hash = Hash[key: k2, value: params_hash[k1][k2]] unless params_hash[k1][k2].blank?
+            hash = {key: k2, value: params_hash[k1][k2]} unless params_hash[k1][k2].blank?
           end
           a[:executives][i1][:executivesFilters][i2] = hash if hash
         }
@@ -36,11 +36,11 @@ class QueryGenerator
         if params_hash[k1].is_a? Hash
           params_hash[k1].each{|k2, v2|
             if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
-              hash = Hash[key: k1 + "." + k2, operators: [ Hash[operator: 'gt', value: params_hash[k1][k2]['gt']], Hash[operator: 'lt', value: params_hash[k1][k2]['lt']]] ]
+              hash = {key: k1 + "." + k2, operators: [ {operator: 'gt', value: params_hash[k1][k2]['gt']}, {operator: 'lt', value: params_hash[k1][k2]['lt']}] }
             elsif !params_hash[k1][k2]['gt'].blank?
-              hash = Hash[key: k1 + "." + k2, operators: [ Hash[operator: 'gt', value: params_hash[k1][k2]['gt']]] ]
+              hash = {key: k1 + "." + k2, operators: [ {operator: 'gt', value: params_hash[k1][k2]['gt']}] }
             elsif !params_hash[k1][k2]['lt'].blank?
-              hash = Hash[key: k1 + "." + k2, operators: [ Hash[operator: 'lt', value: params_hash[k1][k2]['lt']]] ]
+              hash = {key: k1 + "." + k2, operators: [ {operator: 'lt', value: params_hash[k1][k2]['lt']}] }
             end
             a[:advanced] << hash
           }
