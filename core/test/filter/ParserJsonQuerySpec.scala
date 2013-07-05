@@ -14,7 +14,7 @@ class ParserJsonQuerySpec extends FunSuite {
   test("can parse a list of operations") {
     val json = """[{"operator": "gt", "value": 10}, {"operator": "lt", "value": 22}]"""
     val jsonValue = stringMultilineToJson(json).as[List[JsValue]]
-    val conditions = ParserJsonQuery.operatorsFromJson(jsonValue)
+    val conditions = ConditionsParser.operators(jsonValue)
 
     assert(conditions.size === 2)
     assert(conditions(0) === "$gt" -> 10)
@@ -56,15 +56,21 @@ class ParserJsonQuerySpec extends FunSuite {
     assert(filters.size === 3)
   }
 
-  test("can parse a equalCondition ") {
+  test("can parse a equalCondition with a double value") {
     val json = """ {"key": "foo.bar", "value": 15} """
-    val condition = ParserJsonQuery.conditionFromJson(stringMultilineToJson(json))
+    val condition = ParserJsonQuery.parseCondition(stringMultilineToJson(json))
     assert(condition === EqualCondition("foo.bar", 15.0))
+  }
+
+  test("can parse a equalCondition with a string value") {
+    val json = """ {"key": "foo.bar", "value": "15"} """
+    val condition = ParserJsonQuery.parseCondition(stringMultilineToJson(json))
+    assert(condition === EqualCondition("foo.bar", "15"))
   }
 
   test("can parse a condition with operators") {
     val json = """ {"key": "foo.bar", "operators": [{"operator": "lt", "value": 3}]} """
-    val complexCondition = ParserJsonQuery.conditionFromJson(stringMultilineToJson(json))
+    val complexCondition = ParserJsonQuery.parseCondition(stringMultilineToJson(json))
     assert(complexCondition === ConditionWithOperators("foo.bar", Seq("$lt" -> 3)))
   }
 
