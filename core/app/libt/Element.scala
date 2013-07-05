@@ -113,9 +113,9 @@ case class Model(elements: Set[(Symbol, Element)])
   def hasElement(key: Symbol) = elementsMap.contains(key)
   
   /**Creates a new model that is a submodel of this one that only
-   * contains the elements of the given pk*/
-  def subModel(pk: PK) = 
-    Model(pk.map(path => (path.last.routeValue -> this(path))).toSet)
+   * contains the elements of the given mask*/
+  def subModel(mask: Seq[Path]) =
+    Model(mask.map(path => (path.last.routeValue -> this(path))).toSet)
     
   /**
    * Answers a copy of this Model without the specified element

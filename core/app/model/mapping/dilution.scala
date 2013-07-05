@@ -3,7 +3,6 @@ package model.mapping
 import libt.Path
 import model._
 import model.ExecutivesSVTBSDilution._
-import model.mapping._
 import model.validation._
 import libt.util._
 import libt.spreadsheet.reader._

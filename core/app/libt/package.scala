@@ -31,7 +31,7 @@ package object libt {
    */
   //TODO rename
   type PK = Seq[Path]
-  
+
   object PK {
     def apply(elements: Path*) : PK = elements
   }

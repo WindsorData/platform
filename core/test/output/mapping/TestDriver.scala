@@ -158,16 +158,6 @@ class TestDriver extends FunSpec {
               
           )))))
     }
-
-    it("should be able to convert blank cells to a given default value") {
-      val sheet = makeEmptyDataItem
-      val schema = TModel('aField -> TWithDefault(TString, "BLANK"))
-      val area = TestArea(schema, Seq(
-          Gap,
-          Feature(Path('aField))))
-      val result = area.read(sheet)
-      assert(result === Seq(Valid(Model('aField -> Value("BLANK")))))
-    }
   }
 
   def TestArea(schema: TModel, mapping: Seq[Strip]) =
