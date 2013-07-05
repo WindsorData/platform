@@ -20,11 +20,11 @@ class QueryGenerator
               end
             else
               if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
-                hash = {key: k2, operators: Array.new( [{gt: params_hash[k1][k2]['gt'], lt: params_hash[k1][k2]['lt']}] ) }
+                hash = {key: k2, operators: [{gt: params_hash[k1][k2]['gt'], lt: params_hash[k1][k2]['lt']}] }
               elsif !params_hash[k1][k2]['gt'].blank?
-                hash = {key: k2, operators: Array.new( [{gt: params_hash[k1][k2]['gt']}])}
+                hash = {key: k2, operators: [{gt: params_hash[k1][k2]['gt']}]}
               elsif !params_hash[k1][k2]['lt'].blank?
-                hash = {key: k2, operators: Array.new( [{lt: params_hash[k1][k2]['lt']}])}
+                hash = {key: k2, operators: [{lt: params_hash[k1][k2]['lt']}]}
               end
             end     
           else
