@@ -10,7 +10,6 @@ import org.scalatest.FlatSpec
 import org.scalatest.junit.JUnitRunner
 
 
-@RunWith(classOf[JUnitRunner])
 class WorkbookReaderSpec extends FlatSpec {
 
   it should "be able to read a single column oriented input without combining" in {

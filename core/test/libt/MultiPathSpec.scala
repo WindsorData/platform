@@ -5,7 +5,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import libt._
 
-@RunWith(classOf[JUnitRunner])
 class MultiPathSpec extends FunSpec {
   
   describe("multipath model traversing") {

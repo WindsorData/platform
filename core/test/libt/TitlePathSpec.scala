@@ -5,7 +5,6 @@ import org.scalatest.FunSpec
 import org.scalatest.junit.JUnitRunner
 import libt.spreadsheet._
 
-@RunWith(classOf[JUnitRunner])
 class TitlePathSpec extends FunSpec {
 
   describe("Features titles"){

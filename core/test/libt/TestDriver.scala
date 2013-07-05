@@ -5,7 +5,6 @@ import org.scalatest.FunSpec
 import libt._
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 
   describe("tmodel") {

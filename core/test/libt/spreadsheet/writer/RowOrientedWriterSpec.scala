@@ -10,7 +10,6 @@ import libt.spreadsheet.Offset
 import libt.spreadsheet.util.sheet2RichSheet
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class RowOrientedWriterSpec extends FlatSpec with BeforeAndAfter {
   
   def metadata(value: Value[_]) = value.metadataSeq.map(op.String(_))

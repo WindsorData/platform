@@ -19,7 +19,6 @@ import libt.error.Valid
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import output.mapping.TestSpreadsheetLoader
 
-@RunWith(classOf[JUnitRunner])
 class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetLoader {
 
   import MyWorkbookFactory._

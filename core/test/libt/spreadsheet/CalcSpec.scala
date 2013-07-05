@@ -12,7 +12,6 @@ import org.apache.poi.ss.usermodel.Cell
 import scala.math.BigDecimal.int2bigDecimal
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class CalcSpec extends FlatSpec {
 
   val model = Seq(

@@ -4,7 +4,6 @@ import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSpec
 
-@RunWith(classOf[JUnitRunner])
 class ModelSpec extends FunSpec {
 
   describe("inersect") {

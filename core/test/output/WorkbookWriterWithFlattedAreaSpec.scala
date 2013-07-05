@@ -15,7 +15,6 @@ import org.scalatest.junit.JUnitRunner
 import java.io.FileOutputStream
 import org.apache.poi.ss.usermodel.Workbook
 
-@RunWith(classOf[JUnitRunner])
 class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
 
   val TSimpleSchema = TModel(

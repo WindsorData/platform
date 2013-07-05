@@ -9,8 +9,7 @@ import java.util.Date
 import java.util.Calendar
 import org.joda.time.DateTime
 
-@RunWith(classOf[JUnitRunner])
-class Top5ValidationSpec extends FunSpec {
+class Top5ValidationsSpec extends FunSpec {
   def createModel(model: Model, year: Int = 2013, firstName: String = "foo", lastName: String = "bar") =
     Model(
       'disclosureFiscalYear -> Value(year),

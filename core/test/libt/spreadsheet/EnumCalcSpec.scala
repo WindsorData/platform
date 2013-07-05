@@ -16,7 +16,6 @@ import libt.spreadsheet.reader.ColumnOrientedLayout
 import libt.reduction._
 import java.io.FileOutputStream
 
-@RunWith(classOf[JUnitRunner])
 class EnumCalcSpec extends FlatSpec {
 
   val TOptions = TStringEnum("A", "B", "C")

@@ -6,7 +6,6 @@ import org.scalatest.FunSuite
 import persistence.query._
 import com.mongodb.casbah.commons.MongoDBObject
 
-@RunWith(classOf[JUnitRunner])
 class QuerySpec extends FunSuite {
 
   test("can create query with only a condition") {

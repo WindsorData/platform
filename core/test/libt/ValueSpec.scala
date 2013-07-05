@@ -6,7 +6,6 @@ import libt._
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.FlatSpec
 
-@RunWith(classOf[JUnitRunner])
 class ValueSpec extends FlatSpec {
 
   it should "map" in {
