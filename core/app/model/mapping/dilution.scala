@@ -62,7 +62,7 @@ package object dilution extends WorkflowFactory {
       Seq(Path('year1), Path('year2), Path('year3)).map {
         year =>
           model(Path('avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
-            case Some(value) if value < 1000000 =>
+            case Some(value) if value > 999 =>
               Doubtful(model, "Warning on Usage And SVT Data: Average Shares should be in millions")
             case _ => Valid(model)
           }

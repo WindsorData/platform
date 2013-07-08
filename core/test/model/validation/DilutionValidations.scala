@@ -17,8 +17,8 @@ class DilutionValidations extends FunSpec {
             	    'year1 -> Value(year1),
             	    'year2 -> Value(year2),
             	    'year3 -> Value(year3)))
-      assert(dilution.averageSharesValidation(model(100,10,1)).isDoubtful)
-      assert(!dilution.averageSharesValidation(model(3000000,2000000,1000000)).isDoubtful)
+      assert(dilution.averageSharesValidation(model(100,10,1)).isValid)
+      assert(dilution.averageSharesValidation(model(3000000,2000000,1000000)).isDoubtful)
     }
     
     it("should validate options and full values") {
