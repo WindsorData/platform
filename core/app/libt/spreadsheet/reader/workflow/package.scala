@@ -13,6 +13,8 @@ package object workflow {
 
   /**A processing unit for a workbook*/
   type Phase[I, O] = (Workbook, I) => O
+
+  def IdPhase[I]: Phase[I, I] = (_, input) => input
   
   implicit def phase2RichPhase[I, O](self: Phase[I, O]) = new {
     /***Phases composition */

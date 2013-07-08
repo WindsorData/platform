@@ -15,7 +15,6 @@ import libt.workflow._
 import libt._
 import com.mongodb.casbah.MongoDB
 
-//No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
 
   val YearRanges = List(1, 2, 3)

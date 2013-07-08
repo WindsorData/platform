@@ -14,19 +14,20 @@ trait WorkflowFactory {
   def Workflow: FrontPhase[Seq[Validated[Model]]] = 
 	  MappingPhase(Mapping) >> 
 	  CombinerPhase >>
-	  SheetValidationPhase(Validation) >> 
+	  SheetValidationPhase >>
 	  WorkbookValidationPhase
       
-  def SheetValidationPhase(validation: Validated[Model] => Validated[Model]): Phase[Seq[Validated[Model]], Seq[Validated[Model]]] =
+  def SheetValidationPhase: Phase[Seq[Validated[Model]], Seq[Validated[Model]]] =
     (_, models) => {
       if (!models.concat.isInvalid) {
-        models.map(Validation)
+        models.map(SheetValidation)
       } else
         models
     }
     
-  def WorkbookValidationPhase: Phase[Seq[Validated[Model]], Seq[Validated[Model]]]
+  def WorkbookValidationPhase: Phase[Seq[Validated[Model]], Seq[Validated[Model]]] = IdPhase
   def CombinerPhase : Phase[Seq[Seq[Validated[Model]]], Seq[Validated[Model]]]
+
   def Mapping : WorkbookMapping 
-  def Validation: Validated[Model] => Validated[Model]
+  def SheetValidation: Validated[Model] => Validated[Model]
 }

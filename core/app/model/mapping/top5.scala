@@ -120,7 +120,7 @@ object top5 extends WorkflowFactory {
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
 
-  override def Validation =
+  override def SheetValidation =
     model =>
       grantTypeValidation(model.get) andThen
         executivesValidation(model.get)

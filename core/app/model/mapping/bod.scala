@@ -68,13 +68,13 @@ package object bod extends WorkflowFactory {
           Path('ownershipGuidelines, 'achieve, 'lesserOf),
           Path('ownershipGuidelines, 'retention, 'ratio),
           Path('ownershipGuidelines, 'retention, 'period))
-          
-  def Mapping = WorkbookMapping(
+
+  override def Mapping = WorkbookMapping(
     Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name)))),
       Area(TBod, Offset(3, 1), Some(10), ColumnOrientedLayout, bodMapping)))
           
-  def CombinerPhase = DocSrcCombiner((10, 'bod, colWrapping))
+  override def CombinerPhase = DocSrcCombiner((10, 'bod, colWrapping))
   
-  def Validation = model => model
+  override def SheetValidation = model => model
 
 }
