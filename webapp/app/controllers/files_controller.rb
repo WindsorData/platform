@@ -28,8 +28,8 @@ class FilesController < ApplicationController
       if response.code == 200
         flash[:notice] = "Upload successfully completed"
       else
-        flash[:error] = JSON.parse(response.body)['errors'].join("<br/>").html_safe
+        flash[:error] = "The uploaded file is invallid"
       end
-    end    
+    end
   end
 end

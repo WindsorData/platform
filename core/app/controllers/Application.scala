@@ -67,10 +67,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   }
 
   def errorsToJson(errors: Seq[keyed.KeyedMessage]) =
-    errors.map {
-        fileResults =>
-          Map("file" -> toJson(fileResults._1), "errors" -> toJson(fileResults._2))
-    }
+    Map("results" -> errors.map { case (file, errors) => Map("file" -> toJson(file), "errors" -> toJson(errors)) })
 
   def reports = Action {
     Ok(views.html.reports())
