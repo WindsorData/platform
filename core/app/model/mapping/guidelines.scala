@@ -96,7 +96,7 @@ package object guidelines extends WorkflowFactory {
   } 
 
   def scopeValidation(model: Model) =
-    reduceExecutiveValidations(Path('guidelines, *), model) {
+    reduceExecutiveValidations(Path('stBonusPlan, *), model) {
       m =>
         (for {
           corporate <- m(Path('scope, 'corporate, 'use)).rawValue[Boolean]
@@ -110,7 +110,7 @@ package object guidelines extends WorkflowFactory {
   	}
     
   def metricsValidation(model: Model) =
-    reduceExecutiveValidations(Path('guidelines, *), model) {
+    reduceExecutiveValidations(Path('stBonusPlan, *), model) {
       m =>
         {
           val results = m.applySeq(Path('metrics, 'select, *)) ++ m.applySeq(Path('metrics, 'typeIn, *))

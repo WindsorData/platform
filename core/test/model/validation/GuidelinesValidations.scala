@@ -9,10 +9,10 @@ import model.mapping.guidelines
 @RunWith(classOf[JUnitRunner])
 class GuidelinesValidations extends FunSpec{
 
-  def createModel(model: Model) =
+  def createModel(model: Model, tab: Symbol) =
     Model(
       'disclosureFiscalYear -> Value(2013),
-      'guidelines -> Col(
+      tab -> Col(
         Model(
           'firstName -> Value("foo"),
           'lastName -> Value("bar")) ++ model))
@@ -23,7 +23,7 @@ class GuidelinesValidations extends FunSpec{
 	      createModel(
 	          Model(
 	              'numberOfShares -> Value(numberOfShares),
-	              'multipleOfSalary -> Value(multOfSalary)))
+	              'multipleOfSalary -> Value(multOfSalary)), 'guidelines)
 	              
 	    assert(guidelines.guidelinesDigitValidation(model(1,1)).isDoubtful)
 	    assert(!guidelines.guidelinesDigitValidation(model(100,1)).isDoubtful)
@@ -39,7 +39,7 @@ class GuidelinesValidations extends FunSpec{
   	          Model(
   	              'scope -> Model(
   	                  'corporate -> Model(
-  	                      'use -> Value(use)))))
+  	                      'use -> Value(use)))), 'stBonusPlan)
   	    assert(!guidelines.scopeValidation(model(true)).isDoubtful)
   	    assert(guidelines.scopeValidation(model(false)).isDoubtful)
   	  }
@@ -50,7 +50,7 @@ class GuidelinesValidations extends FunSpec{
   	          Model(
   	              'metrics -> Model(
   	                  'select -> Col(select: _*),
-  	                  'typeIn -> Col(typein: _*))))
+  	                  'typeIn -> Col(typein: _*))), 'stBonusPlan)
   	                
   	    assert(guidelines.metricsValidation(model(Seq(), Seq())).isDoubtful)
   	    assert(!guidelines.metricsValidation(model(Seq(), Seq(Model('a -> Value())))).isDoubtful)
