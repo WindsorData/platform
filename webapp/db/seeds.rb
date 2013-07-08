@@ -7,8 +7,8 @@ User.create!(email: "admin@windsor.com", password: "123456", password_confirmati
 client_from_zauber = User.create!(email: "client@windsor.com", password: "123456", password_confirmation: "123456", role: "client", company: zauber)
 
 # Tickers
-ticker_aapl = Ticker.create!(name: "AAPL")
-ticker_fb = Ticker.create!(name: "FB")
+ticker_aapl = Ticker.create!(ticker: 'appl', name: 'Apple Inc')
+ticker_fb = Ticker.create!(ticker: 'fb', name: 'Facebook Inc')
 
 # Groups
 group1 = Group.new(name: 'group with company', company: client_from_zauber.company)
@@ -16,8 +16,8 @@ group1.tickers << ticker_aapl
 group1.save!
 
 group2 =  Group.new(name: 'group without company')
-group1.tickers << ticker_aapl
-group1.tickers << ticker_fb
+group2.tickers << ticker_aapl
+group2.tickers << ticker_fb
 group2.save!
 
 Role.create([{name: "CTO"},{name: "CFO"}])

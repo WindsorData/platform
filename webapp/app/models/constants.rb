@@ -1,6 +1,5 @@
 class Constants
-  REPORTS = [ "Report 1", "Report 2", "Report 3" ];
-  ROLES = ["CEO", "CTO", "CFO"]
-  CRITERIA = ['Salary', 'Other']
+  TOP5_REPORT = 'top5'
+  REPORT_TYPES = [TOP5_REPORT];
   FILE_TYPES = ['top5', 'guidelines', 'dilution', 'batch']
 end

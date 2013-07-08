@@ -1,8 +1,8 @@
 <h1 class="main-title">Insert search results here</h1>
 <%= form_tag(file_download_path, class: "main-form" ) do %>
-  <% @companies.each{ |k| %>
+  <% @tickers.each{ |k| %>
     <% if k.is_a? Hash %>
-      <%= check_box_tag 'tickers[]', k[:ticker] %> <%= k[:full_name] %>
+      <%= check_box_tag 'tickers[]', k[:ticker] %> <%= k[:name] %>
       </br>
     <% end %>
   <% } %>
