@@ -27,4 +27,9 @@ $(function() {
     });
   }
 
+  $('input:checkbox').click(function() {
+    var el = $(this).closest('div').children("input[type='text']");
+    el.attr("disabled", !this.checked);
+  });
+
 });

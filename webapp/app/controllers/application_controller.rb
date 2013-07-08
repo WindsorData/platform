@@ -29,4 +29,14 @@ class ApplicationController < ActionController::Base
     render "#{Rails.root}/public/500"
   end
   
+  rescue_from Errno::EHOSTUNREACH do
+    flash[:error] = "Unable to connect to backend host"
+    redirect_to :back
+  end
+
+  rescue_from Errno::ECONNREFUSED do
+    flash[:error] = "Backend connection refused"
+    redirect_to :back
+  end
+
 end

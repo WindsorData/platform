@@ -24,23 +24,12 @@ class FilesController < ApplicationController
     when 'batch'
       path += Rails.application.config.post_batch_path
     end
-    RestClient.post(path, dataset: File.new(file.path, 'r')) do |response, request|
+    RestClient.post(path, {dataset: File.new(file.path, 'r')}, {accept: :json}) do |response, request|
       if response.code == 200
         flash[:notice] = "Upload successfully completed"
       else
-        # TODO: complete
-        # flash[:error] = response.body
+        flash[:error] = JSON.parse(response.body)['errors'].join("<br/>").html_safe
       end
     end    
-  end
-
-  rescue_from Errno::EHOSTUNREACH do |exception|
-    flash[:error] = "Unable to connect to backend host"
-    redirect_to file_upload_path
-  end
-
-  rescue_from Errno::ECONNREFUSED do |exception|
-    flash[:error] = "Backend connection refused"
-    redirect_to file_upload_path
   end
 end
