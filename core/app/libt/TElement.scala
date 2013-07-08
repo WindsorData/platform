@@ -91,4 +91,6 @@ case class TModel(elementTypes: (Symbol, TElement)*)
       case (field, telement) => telement.validate(m(field))
     }
   }
+  
+  def keys = elementTypes.map(_._1)
 }

@@ -20,6 +20,7 @@ POST    /api/companies/search                            controllers.Api.compani
 POST    /api/companies/top5                     controllers.Application.newCompany
 POST    /api/companies/guidelines               controllers.Application.newExecGuideline
 POST    /api/companies/dilution                 controllers.Application.newSVTBSDilution
+POST    /api/companies/bod                      controllers.Application.newBod
 POST    /api/companies/batch                    controllers.Application.newCompanies
 
 # ~~~~

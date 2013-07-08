@@ -4,20 +4,16 @@ import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
-
 import com.mongodb.casbah.MongoClient
-
 import java.io.ByteArrayOutputStream
-
 import persistence._
 import model.mapping._
 import output._
 import util.FileManager._
-
 import libt.error._
 import libt.workflow._
 import libt._
-
+import com.mongodb.casbah.MongoDB
 
 //No content-negotiation yet. Just assume HTML for now
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
@@ -42,18 +38,19 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newCompany = uploadSingleSpreadsheet(top5.Workflow)
   def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)
+  def newBod = uploadSingleSpreadsheet(bod.Workflow)(MongoClient()("windsor-bod"))
 
   def newCompanies =
     UploadAndReadAction {
       (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
-  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Validated[Model]]]) =
+  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Validated[Model]]])(implicit db: MongoDB) =
     UploadAndReadAction {
       (request, dataset) => keyed.flatJoin(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
     }
   
-  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) = UploadSpreadsheetAction { (request, dataset) =>
+  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model])(implicit db: MongoDB) = UploadSpreadsheetAction { (request, dataset) =>
     readOp(request, dataset) match {
       case Invalid(errors@_*) =>
         request match {
@@ -61,7 +58,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
           case Accepts.Json() => BadRequest(toJson(errorsToJson(errors)))
         }
       case result => {
-        result.get.foreach(updateCompany(_))
+        result.get.foreach(updateCompany(_)(db))
         request match {
           case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
           case Accepts.Json() => Ok("")
