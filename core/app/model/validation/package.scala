@@ -7,6 +7,10 @@ package object validation {
 
   def execMsg(year: Int, m: Model) =
     year + " - " + m(Path('firstName)).getRawValue[String] + m(Path('lastName)).getRawValue[String] + " - "
+    
+  def nonEmptyExecutive(exec: Element) =
+    Seq(Path('firstName), Path('lastName))
+    .forall(exec(_).rawValue[String].nonEmpty)
 
   def reduceExecutiveValidations(path: Path, model: Model)(action: (Element) => Validated[Model]) = {
     val results: Seq[Validated[Model]] = model.applySeq(path).map { m => action(m) }
@@ -31,6 +35,6 @@ package object validation {
           results.reduce((a, b) => a andThen b)
         }
     }
-  def warning(tab: String) = s"Warning on $tab: "
-  def err(tab: String) = s"Error on $tab: "
+  def warning(id: String, msg: String) = s"Warning on $id: $msg"
+  def err(id: String, msg: String) = s"Error on $id: $msg"
 }

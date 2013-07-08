@@ -5,18 +5,113 @@ import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSpec
 import libt._
 import model.mapping.top5
+import java.util.Date
+import java.util.Calendar
+import org.joda.time.DateTime
 
 @RunWith(classOf[JUnitRunner])
 class Top5Validations extends FunSpec {
-  describe("top 5 validations") {
+  def createModel(model: Model, year: Int = 2013, firstName: String = "foo", lastName: String = "bar") =
+    Model(
+      'disclosureFiscalYear -> Value(year),
+      'executives -> Col(
+        Model(
+          'firstName -> Value(firstName),
+          'lastName -> Value(lastName)) ++ model))
+  
+  describe("top 5 workbook validations") {
+    def model(first: String, last: String, year: Int, primary: Value[String], transition: Value[String]) =
+      createModel(
+        Model(
+          'functionalMatches -> Model(
+            'primary -> primary),
+          'transitionPeriod -> transition), year, first, last)
+	it("should validation executive's transition period between different fiscal years") {
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","A",2012, Value("foo"), Value("No")), 
+	          model("Example","A",2011, Value("bar"), Value("Yes")), 
+	          model("Example","A",2010, Value("bar"), Value("no")))).forall(_.isValid))
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","B",2012, Value("foo"), Value("No")), 
+	          model("Example","B",2011, Value("foo"), Value("No")), 
+	          model("Example","B",2010, Value("bar"), Value("Yes")))).forall(_.isValid))
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","C",2012, Value("foo"), Value("No")), 
+	          model("Example","C",2011, Value("bar"), Value("No")), 
+	          model("Example","C",2010, Value("bar"), Value("No")))).exists(_.isInvalid))
+	      
+	  assert(
+	      top5.transitionPeriodValidation(
+	      Seq(model("Example","D",2012, Value("foo"), Value("No")), 
+	          model("Example","D",2011, Value("foo"), Value("No")), 
+	          model("Example","D",2010, Value("bar"), Value("No")))).exists(_.isInvalid))	          
+	}
 
-    def createModel(model: Model) =
+    it("should validate executives with the same first name and last name between different fiscal years") {
+      assert(
+        top5.transitionPeriodValidation(
+          Seq(model("Example", "A", 2012, Value("foo"), Value("No")),
+            model("Example", "B", 2011, Value("bar"), Value("No")),
+            model("Example", "B", 2010, Value("bar"), Value("No")))).forall(_.isValid))
+    }
+    
+    it("should validate options grant dates with grant types max term") {
+     def optionGrant(grantDate: Value[Date], expireDate: Value[Date]) =
+      createModel(
+        model = Model(
+            'optionGrants -> Col(
+                Model(
+                    'grantDate -> grantDate,
+                    'expireDate -> expireDate))))
+     def grantType(maxTerm: Value[BigDecimal]) =
       Model(
-        'disclosureFiscalYear -> Value(2013),
-        'executives -> Col(
-          Model(
-            'firstName -> Value("foo"),
-            'lastName -> Value("bar")) ++ model))
+          'disclosureFiscalYear -> Value(2013),
+          'grantTypes -> Model(
+            'stockOptions -> Model(
+                'maxTerm -> maxTerm)))
+                
+     assert(top5.optionGrantsVsGrantType(
+         Seq(grantType(Value()), optionGrant(Value(),Value()))).forall(_.isValid))
+     assert(top5.optionGrantsVsGrantType(
+         Seq(grantType(Value(1: BigDecimal)), 
+             optionGrant(
+                 Value(new DateTime().plusYears(1).toDate),
+                 Value(new DateTime().toDate)))).forall(_.isValid))
+     assert(top5.optionGrantsVsGrantType(
+         Seq(grantType(Value(1: BigDecimal)), 
+             optionGrant(
+                 Value(new DateTime().plusYears(2).toDate),
+                 Value(new DateTime().toDate)))).exists(_.isDoubtful))
+    }
+    
+    it("should validate timeVestRs in carried interest") {
+      def model(grantDate: Value[Int], timeVest: Value[Int], year: Int) =
+        createModel(
+            year = year,
+            model = Model(
+            'timeVestRS -> Col(
+                Model(
+                'grantDate -> grantDate)),
+            'carriedInterest -> Model(
+                'outstandingEquityAwards -> Model(
+                    'timeVestRS -> timeVest))))
+                   
+       assert(top5.execDbTimeVestValidation(
+           Seq(model(Value(1), Value(1), 2013),
+               model(Value(), Value(), 2012)))
+               .forall(_.isValid))
+       assert(top5.execDbTimeVestValidation(
+           Seq(model(Value(1), Value(), 2013),
+               model(Value(), Value(), 2012)))
+               .exists(_.isDoubtful))
+    }
+  }
+  
+  describe("top 5 sheet validations") {
+
 
     it("should validate BOD with CEO primary functional match") {
       def model(primary: String) =
@@ -84,6 +179,17 @@ class Top5Validations extends FunSpec {
         
       assert(top5.ownedSharesValidation(model(5)).isDoubtful)
       assert(!top5.ownedSharesValidation(model(20)).isDoubtful)
+    }
+    
+    it("should validate if transition period is not empty") {
+      def model(transition: Value[String]) =
+        createModel(
+        Model(
+          'transitionPeriod -> transition))
+        
+      assert(top5.nonEmptyTransitionPeriods(model(Value())).isInvalid)
+      assert(top5.nonEmptyTransitionPeriods(model(Value("No"))).isValid)
+      assert(top5.nonEmptyTransitionPeriods(model(Value("Yes"))).isValid)
     }
     
     it("should validate if salary has more than 3 digits or not") {

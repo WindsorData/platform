@@ -95,18 +95,20 @@ package object guidelines extends WorkflowFactory {
       Valid(model)
   } 
 
+  //TODO: FIX ME!
   def scopeValidation(model: Model) =
     reduceExecutiveValidations(Path('stBonusPlan, *), model) {
       m =>
         (for {
           corporate <- m(Path('scope, 'corporate, 'use)).rawValue[Boolean]
-          if corporate
+          if corporate || !nonEmptyExecutive(m)
         } yield Valid(model))
           .getOrElse(
             Doubtful(model,
-              warning(execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel))
-                + Path('scope, 'corporate, 'use).titles.mkString(" - ")
-                + "Almost always the scope would include Corporate"))
+              warning(
+                  execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel)
+                  + Path('scope, 'corporate, 'use).titles.mkString(" - "),
+            	  "Almost always the scope would include Corporate")))
   	}
     
   def metricsValidation(model: Model) =
@@ -133,4 +135,7 @@ package object guidelines extends WorkflowFactory {
     model => 
       guidelinesValidations(model.get) andThen
       stBonusValidations(model.get)
+      
+  override def WorkbookValidationPhase = 
+  	(_, models) => models
 }
