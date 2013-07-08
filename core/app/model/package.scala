@@ -28,7 +28,7 @@ package object model {
     'dilution -> TDilution,
     
     'executives -> TCol(TExecutive),
-    'bod -> TCol(TExecutiveBod),
+    'bod -> TCol(TBod),
     'guidelines -> TCol(TExecGuidelines),
     'stBonusPlan -> TCol(TExecSTBonusPlan))
 }

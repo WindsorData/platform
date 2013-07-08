@@ -32,7 +32,7 @@ object ExecutivesBod {
       'vestYears -> TNumber,
       'vesting  -> TString)
                
-  val TExecutiveBod = TModel(
+  val TBod = TModel(
       'directorData -> TModel(
           'group -> TString,
           'ceo -> TModel(
