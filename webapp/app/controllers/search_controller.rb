@@ -24,24 +24,19 @@ class SearchController < ApplicationController
     @companies = []
     # RestClient.post(path, query: json_query) do |response, request|
     #   # do something with the response
-    #   # JSON.parse(response.body)
+    #   JSON.parse(response.body)
     # end
-    @companies << Hash[ticker: 'appl', full_name: 'Apple Inc']
-    @companies << Hash[ticker: 'sssss', full_name: 'ssss Inc']
-    # ticker, name
-  end
-
-  def result_spreadsheet
+    @companies << {ticker: 'appl', full_name: 'Apple Inc'}
+    @companies << {ticker: 'goog', full_name: 'Google Inc'} 
   end
 
   def download
+    tickers = params[:tickers]
+    # Get file url from backend sending tickers
     file_remote_url = "http://www.sitasingstheblues.com/SitaCueSheet.xls"
-    t = Time.now
-    file_name = "#{t.month}-#{t.day}-#{t.year}-#{current_user.email}.xls"
-    
+    file_name = "#{Time.now.strftime("%Y-%m-%d-%H:%M:%S")}_#{current_user.email}.xls"
     File.open("#{Rails.root.to_s}/tmp/#{file_name}", "wb") do |saved_file|
-      # the following "open" method is provided by open-uri
-      open(file_remote_url, 'rb') do |read_file|
+      open(file_remote_url, 'rb') do |read_file| # open-uri method
         saved_file.write(read_file.read)        
         send_file saved_file.path
       end

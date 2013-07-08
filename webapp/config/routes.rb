@@ -18,6 +18,6 @@ WindosorFrontend::Application.routes.draw do
   get   "files/upload",       as: :file_upload
   post  "files/send_file",    as: :send_file
   post "search/result_spreadsheet"
-  get "search/download"
+  post "search/download", as: 'file_download'
   
 end
