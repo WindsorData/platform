@@ -25,5 +25,7 @@ package object spreadsheet {
   def Multi(base: Path, count: Int, relativePaths: Path*) =
     for (index <- 0 to count; relativePath <- relativePaths)
       yield Feature((base :+ Index(index)) ++ relativePath)
+  
+  
 
 }

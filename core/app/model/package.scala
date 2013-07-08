@@ -13,6 +13,7 @@ package object model {
   import model.ExecutivesTop5._
   import model.ExecutivesSTBonusPlan._
   import model.ExecutivesSVTBSDilution._
+  import model.ExecutivesBod._
   
    val TCompanyFiscalYear = TModel(
     'ticker -> TString,
@@ -27,6 +28,7 @@ package object model {
     'dilution -> TDilution,
     
     'executives -> TCol(TExecutive),
+    'bod -> TCol(TExecutiveBod),
     'guidelines -> TCol(TExecGuidelines),
     'stBonusPlan -> TCol(TExecSTBonusPlan))
 }

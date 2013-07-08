@@ -42,6 +42,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newCompany = uploadSingleSpreadsheet(top5.Workflow)
   def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)
+  def newBod = uploadSingleSpreadsheet(bod.Workflow)
 
   def newCompanies =
     UploadAndReadAction {
