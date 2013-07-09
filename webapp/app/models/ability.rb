@@ -7,6 +7,7 @@ class Ability
     when 'super'
       can   :manage, User
       can   :manage, Company
+      can   :audit, :upload_log
       can   [:read, :create], Group
       can   :upload, :file
       can   :read_multiple, Array do |arr|

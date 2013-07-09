@@ -1,4 +1,6 @@
 WindosorFrontend::Application.routes.draw do
+  get "upload_log/audit"
+
   root to: "home#index"
   devise_for :users
 

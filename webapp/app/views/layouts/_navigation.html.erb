@@ -11,6 +11,7 @@
       <%= link_to('peers', groups_path, class: 'nav-link') if can? :create, Group %>
       <%= link_to('companies', companies_path, class: 'nav-link') if can? :manage, Company %>
       <%= link_to('file upload', file_upload_path, class: 'nav-link') if can? :upload, :file %>
+      <%= link_to('upload log', upload_log_audit_path, class: 'nav-link') if can? :audit, :upload_log %>
     <% end %>
   </div>
   <div class="right">
