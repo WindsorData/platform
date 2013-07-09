@@ -19,6 +19,7 @@ class FilesController < ApplicationController
       else
         flash[:error] = "The uploaded file is invallid"
       end
+      UploadLog.notify_upload({upload_type: type, message: response.body, user: current_user})
     end
   end
 
