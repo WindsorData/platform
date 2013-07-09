@@ -25,7 +25,7 @@ package object workflow {
   /***Worksheet processing pipeline frontend*/
   implicit class FrontPhase[Output](val phase: Phase[Workbook, Output]) extends AnyVal {
     def apply(wb: Workbook) : Validated[Output] = phase(wb, wb)
-    def apply(in: InputStream) : Validated[Output] =  this(WorkbookFactory.create(in))
+    def apply(in: InputStream) : Validated[Output] =  Validated(WorkbookFactory.create(in)) flatMap apply
   }
 }
 
