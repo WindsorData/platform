@@ -2,6 +2,7 @@ package model.mapping
 
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
+import libt.error._
 import libt._
 import model.ExecutivesBod._
 import model._
@@ -75,6 +76,6 @@ package object bod extends WorkflowFactory {
           
   override def CombinerPhase = DocSrcCombiner((10, 'bod, colWrapping))
   
-  override def SheetValidation = model => model
+  override def SheetValidation = Valid(_)
 
 }

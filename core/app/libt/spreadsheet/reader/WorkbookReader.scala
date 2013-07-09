@@ -22,15 +22,15 @@ case class WorkbookMapping(areas: Seq[SheetDefinition]) {
     val sheets = for (sheetIndex <- 0 to wb.getNumberOfSheets() - 1) yield wb.getSheetAt(sheetIndex)
     (sheets, areas).zipped 
   }
-  def read(wb: Workbook) : Seq[Seq[Validated[libt.Model]]] = 
-    sheetsWithAreas(wb).map((sheet, area) => area.read(sheet))
+  def read(wb: Workbook) : Validated[Seq[Seq[Model]]] =
+    sheetsWithAreas(wb).map((sheet, area) => area.read(sheet)).concat
     
   def write(models: Seq[Model], wb: Workbook) : Unit =
     sheetsWithAreas(wb).foreach((sheet, area) => area.write(models)(sheet)) 
 }
 
 trait SheetDefinition {
-  def read(sheet: Sheet): Seq[Validated[Model]]
+  def read(sheet: Sheet): Validated[Seq[Model]]
   def write(models: Seq[Model])(sheet: Sheet): Unit
 }
 
@@ -48,13 +48,13 @@ case class Area(
   orientation: Layout,
   columns: Seq[Strip]) extends SheetDefinition {
 
-  def read(sheet: Sheet): Seq[Validated[Model]] =
+  def read(sheet: Sheet): Validated[Seq[Model]] =
     orientation.read(this, sheet)
 
   def write(models: Seq[Model])(sheet: Sheet) = 
     orientation.write(this, sheet, models)
   
-  private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) = {
+  private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) : Validated[Model]= {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
     columns
@@ -64,9 +64,15 @@ case class Area(
   }
 
   def continually = Stream.continually[SheetDefinition](this)
+  /**limits the list of rows groups, if necessary*/
+  private [reader] def truncate(rowsGroups: Seq[List[Row]]) =
+    limit match {
+      case None => rowsGroups
+      case Some(limit) => rowsGroups.take(limit)
+    }
 }
 
 object AreaGap extends SheetDefinition {
-  def read(sheet: Sheet) = Nil
+  def read(sheet: Sheet) = Valid(Nil)
   def write(models: Seq[Model])(sheet: Sheet): Unit = ()
 }

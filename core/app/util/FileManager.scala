@@ -1,5 +1,6 @@
 package util
 
+import libt.error._
 import java.io.InputStream
 import java.io.FileInputStream
 import output.SpreadsheetWriter
@@ -24,7 +25,7 @@ object FileManager {
     new FileInputStream(fileName).processWith(action)
 
   implicit def reader2RichReader[A](self: FrontPhase[A]) = new {
-    def readResource(filePath: String): A = loadResource(filePath)(self(_))
-    def readFile(fileName: String): A = loadFile(fileName)(self(_))
+    def readResource(filePath: String): Validated[A] = loadResource(filePath)(self(_))
+    def readFile(fileName: String): Validated[A] = loadFile(fileName)(self(_))
   }
 }

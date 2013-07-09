@@ -120,10 +120,7 @@ object top5 extends WorkflowFactory {
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
 
-  override def SheetValidation =
-    model =>
-      grantTypeValidation(model.get) andThen
-        executivesValidation(model.get)
+  override def SheetValidation = model => grantTypeValidation(model) andThen executivesValidation(model)
 
   def gzip(sheets: Seq[Seq[Validated[Model]]]): Seq[Seq[Validated[Model]]] = sheets match {
         case m1 :: m2 :: Nil => m1.zip(m2).map { case (x, y) => Seq(x,y)}
@@ -132,15 +129,11 @@ object top5 extends WorkflowFactory {
   
   override def WorkbookValidationPhase =
     (_, models) =>
-      if (!models.concat.isInvalid) {
     	  gzip(Seq(
-    	      transitionPeriodValidation(models.map(_.get)),
-    	      optionGrantsVsGrantType(models.map(_.get)),
-            execDbTimeVestValidation(models.map(_.get))))
-    	  .map(_.reduce((a, b) => a andThen b))
-      }
-      else
-        models
+    	      transitionPeriodValidation(models),
+    	      optionGrantsVsGrantType(models),
+            execDbTimeVestValidation(models)))
+    	  .concatMap(_.reduce((a, b) => a andThen b))
 
   def execDbTimeVestValidation(models: Seq[Model]) = {
     val lastYear = models.maxBy(_(Path('disclosureFiscalYear)).getRawValue[Int])

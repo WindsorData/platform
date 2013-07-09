@@ -72,8 +72,8 @@ class TestDriver extends FunSpec {
       val schema = TModel()
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val area = TestArea(schema, Seq())
-      val result: Seq[Validated[Model]] = area.read(sheet)
-      assert(result === Seq(Valid(Model())))
+      val result: Validated[Seq[Model]] = area.read(sheet)
+      assert(result === Valid(Seq(Model())))
     }
 
     it("should let read empty sheets using non-empty mappings ") {
@@ -81,7 +81,7 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
       val area = TestArea(schema, Seq(Feature(Path('foo))))
       val result = area.read(sheet)
-      assert(result === Seq(Valid(Model('foo -> Value()))))
+      assert(result === Valid(Seq(Model('foo -> Value()))))
     }
 
     it("should let read non-empty sheets using non-empty mappings ") {
@@ -89,13 +89,13 @@ class TestDriver extends FunSpec {
       val sheet: Sheet = WorkBookFactory.makeSingleDataItem("value", "calc", "comment", "not", "link")
       val area = TestArea(schema, Seq(Gap, Feature(Path('foo))))
       val result = area.read(sheet)
-      assert(result.head === Valid(Model('foo ->
+      assert(result.get.head === Model('foo ->
         Value(
           Some("value"),
           Some("calc"),
           Some("comment"),
           Some("not"),
-          Some("link")))))
+          Some("link"))))
     }
 
     it("should let read sheets with enum values") {
@@ -116,8 +116,8 @@ class TestDriver extends FunSpec {
         Gap,
         Feature(Path('aField))))
 
-      val result = area.read(sheet)
-      assert(result === Seq(Valid(Model('aField -> Value()))))
+      val result = area.read(sheet).get
+      assert(result === Seq(Model('aField -> Value())))
 
     }
     
@@ -141,8 +141,8 @@ class TestDriver extends FunSpec {
           Feature(Path('models, 1, 'value4))
           ))
           
-      val result = area.read(sheet)
-      assert(result === Seq(Valid(Model('models -> Col(
+      val result = area.read(sheet).get
+      assert(result === Seq(Model('models -> Col(
           Model(
           'value1 -> Value("model1-value1"),
           'value2 -> Value("model1-value2"),
@@ -156,7 +156,7 @@ class TestDriver extends FunSpec {
           'value4 -> Value("model2-value4")
               )    
               
-          )))))
+          ))))
     }
   }
 

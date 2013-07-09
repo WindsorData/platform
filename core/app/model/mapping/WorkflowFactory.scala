@@ -1,33 +1,29 @@
 package model.mapping
 
-import libt.spreadsheet.reader._
 import libt.workflow._
+import libt.spreadsheet.reader._
+import libt.error.Validated._
 import libt.error._
 import libt._
 
 import org.apache.poi.ss.usermodel.Workbook
 
 trait WorkflowFactory {
-  def MappingPhase(mapping: WorkbookMapping): Phase[Workbook, Seq[Seq[Validated[Model]]]] =
-    (wb, _) => mapping.read(wb).filter(!_.isEmpty)
+  def MappingPhase(mapping: WorkbookMapping): Phase[Workbook, Seq[Seq[Model]]] =
+    (wb, _) => mapping.read(wb).map(_.filter(!_.isEmpty))
 
-  def Workflow: FrontPhase[Seq[Validated[Model]]] = 
+  def Workflow: FrontPhase[Seq[Model]] =
 	  MappingPhase(Mapping) >> 
 	  CombinerPhase >>
 	  SheetValidationPhase >>
 	  WorkbookValidationPhase
       
-  def SheetValidationPhase: Phase[Seq[Validated[Model]], Seq[Validated[Model]]] =
-    (_, models) => {
-      if (!models.concat.isInvalid) {
-        models.map(SheetValidation)
-      } else
-        models
-    }
-    
-  def WorkbookValidationPhase: Phase[Seq[Validated[Model]], Seq[Validated[Model]]] = IdPhase
-  def CombinerPhase : Phase[Seq[Seq[Validated[Model]]], Seq[Validated[Model]]]
+  def SheetValidationPhase: Phase[Seq[Model], Seq[Model]] =
+    (_, models) => { models.concatMap(SheetValidation) }
+
+  def WorkbookValidationPhase: Phase[Seq[Model], Seq[Model]] = IdPhase
+  def CombinerPhase : Phase[Seq[Seq[Model]], Seq[Model]]
 
   def Mapping : WorkbookMapping 
-  def SheetValidation: Validated[Model] => Validated[Model]
+  def SheetValidation: Model => Validated[Model]
 }

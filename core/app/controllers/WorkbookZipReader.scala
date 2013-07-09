@@ -14,7 +14,7 @@ trait WorkbookZipReader {
   var file : ZipFile = _
   
   /**answers a seq of file names and read results*/
-  def readZipFileEntries[A](filePath: String, readers: Seq[(FrontPhase[A], String)]) = {
+  def readZipFileEntries(filePath: String, readers: Seq[(FrontPhase[Seq[Model]], String)]) = {
     file = new ZipFile(filePath)
     readZipFile(getValidEntries(readers))
   }

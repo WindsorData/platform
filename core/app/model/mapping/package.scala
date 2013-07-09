@@ -6,8 +6,8 @@ import libt._
 
 package object mapping {
 
-  val colWrapping = (x:Seq[Validated[Model]]) => Col(x.map(_.get).toList: _*)
-  val singleModelWrapping = (x:Seq[Validated[Model]]) => Model(x.head.get.elements)
+  val colWrapping = (x:Seq[Model]) => Col(x.toList: _*)
+  val singleModelWrapping = (x:Seq[Model]) => Model(x.head.elements)
 
   def addTYears(paths: Path*): Seq[Strip] =
     paths.flatMap(path => Seq[Strip](

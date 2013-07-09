@@ -127,9 +127,6 @@ package object dilution extends WorkflowFactory {
     } else
       Valid(model)
 
-  override def SheetValidation =
-    model => 
-      usageAndSVTValidations(model.get) andThen
-      dilutionValidations(model.get)
+  override def SheetValidation = model => usageAndSVTValidations(model) andThen dilutionValidations(model)
   
 }
