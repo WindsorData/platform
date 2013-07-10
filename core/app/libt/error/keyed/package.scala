@@ -18,7 +18,7 @@ package object keyed {
       results concatMap {
         case (key, result) => result match {
           case v@Valid(_) => v
-          case Doubtful(v, w) => Doubtful(v, key -> Seq(w))
+          case Doubtful(v, w@_*) => Doubtful(v, key -> w)
           case i => Invalid(key -> i.messages)
         }
       } map(_.flatten)

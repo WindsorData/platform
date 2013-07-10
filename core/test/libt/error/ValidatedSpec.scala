@@ -17,6 +17,14 @@ class ValidatedSpec extends FunSpec {
     it("should answer valid when valid combined with valid") {
       assert(Valid(2).flatMap(x => Valid(x + 1)) === Valid(3))
     }
+    
+    it("should answer Doubtful when doubtful combined with valid") {
+      assert(Valid(2).flatMap(x => Doubtful(x + 1, "foo")) === Doubtful(3, "foo"))
+    }
+    
+    it("should answer Doubtful when doubtful combined with Doubtful") {
+      assert(Doubtful(1, "foo").flatMap(x => Doubtful(x + 1, "bar")) === Doubtful(2, "foo", "bar"))
+    }
 
     it("should answer invalid when invalid combined with invalid") {
       assert(Invalid("foo", "bar").flatMap((x: Int) => Valid(x + 1)) === Invalid("foo", "bar"))
@@ -29,6 +37,15 @@ class ValidatedSpec extends FunSpec {
     it("should answer invalid when invalid combined with valid") {
       assert(Invalid("foo", "bar").flatMap(x => Invalid("foobar")) === Invalid("foo", "bar"))
     }
+
+    it("should answer invalid when invalid combined with doubtful") {
+      assert(Invalid("foo", "bar").flatMap(x => Doubtful(1, "foobar")) === Invalid("foo", "bar"))
+    }
+
+    it("should answer invalid merging messages when doubtful combined with invalid") {
+      assert(Doubtful(1, "foo").flatMap(x => Invalid("foobar")) === Invalid("foo", "foobar"))
+    }
+
   }
 
   describe("for comprehensions") {
@@ -78,5 +95,31 @@ class ValidatedSpec extends FunSpec {
     it("should be Invalid when first is invalid and second is doubtful") {
       assert((Invalid("mmm") andThen Doubtful(2, "aaa")) === Invalid("mmm", "aaa"))
     }
+  }
+
+  describe("flatConcat") {
+    it("should be Valid for empty seq") {
+      assert(keyed.Validated.flatConcat(Seq()) === Valid(Seq()))
+    }
+
+    it("should be Valid for seq with only valids") {
+      assert(keyed.Validated.flatConcat(
+        Seq(("foo",Valid(Seq(1,2,3))))) === Valid(Seq(1,2,3)))
+    }
+
+    it("should be Doubtful for seq with only doubtfuls or valids") {
+      assert(keyed.Validated.flatConcat(
+        Seq(("foo",Valid(Seq(1))),
+            ("bar", Doubtful(Seq(2),"w1")),
+            ("baz", Doubtful(Seq(3,4),"w2")))) === Doubtful(Seq(1,2,3,4), "bar" -> Seq("w1"), "baz" -> Seq("w2")))
+    }
+
+    ignore("should be invalid for seq with invalids") {
+      assert(keyed.Validated.flatConcat(
+        Seq(("foo",Valid(Seq(1))),
+          ("bar", Invalid("w1")),
+          ("baz", Doubtful(Seq(3,4),"w2")))) === Invalid("bar" -> Seq("w1"), "baz" -> Seq("w2")))
+    }
+
   }
 }
