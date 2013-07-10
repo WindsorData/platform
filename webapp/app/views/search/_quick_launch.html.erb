@@ -26,7 +26,7 @@
           <%= select_tag :report, options_for_select(Constants::REPORTS) %>
         </label>
         <%= submit_tag "Select" %>
-        <%= link_to('Create new peer group', new_group_path, class: 'right') %>
+        <%= link_to('Create new peer group', groups_path, class: 'right') %>
       <% end %>
     </div>
   </div>
