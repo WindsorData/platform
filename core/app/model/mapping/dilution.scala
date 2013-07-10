@@ -114,18 +114,14 @@ package object dilution extends StandardWorkflowFactory {
       	.getOrElse(Valid(model))
   
   def usageAndSVTValidations(model: Model): Validated[Model] = 
-    if (model.contains('usageAndSVTData)) {
-      averageSharesValidation(model) andThen
-      optionsAndFullValueValidation(model)
-    } else
-      Valid(model)
+    model.validate('usageAndSVTData) {
+      averageSharesValidation(model) andThen optionsAndFullValueValidation(model)
+    } 
   
   def dilutionValidations(model: Model): Validated[Model] = 
-    if (model.contains('dilution)) {
-      totalValidation(model) andThen 
-      optionAndFullValuesValidation(model)
-    } else
-      Valid(model)
+    model.validate('dilution) {
+      totalValidation(model) andThen  optionAndFullValuesValidation(model)
+    } 
 
   override def SheetValidation = model => usageAndSVTValidations(model) andThen dilutionValidations(model)
   

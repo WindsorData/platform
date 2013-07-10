@@ -2,20 +2,23 @@ package libt
 
 import libt.util._
 
+trait ElementValueOps { self : Element =>
+  def isEmpty(route:PathPart) = (this / route).rawValue.isEmpty
+  def nonEmpty(route:PathPart) = (this / route).rawValue.nonEmpty
+  def /#(route:PathPart) = (this / route).rawValue[BigDecimal]
+  def /!(route:PathPart) = (this / route).rawValue[String]
+  def getRawValue[A] : A = rawValue[A].get
+}
+
 /**
- * @author flbulgarelli
+  * @author flbulgarelli
  */
-sealed trait Element extends ElementLike[Element] {
+sealed trait Element extends ElementLike[Element] with ElementValueOps {
   override type ModelType = Model
   override type ColType = Col
   override type ValueType[A] = Value[A]
 
-  def ?(route:PathPart) = (this / route).rawValue.nonEmpty
-  def /#(route:PathPart) = (this / route).rawValue[BigDecimal]
-  def /!(route:PathPart) = (this / route).rawValue[String]
-
   def rawValue[A]  : Option[A] =  asValue[A].value
-  def getRawValue[A] : A = rawValue[A].get
 
   /** Answers the elements at the given key,
     * spreading at the {{{*}}} path parth, if present.

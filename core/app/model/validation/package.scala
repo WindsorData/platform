@@ -4,6 +4,19 @@ import libt.error._
 import libt._
 
 package object validation {
+
+  //TODO move out
+  implicit class ValidableModel(val model:Model) {
+    def validate(route: Symbol)(validation: => Validated[Model]): Validated[Model] =
+      if (!model.contains(route)) Valid(model) else validation
+  }
+
+  implicit class Validable[A](val any:A) {
+    def validateWhen(condition: => Boolean)(validation: => Validated[A]) : Validated[A] =
+      if (!condition) Valid(any) else validation
+    def validateUnless(condition: => Boolean)(validation: => Validated[A]) : Validated[A] =
+      validateWhen(!condition)(validation)
+  }
   
   implicit def validatedModels2reducedValidatedModel(models: Seq[Validated[Model]]) = new {
     def reduceValidations(default: Model): Validated[Model] = 
@@ -14,7 +27,7 @@ package object validation {
   def execMsg(year: Int, m: Model) =
     year + " - " + (m /! 'firstName).get + (m /! 'lastName).get + " - "
 
-  def nonEmptyExecutive(exec: Element) = Seq('firstName, 'lastName).forall(exec ? _)
+  def nonEmptyExecutive(exec: Element) = Seq('firstName, 'lastName).forall(exec nonEmpty _)
 
   def reduceExecutiveValidations(path: Path, model: Model)(action: (Element) => Validated[Model]) = {
     val results: Seq[Validated[Model]] = model.applySeq(path).map { m => action(m) }
