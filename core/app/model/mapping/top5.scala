@@ -317,7 +317,7 @@ object top5 extends WorkflowFactory {
                     case _ => Valid(model)
                   }
               }
-          results.reduce((a, b) => a andThen b)
+          results.reduceValidations(m.asModel)
         }
     }
 
@@ -339,7 +339,7 @@ object top5 extends WorkflowFactory {
                     		"Some Owned Shares values cannot be greater than Beneficial Ownership"))
                 case _ => Valid(model)
               }
-          results.reduce((a, b) => a andThen b)
+          results.reduceValidations(m.asModel)
         }
     }
 
@@ -377,7 +377,7 @@ object top5 extends WorkflowFactory {
                   err("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs",
                     "Number multiplied by price should be equal to value"))).getOrElse(Valid(model))
               }
-          results.reduce((a, b) => a andThen b)
+          results.reduceValidations(m.asModel)
         }
     }
 
@@ -426,7 +426,7 @@ object top5 extends WorkflowFactory {
                     		"Option grants must have all columns filled with data or all empty"))
               }
 
-          results.reduce((a, b) => a andThen b)
+          results.reduceValidations(m.asModel)
         }
     }
 

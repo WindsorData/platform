@@ -61,39 +61,40 @@ package object dilution extends WorkflowFactory {
     val results: Seq[Validated[Model]] =
       Seq(Path('year1), Path('year2), Path('year3)).map {
         year =>
-          model(Path('avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
+          model(Path('usageAndSVTData, 'avgSharesOutstanding) ++ year).rawValue[BigDecimal] match {
             case Some(value) if value > 999 =>
               Doubtful(model, "Warning on Usage And SVT Data: Average Shares should be in millions")
             case _ => Valid(model)
           }
       }
-    results.reduce((a, b) => a andThen b)
+    
+    results.reduceValidations(model)
   }
   
   def optionsAndFullValueValidation(model: Model) = {
       val results : Seq[Validated[Model]] = 
-      Seq(model(Path('optionsSARs, 'granted)),
-          model(Path('optionsSARs, 'cancelled)),
-          model(Path('fullValue, 'sharesGranted)),
-          model(Path('fullValue, 'sharesCancelled)))
-      .flatMap(model => Seq(model(Path('year1)).rawValue[BigDecimal], 
-    		  				model(Path('year2)).rawValue[BigDecimal], 
-    		  				model(Path('year3)).rawValue[BigDecimal])).flatten
+      Seq(model(Path('usageAndSVTData, 'optionsSARs, 'granted)),
+          model(Path('usageAndSVTData, 'optionsSARs, 'cancelled)),
+          model(Path('usageAndSVTData, 'fullValue, 'sharesGranted)),
+          model(Path('usageAndSVTData, 'fullValue, 'sharesCancelled)))
+      .flatMap(m => Seq(m(Path('year1)).rawValue[BigDecimal], 
+    		  				m(Path('year2)).rawValue[BigDecimal], 
+    		  				m(Path('year3)).rawValue[BigDecimal])).flatten
       .map (value => if( value < 1000) 
     	  				Doubtful(model, 
     	  				    warning(
     	  				        "Usage And SVT Data", 
     	  				        "Options and Full Value: granted and cancelled values should not be less than 1000")) 
     	  			 else Valid(model))
-      
-      results.reduce( (a, b) => a andThen b)
+    	  			 
+    results.reduceValidations(model)
   }
 
   def totalValidation(model: Model) = 
     (for {
-      option <- model(Path('awardsOutstandings, 'option)).rawValue[BigDecimal]
-      full <- model(Path('awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
-      total <- model(Path('awardsOutstandings, 'total)).rawValue[BigDecimal]
+      option <- model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal]
+      full <- model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+      total <- model(Path('dilution, 'awardsOutstandings, 'total)).rawValue[BigDecimal]
       if option + full == total
     }
     yield Valid(model))
@@ -103,8 +104,8 @@ package object dilution extends WorkflowFactory {
               
   def optionAndFullValuesValidation(model: Model) = 
       ( for {
-    	  option <- model(Path('awardsOutstandings, 'option)).rawValue[BigDecimal]
-    	  fullvalue <- model(Path('awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
+    	  option <- model(Path('dilution, 'awardsOutstandings, 'option)).rawValue[BigDecimal]
+    	  fullvalue <- model(Path('dilution, 'awardsOutstandings, 'fullValue)).rawValue[BigDecimal]
     	  if option == 0 || fullvalue == 0
       	}
       	yield Doubtful(model, 
@@ -115,15 +116,15 @@ package object dilution extends WorkflowFactory {
   
   def usageAndSVTValidations(model: Model): Validated[Model] = 
     if (model.hasElement('usageAndSVTData)) {
-      averageSharesValidation(model(Path('usageAndSVTData)).asModel) andThen
-      optionsAndFullValueValidation(model(Path('usageAndSVTData)).asModel)
+      averageSharesValidation(model) andThen
+      optionsAndFullValueValidation(model)
     } else
       Valid(model)
   
   def dilutionValidations(model: Model): Validated[Model] = 
     if (model.hasElement('dilution)) {
-      totalValidation(model(Path('dilution)).asModel) andThen 
-      optionAndFullValuesValidation(model(Path('dilution)).asModel)
+      totalValidation(model) andThen 
+      optionAndFullValuesValidation(model)
     } else
       Valid(model)
 

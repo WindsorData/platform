@@ -4,6 +4,12 @@ import libt.error._
 import libt._
 
 package object validation {
+  
+  implicit def validatedModels2reducedValidatedModel(models: Seq[Validated[Model]]) = new {
+    def reduceValidations(default: Model): Validated[Model] = 
+      if(models.isEmpty) Valid(default)
+      else models.reduce( (a, b) => a andThen b)
+  }
 
   def execMsg(year: Int, m: Model) =
     year + " - " + m(Path('firstName)).getRawValue[String] + m(Path('lastName)).getRawValue[String] + " - "
@@ -14,9 +20,9 @@ package object validation {
 
   def reduceExecutiveValidations(path: Path, model: Model)(action: (Element) => Validated[Model]) = {
     val results: Seq[Validated[Model]] = model.applySeq(path).map { m => action(m) }
-    results.reduce((a, b) => a andThen b)
+    results.reduceValidations(model)
   }
-
+  
   def threeDigitValidation(basePath: Path, valuePaths: Seq[Path], model: Model) = 
     digitValidation(basePath, valuePaths, model)(_ >= 100)
 
@@ -32,7 +38,7 @@ package object validation {
                     ": " + valuePaths.map(_.titles).mkString(" - ") + " should be 3 digits or more")
               case _ => Valid(model)
             })
-          results.reduce((a, b) => a andThen b)
+          results.reduceValidations(model)
         }
     }
   def warning(id: String, msg: String) = s"Warning on $id: $msg"
