@@ -6,7 +6,6 @@ import org.scalatest.junit.JUnitRunner
 import libt._
 import model.mapping.guidelines
 
-@RunWith(classOf[JUnitRunner])
 class GuidelinesValidations extends FunSpec{
 
   def createModel(model: Model, tab: Symbol) =

@@ -10,7 +10,6 @@ import org.scalatest.junit.JUnitRunner
 import com.mongodb.DBObject
 import libt._
 
-@RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 
   describe("tmodel persistence") {

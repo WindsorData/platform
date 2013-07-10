@@ -13,7 +13,6 @@ import libt.spreadsheet.util._
 import scala.math.BigDecimal.int2bigDecimal
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class MetadataAreaLayoutSpec extends FlatSpec with BeforeAndAfter {
 
   val TSchema = TModel(

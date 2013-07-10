@@ -6,7 +6,6 @@ import org.scalatest.path.FunSpec
 import org.scalatest.FunSuite
 import IndexedTraversables._
 
-@RunWith(classOf[JUnitRunner])
 class IndexedTraversablesSpec extends FunSuite {
   test("can traverse with index") {
     var result = List[Int]()

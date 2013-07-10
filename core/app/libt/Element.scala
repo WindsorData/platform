@@ -101,27 +101,38 @@ case class Col(elements: Element*)
 
 /*=======Model=======*/
 
+trait ModelAlgebraOps {  this : Model =>
+  /**
+   * Adds a complete model to this model
+   *
+   * Answers a new model that contains the elements of {{this}} and {{that}}.
+   * If there is collision between elements keys, the elements of {{that}}
+   * take precedence
+   * */
+  def ++(that: Model) = Model(elements ++ that.elements)
+
+  /**Adds or updates a model entry to this model*/
+  def +(entry:(Symbol, Element)) = Model(elements + entry)
+
+  /** Removes a key from the given model */
+  def -(key: Symbol): Model = Model(elements.filter{ case (k, _) => k != key })
+
+  /**Creates a new model that is a submodel of this one that only
+    * contains the elements of the given mask*/
+  def intersect(mask: Seq[Path]) =
+    Model(mask.map(path => (path.last.routeValue -> this(path))).toSet)
+}
+
 case class Model(elements: Set[(Symbol, Element)])
   extends Element
-  with ModelLike[Element] {
+  with ModelLike[Element]
+  with ModelLikeOps[Element]
+  with ModelAlgebraOps {
 
   private val elementsMap = elements.toMap
 
   def get(key: Symbol) =  elementsMap.get(key)
-  override def apply(key: Symbol) = elementsMap.getOrElse(key, sys.error(s"key $key not found in $this"))
-  
-  def hasElement(key: Symbol) = elementsMap.contains(key)
-  
-  /**Creates a new model that is a submodel of this one that only
-   * contains the elements of the given mask*/
-  def subModel(mask: Seq[Path]) =
-    Model(mask.map(path => (path.last.routeValue -> this(path))).toSet)
-    
-  /**
-   * Answers a copy of this Model without the specified element
-   */
-  def without(key: Symbol): Model =
-    Model(elements.filter{ case (k, _) => k != key })        
+  def contains(key: Symbol) = elementsMap.contains(key)
 
   /**
    * Flattens this model based on a path - flatteningPath - that points
@@ -134,18 +145,8 @@ case class Model(elements: Set[(Symbol, Element)])
    */
   def flattenWith(rootPk: PK, flatteningPath: Path): Seq[Model] =
     for (element <- applySeq(flatteningPath))
-     yield element.asModel ++ this.subModel(rootPk)
+     yield element.asModel ++ (this intersect rootPk)
 
-
-  /**
-   * Model addition
-   * 
-   * Answers a new model that contains the elements of {{this}} and {{that}}. 
-   * If there is collision between elements keys, the elements of {{that}} 
-   * take precedence
-   * */
-  def ++(that: Model) = Model(elements ++ that.elements)
-  
   def isComplete = elements.forall { case (_, element) => element.isComplete }
 }
 object Model {

@@ -6,7 +6,6 @@ import org.scalatest.FunSpec
 import libt._
 import model.mapping.dilution
 
-@RunWith(classOf[JUnitRunner])
 class DilutionValidations extends FunSpec {
 
   describe("usage and svt data validations") {

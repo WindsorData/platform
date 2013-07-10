@@ -6,7 +6,6 @@ import org.scalatest.FunSpec
 import libt._
 import model.mapping.top5
 
-@RunWith(classOf[JUnitRunner])
 class GrantTypeValidations extends FunSpec {
   
   describe("grant types validations") {

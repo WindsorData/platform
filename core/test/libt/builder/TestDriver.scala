@@ -8,7 +8,6 @@ import java.util.Stack
 import libt.Value
 import libt._
 
-@RunWith(classOf[JUnitRunner])
 class TestDriver extends FlatSpec {
 
   behavior of "model builder"

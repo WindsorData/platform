@@ -6,7 +6,6 @@ import persistence.query._
 import org.scalatest.junit.JUnitRunner
 import org.junit.runner.RunWith
 
-@RunWith(classOf[JUnitRunner])
 class ParserJsonQuerySpec extends FunSuite {
 
   def stringMultilineToJson(json: String): JsValue = Json.parse(json.stripMargin)

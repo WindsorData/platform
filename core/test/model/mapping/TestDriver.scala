@@ -10,7 +10,6 @@ import model._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
 
-@RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 
   describe("An importer") {

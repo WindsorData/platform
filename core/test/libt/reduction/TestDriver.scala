@@ -7,7 +7,6 @@ import libt._
 import scala.math.BigDecimal.int2bigDecimal
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class CalculationSpec extends FunSpec {
 
   val modelWithCol =

@@ -15,7 +15,6 @@ import org.apache.poi.ss.usermodel.Cell
 import libt.spreadsheet.writer.ColumnOrientedWriter
 import libt.spreadsheet.writer.ColumnOrientedWriter
 
-@RunWith(classOf[JUnitRunner])
 class StripSpec extends FunSpec with MockFactory with BeforeAndAfter {
 
     var reader: CellReader = null

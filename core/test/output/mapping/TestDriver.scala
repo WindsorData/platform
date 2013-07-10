@@ -12,7 +12,6 @@ import libt._
 import model._
 import org.scalatest.junit.JUnitRunner
 
-@RunWith(classOf[JUnitRunner])
 class TestDriver extends FunSpec {
 
   //==================TEST UTILS====================

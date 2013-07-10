@@ -79,12 +79,11 @@ case class TCol(elementType: TElement)
  */
 case class TModel(elementTypes: (Symbol, TElement)*)
   extends TElement
-  with ModelLike[TElement] {
+  with ModelLike[TElement]
+  with ModelLikeOps[TElement] {
   private val elementsMap = elementTypes.toMap
 
-  override def apply(key: Symbol) = elementsMap.get(key).getOrElse {
-    sys.error("key "+key+" not found in model "+ this)
-  }
+  override def get(key: Symbol) = elementsMap.get(key)
 
   override def validate(element: Element) = umatch(element) {
     case m: Model => elementTypes.foreach {
