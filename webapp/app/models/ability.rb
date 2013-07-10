@@ -12,8 +12,10 @@ class Ability
         arr.inject(true){|r, el| r && can?(:read, el)}
       end
       can   :perform, :quick_search
+      can   :perform, :full_search
     when 'admin'
       can   :upload, :file
+      can   :perform, :full_search
     when 'client'
       can   :create, Group
       can   :destroy, Group do |g|
@@ -26,6 +28,7 @@ class Ability
         arr.inject(true){|r, el| r && can?(:read, el)}
       end
       can   :perform, :quick_search
+      can   :perform, :full_search
     end
   end
 end
