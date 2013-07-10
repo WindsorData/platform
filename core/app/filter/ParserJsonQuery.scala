@@ -12,14 +12,14 @@ object ParserJsonQuery {
   val parsers = Stream(EqualParser, ConditionsParser)
 
   def query(query: JsValue) : QueryExecutives = QueryExecutives(executivesFilters(query), advancedFilters(query))
-  def executivesFilters(json: JsValue) : Seq[Filter] = filtersFromJson(basicsFromJson(json)).map(_.map(parseCondition(_)))
-  def advancedFilters(json: JsValue) : Filter = (json \ "advanced").as[Seq[JsValue]].map(parseCondition(_))
+  def executivesFilters(json: JsValue) : Seq[Filter] = basicsFromJson(json).map(filtersFromJson(_).map(_.map(parseCondition))).getOrElse(Seq())
+  def advancedFilters(json: JsValue) : Filter = (json \ "advanced").asOpt[Seq[JsValue]].map(_.map(parseCondition)).getOrElse(Seq())
 
 
   def parseCondition(jsonCondition: JsValue) : Condition = parsers.flatMap(_(jsonCondition)).toList.head
 
   def filtersFromJson(json: Seq[JsValue]) = json.map(_.\("executivesFilters").as[Seq[JsValue]])
-  def basicsFromJson(json: JsValue) : Seq[JsValue] = (json \ "executives").as[Seq[JsValue]]
+  def basicsFromJson(json: JsValue) : Option[Seq[JsValue]] = (json \ "executives").asOpt[Seq[JsValue]]
 
 
 }

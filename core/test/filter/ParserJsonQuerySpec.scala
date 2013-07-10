@@ -20,6 +20,25 @@ class ParserJsonQuerySpec extends FunSuite {
     assert(conditions(1) === "$lt" -> 22)
   }
 
+  test ("can parse a query only basic filters ") {
+    val json =
+      """ {
+          "executives": [
+              {
+                "executivesFilters": [
+                          {"key": "firstName", "value": "den"},
+                          {"key": "lastName", "value": "ritch"},
+                          {"key": "salary", "operators":[ {"operator":"gt","value":5}, {"operator":"lt","value":10} ]}
+                      ]
+              }
+            ]
+        }
+      """
+    val query = ParserJsonQuery.query(stringMultilineToJson(json))
+    assert(query.executives.size === 1)
+    assert(query.executives(0).size === 3)
+  }
+
   test("can parse a complete query") {
     val json =
       """ {
