@@ -1,4 +1,3 @@
-# bundle exec rails g scaffold_controller users --no-test-framework
 class UsersController < ApplicationController
   inherit_resources
   authorize_resource
@@ -8,9 +7,9 @@ class UsersController < ApplicationController
     update! { users_path }
   end
 
-  def create
-    create! { users_path }
-  end
+  # def create
+  #   create! { users_path }
+  # end
 
   def index
     @user = User.new

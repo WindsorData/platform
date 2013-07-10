@@ -16,7 +16,7 @@ describe Company do
   context "When it doesn't have a contact email" do
     let(:company){ build(:company, contact_email: nil) }
     
-    it { should_not be_valid }
+    it { should be_valid }
   end
   context "When exists another company with the same name" do
     let(:other_company){ create(:company) }

@@ -1,4 +1,3 @@
-# bundle exec rails g scaffold_controller groups index new --no-test-framework
 class GroupsController < ApplicationController
   before_filter :authenticate_user!
   inherit_resources
