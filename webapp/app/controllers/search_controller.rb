@@ -8,8 +8,8 @@ class SearchController < ApplicationController
   def full_search
     authorize!(:perform, :full_search)
     @primary_roles = PrimaryRole.order("name asc")
-    @eq_comp_values = EquityCompensation.all
-    @cash_comp_values = CashCompensation.all
+    @eq_comp_values = EquityCompensation.order("value asc")
+    @cash_comp_values = CashCompensation.order("value asc")
   end
 
   def results

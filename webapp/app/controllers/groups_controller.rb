@@ -12,7 +12,7 @@ class GroupsController < ApplicationController
   
   def index
     @group = Group.new
-    @groups = current_user.is_client? ? Group.by_company(current_user.company).to_a : Group.all
+    @groups = current_user.is_client? ? Group.by_company(current_user.company).order("name asc").to_a : Group.order("name asc").to_a
     authorize!(:read_multiple, @groups)
   end
   def update
