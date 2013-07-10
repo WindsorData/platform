@@ -16,6 +16,8 @@ $(function() {
 
   $("#advanced-search-button").click(function() {
     $(".advanced-search").toggleClass('hidden');
+    var text = $("#advanced-search-button").text();
+    $("#advanced-search-button").text(text == "Show Advanced search" ? "Hide Advanced Search" : "Show Advanced search");
   });
 
   function replaceElementNameWithCounter(){
