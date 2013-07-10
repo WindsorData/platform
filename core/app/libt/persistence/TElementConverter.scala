@@ -28,7 +28,7 @@ class TModelConverter(tModel: TModel) extends TElementConverter {
     MongoDBObject(
       tModel.elementTypes
         .filter {
-          case (key, _) => model.hasElement(key)
+          case (key, _) => model.contains(key)
         }
         .map {
           case (key, telement) =>

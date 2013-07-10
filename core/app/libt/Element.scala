@@ -110,7 +110,7 @@ case class Model(elements: Set[(Symbol, Element)])
   def get(key: Symbol) =  elementsMap.get(key)
   override def apply(key: Symbol) = elementsMap.getOrElse(key, sys.error(s"key $key not found in $this"))
   
-  def hasElement(key: Symbol) = elementsMap.contains(key)
+  def contains(key: Symbol) = elementsMap.contains(key)
   
   /**Creates a new model that is a submodel of this one that only
    * contains the elements of the given mask*/

@@ -89,7 +89,7 @@ package object guidelines extends WorkflowFactory {
     digitValidation(Path('guidelines, *), Seq(Path('multipleOfSalary)),model)(_ < 10)
   
   def guidelinesValidations(model: Model): Validated[Model] = {
-    if(model.hasElement('guidelines))
+    if(model.contains('guidelines))
       guidelinesDigitValidation(model)
     else
       Valid(model)
@@ -124,7 +124,7 @@ package object guidelines extends WorkflowFactory {
   	}
   
   def stBonusValidations(model: Model): Validated[Model] = {
-    if(model.hasElement('stBonusPlan)) 
+    if(model.contains('stBonusPlan))
       scopeValidation(model) andThen
       metricsValidation(model)
     else
