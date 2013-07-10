@@ -20,9 +20,9 @@ class QueryGenerator
     query.delete(:executives) if query[:executives].blank?
 
     if query.blank?
-      ""
+      "{}"
     else
-      query.to_json.gsub!(/\"/, '\'').gsub(/'(\d)\'/,' \1')
+      query.to_json
     end
   end
 
