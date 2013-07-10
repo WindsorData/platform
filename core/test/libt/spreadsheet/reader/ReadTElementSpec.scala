@@ -46,27 +46,27 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
 
     it("should read numeric values as a string") {
       sheet.cellAt(0, 0).setCellValue(22)
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value("22.0")))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value("22.0"))))
     }
 
     it("should read formulas as a string") {
       sheet.cellAt(0, 0).setCellFormula("2+2")
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value("2+2")))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq((Model('key -> Value("2+2")))))
     }
 
 
     it("should read boolean values as a string") {
       sheet.cellAt(0, 0).setCellValue(true)
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value("true")))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value("true"))))
     }
 
     it("should read string values as a string") {
       sheet.cellAt(0, 0).setCellValue("something")
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value("something")))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value("something"))))
     }
 
   }
@@ -77,8 +77,8 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
 
     it("should read numeric values") {
       sheet.cellAt(0, 0).setCellValue(10)
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value(10)))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value(10))))
     }
 
     it("should read percentage values as a number") {
@@ -88,8 +88,8 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
           sheet = workbook.getSheetAt(0)
           (1 to 4).foreach(sheet.cellAt(_, 0).setAsActiveCell())
       }
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value(0.1: BigDecimal)))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value(0.1: BigDecimal))))
     }
 
   }
@@ -99,15 +99,15 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
     it("should read valid Strings") {
       val reader = createWbReader(TStringEnum("a", "b", "c"))
       sheet.cellAt(0, 0).setCellValue("b")
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value("b")))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value("b"))))
     }
 
     ignore("should read valid Numbers") {
       val reader = createWbReader(TNumberEnum(1, 2, 3))
       sheet.cellAt(0, 0).setCellValue(1)
-      val result = reader.read(workbook)
-      assert(result.head.toList === Seq(Valid(Model('key -> Value(1)))))
+      val result = reader.read(workbook).get
+      assert(result.head.toList === Seq(Model('key -> Value(1))))
     }
 
     it("should not let read invalid entries") {
@@ -115,8 +115,8 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
         val schema = TStringEnum("a", "b", "c")
         val reader = createWbReader(schema)
         sheet.cellAt(0, 0).setCellValue("x")
-        val result = reader.read(workbook)
-        schema.validate(result.head.head.get)
+        val result = reader.read(workbook).get
+        schema.validate(result.head.head)
       }
     }
   }

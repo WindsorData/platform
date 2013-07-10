@@ -27,8 +27,8 @@ import org.joda.time.DateTime
  * @author mcorbanini
  */
 class DocSrcCombiner(
-    yearsPositionWithKeys: Seq[(Int, Symbol, Seq[Validated[Model]] => Element)]) 
-    extends Phase[Seq[Seq[Validated[Model]]], Seq[Validated[Model]]] {
+    yearsPositionWithKeys: Seq[(Int, Symbol, Seq[Model] => Element)])
+    extends Phase[Seq[Seq[Model]], Seq[Model]] {
 
   def dateCellToYear(r: Seq[Row]): Validated[Int] = {
     val dateCell = r.get(0).getCell(2)
@@ -47,23 +47,19 @@ class DocSrcCombiner(
       case (yearIndex, key, elemWrap) => (dateCellToYear(sheet.rows.drop(yearIndex)), key, elemWrap)
     }
 
-  def apply(wb: Workbook, results: Seq[Seq[Validated[Model]]]) = {
-    val flattenResults = results.flatten
+  override def apply(wb: Workbook, results: Seq[Seq[Model]]): Validated[Seq[Model]] = {
     val yearsWithKeys = years(wb.getSheetAt(0))
-    (Validated.concat(yearsWithKeys.map(_._1)), Validated.concat(flattenResults)) match {
-      case (i: Invalid, _) => Seq(i)
-      case (_, i: Invalid) => flattenResults
-      case _ => (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped
-        .map {
-          case ((year, key, elemWrap), executives, company) =>
-            Valid(Model(company.get.elements
-              + ('disclosureFiscalYear -> Value(year.get))
-              + (key -> elemWrap(executives))))
-        }
+    yearsWithKeys.concatMap(_._1) andThen {
+      (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped.map {
+        case ((year, key, elemWrap), executives, company) =>
+          Valid(Model(company.elements
+            + ('disclosureFiscalYear -> Value(year.get))
+            + (key -> elemWrap(executives))))
+      }.concat
     }
   }
 }
 
 object DocSrcCombiner {
-  def apply(years: (Int, Symbol, Seq[Validated[Model]] => Element)*) = new DocSrcCombiner(years.toSeq)
+  def apply(years: (Int, Symbol, Seq[Model] => Element)*) = new DocSrcCombiner(years.toSeq)
 }

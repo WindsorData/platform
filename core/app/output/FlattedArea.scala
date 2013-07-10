@@ -62,7 +62,7 @@ case class FlattedArea(
 
   protected def flattedSchema = schema(flatteningPath)(Path(*))
 
-  def read(sheet: Sheet): Seq[Validated[Model]] = ???
+  def read(sheet: Sheet): Validated[Seq[Model]] = ???
 
   def newWriter(writer: CellWriter, flattedModel: Model) = new {
 

@@ -133,15 +133,11 @@ object Validated {
       case (invalids, _) => Invalid(invalids.flatMap(_.messages): _*)
     }
 
-  //TODO remove
-  def flatJoin[E, A](elements: Seq[Validated[E, Seq[A]]]): Validated[E, Seq[A]] =
-    concat(elements) match {
-      case Valid(v) => Valid(v.flatten)
-      case Doubtful(v,w) => Doubtful(v.flatten, w)
-      case i: Invalid[A] => i
-    }
-    
-  implicit def seq2SeqOfValidated[M, A](self:Seq[Validated[M, A]]) = new {
+  implicit def seqOfValidated2RichSeqOfValidated[M, A](self:Seq[Validated[M, A]]) = new {
     def concat = Validated.concat(self)
+  }
+
+  implicit def seq2SeqOfValidated[A](self:Seq[A]) = new {
+    def concatMap[M, B](f: A => Validated[M, B]) = self.map(f).concat
   }
 }

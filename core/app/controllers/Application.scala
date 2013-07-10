@@ -41,30 +41,32 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def newCompanies =
     UploadAndReadAction {
-      (request, dataset) => keyed.flatJoin(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
+      (request, dataset) => keyed.Validated.flatConcat(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
-  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Validated[Model]]])(implicit db: MongoDB) =
+  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(implicit db: MongoDB) =
     UploadAndReadAction {
-      (request, dataset) => keyed.flatJoin(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
+      (request, dataset) => keyed.Validated.flatConcat(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
     }
-  
-  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model])(implicit db: MongoDB) = UploadSpreadsheetAction { (request, dataset) =>
-    readOp(request, dataset) match {
-      case Invalid(errors@_*) =>
-        request match {
-          case Accepts.Html() => BadRequest(views.html.parsingError(errors))
-          case Accepts.Json() => BadRequest(toJson(errorsToJson(errors)))
+
+  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model])(implicit db: MongoDB) =
+    UploadSpreadsheetAction {
+      (request, dataset) =>
+        readOp(request, dataset) match {
+          case Invalid(errors@_*) =>
+            request match {
+              case Accepts.Html() => BadRequest(views.html.parsingError(errors))
+              case Accepts.Json() => BadRequest(toJson(errorsToJson(errors)))
+            }
+          case result => {
+            result.get.foreach(updateCompany(_)(db))
+            request match {
+              case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
+              case Accepts.Json() => Ok("")
+            }
+          }
         }
-      case result => {
-        result.get.foreach(updateCompany(_)(db))
-        request match {
-          case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
-          case Accepts.Json() => Ok("")
-        }
-      }
     }
-  }
 
   def errorsToJson(errors: Seq[keyed.KeyedMessage]) =
     Map("results" -> errors.map { case (file, errors) => Map("file" -> toJson(file), "errors" -> toJson(errors)) })

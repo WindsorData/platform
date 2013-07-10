@@ -12,11 +12,16 @@ trait WorkbookZipReader {
 
   //TODO remove conversational state
   var file : ZipFile = _
-  
+
   /**answers a seq of file names and read results*/
-  def readZipFileEntries[A](filePath: String, readers: Seq[(FrontPhase[A], String)]) = {
-    file = new ZipFile(filePath)
-    readZipFile(getValidEntries(readers))
+  //TODO use monadic validated error hadndling
+  def readZipFileEntries(filePath: String, readers: Seq[(FrontPhase[Seq[Model]], String)]) : Seq[(String, Validated[Seq[Model]])] = {
+    try {
+      file = new ZipFile(filePath)
+      readZipFile(getValidEntries(readers))
+    } catch {
+      case e => Seq(filePath -> Invalid(e.getMessage))
+    }
   }
 
   protected def readZipFile[A](readersWithEntries: Seq[(FrontPhase[A], ZipEntry)]) =

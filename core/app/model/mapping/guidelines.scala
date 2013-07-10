@@ -131,8 +131,5 @@ package object guidelines extends WorkflowFactory {
       Valid(model)
   }
   
-  override def SheetValidation =
-    model => 
-      guidelinesValidations(model.get) andThen
-      stBonusValidations(model.get)
+  override def SheetValidation = model =>  guidelinesValidations(model) andThen stBonusValidations(model)
 }

@@ -5,7 +5,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.writer._
 import libt.spreadsheet.util._
 import libt.spreadsheet._
-import libt.builder._
+import libt.error.Validated._
 import libt.error._
 import libt._
 
@@ -14,26 +14,20 @@ import libt._
  * the exact way a sheet is read and written
  * */
 sealed trait Layout {
-  def read(area: Area, sheet: Sheet): Seq[Validated[Model]]
+  def read(area: Area, sheet: Sheet): Validated[Seq[Model]]
   def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
 
 object RowOrientedLayout extends Layout {
   override def read(area: Area, sheet: Sheet) = 
-    Seq(area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _)))
+    area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _)).map(Seq(_))
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) = ???
 }
 
 object ColumnOrientedLayout extends Layout with LibtSizes {
-  override def read(area: Area, sheet: Sheet) = {
-	  val models = effectiveRowGroups(area, sheet).map { rows =>
-	  area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _))
-	  }.toSeq
-	  area.limit match {
-	  	case None => models
-	  	case Some(limit) => models.take(limit)
-	  }	
-  }
+  override def read(area: Area, sheet: Sheet) =
+      effectiveRowGroups(area, sheet).
+      concatMap { rows => area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _)) }
 
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) {
     sheet.defineLimits(area.offset, models.size * ValueSizeWithSeparator, area.columns.size)
@@ -44,7 +38,7 @@ object ColumnOrientedLayout extends Layout with LibtSizes {
       }
     }
   }
-    
+
   def effectiveRowGroups(area: Area, sheet: Sheet) =
-    sheet.rows(area.offset).grouped(ValueSizeWithSeparator).map(_.toList)
+    area.truncate(sheet.rows(area.offset).grouped(ValueSizeWithSeparator).map(_.toList).toSeq)
 }

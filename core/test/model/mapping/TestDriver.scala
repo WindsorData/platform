@@ -16,16 +16,13 @@ class TestDriver extends FunSpec {
   describe("An importer") {
 
     ignore("should be able to import an empty company fiscal year") {
-
       val results = top5.Workflow.readFile("test/input/CompanyValuesAndNotes.xlsx")
-
-      
       assert(results === Seq())
     }
 
     it("should be able to import 3 company fiscal years with executives") {
 
-      val results = top5.Workflow.readFile("test/input/FullValuesOnly.xlsx").map(_.get)
+      val results = top5.Workflow.readFile("test/input/FullValuesOnly.xlsx").get
 
       assert(results.size === 4)
 
@@ -67,16 +64,16 @@ class TestDriver extends FunSpec {
     it("should throw IllegalArgumentException when there's an invalid functional value") {
       intercept[Throwable] {
         top5.Workflow.readFile("test/input/InvalidFunctionalValue.xlsx")
-          .foreach(company => TCompanyFiscalYear.validate(company.get))
+          .get.foreach(company => TCompanyFiscalYear.validate(company))
       }
     }
 
     it("should throw an Exception when there's a numeric value on string cell") {
-      assert(top5.Workflow.readFile("test/input/ExpectedStringButWasNumeric.xlsx").concat.isInvalid)
+      assert(top5.Workflow.readFile("test/input/ExpectedStringButWasNumeric.xlsx").isInvalid)
     }
 
     it("should throw an Exception when there's no value on any fiscal year") {
-      assert(top5.Workflow.readFile("test/input/EmptyFiscalYear.xlsx").concat.isInvalid)
+      assert(top5.Workflow.readFile("test/input/EmptyFiscalYear.xlsx").isInvalid)
     }
 
   }
