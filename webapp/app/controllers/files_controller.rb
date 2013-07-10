@@ -1,5 +1,4 @@
 class FilesController < ApplicationController
-  before_filter :authenticate_user!
   before_filter {|c| c.authorize!(:upload, :file)}
 
   def upload
