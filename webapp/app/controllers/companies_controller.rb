@@ -4,8 +4,7 @@ class CompaniesController < ApplicationController
 
   def index
     @company = Company.new
-    @companies = Company.all
-    # index!
+    @companies = Company.order("name asc").page(params[:page]).per(15)
   end
 
   def create
