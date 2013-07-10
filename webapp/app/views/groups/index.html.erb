@@ -15,7 +15,7 @@
   <tbody>
     <% @groups.each do |group| %>
       <tr>
-        <td><%= group.name %></td>
+        <td><%= link_to group.name, group %></td>
         <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_group_path(group), class: 'btn-icon' %></td>
         <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, group, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
       </tr>
