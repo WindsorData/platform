@@ -6,6 +6,7 @@ class SearchController < ApplicationController
     authorize!(:perform, :quick_search)
   end  
   def full_search
+    authorize!(:perform, :full_search)
     @roles = Role.all
     @eq_comp_values = EquityCompensation.all
     @cash_comp_values = CashCompensation.all
