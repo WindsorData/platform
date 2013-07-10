@@ -12,6 +12,12 @@ class UsersController < ApplicationController
     create! { users_path }
   end
 
+  def index
+    @user = User.new
+    @users = User.order("email asc").page(params[:page]).per(15)
+    index!
+  end
+
   private
   def ensamble_company
     if params[:user][:role] == "client"
