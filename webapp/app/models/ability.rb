@@ -6,6 +6,7 @@ class Ability
     case user.role
     when 'super'
       can   :manage, User
+      can   :manage, Company
       can   [:read, :create], Group
       can   :upload, :file
       can   :read_multiple, Array do |arr|

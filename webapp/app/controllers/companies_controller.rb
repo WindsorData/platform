@@ -1,7 +1,15 @@
 class CompaniesController < ApplicationController
   inherit_resources
+  authorize_resource
+
+  def index
+    @company = Company.new
+    @companies = Company.all
+    # index!
+  end
 
   def create
-    create! { redirect_to new_user_path; return }
+    create! { companies_path }
   end
+
 end
