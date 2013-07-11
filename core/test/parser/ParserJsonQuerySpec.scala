@@ -1,4 +1,4 @@
-package filter
+package parser
 
 import play.api.libs.json._
 import org.scalatest.FunSuite
@@ -72,12 +72,6 @@ class ParserJsonQuerySpec extends FunSuite {
     val json = """[ {"executivesFilters": []}, {"executivesFilters": []}, {"executivesFilters": []}]"""
     val filters = ParserJsonQuery.filtersFromJson(stringMultilineToJson(json).as[List[JsValue]])
     assert(filters.size === 3)
-  }
-
-  test("can parse a equalCondition with a double value") {
-    val json = """ {"key": "foo.bar", "value": 15} """
-    val condition = ParserJsonQuery.parseCondition(stringMultilineToJson(json))
-    assert(condition === EqualCondition("foo.bar", 15.0))
   }
 
   test("can parse a equalCondition with a string value") {
