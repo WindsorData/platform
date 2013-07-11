@@ -8,7 +8,7 @@
 
           <div class="item-form cf">
             <label class="label">Role</label>
-            <%= select_tag '[role_form][role]', options_from_collection_for_select(@primary_roles, "id", "name"), {include_blank: true} %>
+            <%= select_tag '[role_form][role]', options_from_collection_for_select(@primary_roles, "name", "name"), {include_blank: true} %>
           </div>
 
           <div class="item-form cf">
