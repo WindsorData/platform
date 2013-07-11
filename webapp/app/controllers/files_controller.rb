@@ -7,7 +7,7 @@ class FilesController < ApplicationController
   def send_file
     post_file(params[:type], params[:file])
     BackendService.update_search_values
-    redirect_to :back
+    render 'files/upload'
   end
 
   private
@@ -19,7 +19,7 @@ class FilesController < ApplicationController
       else
         flash[:error] = "The uploaded file is invallid"
       end
-      UploadLog.notify_upload({upload_type: type, message: response.body, user: current_user})
+      @upload_log = UploadLog.create({upload_type: type, message: response.body, user: current_user})
     end
   end
 

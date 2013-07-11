@@ -1,0 +1,10 @@
+<% results.each do |element| %>
+    <%= content_tag :div, element['file'] %>
+    <div>
+      <ul>
+        <% element['errors'].each do |message| %>
+            <%= content_tag :li, message %>
+        <% end %>
+      </ul>
+    </div>
+<% end %>
