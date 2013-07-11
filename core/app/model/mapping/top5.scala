@@ -1,24 +1,15 @@
 package model.mapping
 
-import libt.Path
 import model._
 import model.ExecutivesTop5._
-import model.mapping._
 import model.validation._
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
-import libt.workflow._
-import libt.util._
 import libt._
+import libt.calc._
 import libt.error._
-import java.math.MathContext
-import org.joda._
 import java.util.Date
-import org.joda.time.Interval
 import org.joda.time.DateTime
-import org.joda.time.Days
-import org.joda.time.Years
-import play.Logger
 
 object top5 extends WorkflowFactory {
 
@@ -430,9 +421,25 @@ object top5 extends WorkflowFactory {
         }
     }
 
+  def formulaValidation(model: Model): Validated[Model] = {
+    val results: Seq[Validated[Model]] =
+      model.applySeq(Path('executives, *)).map { m =>
+        if (Seq(m(Path('cashCompensations, 'maxBonus)).asValue[BigDecimal],
+                m(Path('cashCompensations, 'thresholdBonus)).asValue[BigDecimal]).forall(_.isConsistent))
+          Valid(model)
+        else
+          Invalid(
+            err(execMsg(model('disclosureFiscalYear).getRawValue[Int], m.asModel),
+              "max bonus and threshold bonus calculations are wrong"))
+    }
+    results.reduceValidations(model)
+  }
+
+
   def executivesValidation(model: Model): Validated[Model] = {
     if (model.contains('executives))
-      founderValidation(model) andThen
+        formulaValidation(model) andThen
+        founderValidation(model) andThen
         bodValidation(model) andThen
         nextFiscalYearDataValidation(model) andThen
         perfCashValidation(model) andThen
