@@ -1,0 +1,17 @@
+{ "projects" :  
+ [
+   {
+    "name" : "backend",
+    "type" : "free",
+    "directory" : "core",
+    "commands" : ""
+   },
+   {
+    "name" : "frontend",
+    "type" : "free",
+    "directory" : "webapp",
+    "commands" : ""
+   }
+ ]
+}
+
