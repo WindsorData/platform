@@ -1,6 +1,6 @@
 package libt
 
-import javax.script.ScriptEngineManager
+import javax.script.{ScriptException, ScriptEngineManager}
 
 package object calc {
   val engine = new ScriptEngineManager().getEngineByName("javascript")
@@ -11,9 +11,11 @@ package object calc {
     def apply() = engine.eval(formula)
   }
 
-  implicit class ValueCalcOps(val self: Value[_]) {
+  implicit class ValueCalcOps(val self: Value[BigDecimal]) {
     def isConsistent =
-      (for (v <- self.value; c <- self.calc) yield v == Calc(c)()).getOrElse(true)
+      (for (v <- self.value; c <- self.calc)
+        yield v == BigDecimal(Calc(c)().asInstanceOf[Double]).setScale(2, BigDecimal.RoundingMode.HALF_UP))
+      .getOrElse(true)
   }
 
 }

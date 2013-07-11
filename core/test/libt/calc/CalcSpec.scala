@@ -26,16 +26,18 @@ class CalcSpec extends FunSpec {
 
   describe("isConsistent") {
     it("should be consistent when value is none") {
-      assert(Value(Some(1), None, None, None, None).isConsistent)
+      assert(Value(1: BigDecimal).isConsistent)
     }
 
     it("should be consistent when calc is none") {
-      assert(Value(None, Some("1+2"), None, None, None).isConsistent)
+      assert(Value[BigDecimal](None, Some("1+2"), None, None, None).isConsistent)
     }
 
-    it("should be consisten iff values match") {
-      assert(Value(Some(3), Some("1+2"), None, None, None).isConsistent)
-      assert(!Value(Some(1), Some("1+2"), None, None, None).isConsistent)
+    it("should be consistent if values match") {
+      assert(Value(Some(3: BigDecimal), Some("1+2"), None, None, None).isConsistent)
+      assert(!Value(Some(1: BigDecimal), Some("1+2"), None, None, None).isConsistent)
+      assert(Value(Some(0.71: BigDecimal), Some("=341.885/484"), None, None, None).isConsistent)
+      assert(Value(Some(0.5: BigDecimal), Some("=341.885/685"), None, None, None).isConsistent)
     }
   }
 
