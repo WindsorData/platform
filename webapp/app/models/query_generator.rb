@@ -47,12 +47,12 @@ class QueryGenerator
       if params_hash[k1][k2].is_a? Hash
         if !params_hash[k1][k2]['type'].blank?
           if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
-            hash = {key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [{operator: 'gt', value: params_hash[k1][k2]['gt']},
+            hash = {key: params_hash[k1][k2]['type'], operators: [{operator: 'gt', value: params_hash[k1][k2]['gt']},
                                                                                       {operator: 'lt', value: params_hash[k1][k2]['lt']}]}
           elsif !params_hash[k1][k2]['gt'].blank?
-            hash = {key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [{operator: 'gt', value: params_hash[k1][k2]['gt']}]}
+            hash = {key: params_hash[k1][k2]['type'], operators: [{operator: 'gt', value: params_hash[k1][k2]['gt']}]}
           elsif !params_hash[k1][k2]['lt'].blank?
-            hash = {key: k2 + "." + params_hash[k1][k2]['type'].downcase, operators: [{operator: 'lt', value: params_hash[k1][k2]['lt']}]}
+            hash = {key: params_hash[k1][k2]['type'], operators: [{operator: 'lt', value: params_hash[k1][k2]['lt']}]}
           end
         else
           if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
