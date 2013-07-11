@@ -20,7 +20,11 @@ class CalcSpec extends FunSpec {
 
   describe("eval") {
     it("should eval expressions") {
-      assert(Calc(" 4 + 5")() === 9)
+      assert(Calc(" 4 + 5")() === Some(9))
+    }
+
+    it("should reject invalid expressions") {
+      assert(Calc("=40%*1.2")() === None)
     }
   }
 
@@ -35,9 +39,16 @@ class CalcSpec extends FunSpec {
 
     it("should be consistent if values match") {
       assert(Value(Some(3: BigDecimal), Some("1+2"), None, None, None).isConsistent)
-      assert(!Value(Some(1: BigDecimal), Some("1+2"), None, None, None).isConsistent)
       assert(Value(Some(0.71: BigDecimal), Some("=341.885/484"), None, None, None).isConsistent)
       assert(Value(Some(0.5: BigDecimal), Some("=341.885/685"), None, None, None).isConsistent)
+    }
+
+    it("should be inconsistent if values don't match") {
+      assert(!Value(Some(1: BigDecimal), Some("1+2"), None, None, None).isConsistent)
+    }
+
+    it("should be inconsistent if the formula is an invalid expression") {
+      assert(!Value(Some(1: BigDecimal), Some("=40%*1.2"), None, None, None).isConsistent)
     }
   }
 

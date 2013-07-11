@@ -111,7 +111,6 @@ class Top5ValidationsSpec extends FunSpec {
   
   describe("top 5 sheet validations") {
 
-
     it("should validate BOD with CEO primary functional match") {
       def model(primary: String) =
         createModel(
