@@ -74,6 +74,12 @@ class ParserJsonQuerySpec extends FunSuite {
     assert(filters.size === 3)
   }
 
+  test("can parse a equalCondition with a double value") {
+    val json = """ {"key": "foo.bar", "value": 15} """
+    val condition = ParserJsonQuery.parseCondition(stringMultilineToJson(json))
+    assert(condition === EqualCondition("foo.bar", 15.0))
+  }
+
   test("can parse a equalCondition with a string value") {
     val json = """ {"key": "foo.bar", "value": "15"} """
     val condition = ParserJsonQuery.parseCondition(stringMultilineToJson(json))

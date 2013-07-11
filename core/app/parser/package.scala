@@ -29,7 +29,10 @@ package object parser {
   }
 
   object EqualParser extends Parser {
-    def apply(json: JsValue) = (json \ "value").asOpt[String].map(EqualCondition(property(json), _))
+    def apply(json: JsValue) = {
+      val value: JsValue = json \ "value"
+      value.asOpt[Double].orElse(value.asOpt[String]).map(EqualCondition(property(json), _))
+    }
   }
 
   object ConditionsParser extends Parser {
