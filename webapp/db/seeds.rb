@@ -20,4 +20,4 @@ group2.tickers << ticker_aapl
 group2.tickers << ticker_fb
 group2.save!
 
-Role.create([{name: "CTO"},{name: "CFO"}])
+PrimaryRole.create!([{name: "CTO"},{name: "CFO"}])
