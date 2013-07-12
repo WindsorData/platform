@@ -15,5 +15,5 @@ class Ticker < ActiveRecord::Base
   has_and_belongs_to_many :groups
   validates :name, presence: true, uniqueness: true
 
-  scope :containing_chars, lambda { |s| where("name like ?", "%#{s}%") }
+  scope :containing_chars, lambda { |s| where("name ilike ?", "%#{s}%") }
 end
