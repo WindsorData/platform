@@ -7,9 +7,9 @@ import com.mongodb.casbah.MongoClient
 
 case class CompaniesDb(db: MongoDB) extends Persistence {
 
-  val TDBSchema = TCompanyFiscalYear
-  protected val colName = "companies"
-  protected val pk = Seq(Path('cusip), Path('disclosureFiscalYear))
+  override val TDBSchema = TCompanyFiscalYear
+  protected override val colName = "companies"
+  protected override val pk = Seq(Path('cusip), Path('disclosureFiscalYear))
 
   val allCompanies = "All Companies"
 
@@ -26,5 +26,13 @@ case class CompaniesDb(db: MongoDB) extends Persistence {
 
   def findAllCompaniesIdWithNames: Seq[(String,String,String)] =
     findAllMap(company => (company /!/ 'cusip, company /!/ 'ticker, company /!/ 'name))
+
+  def remove(cusip : String, disclosureFiscalYear : Int) {
+    collection.remove(companyQuery(cusip, disclosureFiscalYear))
+  }
+
+  def companyQuery(cusip : String, disclosureFiscalYear : Int) = MongoDBObject(
+    "cusip.value" -> cusip,
+    "disclosureFiscalYear.value" -> disclosureFiscalYear)
 
 }
