@@ -15,6 +15,8 @@ WindosorFrontend::Application.routes.draw do
   get "search/quick_search",  as: :quick_search
   get "search/full_search",   as: :full_search
   get   "files/upload",       as: :file_upload
+  post  "files/send_file",    as: :send_file
+  get "search/recent_search/:id", to: "search#recent_search", as: :recent_search
 
   post "search/results",      as: :search_result
   post  "files/send_file",    as: :send_file
