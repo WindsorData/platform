@@ -1,0 +1,9 @@
+<h1>Upload Log</h1>
+<% @logs.each do |log| %>
+    <%= content_tag :div, log.user.email %>
+    <%= content_tag :div, log.created_at %>
+    <%= content_tag :div, log.upload_type %>
+    <%= render 'layouts/upload_results', results: log.results %>
+<% end %>
+
+<%= paginate @logs %>
