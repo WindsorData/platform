@@ -61,10 +61,10 @@ package object guidelines extends WorkflowFactory {
   def Mapping = WorkbookMapping(
     Seq(
       Area(TCompanyFiscalYear,
-        Offset(2, 2),
+        Offset(1, 2),
         None,
         RowOrientedLayout,
-        Seq(Feature(Path('ticker)), Feature(Path('name)))),
+        docSrcMapping),
       Area(TExecGuidelines,
         Offset(3, 1),
         Some(5),

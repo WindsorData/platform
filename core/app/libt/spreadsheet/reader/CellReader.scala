@@ -30,7 +30,9 @@ trait CellReader extends SkipeableLike {
   def readAnyValue(cell: Cell) = 
     cell.getCellType() match {
     	case Cell.CELL_TYPE_BOOLEAN => cell.getBooleanCellValue().toString
-    	case Cell.CELL_TYPE_NUMERIC => cell.getNumericCellValue().toString
+    	case Cell.CELL_TYPE_NUMERIC =>
+        try { cell.getNumericCellValue().toIntExact.toString }
+        catch { case e: ArithmeticException => cell.getNumericCellValue.toString }
     	case Cell.CELL_TYPE_FORMULA => cell.getCellFormula().toString
     	case _ => cell.getStringCellValue()
     }

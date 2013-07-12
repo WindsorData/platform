@@ -46,7 +46,7 @@ package object dilution extends WorkflowFactory {
     Path('sharesAvailable, 'fungible, 'fullValue))
 
   def Mapping = WorkbookMapping(
-    Seq(Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name)))),
+    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, RowOrientedLayout, docSrcMapping),
       Area(TUsageAndSVTData, Offset(3, 1), Some(1), ColumnOrientedLayout, usageAndSVTDataMapping),
       Area(TBlackScholesInputs, Offset(3, 1), Some(1), ColumnOrientedLayout, blackScholesInputsMapping),
       Area(TDilution, Offset(4, 1), Some(1), ColumnOrientedLayout, dilutionMapping)))
