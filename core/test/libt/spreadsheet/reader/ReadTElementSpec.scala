@@ -46,7 +46,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
     it("should read numeric values as a string") {
       sheet.cellAt(0, 0).setCellValue(22)
       val result = reader.read(workbook).get
-      assert(result.head.toList === Seq(Model('key -> Value("22.0"))))
+      assert(result.head.toList === Seq(Model('key -> Value("22"))))
     }
 
     it("should read formulas as a string") {

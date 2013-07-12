@@ -25,6 +25,7 @@ class TestDriver extends FunSpec {
 
       assert(results.size === 4)
 
+      assert(results.head('cusip) === Value("73271"))
       assert(results.head('ticker) === Value("BV"))
       assert(results.head('name) === Value("Bazaarvoice Inc"))
 

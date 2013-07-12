@@ -98,7 +98,7 @@ object top5 extends WorkflowFactory {
 
   override def Mapping =
     WorkbookMapping(
-      Area(TCompanyFiscalYear, Offset(2, 2), None, RowOrientedLayout, Seq(Feature(Path('ticker)), Feature(Path('name))))
+      Area(TCompanyFiscalYear, Offset(1, 2), None, RowOrientedLayout, docSrcMapping)
         #::
         Area(TGrantTypes, Offset(3, 1), Some(1), ColumnOrientedLayout, grantTypesMapping)
         #::
