@@ -5,3 +5,5 @@
     <%= content_tag :div, log.upload_type %>
     <%= render 'layouts/upload_results', results: log.results %>
 <% end %>
+
+<%= paginate @logs %>
