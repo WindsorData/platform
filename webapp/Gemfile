@@ -24,7 +24,7 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
-group :test, :development do
+group :test, :development, :integration do
   gem 'pry'
   gem 'debugger'
   gem 'debugger-pry'
@@ -32,7 +32,7 @@ group :test, :development do
   gem 'pry-stack_explorer'
 end
 
-group :test do
+group :test, :integration do
   gem 'spork-rails'
   gem 'timecop'
   gem 'rspec-rails'
@@ -42,4 +42,8 @@ group :test do
   gem 'database_cleaner'
   gem 'cucumber-rails', require: false
   gem 'capybara'
+end
+
+group :integration do
+  gem 'sqlite3'
 end
