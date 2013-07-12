@@ -52,7 +52,7 @@ class TValueConverter(v: TValue[_]) extends TElementConverter {
     val value = it.asValue
 
     def convert(v: Option[_]) = v match {
-      case Some(value: BigDecimal) => Some(value.toString)
+      case Some(value: BigDecimal) => Some(value.toDouble)
       case _ => v
     }
 
@@ -71,7 +71,7 @@ class TValueConverter(v: TValue[_]) extends TElementConverter {
 
     def convert(value: AnyRef): Option[AnyRef] = v match {
       case TNumber => Option(value).map {
-        it => BigDecimal(it.asInstanceOf[String])
+        it => BigDecimal(it.asInstanceOf[Double])
       }
       case _ => Option(value)
     }
