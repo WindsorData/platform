@@ -107,8 +107,8 @@ case class EnumCheck(path: Path, check: String) extends CheckStrip {
  * exists on the valid ones inside an specific TEnum
  * Supports writing only
  * 
- * @parm basePath the path that points to the collection of models
- * @parm checkPath the path relative to base path whose value will be checked against the check string
+ * @param basePath the path that points to the collection of models
+ * @param checkPath the path relative to base path whose value will be checked against the check string
  * @param writePath the path of the value that will be written when the check path value matches the check string
  */
 case class ComplexEnumCheck(
