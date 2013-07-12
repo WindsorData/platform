@@ -39,12 +39,12 @@ class TestDriver extends FunSpec {
     
     it("can unmarshall BigDecimal") {
       val schema = TNumber
-      assert(schema.unmarshall(MongoDBObject("value" -> "1.0")) === Value(1.0))
+      assert(schema.unmarshall(MongoDBObject("value" -> 1.0)) === Value(1.0))
     }
     
     it("can unmarshall Numeric Enums") {
       val schema = TNumberEnum(1.0,2.0,3.0)
-      assert(schema.unmarshall(MongoDBObject("value" -> "1.0")) === Value(1.0))
+      assert(schema.unmarshall(MongoDBObject("value" -> 1.0)) === Value(1.0))
     }
 
     it("can marshall empty models") {
