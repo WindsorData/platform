@@ -6,12 +6,12 @@
     "directory" : "core",
     "commands" : ""
    },
-   {
+ {
     "name" : "frontend",
     "type" : "rbenv",
     "directory" : "webapp",
-    "commands" : "RAILS_ENV=integration bundle install && bundle exec rake db:drop db:setup && bundle exec rspec && bundle exec cucumber", 
-    "override" : true
+    "commands" : "RAILS_ENV=integration bundle install ; RAILS_ENV=integration bundle exec rake db:drop db:setup ; RAILS_ENV=integration bundle exec rspec ; RAILS_ENV=integration bundle exec cucumber",
+    "override":true
    }
  ]
 }
