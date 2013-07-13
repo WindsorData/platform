@@ -8,9 +8,10 @@
    },
    {
     "name" : "frontend",
-    "type" : "free",
+    "type" : "rbenv",
     "directory" : "webapp",
-    "commands" : ""
+    "commands" : "RAILS_ENV=integration bundle install && bundle exec rake db:drop db:setup && bundle exec rspec && bundle exec cucumber", 
+    "override" : true
    }
  ]
 }
