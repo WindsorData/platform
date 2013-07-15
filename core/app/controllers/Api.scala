@@ -65,7 +65,7 @@ object Api extends Controller {
 
   def companiesSearch = Action { request =>
     val json : JsValue = request.body.asJson.get
-    val query: QueryExecutives = ParserJsonQuery.query(json)
+    val query: QueryExecutives = QueryParser.query(json)
 
     val results = query().map { company =>
       Map(

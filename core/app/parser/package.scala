@@ -4,41 +4,52 @@ import play.api.libs.json.JsValue
 
 package object parser {
 
-  object ParserJsonQuery {
+  object QueryParser {
 
-    val parsers = Stream(EqualParser, ConditionsParser)
+    private val parsers = Stream(EqualParser, OperatorParser)
 
-    def query(query: JsValue) : QueryExecutives = QueryExecutives(executivesFilters(query), advancedFilters(query))
-    def executivesFilters(json: JsValue) : Seq[Filter] = basicsFromJson(json).map(filtersFromJson(_).map(_.map(parseCondition))).getOrElse(Seq())
-    def advancedFilters(json: JsValue) : Filter = (json \ "advanced").asOpt[Seq[JsValue]].map(_.map(parseCondition)).getOrElse(Seq())
+    def query(query: JsValue) : QueryExecutives =
+      QueryExecutives(executivesFilters(query), advancedFilters(query))
+    def executivesFilters(json: JsValue) : Seq[Filter] =
+      basicsFromJson(json).map(filtersFromJson(_).map(_.map(parseCondition))).getOrElse(Seq())
+    def advancedFilters(json: JsValue) : Filter =
+      (json \ "advanced").asOpt[Seq[JsValue]].map(_.map(parseCondition)).getOrElse(Seq())
 
+    private[parser] def parseCondition(jsonCondition: JsValue) : Condition =
+      parsers.flatMap(_(jsonCondition)).toList.head
 
-    def parseCondition(jsonCondition: JsValue) : Condition = parsers.flatMap(_(jsonCondition)).toList.head
+    private[parser] def filtersFromJson(json: Seq[JsValue]) =
+      json.map(_.\("executivesFilters").as[Seq[JsValue]])
 
-    def filtersFromJson(json: Seq[JsValue]) = json.map(_.\("executivesFilters").as[Seq[JsValue]])
-    def basicsFromJson(json: JsValue) : Option[Seq[JsValue]] = (json \ "executives").asOpt[Seq[JsValue]]
+    private[parser] def basicsFromJson(json: JsValue) : Option[Seq[JsValue]] =
+      (json \ "executives").asOpt[Seq[JsValue]]
   }
 
-  val translations = Map(
-    "role" -> Path('executives, 'functionalMatches, 'primary)
-  ).mapValues(path => (path ++ Path('value)).joinWithDots)
+  trait ConditionParser {
+    private val translations = Map(
+      "role" -> Path('executives, 'functionalMatches, 'primary)
+    ).mapValues(path => (path ++ Path('value)).joinWithDots)
 
-  trait Parser {
+    /***Parses a json condition*/
     def apply(json: JsValue) : Option[Condition]
-    def property(json:JsValue) = translations.get((json \ "key").as[String]).getOrElse((json \ "key").as[String])
+    /**Extracts a search key from the given condition, translating it if necessary */
+    protected def parseAndTranslateKey(json:JsValue) =
+      translations.get((json \ "key").as[String]).getOrElse((json \ "key").as[String])
   }
 
-  object EqualParser extends Parser {
+  object EqualParser extends ConditionParser {
     def apply(json: JsValue) = {
       val value: JsValue = json \ "value"
-      value.asOpt[Double].orElse(value.asOpt[String]).map(EqualCondition(property(json), _))
+      value.asOpt[Double].orElse(value.asOpt[String]).map(EqualCondition(parseAndTranslateKey(json), _))
     }
   }
 
-  object ConditionsParser extends Parser {
-    def apply(json: JsValue) = (json \ "operators").asOpt[Seq[JsValue]].map(it => ConditionWithOperators(property(json), operators(it)))
+  object OperatorParser extends ConditionParser {
+    def apply(json: JsValue) =
+      (json \ "operators").asOpt[Seq[JsValue]].map(it => ConditionWithOperators(parseAndTranslateKey(json), operators(it)))
 
     def operators(operators: Seq[JsValue]) : Seq[Operator] = operators.map(operator)
-    def operator(condition : JsValue) : Operator =  "$" + (condition \ "operator").as[String] -> (condition \ "value").as[Double]
+    def operator(condition : JsValue) : Operator =
+      "$" + (condition \ "operator").as[String] -> (condition \ "value").as[Double]
   }
 }
