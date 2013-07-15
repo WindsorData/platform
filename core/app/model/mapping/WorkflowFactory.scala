@@ -8,9 +8,12 @@ import libt._
 
 import org.apache.poi.ss.usermodel.Workbook
 
-trait WorkflowFactory {
+trait Mappeable {
   def MappingPhase(mapping: WorkbookMapping): Phase[Workbook, Seq[Seq[Model]]] =
     (wb, _) => mapping.read(wb).map(_.filter(!_.isEmpty))
+}
+
+trait WorkflowFactory extends Mappeable{
 
   def Workflow: FrontPhase[Seq[Model]] =
 	  MappingPhase(Mapping) >> 

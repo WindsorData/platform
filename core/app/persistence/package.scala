@@ -1,5 +1,6 @@
 
 import model._
+import model.PeerCompanies._
 import com.mongodb.casbah.Imports._
 import libt.persistence._
 import libt._
@@ -24,6 +25,15 @@ package object persistence {
         "ticker.value" -> company(Path('ticker)).asValue[String].value.get,
         "disclosureFiscalYear.value" -> company(Path('disclosureFiscalYear)).asValue.value.get),
       MongoDBObject("$set" -> marshallCompany(company)), true)
+  }
+
+  def updatePeers(model: Model)(implicit db: MongoDB) = {
+    companies.update(
+      MongoDBObject(
+        "ticker.value" -> model(Path('ticker)).getRawValue[String],
+        "fiscalYear.value" -> model(Path('fiscalYear)).getRawValue[Int],
+        "peerTicker.value" -> model(Path('peerTicker)).getRawValue[String]),
+      TPeers.marshall(model), true)
   }
 
   def findAllCompanies(implicit db: MongoDB) = companies.toList.map(unmarshallCompany)

@@ -17,7 +17,8 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
-  
+  implicit def saveAction(m: Model, db: MongoDB) = updateCompany(m)(db)
+
   val readersAndValidSuffixes = 
     Seq((top5.Workflow, "Exec Top5 and Grants.xlsx"),
         (guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xlsx"),
@@ -27,7 +28,6 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
     tuple(
       "checkMe" -> seq(text),
       "Company Fiscal Year" -> number))
-
   def index = Action {
     Redirect(routes.Application.companies)
   }
@@ -35,19 +35,20 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newCompany = uploadSingleSpreadsheet(top5.Workflow)
   def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)
-  def newBod = uploadSingleSpreadsheet(bod.Workflow)(MongoClient()("windsor-bod"))
+  def newBod = uploadSingleSpreadsheet(bod.Workflow)(MongoClient()("windsor-bod"), (m, db) => updateCompany(m)(db) )
+  def newPeers = uploadSingleSpreadsheet(peers.Workflow)(MongoClient()("windsor-peers"), (m, db) => updatePeers(m)(db) )
 
   def newCompanies =
-    UploadAndReadAction {
+    UploadAndReadAction(db, saveAction) {
       (request, dataset) => keyed.Validated.flatConcat(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
     }
 
-  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(implicit db: MongoDB) =
-    UploadAndReadAction {
+  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(implicit db: MongoDB, saveAction: (Model, MongoDB) => Unit) =
+    UploadAndReadAction(db, saveAction) {
       (request, dataset) => keyed.Validated.flatConcat(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
     }
 
-  def UploadAndReadAction(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model])(implicit db: MongoDB) =
+  def UploadAndReadAction(db: MongoDB, saveAction: (Model, MongoDB) => Unit)(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) =
     UploadSpreadsheetAction {
       (request, dataset) =>
         readOp(request, dataset) match {
@@ -57,7 +58,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
               case Accepts.Json() => BadRequest(toJson(errorsToJson(errors)))
             }
           case result => {
-            result.get.foreach(updateCompany(_)(db))
+            result.get.foreach(saveAction(_,db))
             request match {
               case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
               case Accepts.Json() => Ok("")

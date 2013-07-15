@@ -43,3 +43,4 @@ class ColumnOrientedLayout(valueReader: ValueReader) extends Layout with LibtSiz
 }
 
 object ColumnOrientedLayout extends ColumnOrientedLayout(WithMetadataValueReader)
+
