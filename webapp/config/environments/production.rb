@@ -66,7 +66,7 @@ WindosorFrontend::Application.configure do
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
   # Backend params
-  config.backend_host = 'http://192.168.161.176:9000'
+  config.backend_host = 'http://localhost:9000'
   config.get_tickers_path = '/api/tickers'
   config.get_primary_roles_path = '/api/schema/values/roles/primary'
   config.get_secondary_roles_path = '/api/schema/values/roles/secondary'  
