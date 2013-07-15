@@ -99,7 +99,7 @@ end
 
 ############################### Install Rails Server ###########################
 execute "bundle install" do
-  command "cd #{rails_app_path} && rbenv exec bundle install --without staging development test"
+  command "cd #{rails_app_path} && rbenv exec bundle install --without staging development test integration"
 end
 
 execute "rake db:migrate" do
