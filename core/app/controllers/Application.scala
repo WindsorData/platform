@@ -15,7 +15,7 @@ import libt.workflow._
 import libt._
 import com.mongodb.casbah.MongoDB
 
-object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
+object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
   val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
@@ -87,16 +87,12 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
         BadRequest(views.html.searchCompanies(formWithErrors,
           findAllCompaniesNames,
           YearRanges)),
-      values => {
+      success = values => {
         val names = values._1
         val range = values._2
-        val out = new ByteArrayOutputStream()
-        findCompaniesBy(names, range) match {
-          case Some(founded: Seq[Model]) => {
-            SpreadsheetWriter.write(out, founded, range)
-            Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
-              CONTENT_DISPOSITION -> "attachment; filename=company.xls")
-          }
+
+        createSpreedsheet(names, range) match {
+          case Some(response) => response
           case None => Ok(views.html.searchWithoutResults())
         }
       })

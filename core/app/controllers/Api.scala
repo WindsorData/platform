@@ -15,7 +15,7 @@ import java.io.ByteArrayOutputStream
 import output.SpreadsheetWriter
 
 
-object Api extends Controller {
+object Api extends Controller with SpreadsheetDownloader {
 
   implicit val db = MongoClient()("windsor")
 
@@ -84,13 +84,8 @@ object Api extends Controller {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      val out = new ByteArrayOutputStream()
-      findCompaniesBy(companies, range) match {
-        case Some(founded: Seq[Model]) => {
-          SpreadsheetWriter.write(out, founded, range)
-          Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
-            CONTENT_DISPOSITION -> "attachment; filename=company.xls")
-        }
+      createSpreedsheet(companies, range) match {
+        case Some(response) => response
         case None => NotFound("not found companies")
       }
     } .getOrElse(BadRequest("invalid json"))
