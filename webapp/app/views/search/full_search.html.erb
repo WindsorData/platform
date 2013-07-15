@@ -8,7 +8,7 @@
 
           <div class="item-form cf">
             <label class="label">Role</label>
-            <%= select_tag '[role_form][role]', options_from_collection_for_select(@primary_roles, "id", "name"), {include_blank: true} %>
+            <%= select_tag '[role_form][role]', options_from_collection_for_select(@primary_roles, "name", "name"), {include_blank: true} %>
           </div>
 
           <div class="item-form cf">
@@ -30,7 +30,7 @@
             <p class="label">equity compensation</p>
             <%= select_tag '[role_form][eq_comp][type]', options_from_collection_for_select(@eq_comp_values, "field", "value"), {include_blank: true} %>
             <input type="text" placeholder="Greater than ($)" name='[role_form][eq_comp][gt]'>
-            <input type="text" placeholder="Less than ($)" name='[role_form][eq_comp][gt]'>
+            <input type="text" placeholder="Less than ($)" name='[role_form][eq_comp][lt]'>
           </div>
           
           <!-- compensation arrangements -->
@@ -59,17 +59,17 @@
             <!-- Founder -->
             <div class="item-form cf">
               <p class="label">Founder</p>
-              <%= label_tag 'Yes' %> <%= radio_button_tag 'founder', 'Yes' %>
-              <%= label_tag 'No' %> <%= radio_button_tag 'founder', 'No' %>
-              <%= label_tag 'N/A' %> <%= radio_button_tag 'founder', 'N/A' %>
+              <%= label_tag 'Yes' %> <%= radio_button_tag '[role_form][founder]', 'Yes' %>
+              <%= label_tag 'No' %> <%= radio_button_tag '[role_form][founder]', 'No' %>
+              <%= label_tag 'N/A' %> <%= radio_button_tag '[role_form][founder]', 'N/A' %>
             </div>
 
             <!-- transition period -->
             <div class="item-form cf">
               <p class="label">Transition period</p>
-              <%= label_tag 'Yes' %> <%= radio_button_tag 'trans_period', 'Yes' %>
-              <%= label_tag 'No' %> <%= radio_button_tag 'trans_period', 'No' %>
-              <%= label_tag 'N/A' %> <%= radio_button_tag 'trans_period', 'N/A' %>
+              <%= label_tag 'Yes' %> <%= radio_button_tag '[role_form][trans_period]', 'Yes' %>
+              <%= label_tag 'No' %> <%= radio_button_tag '[role_form][trans_period]', 'No' %>
+              <%= label_tag 'N/A' %> <%= radio_button_tag '[role_form][trans_period]', 'N/A' %>
             </div>
           </div>
         </div>

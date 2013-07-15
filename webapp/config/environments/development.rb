@@ -51,5 +51,5 @@ WindosorFrontend::Application.configure do
   config.post_dilution_path = '/api/companies/dilution'
   config.post_batch_path = '/api/companies/batch'
 
-  config.post_query_path = '/api/schema/query'
+  config.post_query_path = '/api/companies/search'
 end

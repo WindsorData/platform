@@ -3,7 +3,7 @@ package controllers
 import _root_.persistence.query.QueryExecutives
 import play.api.libs.json.JsValue
 import com.mongodb.casbah.MongoClient
-import filter._
+import parser._
 import libt.util.Strings._
 import model.Commons._
 import play.api.libs.json.Json._
@@ -33,8 +33,8 @@ object Api extends Controller {
       Path('baseSalary),
       Path('bonus),
       Path('salaryAndBonus)
-    ),
-    _.last
+    ).map(_ ++ Path('value)),
+    _(2)
   )
 
   def equityCompensations = pathsToJson(
@@ -43,8 +43,8 @@ object Api extends Controller {
       Path('optionGrants),
       Path('timeVestRS),
       Path('performanceVestRS)
-    ),
-    _.last
+    ).map(_ ++ Path('value)),
+    _(1)
   )
 
   def pathsToJson(paths: Seq[Path], description : Path => PathPart) : Action[AnyContent] = {
@@ -65,7 +65,7 @@ object Api extends Controller {
 
   def companiesSearch = Action { request =>
     val json : JsValue = request.body.asJson.get
-    val query: QueryExecutives = ParserJsonQuery.query(json)
+    val query: QueryExecutives = QueryParser.query(json)
 
     val results = query().map { company =>
       Map(
