@@ -11,6 +11,8 @@ import persistence._
 import play.api.mvc._
 import libt._
 import play.api.Logger
+import java.io.ByteArrayOutputStream
+import output.SpreadsheetWriter
 
 
 object Api extends Controller {
@@ -76,6 +78,22 @@ object Api extends Controller {
     }
 
     Ok(toJson(results.map(toJson(_))))
+  }
+
+  def companiesReport = Action { request =>
+    request.body.asJson.map { json =>
+      val range = (json \ "range").as[Int]
+      val companies = (json \ "companies").as[Seq[String]]
+      val out = new ByteArrayOutputStream()
+      findCompaniesBy(companies, range) match {
+        case Some(founded: Seq[Model]) => {
+          SpreadsheetWriter.write(out, founded, range)
+          Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
+            CONTENT_DISPOSITION -> "attachment; filename=company.xls")
+        }
+        case None => NotFound("not found companies")
+      }
+    } .getOrElse(BadRequest("invalid json"))
   }
 
 }
