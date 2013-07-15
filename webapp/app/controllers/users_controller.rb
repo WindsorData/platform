@@ -13,7 +13,7 @@ class UsersController < ApplicationController
 
   def index
     @user = User.new
-    @users = User.order("email asc").paginated
+    @users = User.order("email asc").paginated(params)
     index!
   end
 
