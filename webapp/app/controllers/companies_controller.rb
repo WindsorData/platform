@@ -4,7 +4,7 @@ class CompaniesController < ApplicationController
 
   def index
     @company = Company.new
-    @companies = Company.order("name asc").paginated
+    @companies = Company.order("name asc").paginated(params)
   end
 
   def create
