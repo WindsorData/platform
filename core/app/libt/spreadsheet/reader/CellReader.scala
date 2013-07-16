@@ -30,13 +30,13 @@ trait CellReader extends SkipeableLike {
   def any: Value[String] = createValue(blankToNone(readAnyValue))
 
   def readAnyValue(cell: Cell) =
-    cell.getCellType() match {
-    	case Cell.CELL_TYPE_BOOLEAN => cell.getBooleanCellValue().toString
+    cell.getCellType match {
+    	case Cell.CELL_TYPE_BOOLEAN => cell.getBooleanCellValue.toString
     	case Cell.CELL_TYPE_NUMERIC =>
-        try { cell.getNumericCellValue().toIntExact.toString }
+        try { cell.getNumericCellValue.toIntExact.toString }
         catch { case e: ArithmeticException => cell.getNumericCellValue.toString }
-    	case Cell.CELL_TYPE_FORMULA => cell.getCellFormula().toString
-    	case _ => cell.getStringCellValue()
+    	case Cell.CELL_TYPE_FORMULA => cell.getCellFormula
+    	case _ => cell.getStringCellValue
     }
 
   protected def next: Seq[Cell]
@@ -49,7 +49,7 @@ trait CellReader extends SkipeableLike {
       valueReader.read(valueMapper(nextCells(0)), nextValue)
     } catch {
       case e: RuntimeException =>
-        throw new RuntimeException(ReaderError(e.getMessage()).description(nextCells(0)))
+        throw new RuntimeException(ReaderError(e.getMessage).description(nextCells(0)))
     }
   }
 }
@@ -63,7 +63,7 @@ class ColumnOrientedReader(
     override val rows: Seq[Row],
     override val valueReader: ValueReader) extends CellReader with ColumnOrientedLike {
 
-  override protected def next = cellIterators.map(_.next)
+  override protected def next = cellIterators.map(_.next())
 }
 
 /**
@@ -76,6 +76,6 @@ class RowOrientedReader(
     override val rows: Seq[Row],
     override val valueReader: ValueReader) extends CellReader with RowOrientedLike {
 
-  override protected def next = rowIterator.next.cells.drop(offset.columnIndex)
+  override protected def next = rowIterator.next().cells.drop(offset.columnIndex)
 
 }

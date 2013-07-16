@@ -8,13 +8,8 @@ trait LibtSizes {
 
   /**Size of metadata fields of a {{libt.Value}}*/
   val MetadataSize = 4
-  
+
   /**Size of a whole {{libt.Value}}*/
   val ValueSize = MetadataSize + 1
-  
-  /**Size of a whole {{libt.Value}}, plus a blank row*/
-  val ValueSizeWithSeparator = ValueSize + 1
-  
-  
 
 }

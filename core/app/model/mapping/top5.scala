@@ -98,11 +98,11 @@ object top5 extends WorkflowFactory {
 
   override def Mapping =
     WorkbookMapping(
-      Area(TCompanyFiscalYear, Offset(1, 2), None, RowOrientedLayout, docSrcMapping)
+      Area(TCompanyFiscalYear, Offset(1, 2), None, WithPartialMetadataRowOrientedLayout, docSrcMapping)
         #::
-        Area(TGrantTypes, Offset(3, 1), Some(1), ColumnOrientedLayout, grantTypesMapping)
+        Area(TGrantTypes, Offset(3, 1), Some(1), WithMetadataAndSeparatorColumnOrientedLayout, grantTypesMapping)
         #::
-        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), ColumnOrientedLayout, executiveMapping)))
+        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), WithMetadataAndSeparatorColumnOrientedLayout, executiveMapping)))
 
   override def CombinerPhase =
     DocSrcCombiner(

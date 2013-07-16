@@ -71,8 +71,8 @@ package object bod extends WorkflowFactory {
           Path('ownershipGuidelines, 'retention, 'period))
 
   override def Mapping = WorkbookMapping(
-    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, RowOrientedLayout, docSrcMapping),
-        Area(TBod, Offset(3, 1), Some(10), ColumnOrientedLayout, bodMapping)))
+    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, WithPartialMetadataRowOrientedLayout, docSrcMapping),
+        Area(TBod, Offset(3, 1), Some(10), WithMetadataAndSeparatorColumnOrientedLayout, bodMapping)))
           
   override def CombinerPhase = DocSrcCombiner((10, 'bod, colWrapping))
   

@@ -12,7 +12,7 @@ import libt.spreadsheet.writer._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
 import libt.spreadsheet.reader.Area
-import libt.spreadsheet.reader.ColumnOrientedLayout
+import libt.spreadsheet.reader.WithMetadataAndSeparatorColumnOrientedLayout
 import libt.reduction._
 import java.io.FileOutputStream
 
@@ -49,7 +49,7 @@ class EnumCalcSpec extends FlatSpec {
             'b -> TOptions)))),
     Offset(1, 0),
     None,
-    ColumnOrientedLayout,
+    WithMetadataAndSeparatorColumnOrientedLayout,
     mapping)
 
   def writeSheet = {

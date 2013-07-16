@@ -63,17 +63,17 @@ package object guidelines extends WorkflowFactory {
       Area(TCompanyFiscalYear,
         Offset(1, 2),
         None,
-        RowOrientedLayout,
+        WithPartialMetadataRowOrientedLayout,
         docSrcMapping),
       Area(TExecGuidelines,
         Offset(3, 1),
         Some(5),
-        ColumnOrientedLayout,
+        WithMetadataAndSeparatorColumnOrientedLayout,
         GuidelinesSheetMapping),
       Area(TExecSTBonusPlan,
         Offset(5, 1),
         Some(5),
-        ColumnOrientedLayout,
+        WithMetadataAndSeparatorColumnOrientedLayout,
         STBonusPlanSheetMapping)))
 
   def CombinerPhase =

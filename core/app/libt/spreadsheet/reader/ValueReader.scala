@@ -10,11 +10,17 @@ trait ValueReader {
   def blockSize: Int
 }
 
+case class WithSeparator(valueReader:ValueReader) extends ValueReader {
+  override def read[T](value: Option[T], nextValue: Int => Option[String]) =
+    valueReader.read(value, nextValue)
+  override def blockSize = valueReader.blockSize + 1
+}
+
 object WithMetadataValueReader extends ValueReader {
   override def read[T](value: Option[T], nextValue: Int => Option[String]) =
     Value(value, nextValue(1), nextValue(2), nextValue(3), nextValue(4))
 
-  override def blockSize = 5 + 1 //TODO this is a separator separator
+  override def blockSize = 5
 }
 
 object WithPartialMetadataValueReader extends ValueReader {

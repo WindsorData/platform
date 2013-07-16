@@ -17,13 +17,13 @@ sealed trait Layout {
   def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
 
-object RowOrientedLayout extends Layout {
-  override def read(area: Area, sheet: Sheet) = 
-    area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _, WithPartialMetadataValueReader)).map(Seq(_))
+case class RowOrientedLayout(valueReader: ValueReader) extends Layout {
+  override def read(area: Area, sheet: Sheet) =
+    area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _, valueReader)).map(Seq(_))
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) = ???
 }
 
-class ColumnOrientedLayout(valueReader: ValueReader) extends Layout with LibtSizes {
+case class ColumnOrientedLayout(valueReader: ValueReader) extends Layout {
   override def read(area: Area, sheet: Sheet) =
       effectiveRowGroups(area, sheet).
       concatMap { rows => area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _, valueReader)) }
@@ -42,5 +42,6 @@ class ColumnOrientedLayout(valueReader: ValueReader) extends Layout with LibtSiz
     area.truncate(sheet.rows(area.offset).grouped(valueReader.blockSize).map(_.toList).toSeq)
 }
 
-object ColumnOrientedLayout extends ColumnOrientedLayout(WithMetadataValueReader)
+object WithMetadataAndSeparatorColumnOrientedLayout extends ColumnOrientedLayout(WithSeparator(WithMetadataValueReader))
 
+object WithPartialMetadataRowOrientedLayout extends RowOrientedLayout(WithPartialMetadataValueReader)

@@ -28,7 +28,7 @@ class CalcSpec extends FlatSpec {
       'b -> TCol(TNumber)),
     Offset(0, 0),
     None,
-    ColumnOrientedLayout,
+    WithMetadataAndSeparatorColumnOrientedLayout,
     Seq(
       Feature('a),
       Calc(Sum(Path('b, *)))))

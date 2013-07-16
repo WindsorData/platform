@@ -14,7 +14,7 @@ class WorkbookReaderSpec extends FlatSpec {
 
   it should "be able to read a single column oriented input without combining" in {
     val workbook = createNewSingleSheetWorkbook.addSingleColumnOrientedValue(2, "a")
-    val mapping = WorkbookMapping(Seq(Area(TModel('a -> TString), Offset(0, 2), None, ColumnOrientedLayout, Seq(Feature(Path('a))))))
+    val mapping = WorkbookMapping(Seq(Area(TModel('a -> TString), Offset(0, 2), None, WithMetadataAndSeparatorColumnOrientedLayout, Seq(Feature(Path('a))))))
     assert(mapping.read(workbook).get.head === Seq(Model('a -> Value("a"))))
   }
 
@@ -28,14 +28,14 @@ class WorkbookReaderSpec extends FlatSpec {
           TModel('a -> TString, 'b -> TString),
           Offset(0, 0),
           None,
-          ColumnOrientedLayout,
+          WithMetadataAndSeparatorColumnOrientedLayout,
           Seq(Feature(Path('a)), Feature(Path('b))))))
     assert(mapping.read(workbook).get.head === Seq(Model('a -> Value("a"), 'b -> Value("b"))))
   }
 
   it should "be able to read row oriented inputs" in {
     val workbook = createNewSingleSheetWorkbook.addSingleRowOrientedValue(1, "a")
-    val mapping = WorkbookMapping(Seq(Area(TModel('a -> TString), Offset(1, 0), None, RowOrientedLayout, Seq(Feature(Path('a))))))
+    val mapping = WorkbookMapping(Seq(Area(TModel('a -> TString), Offset(1, 0), None, WithPartialMetadataRowOrientedLayout, Seq(Feature(Path('a))))))
 
     assert(mapping.read(workbook).get.head === Seq(Model('a -> Value("a"))))
   }

@@ -38,5 +38,5 @@ package object peers extends Mappeable {
       })
     }
 
-  def Mapping = WorkbookMapping(Seq(Area(TPeers, Offset(1, 1), None, new ColumnOrientedLayout(RawValueReader), peersMapping)))
+  def Mapping = WorkbookMapping(Seq(Area(TPeers, Offset(1, 1), None, ColumnOrientedLayout(RawValueReader), peersMapping)))
 }
