@@ -4,18 +4,16 @@ import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
+import com.mongodb.casbah.MongoDB
 import com.mongodb.casbah.MongoClient
-import java.io.ByteArrayOutputStream
 import persistence._
 import model.mapping._
-import output._
 import util.FileManager._
 import libt.error._
 import libt.workflow._
 import libt._
-import com.mongodb.casbah.MongoDB
 
-object Application extends Controller with WorkbookZipReader with SpreadsheetUploader {
+object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
   val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
@@ -84,21 +82,13 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def doSearch = Action { implicit request =>
     companyForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.searchCompanies(formWithErrors,
-          findAllCompaniesNames,
-          YearRanges)),
-      values => {
-        val names = values._1
-        val range = values._2
-        val out = new ByteArrayOutputStream()
-        findCompaniesBy(names, range) match {
-          case Some(founded: Seq[Model]) => {
-            SpreadsheetWriter.write(out, founded, range)
-            Ok(out.toByteArray()).withHeaders(CONTENT_TYPE -> "application/octet-stream",
-              CONTENT_DISPOSITION -> "attachment; filename=company.xls")
+        BadRequest(views.html.searchCompanies(formWithErrors, findAllCompaniesNames, YearRanges)),
+      success = values => values match {
+        case (names, range) =>
+          createSpreadsheetResult(names, range) match {
+            case Some(response) => response
+            case None => Ok(views.html.searchWithoutResults())
           }
-          case None => Ok(views.html.searchWithoutResults())
-        }
       })
   }
 
