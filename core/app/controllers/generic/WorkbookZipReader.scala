@@ -1,4 +1,4 @@
-package controllers
+package controllers.generic
 
 import java.util.zip._
 import scala.collection.JavaConversions._

@@ -17,6 +17,7 @@ import util.FileManager._
 import libt.spreadsheet.reader.workflow._
 import libt.error._
 import libt._
+import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 

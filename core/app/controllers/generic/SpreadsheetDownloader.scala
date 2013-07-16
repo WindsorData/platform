@@ -1,4 +1,4 @@
-package controllers
+package controllers.generic
 
 import com.mongodb.casbah.MongoDB
 
