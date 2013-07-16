@@ -19,4 +19,6 @@ object PeerCompanies {
     'peerCoName	-> TString,
     'peerTicker -> TString,
     'value -> TAny)
+
+  val peerId = Seq(Path('peerTicker), Path('ticker))
 }

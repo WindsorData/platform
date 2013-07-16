@@ -26,12 +26,10 @@ package object peers {
     Path('peerTicker),
     Path('value))
 
-  val pk = Seq(Path('peerTicker), Path('ticker))
-
   def Workflow: FrontPhase[Seq[Model]] =
     MappingPhase(Mapping) >> {
       (_, xs) => Validated(xs.head.filter { model =>
-        pk.forall(model(_).rawValue[Any].nonEmpty)
+        peerId.forall(model(_).rawValue[Any].nonEmpty)
       })
     }
 

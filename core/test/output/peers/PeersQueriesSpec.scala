@@ -31,7 +31,7 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
     PeersDb.drop
   }
 
-  behavior of "Peers Report Queries"
+  behavior of "Peers Queries for Reports"
 
     it should "Get companies that have a target Company as a Peer" in {
       assert(PeersDb.indirectPeersOf("A") ===

@@ -3,9 +3,8 @@ package persistence
 import com.mongodb.casbah.Imports._
 import libt.persistence._
 import libt._
-import model.PeerCompanies.TPeers
+import model.PeerCompanies._
 
-//TODO: Merge these with package object
 object PeersDb {
   type DBO = DBObject
 
@@ -18,28 +17,34 @@ object PeersDb {
     models.foreach(model => peers.insert(TPeers.marshall(model)))
 
   def update(models: Model*)(implicit db: MongoDB) = {
-    models.foreach{
-      model =>
-        peers.update(
-          MongoDBObject(
-            "ticker.value" -> model(Path('ticker)).getRawValue[String],
-            "peerTicker.value" -> model(Path('peerTicker)).getRawValue[String]),
-          TPeers.marshall(model), true)
+    models.foreach{ model =>
+      peers.update(
+        peerPKQuery(model),
+        MongoDBObject("$set" -> TPeers.marshall(model)),
+        true)
     }
   }
+
+  def peerPKQuery(model: Model) =
+    MongoDBObject(
+      peerId.map { path =>
+        peerKey(path) -> model(path).getRawValue[String]
+      }:_*)
+
+  def peerKey(path: Path) : String = path.titles.mkString(".") + ".value"
 
   def indirectPeersOf(ticker: String)(implicit db: MongoDB) : Seq[Model] =
     peers.find(MongoDBObject("peerTicker.value" -> ticker))
 
   def peersOf(tickers: String*)(implicit db: MongoDB) : Seq[Model] = {
-    val builder = MongoDBList.newBuilder
-    tickers.toSeq.foreach(it => builder += MongoDBObject("ticker.value" -> it))
-    peers.find(MongoDBObject("$or" -> builder.result))
+    val results = tickers.toSeq.foldLeft(MongoDBList.newBuilder) {  (builder, it) =>
+      builder += MongoDBObject("ticker.value" -> it)
+    }.result
+    peers.find(MongoDBObject("$or" -> results))
   }
 
   def peersOfPeersOf(ticker: String)(implicit db: MongoDB) : Seq[Model] =
-    peersOf(peersOf(ticker)
-      .flatMap(_(Path('peerTicker)).rawValue[String]): _*)
+    peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*)
 
   def clean(implicit db: MongoDB) = peers.drop()
 
