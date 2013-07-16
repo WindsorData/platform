@@ -27,15 +27,6 @@ package object persistence {
       MongoDBObject("$set" -> marshallCompany(company)), true)
   }
 
-  def updatePeers(model: Model)(implicit db: MongoDB) = {
-    companies.update(
-      MongoDBObject(
-        "ticker.value" -> model /!/ 'ticker,
-        "fiscalYear.value" -> model /#/ 'fiscalYear,
-        "peerTicker.value" -> model /!/ 'peerTicker),
-      TPeers.marshall(model), true)
-  }
-
   def findAllCompanies(implicit db: MongoDB) = companies.toList.map(unmarshallCompany)
 
   def findByExample(implicit db: MongoDB, example : DBO) = companies.find(example).toList.map(unmarshallCompany)

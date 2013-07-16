@@ -26,7 +26,7 @@ package object peers {
     Path('peerTicker),
     Path('value))
 
-  val pk = Seq(Path('peerTicker), Path('ticker), Path('fiscalYear))
+  val pk = Seq(Path('peerTicker), Path('ticker))
 
   def Workflow: FrontPhase[Seq[Model]] =
     MappingPhase(Mapping) >> {
