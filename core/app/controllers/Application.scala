@@ -4,16 +4,14 @@ import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
+import com.mongodb.casbah.MongoDB
 import com.mongodb.casbah.MongoClient
-import java.io.ByteArrayOutputStream
 import persistence._
 import model.mapping._
-import output._
 import util.FileManager._
 import libt.error._
 import libt.workflow._
 import libt._
-import com.mongodb.casbah.MongoDB
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
@@ -84,17 +82,13 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def doSearch = Action { implicit request =>
     companyForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.searchCompanies(formWithErrors,
-          findAllCompaniesNames,
-          YearRanges)),
-      success = values => {
-        val names = values._1
-        val range = values._2
-
-        createSpreedsheet(names, range) match {
-          case Some(response) => response
-          case None => Ok(views.html.searchWithoutResults())
-        }
+        BadRequest(views.html.searchCompanies(formWithErrors, findAllCompaniesNames, YearRanges)),
+      success = values => values match {
+        case (names, range) =>
+          createSpreadsheetResult(names, range) match {
+            case Some(response) => response
+            case None => Ok(views.html.searchWithoutResults())
+          }
       })
   }
 

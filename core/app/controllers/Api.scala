@@ -1,18 +1,19 @@
 package controllers
 
-import _root_.persistence.query.QueryExecutives
-import play.api.libs.json.JsValue
 import com.mongodb.casbah.MongoClient
-import parser._
-import libt.util.Strings._
-import model.Commons._
+
+import play.api.libs.json.JsValue
 import play.api.libs.json.Json._
-import persistence._
 import play.api.mvc._
+
+import persistence.query._
+import persistence._
+
+import model.Commons._
+
+import libt.util.Strings._
+import parser._
 import libt._
-import play.api.Logger
-import java.io.ByteArrayOutputStream
-import output.SpreadsheetWriter
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -84,7 +85,7 @@ object Api extends Controller with SpreadsheetDownloader {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreedsheet(companies, range) match {
+      createSpreadsheetResult(companies, range) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
