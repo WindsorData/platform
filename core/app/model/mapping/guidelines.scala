@@ -1,15 +1,17 @@
 package model.mapping
 
+import model.mapping.generic._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
 import model._
 import model.validation._
+
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt._
 import libt.error._
 
-package object guidelines extends WorkflowFactory {
+package object guidelines extends StandardWorkflowFactory {
 
   val GuidelinesSheetMapping =
     Seq[Strip](
@@ -63,17 +65,17 @@ package object guidelines extends WorkflowFactory {
       Area(TCompanyFiscalYear,
         Offset(1, 2),
         None,
-        WithPartialMetadataRowOrientedLayout,
-        docSrcMapping),
+        DocSrcLayout,
+        DocSrcMapping),
       Area(TExecGuidelines,
         Offset(3, 1),
         Some(5),
-        WithMetadataAndSeparatorColumnOrientedLayout,
+        DataLayout,
         GuidelinesSheetMapping),
       Area(TExecSTBonusPlan,
         Offset(5, 1),
         Some(5),
-        WithMetadataAndSeparatorColumnOrientedLayout,
+        DataLayout,
         STBonusPlanSheetMapping)))
 
   def CombinerPhase =

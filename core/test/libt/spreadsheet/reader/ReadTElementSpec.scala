@@ -30,7 +30,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
     WorkbookMapping(
       Seq(
         Area(
-          TModel('key -> tValue), Offset(0, 0), None, WithMetadataAndSeparatorColumnOrientedLayout, Seq(Feature(Path('key))))))
+          TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout(WithMetadataValueReader), Seq(Feature(Path('key))))))
 
 
   before {

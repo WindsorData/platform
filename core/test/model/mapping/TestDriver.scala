@@ -2,13 +2,8 @@ package model.mapping
 
 import util.FileManager._
 import org.scalatest.FunSpec
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import libt.workflow._
 import libt._
 import model._
-import libt.spreadsheet._
-import libt.spreadsheet.reader._
 
 class TestDriver extends FunSpec {
 

@@ -1,11 +1,11 @@
-package model.mapping
+package model.mapping.generic
 
 import util.WorkbookLogger._
+
+import libt.spreadsheet.reader.workflow._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.util._
-import libt.spreadsheet._
 import libt.error._
-import libt.workflow._
 import libt._
 
 import scala.collection.JavaConversions._

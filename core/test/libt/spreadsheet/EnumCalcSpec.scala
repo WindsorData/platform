@@ -6,15 +6,21 @@ import org.scalatest.junit.JUnitRunner
 import libt.spreadsheet.util._
 import libt.spreadsheet._
 import libt._
-import libt.spreadsheet.reader.CellReader
+import libt.spreadsheet.reader._
 import libt.builder.ModelBuilder
 import libt.spreadsheet.writer._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
-import libt.spreadsheet.reader.Area
-import libt.spreadsheet.reader.WithMetadataAndSeparatorColumnOrientedLayout
 import libt.reduction._
 import java.io.FileOutputStream
+import libt.TModel
+import libt.spreadsheet.Offset
+import libt.spreadsheet.ComplexEnumCheck
+import libt.spreadsheet.EnumCheck
+import libt.TCol
+import libt.Col
+import libt.spreadsheet.reader.Area
+import libt.spreadsheet.reader.ColumnOrientedLayout
 
 class EnumCalcSpec extends FlatSpec {
 
@@ -49,7 +55,7 @@ class EnumCalcSpec extends FlatSpec {
             'b -> TOptions)))),
     Offset(1, 0),
     None,
-    WithMetadataAndSeparatorColumnOrientedLayout,
+    ColumnOrientedLayout(WithMetadataValueReader),
     mapping)
 
   def writeSheet = {

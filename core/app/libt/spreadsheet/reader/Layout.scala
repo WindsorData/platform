@@ -41,7 +41,3 @@ case class ColumnOrientedLayout(valueReader: ValueReader) extends Layout {
   def effectiveRowGroups(area: Area, sheet: Sheet) =
     area.truncate(sheet.rows(area.offset).grouped(valueReader.blockSize).map(_.toList).toSeq)
 }
-
-object WithMetadataAndSeparatorColumnOrientedLayout extends ColumnOrientedLayout(WithSeparator(WithMetadataValueReader))
-
-object WithPartialMetadataRowOrientedLayout extends RowOrientedLayout(WithPartialMetadataValueReader)

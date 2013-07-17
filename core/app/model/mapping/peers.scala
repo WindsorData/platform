@@ -1,17 +1,14 @@
 package model.mapping
 
-import libt.spreadsheet.Strip
-import libt.{Model, Path}
+import libt.spreadsheet.reader.workflow._
 import libt.spreadsheet.reader._
+import libt.spreadsheet._
+import libt._
+
 import model.PeerCompanies._
-import libt.workflow._
-import org.apache.poi.ss.usermodel.Workbook
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.Offset
-import libt.spreadsheet.reader.Area
 import libt.error.generic.Validated
 
-package object peers extends Mappeable {
+package object peers {
 
   val peersMapping = Seq[Strip](
     Path('companyName),

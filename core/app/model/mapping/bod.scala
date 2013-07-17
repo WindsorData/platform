@@ -4,10 +4,12 @@ import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt.error._
 import libt._
+
+import model.mapping.generic._
 import model.ExecutivesBod._
 import model._
 
-package object bod extends WorkflowFactory {
+package object bod extends StandardWorkflowFactory {
   
 	def relativeStrip(base: Path, relativeSchema: TModel) =
 	  Relative(base, relativeSchema.keys.map(Path(_)): _*).map(pathToFeature)
@@ -71,8 +73,8 @@ package object bod extends WorkflowFactory {
           Path('ownershipGuidelines, 'retention, 'period))
 
   override def Mapping = WorkbookMapping(
-    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, WithPartialMetadataRowOrientedLayout, docSrcMapping),
-        Area(TBod, Offset(3, 1), Some(10), WithMetadataAndSeparatorColumnOrientedLayout, bodMapping)))
+    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping),
+        Area(TBod, Offset(3, 1), Some(10), DataLayout, bodMapping)))
           
   override def CombinerPhase = DocSrcCombiner((10, 'bod, colWrapping))
   

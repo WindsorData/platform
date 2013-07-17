@@ -1,17 +1,20 @@
 package model.mapping
 
-import model._
+import model.mapping.generic._
 import model.ExecutivesTop5._
 import model.validation._
+import model._
+
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
 import libt._
 import libt.calc._
 import libt.error._
+
 import java.util.Date
 import org.joda.time.DateTime
 
-object top5 extends WorkflowFactory {
+object top5 extends StandardWorkflowFactory {
 
   def performanceVestingMapping(rootPath: Symbol) =
     Seq[Strip](Path(rootPath, 'useShares),
@@ -98,11 +101,11 @@ object top5 extends WorkflowFactory {
 
   override def Mapping =
     WorkbookMapping(
-      Area(TCompanyFiscalYear, Offset(1, 2), None, WithPartialMetadataRowOrientedLayout, docSrcMapping)
+      Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping)
         #::
-        Area(TGrantTypes, Offset(3, 1), Some(1), WithMetadataAndSeparatorColumnOrientedLayout, grantTypesMapping)
+        Area(TGrantTypes, Offset(3, 1), Some(1), DataLayout, grantTypesMapping)
         #::
-        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), WithMetadataAndSeparatorColumnOrientedLayout, executiveMapping)))
+        Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), DataLayout, executiveMapping)))
 
   override def CombinerPhase =
     DocSrcCombiner(
