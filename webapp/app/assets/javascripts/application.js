@@ -13,6 +13,7 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.ui.datepicker
+//= require foundation
 //= require modernizr
 //= require css_browser_selector
 //= require jquery.tokeninput
@@ -26,3 +27,5 @@ $(function() {
   });
   $('input, textarea').placeholder();
 });
+
+$(document).foundation();
