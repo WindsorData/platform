@@ -8,14 +8,11 @@ package object libt {
   /* Small DSL for declaring paths  */
 
   implicit def symbol2Route(s: Symbol) = Route(s)
-  
+
   implicit def int2Index(i: Int) = Index(i)
 
   implicit def path2RichPath(path: Path) = new {
     def titles = path.map(_.name)
-  }
-
-  implicit def richJoinPath(path: Path) = new {
     def joinWithDots = path.map(_.routeValue.name).mkString(".")
   }
 

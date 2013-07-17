@@ -9,7 +9,11 @@ sealed trait Element extends ElementLike[Element] {
   override type ModelType = Model
   override type ColType = Col
   override type ValueType[A] = Value[A]
-  
+
+  def ?(route:PathPart) = (this / route).rawValue.nonEmpty
+  def /#(route:PathPart) = (this / route).rawValue[BigDecimal]
+  def /!(route:PathPart) = (this / route).rawValue[String]
+
   def rawValue[A]  : Option[A] =  asValue[A].value
   def getRawValue[A] : A = rawValue[A].get
 
