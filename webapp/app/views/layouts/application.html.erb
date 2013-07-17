@@ -29,16 +29,12 @@
 
     <%= render 'layouts/messages' %>
     <% if controller_name != 'sessions' %>
-      <div class="navbar width-100">
-        <%= render 'layouts/navigation' %>
-      </div>
+      <%= render 'layouts/navigation' %>
     <% end %>
     <div class="main" id="main" role="main">
-      <div class="container">
-        <div class="row">
-          <%= yield %>
-        </div>
-      </div> <!--! end of .container -->
+      <div class="row">
+        <%= yield %>
+      </div>
     </div> <!--! end of #main -->
 
     <%= javascript_include_tag "application" %>
