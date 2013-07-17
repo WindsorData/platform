@@ -17,6 +17,7 @@ import util.FileManager._
 import libt.spreadsheet.reader.workflow._
 import libt.error._
 import libt._
+import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
@@ -24,10 +25,11 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   implicit val db = MongoClient()("windsor")
   implicit def saveAction(m: Model, db: MongoDB) = updateCompany(m)(db)
 
-  val readersAndValidSuffixes = 
-    Seq((top5.Workflow, "Exec Top5 and Grants.xlsx"),
-        (guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xlsx"),
-        (dilution.Workflow, "Company SVT BS Dilution.xlsx"))
+  override val entryReaders =
+    Seq(
+      EntryReader(top5.Workflow, "Exec Top5 and Grants.xlsx"),
+      EntryReader(guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xlsx"),
+      EntryReader(dilution.Workflow, "Company SVT BS Dilution.xlsx"))
         
   val companyForm = Form(
     tuple(
@@ -45,7 +47,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def newCompanies =
     UploadAndReadAction(db, saveAction) {
-      (request, dataset) => keyed.Validated.flatConcat(readZipFileEntries(dataset.ref.file.getAbsolutePath, readersAndValidSuffixes))
+      (request, dataset) => keyed.Validated.flatConcat(readZipFileEntries(dataset.ref.file.getAbsolutePath))
     }
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(implicit db: MongoDB, saveAction: (Model, MongoDB) => Unit) =

@@ -1,8 +1,9 @@
-package controllers
+package controllers.generic
 
 import play.api.libs.Files._
 import play.api.mvc.MultipartFormData._
 import play.api.mvc._
+import controllers.routes
 
 trait SpreadsheetUploader { self: Controller =>
   type UploadRequest = Request[MultipartFormData[TemporaryFile]]
