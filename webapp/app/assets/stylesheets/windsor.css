@@ -1,0 +1,13 @@
+.hidden {
+  display: none;
+}
+
+.top-bar {
+  position: fixed;
+  width: 100%;
+  z-index: 1;
+}
+
+.main {
+  padding-top: 50px;
+}
