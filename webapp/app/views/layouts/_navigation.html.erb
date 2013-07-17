@@ -1,25 +1,62 @@
-<div class="container cf">
-  <div class="left">
-    <% if user_signed_in? %>
-      <%= link_to "Home", user_root_path(current_user), class: 'brand' %>
-    <% end %>
-  </div>
-  <div class="nav left">
-    <% if user_signed_in? %>  
-      <%= link_to('users', users_path, class: 'nav-link') if can? :manage, User %>
-      <%= link_to('search', full_search_path, class: 'nav-link') if can? :perform, :full_search %>
-      <%= link_to('peers', groups_path, class: 'nav-link') if can? :create, Group %>
-      <%= link_to('companies', companies_path, class: 'nav-link') if can? :manage, Company %>
-      <%= link_to('file upload', file_upload_path, class: 'nav-link') if can? :upload, :file %>
-      <%= link_to('upload log', audit_log_path, class: 'nav-link') if can? :audit, :upload_log %>
-    <% end %>
-  </div>
-  <div class="right">
-    <% if user_signed_in? %>
-      <%= current_user.email %>
-      <%= link_to('Logout', destroy_user_session_path, method: 'delete') %>
-    <% else %>
-      <%= link_to('Login', new_user_session_path)  %>
-    <% end %>
-  </div>
-</div>
+<nav class="top-bar">
+  <ul class="title-area">
+    <!-- Title Area -->
+    <li class="name">
+      <h1>
+        <% if user_signed_in? %>
+          <%= link_to "Home", user_root_path(current_user), class: 'brand' %>
+        <% end %>
+      </h1>
+    </li>
+    <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+    <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+  </ul>
+
+  <section class="top-bar-section">
+    <!-- Left Nav Section -->
+    <ul class="left">
+      <li class="divider"></li>
+      <% if user_signed_in? %>  
+      <li class="active">
+        <%= link_to('users', users_path, class: 'nav-link') if can? :manage, User %>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <%= link_to('search', full_search_path, class: 'nav-link') if can? :perform, :full_search %>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <%= link_to('peers', groups_path, class: 'nav-link') if can? :create, Group %>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <%= link_to('companies', companies_path, class: 'nav-link') if can? :manage, Company %>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <%= link_to('file upload', file_upload_path, class: 'nav-link') if can? :upload, :file %>
+      </li>
+      <li class="divider"></li>
+      <li>
+        <%= link_to('upload log', upload_log_audit_path, class: 'nav-link') if can? :audit, :upload_log %>
+      </li>
+      <% end %>
+      <li class="divider"></li>
+    </ul>
+
+    <!-- Right Nav Section -->
+    <ul class="right">
+      <li class="divider"></li>
+      <li>
+        <a class="nav-link"><%= current_user.email %></a>
+      </li>
+      <li class="has-form">
+        <% if user_signed_in? %>
+          <%= link_to('Logout', destroy_user_session_path, method: 'delete', class: 'button') %>
+        <% else %>
+          <%= link_to('Login', new_user_session_path)  %>
+        <% end %>
+      </li>
+    </ul>
+  </section>
+</nav>
