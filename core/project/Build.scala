@@ -7,6 +7,8 @@ object ApplicationBuild extends Build {
   val appName         = "WindsorData"
   val appVersion      = "1.0-SNAPSHOT"
 
+  lazy val scct_settings = Defaults.defaultSettings ++ Seq(ScctPlugin.instrumentSettings: _*)
+
   val appDependencies = Seq(
      "org.apache.poi" % "poi" % "3.9",
      "org.apache.poi" % "poi-ooxml" % "3.9",
@@ -21,9 +23,8 @@ object ApplicationBuild extends Build {
 
 
 
-  
-  val main = play.Project(appName, appVersion, appDependencies).settings(
-    // Add your own project settings here      
+  val main = play.Project(appName, appVersion, appDependencies, settings = scct_settings).settings( 
+   testOptions in Test := Nil
   )
 
 }
