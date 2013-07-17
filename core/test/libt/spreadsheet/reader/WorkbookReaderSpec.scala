@@ -2,12 +2,8 @@ package libt.spreadsheet.reader
 
 import MyWorkbookFactory._
 import libt._
-import libt.error._
 import libt.spreadsheet._
-import libt.workflow._
-import org.junit.runner.RunWith
 import org.scalatest.FlatSpec
-import org.scalatest.junit.JUnitRunner
 
 
 class WorkbookReaderSpec extends FlatSpec {
