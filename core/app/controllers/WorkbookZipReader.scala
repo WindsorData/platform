@@ -2,9 +2,8 @@ package controllers
 
 import java.util.zip._
 import scala.collection.JavaConversions._
-import libt.spreadsheet.reader._
+import libt.spreadsheet.reader.workflow._
 import libt.error._
-import libt.workflow._
 import libt._
 
 /**Trait that provides behavior for reading zipped spreadsheet sets */

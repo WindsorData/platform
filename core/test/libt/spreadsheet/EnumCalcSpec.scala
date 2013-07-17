@@ -1,20 +1,14 @@
 package libt.spreadsheet
 
-import org.scalatest.FlatSpec
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import libt.spreadsheet.util._
-import libt.spreadsheet._
-import libt._
-import libt.spreadsheet.reader.CellReader
-import libt.builder.ModelBuilder
-import libt.spreadsheet.writer._
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Cell
-import libt.spreadsheet.reader.Area
-import libt.spreadsheet.reader.ColumnOrientedLayout
-import libt.reduction._
-import java.io.FileOutputStream
+
+import org.scalatest.FlatSpec
+
+import libt.spreadsheet.reader._
+import libt.spreadsheet.reader._
+import libt.spreadsheet.util._
+import libt._
 
 class EnumCalcSpec extends FlatSpec {
 
@@ -49,7 +43,7 @@ class EnumCalcSpec extends FlatSpec {
             'b -> TOptions)))),
     Offset(1, 0),
     None,
-    ColumnOrientedLayout,
+    ColumnOrientedLayout(WithMetadataValueReader),
     mapping)
 
   def writeSheet = {

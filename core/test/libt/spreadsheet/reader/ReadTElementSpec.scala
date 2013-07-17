@@ -3,7 +3,6 @@ package libt.spreadsheet.reader
 import util.FileManager
 import org.scalatest.FunSpec
 import libt.spreadsheet.util._
-import libt.workflow._
 import libt._
 
 import libt.spreadsheet.Offset
@@ -30,7 +29,7 @@ class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetL
     WorkbookMapping(
       Seq(
         Area(
-          TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout, Seq(Feature(Path('key))))))
+          TModel('key -> tValue), Offset(0, 0), None, ColumnOrientedLayout(WithMetadataValueReader), Seq(Feature(Path('key))))))
 
 
   before {

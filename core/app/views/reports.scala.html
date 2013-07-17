@@ -53,7 +53,20 @@
             </p>
         }
     </div>
-    
+
+    <div>
+        @form(action = routes.Application.newPeers, 'enctype -> "multipart/form-data") {
+            <!--  -->
+            <div>
+                <p>Upload a single Peers data set</p>
+            </div>
+            <input type="file" name="dataset">
+            <p>
+                <input type="submit">
+            </p>
+        }
+    </div>
+
     <div>
         @form(action = routes.Application.newCompanies, 'enctype -> "multipart/form-data") {
             <!--  -->
@@ -66,5 +79,6 @@
             </p>
         }
     </div>
+
 
 </div>

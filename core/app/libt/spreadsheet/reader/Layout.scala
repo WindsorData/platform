@@ -1,6 +1,5 @@
 package libt.spreadsheet.reader
 
-import org.apache.poi.ss.usermodel.Row
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.writer._
 import libt.spreadsheet.util._
@@ -18,19 +17,19 @@ sealed trait Layout {
   def write(area: Area, sheet: Sheet, models: Seq[Model]) 
 }
 
-object RowOrientedLayout extends Layout {
-  override def read(area: Area, sheet: Sheet) = 
-    area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _)).map(Seq(_))
+case class RowOrientedLayout(valueReader: ValueReader) extends Layout {
+  override def read(area: Area, sheet: Sheet) =
+    area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _, valueReader)).map(Seq(_))
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) = ???
 }
 
-object ColumnOrientedLayout extends Layout with LibtSizes {
+case class ColumnOrientedLayout(valueReader: ValueReader) extends Layout {
   override def read(area: Area, sheet: Sheet) =
       effectiveRowGroups(area, sheet).
-      concatMap { rows => area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _)) }
+      concatMap { rows => area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _, valueReader)) }
 
   override def write(area: Area, sheet: Sheet, models: Seq[Model]) {
-    sheet.defineLimits(area.offset, models.size * ValueSizeWithSeparator, area.columns.size)
+    sheet.defineLimits(area.offset, models.size * valueReader.blockSize, area.columns.size)
     (effectiveRowGroups(area, sheet).toSeq, models).zipped.foreach { (row, model) =>
       val writer = new ColumnOrientedWriter(area.offset.columnIndex, row)
       area.columns.foreachWithOps(model, area.schema) { ops =>
@@ -40,5 +39,5 @@ object ColumnOrientedLayout extends Layout with LibtSizes {
   }
 
   def effectiveRowGroups(area: Area, sheet: Sheet) =
-    area.truncate(sheet.rows(area.offset).grouped(ValueSizeWithSeparator).map(_.toList).toSeq)
+    area.truncate(sheet.rows(area.offset).grouped(valueReader.blockSize).map(_.toList).toSeq)
 }

@@ -1,17 +1,16 @@
 package model.mapping
 
-import libt.Path
-import model._
+import model.mapping.generic._
 import model.ExecutivesSVTBSDilution._
 import model.validation._
-import libt.util._
+import model._
+
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
-import libt.workflow._
 import libt.error._
 import libt._
 
-package object dilution extends WorkflowFactory {
+package object dilution extends StandardWorkflowFactory {
 
   val usageAndSVTDataMapping =
     addTYears(
@@ -46,10 +45,10 @@ package object dilution extends WorkflowFactory {
     Path('sharesAvailable, 'fungible, 'fullValue))
 
   def Mapping = WorkbookMapping(
-    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, RowOrientedLayout, docSrcMapping),
-      Area(TUsageAndSVTData, Offset(3, 1), Some(1), ColumnOrientedLayout, usageAndSVTDataMapping),
-      Area(TBlackScholesInputs, Offset(3, 1), Some(1), ColumnOrientedLayout, blackScholesInputsMapping),
-      Area(TDilution, Offset(4, 1), Some(1), ColumnOrientedLayout, dilutionMapping)))
+    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping),
+      Area(TUsageAndSVTData, Offset(3, 1), Some(1), DataLayout, usageAndSVTDataMapping),
+      Area(TBlackScholesInputs, Offset(3, 1), Some(1), DataLayout, blackScholesInputsMapping),
+      Area(TDilution, Offset(4, 1), Some(1), DataLayout, dilutionMapping)))
 
   def CombinerPhase =
     DocSrcCombiner(
