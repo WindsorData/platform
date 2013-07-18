@@ -1,6 +1,6 @@
 package output
 
-import _root_.persistence.PeersDb
+import libt.util.math._
 import libt._
 
 trait PeersReport {
@@ -19,7 +19,7 @@ trait PeersReport {
         Model(
           'secondPeer -> Value(secondPeer),
           'secondPeerName -> Value(models.find( _ /!/ 'peerTicker == secondPeer).get /!/ 'peerCoName),
-          'weight -> Value(primaryPeers.map(it => it._1).sum.with2Decimals),
+          'weight -> Value(primaryPeers.map(it => it._1).sum.roundUp(1)),
           'primaryPeersWeights ->
             Col(primaryPeers.map {
               case (w, peer) =>
