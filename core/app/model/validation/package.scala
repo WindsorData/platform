@@ -45,7 +45,7 @@ package object validation {
             valuePaths.map(path => m(path).rawValue[BigDecimal] match {
               case Some(salary) if !digitValidation(salary) =>
                 Doubtful(model,
-                  "Warning on ExecDb " + execMsg((model / 'disclosureFiscalYear).getRawValue[Int], m.asModel) +
+                  "Warning on ExecDb " + execMsg((model /# 'disclosureFiscalYear).get, m.asModel) +
                     ": " + valuePaths.map(_.titles).mkString(" - ") + " should be 3 digits or more")
               case _ => Valid(model)
             })

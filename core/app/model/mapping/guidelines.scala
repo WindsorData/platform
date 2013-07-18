@@ -104,7 +104,7 @@ package object guidelines extends StandardWorkflowFactory {
           .getOrElse(
             Doubtful(model,
               warning(
-                  execMsg((model / 'disclosureFiscalYear).getRawValue[Int], m.asModel)
+                  execMsg((model /# 'disclosureFiscalYear).get, m.asModel)
                   + Path('scope, 'corporate, 'use).titles.mkString(" - "),
             	  "Almost always the scope would include Corporate")))
   	}

@@ -60,69 +60,69 @@ package object dilution extends StandardWorkflowFactory {
     val results: Seq[Validated[Model]] =
       Seq('year1, 'year2, 'year3).map {
         year =>
-          (model / 'usageAndSVTData / 'avgSharesOutstanding /# year) match {
+          (model / 'usageAndSVTData / 'avgSharesOutstanding /% year) match {
             case Some(value) if value > 999 =>
               Doubtful(model, "Warning on Usage And SVT Data: Average Shares should be in millions")
             case _ => Valid(model)
           }
       }
-    
-    results.reduceValidations(model)
-  }
-  
-  def optionsAndFullValueValidation(model: Model) = {
-      val results : Seq[Validated[Model]] = 
-      Seq((model / 'usageAndSVTData / 'optionsSARs / 'granted ),
-          (model / 'usageAndSVTData / 'optionsSARs / 'cancelled ),
-          (model / 'usageAndSVTData / 'fullValue / 'sharesGranted ),
-          (model / 'usageAndSVTData / 'fullValue / 'sharesCancelled ))
-      .flatMap(m => Seq((m /# 'year1),
-    		  				(m /# 'year2),
-    		  				(m /# 'year3))).flatten
-      .map (value => if( value < 1000) 
-    	  				Doubtful(model, 
-    	  				    warning(
-    	  				        "Usage And SVT Data", 
-    	  				        "Options and Full Value: granted and cancelled values should not be less than 1000")) 
-    	  			 else Valid(model))
-    	  			 
+
     results.reduceValidations(model)
   }
 
-  def totalValidation(model: Model) = 
+  def optionsAndFullValueValidation(model: Model) = {
+    val results: Seq[Validated[Model]] =
+      Seq((model / 'usageAndSVTData / 'optionsSARs / 'granted),
+        (model / 'usageAndSVTData / 'optionsSARs / 'cancelled),
+        (model / 'usageAndSVTData / 'fullValue / 'sharesGranted),
+        (model / 'usageAndSVTData / 'fullValue / 'sharesCancelled))
+        .flatMap(m => Seq((m /% 'year1),
+        (m /% 'year2),
+        (m /% 'year3))).flatten
+        .map(value => if (value < 1000)
+        Doubtful(model,
+          warning(
+            "Usage And SVT Data",
+            "Options and Full Value: granted and cancelled values should not be less than 1000"))
+      else Valid(model))
+
+    results.reduceValidations(model)
+  }
+
+  def totalValidation(model: Model) =
     (for {
-      option <- (model / 'dilution / 'awardsOutstandings /# 'option)
-      full <- (model / 'dilution / 'awardsOutstandings /# 'fullValue)
-      total <- (model / 'dilution / 'awardsOutstandings /# 'total)
+      option <- (model / 'dilution / 'awardsOutstandings /% 'option)
+      full <- (model / 'dilution / 'awardsOutstandings /% 'fullValue)
+      total <- (model / 'dilution / 'awardsOutstandings /% 'total)
       if option + full == total
     }
     yield Valid(model))
       .getOrElse(
-          Invalid("Error on Dilution and ISS SVT Data - " +
-              "Awards Outstandings: column total must be equal to option + full value"))
-              
-  def optionAndFullValuesValidation(model: Model) = 
-      ( for {
-    	  option <- (model / 'dilution / 'awardsOutstandings /# 'option)
-    	  fullvalue <- (model / 'dilution / 'awardsOutstandings /# 'fullValue)
-    	  if option == 0 || fullvalue == 0
-      	}
-      	yield Doubtful(model, 
-      	    warning(
-      	        "Dilution and ISS SVT Data", 
-      	        "Awards Outstandings: Options and Full values should not be 0"))) 
-      	.getOrElse(Valid(model))
-  
-  def usageAndSVTValidations(model: Model): Validated[Model] = 
+      Invalid("Error on Dilution and ISS SVT Data - " +
+        "Awards Outstandings: column total must be equal to option + full value"))
+
+  def optionAndFullValuesValidation(model: Model) =
+    (for {
+      option <- (model / 'dilution / 'awardsOutstandings /% 'option)
+      fullvalue <- (model / 'dilution / 'awardsOutstandings /% 'fullValue)
+      if option == 0 || fullvalue == 0
+    }
+    yield Doubtful(model,
+        warning(
+          "Dilution and ISS SVT Data",
+          "Awards Outstandings: Options and Full values should not be 0")))
+      .getOrElse(Valid(model))
+
+  def usageAndSVTValidations(model: Model): Validated[Model] =
     model.validate('usageAndSVTData) {
       averageSharesValidation(model) andThen optionsAndFullValueValidation(model)
-    } 
-  
-  def dilutionValidations(model: Model): Validated[Model] = 
+    }
+
+  def dilutionValidations(model: Model): Validated[Model] =
     model.validate('dilution) {
-      totalValidation(model) andThen  optionAndFullValuesValidation(model)
-    } 
+      totalValidation(model) andThen optionAndFullValuesValidation(model)
+    }
 
   override def SheetValidation = model => usageAndSVTValidations(model) andThen dilutionValidations(model)
-  
+
 }
