@@ -6,7 +6,7 @@
   <div class="field">
     <%= f.text_field :name, placeholder: 'Group name', class: 'group-name inline-block' %>
     <%= f.text_field :tickers_tokens, id: 'tickers_tokens', "data-pre" => @group.tickers.map(&:attributes).to_json %>
-    <%= f.submit 'Create group', class: 'big-button' %>
+    <%= f.submit class: 'big-button' %>
   </div>
 
 <% end %>
