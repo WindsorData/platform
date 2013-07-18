@@ -44,7 +44,7 @@ trait ElementLike[ElementType] { self : ElementType =>
    * for the more general [[libt.ElementLike.apply]]  that takes a Path, when
    * it is a single [[libt.PathPart]] path
    */
-  def apply(pathPart:PathPart) : ElementType = apply(Path(pathPart))
+  def /(pathPart:PathPart) : ElementType = apply(Path(pathPart))
 
 }
 trait ModelLikeOps[ElementType] {

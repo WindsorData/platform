@@ -130,25 +130,22 @@ object top5 extends StandardWorkflowFactory {
     	  .concatMap(_.reduce((a, b) => a andThen b))
 
   def execDbTimeVestValidation(models: Seq[Model]) = {
-    val lastYear = models.maxBy(_(Path('disclosureFiscalYear)).getRawValue[Int])
-    				.apply(Path('disclosureFiscalYear)).getRawValue[Int]
+    val lastYear = models.maxBy(_ /#/ 'disclosureFiscalYear) /#/ 'disclosureFiscalYear
     models.map { model =>
-      if (model.contains('executives) && model(Path('disclosureFiscalYear)).getRawValue[Int] == lastYear) {
+      model.validateWhen(model.contains('executives) && ( model /#/ 'disclosureFiscalYear) == lastYear) {
         val results: Seq[Validated[Model]] =
           model.applySeq(Path('executives, *)).map { exec =>
             val hasSomeGrantDate = exec.applySeq(Path('timeVestRS, *, 'grantDate)).flatMap(_.rawValue[Date]).nonEmpty
-            val hasNoTimeVestRs = exec(Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS)).rawValue[Int].isEmpty
-            if ( hasSomeGrantDate && hasNoTimeVestRs )
+            val hasNoTimeVestRs = ( exec / 'carriedInterest / 'outstandingEquityAwards /# 'timeVestRS).isEmpty
+            model.validateWhen(hasSomeGrantDate && hasNoTimeVestRs) {
               Doubtful(model,
-                warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], exec.asModel) +
+                warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), exec.asModel) +
                   "Carried Interest - Outstanding Equity Awards - Time Vest RS",
                   "should not be blank if there's some time vest rs - grant date"))
-            else
-              Valid(model)
+            }
           }
         results.reduce((a, b) => a andThen b)
-      } else
-        Valid(model)
+      }
     }
   }
 
@@ -156,46 +153,43 @@ object top5 extends StandardWorkflowFactory {
   def optionGrantsVsGrantType(models: Seq[Model]): Seq[Validated[Model]] = {
     def gap(eDate: Date, gDate: Date) =
       Math.abs(new DateTime(eDate).getYear() - new DateTime(gDate).getYear())
-        
+
 	  models.map { m =>
-	  	val maxTerm = models.find(_.contains('grantTypes))
-	  				.get(Path('grantTypes, 'stockOptions, 'maxTerm)).rawValue[BigDecimal]
-		if(m.contains('executives)) {
-		  val results : Seq[Validated[Model]] = 
+	  	val maxTerm = (models.find(_.contains('grantTypes)).get) / 'grantTypes / 'stockOptions /% 'maxTerm
+		m.validate('executives) {
+		  val results : Seq[Validated[Model]] =
 		  for {
 			  execs <- m.applySeq(Path('executives, *))
 			  grants = execs.applySeq(Path('optionGrants, *))
 			  grant <- grants.zip(Stream.from(1))
 		  }
 		  yield
-		  (grant._1(Path('expireDate)).rawValue[Date], grant._1(Path('grantDate)).rawValue[Date], maxTerm) match {
-		    case (Some(eDate), Some(gDate), Some(term)) 
-		    	if gap(eDate,gDate) != term.toInt => 
+		  ((grant._1 / 'expireDate).rawValue[Date], (grant._1 / 'grantDate).rawValue[Date], maxTerm) match {
+		    case (Some(eDate), Some(gDate), Some(term))
+		    	if gap(eDate,gDate) != term.toInt =>
 		    	  Doubtful(m,
-		    	      warning("ExecDb - " + execMsg(m(Path('disclosureFiscalYear)).getRawValue[Int], execs.asModel)
+		    	      warning("ExecDb - " + execMsg((m /#/ 'disclosureFiscalYear), execs.asModel)
 		    	    		  + "grant " + grant._2,
 		    	    		  "option grants should have gap between dates equal to max term on grant types"))
 		    case _ => Valid(m)
 		  }
 		  results.reduce( (a, b) => a andThen b)
 		}
-		else
-		  Valid(m)
 	  }
   }
-  
+
   def transitionPeriodValidation(models: Seq[Model]): Seq[Validated[Model]] = {
 
     def validateTransition(model: Model)(execs: (Element, Element)): Validated[Model] =
-      (execs._1(Path('functionalMatches, 'primary)).rawValue[String],
-        execs._2(Path('functionalMatches, 'primary)).rawValue[String],
-        execs._2(Path('transitionPeriod)).rawValue[String]) match {
+      ((execs._1/ 'functionalMatches /! 'primary),
+       (execs._2 / 'functionalMatches /! 'primary),
+       (execs._2 /! 'transitionPeriod)) match {
           case (Some(rol0), Some(rol1), Some(isTransition))
           if ((rol0 == rol1 && isTransition == "Yes") || (rol0 != rol1 && isTransition == "No")) =>
             Invalid(
-              s"Error on ExecDb ${model(Path('disclosureFiscalYear)).getRawValue[Int]} " +
-                s"- ${execs._2(Path('firstName)).getRawValue[String]} " +
-                s"${execs._2(Path('lastName)).getRawValue[String]} : Transition Period is wrong")
+              s"Error on ExecDb ${(model /#/ 'disclosureFiscalYear)} " +
+                s"- ${(execs._2 /!/ 'firstName)} " +
+                s"${(execs._2 /!/ 'lastName)} : Transition Period is wrong")
           case _ => Valid(model)
         }
 
@@ -206,19 +200,14 @@ object top5 extends StandardWorkflowFactory {
             .foldLeft(Valid(execDbModel): Validated[Model])((acc, e) => acc andThen e)
       }
 
-    def execId(exec: Element) =
-      exec('firstName).getRawValue[String] +
-        exec('lastName).getRawValue[String]
+    def execId(exec: Element) = (exec /!/ 'firstName) + (exec /! 'lastName).get
 
     def combineSameExecutives(execs: (Model, Seq[Element]), nextExecs: (Model, Seq[Element])) =
       (execs, nextExecs) match {
         case ((_, execs0), (model, execs1)) =>
           (model,
             (execs0 ++ execs1)
-            .filter { e =>
-              e('firstName).rawValue[String].nonEmpty &&
-                e('lastName).rawValue[String].nonEmpty
-            }
+            .filter { e => e.nonEmpty('firstName) && e.nonEmpty('lastName) }
             .groupBy(execId)
             .toSeq
             .flatMap {
@@ -234,7 +223,7 @@ object top5 extends StandardWorkflowFactory {
 
     val executives: Seq[(Model, Seq[(Element)])] =
       inputPartitioned._1
-        .sortBy(_.apply('disclosureFiscalYear).getRawValue[Int]).reverse
+        .sortBy(_ /#/ 'disclosureFiscalYear).reverse
         .map { execs =>
           (execs, execs.applySeq(Path('executives, *)))
         }
@@ -255,16 +244,16 @@ object top5 extends StandardWorkflowFactory {
   def nextFiscalYearDataValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
       m =>
-        (m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal],
-          m(Path('cashCompensations, 'nextFiscalYearData, 'baseSalary)).rawValue[BigDecimal],
-          m(Path('cashCompensations, 'targetBonus)).rawValue[BigDecimal],
-          m(Path('cashCompensations, 'nextFiscalYearData, 'targetBonus)).rawValue[BigDecimal]) match {
+        ((m / 'cashCompensations /% 'baseSalary),
+          (m / 'cashCompensations / 'nextFiscalYearData /% 'baseSalary),
+          (m / 'cashCompensations /% 'targetBonus),
+          (m / 'cashCompensations / 'nextFiscalYearData /% 'targetBonus)) match {
             case (Some(baseSalary), Some(nextBaseSalary), Some(targetBonus), Some(nextTargetBonus)) if (baseSalary <= nextBaseSalary && targetBonus <= nextTargetBonus) =>
               Valid(model)
             case (_, None, _, None) => Valid(model)
             case _ =>
               Doubtful(model,
-                warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
                 		"current base salary and target bonus are equal or greater that next fiscal year data"))
           }
     }
@@ -273,11 +262,11 @@ object top5 extends StandardWorkflowFactory {
     reduceExecutiveValidations(Path('executives, *), model) {
       m =>
         {
-          val primary = m(Path('functionalMatches, 'primary)).rawValue[String]
-          val bod = m(Path('functionalMatches, 'bod)).rawValue[String]
+          val primary = (m / 'functionalMatches /! 'primary)
+          val bod = (m / 'functionalMatches /! 'bod)
           (for (primaryv <- primary; if (primaryv == "CEO (Chief Executive Officer)" && bod.isEmpty))
             yield Doubtful(model,
-            warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Bod: ",
+            warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + " - Bod: ",
             		"CEO with no BOD"))).getOrElse(Valid(model))
         }
     }
@@ -286,11 +275,11 @@ object top5 extends StandardWorkflowFactory {
     reduceExecutiveValidations(Path('executives, *), model) {
       m =>
         {
-          val baseSalary = m(Path('cashCompensations, 'baseSalary)).rawValue[BigDecimal]
-          val founder = m(Path('founder)).rawValue[Boolean]
+          val baseSalary = (m / 'cashCompensations /% 'baseSalary)
+          val founder = (m / 'founder).rawValue[Boolean]
           (for (salaryv <- baseSalary; if salaryv == 1 && founder.isEmpty)
             yield Doubtful(model,
-            warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + " - Founder: ",
+            warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + " - Founder: ",
             		"base salary is 1 and executive is not a founder"))).getOrElse(Valid(model))
         }
     }
@@ -302,11 +291,11 @@ object top5 extends StandardWorkflowFactory {
           val results: Seq[Validated[Model]] =
             m.applySeq(Path('performanceCash, *))
               .map { perfCash =>
-                (perfCash('targetValue).rawValue[BigDecimal],
-                  perfCash('payout).rawValue[BigDecimal]) match {
+                ((perfCash/'targetValue).rawValue[BigDecimal],
+                  (perfCash/'payout).rawValue[BigDecimal]) match {
                     case (Some(_), Some(_)) =>
                       Invalid(
-                        err("ExecDb - " +execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                        err("ExecDb - " +execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
                           ": in PerfCash Both target value and Payout can’t be filled for the same grant"))
                     case _ => Valid(model)
                   }
@@ -319,17 +308,17 @@ object top5 extends StandardWorkflowFactory {
     reduceExecutiveValidations(Path('executives, *), model) {
       m =>
         {
-          val ownedShares = m(Path('carriedInterest, 'ownedShares)).asModel
-          val beneficial = ownedShares(Path('beneficialOwnership)).rawValue[BigDecimal]
+          val ownedShares = (m / 'carriedInterest / 'ownedShares).asModel
+          val beneficial = (ownedShares /% 'beneficialOwnership)
           val results: Seq[Validated[Model]] =
-            Seq(ownedShares(Path('options)).rawValue[BigDecimal],
-              ownedShares(Path('unvestedRestrictedStock)).rawValue[BigDecimal],
-              ownedShares(Path('disclaimBeneficialOwnership)).rawValue[BigDecimal],
-              ownedShares(Path('heldByTrust)).rawValue[BigDecimal]).zip(Stream.continually(beneficial))
+            Seq((ownedShares/% 'options),
+              (ownedShares /% 'unvestedRestrictedStock),
+              (ownedShares /% 'disclaimBeneficialOwnership),
+              (ownedShares/% 'heldByTrust)).zip(Stream.continually(beneficial))
               .map {
                 case (Some(value), Some(benef)) if value > benef =>
                   Doubtful(model,
-                    warning("ExecDb + " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                    warning("ExecDb + " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
                     		"Some Owned Shares values cannot be greater than Beneficial Ownership"))
                 case _ => Valid(model)
               }
@@ -341,12 +330,12 @@ object top5 extends StandardWorkflowFactory {
     reduceExecutiveValidations(Path('executives, *), model) {
       m =>
         {
-          (m(Path('carriedInterest, 'ownedShares, 'options)).rawValue[BigDecimal],
-            m(Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions)).rawValue[BigDecimal],
-            m(Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions)).rawValue[BigDecimal]) match {
+          (m / 'carriedInterest / 'ownedShares /% 'options,
+           m / 'carriedInterest / 'outstandingEquityAwards /% 'vestedOptions,
+           m / 'carriedInterest / 'outstandingEquityAwards /% 'unvestedOptions) match {
               case (Some(options), vested, unvested) if options == 0 && Seq(vested, unvested).flatten.sum > 0 =>
                 Invalid(err("ExecDb - " 
-                    + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel)
+                    + execMsg((model /#/ 'disclosureFiscalYear), m.asModel)
                     + Path('carriedInterest, 'ownedShares, 'options).titles.mkString(" - "),
                 	" is 0, so vested options and unvested options should be 0 or empty"))
               case _ => Valid(model)
@@ -362,13 +351,13 @@ object top5 extends StandardWorkflowFactory {
             m.applySeq(Path('timeVestRS, *))
               .map { timeVest =>
                 (for {
-                  n <- timeVest(Path('number)).rawValue[BigDecimal]
-                  p <- timeVest(Path('price)).rawValue[BigDecimal]
-                  v <- timeVest(Path('value)).rawValue[BigDecimal]
+                  n <- (timeVest /% 'number)
+                  p <- (timeVest /% 'price)
+                  v <- (timeVest /% 'value)
                   product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) / 1000
                   if product != v
                 } yield Invalid(
-                  err("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel) + "TimeVestRs",
+                  err("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + "TimeVestRs",
                     "Number multiplied by price should be equal to value"))).getOrElse(Valid(model))
               }
           results.reduceValidations(m.asModel)
@@ -379,7 +368,7 @@ object top5 extends StandardWorkflowFactory {
     reduceExecutiveValidations(Path('executives, *), model) {
       m =>
         {
-          (m(Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS)).rawValue[Date],
+          ((m / 'carriedInterest / 'outstandingEquityAwards / 'timeVestRS).rawValue[Date],
             m.applySeq(Path('timeVestRS, *, 'grantDate)).flatMap(_.rawValue[Date])) match {
               case (None, dates) if dates.nonEmpty => Doubtful(model, "asda")
               case _ => Valid(model)
@@ -389,15 +378,12 @@ object top5 extends StandardWorkflowFactory {
   
   //TODO: FIX ME! 
   def nonEmptyTransitionPeriods(model: Model) =
-    reduceExecutiveValidations(Path('executives, *), model) {
-      m =>
-        if (m(Path('transitionPeriod)).rawValue[String].isEmpty
-            && nonEmptyExecutive(m))
+    reduceExecutiveValidations(Path('executives, *), model) { m =>
+        model.validateWhen(m.isEmpty('transitionPeriod) && nonEmptyExecutive(m)) {
           Invalid(
-            err("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+            err("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
               "Transition Period should not be BLANK"))
-        else
-          Valid(model)
+        }
     }
 
   def salaryValidation(model: Model): Validated[Model] =
@@ -411,13 +397,11 @@ object top5 extends StandardWorkflowFactory {
             m.applySeq(Path('optionGrants, *))
               .map { grant =>
                 val elements = (grant.asModel - 'perf).elements
-                if (elements.forall(!_._2.asValue.isComplete)
-                  || elements.forall(_._2.asValue.isComplete))
-                  Valid(model)
-                else
+                model.validateUnless(elements.forall(!_._2.asValue.isComplete) || elements.forall(_._2.asValue.isComplete)) {
                   Doubtful(model,
-                    warning("ExecDb - " + execMsg(model(Path('disclosureFiscalYear)).getRawValue[Int], m.asModel),
+                    warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
                     		"Option grants must have all columns filled with data or all empty"))
+                }
               }
 
           results.reduceValidations(m.asModel)
@@ -427,12 +411,12 @@ object top5 extends StandardWorkflowFactory {
   def formulaValidation(model: Model): Validated[Model] = {
     val results: Seq[Validated[Model]] =
       model.applySeq(Path('executives, *)).map { m =>
-        if (Seq(m(Path('cashCompensations, 'maxBonus)).asValue[BigDecimal],
-                m(Path('cashCompensations, 'thresholdBonus)).asValue[BigDecimal]).forall(_.isConsistent))
+        if (Seq((m / 'cashCompensations / 'maxBonus).asValue[BigDecimal],
+                (m / 'cashCompensations / 'thresholdBonus).asValue[BigDecimal]).forall(_.isConsistent))
           Valid(model)
         else
           Invalid(
-            err(execMsg(model('disclosureFiscalYear).getRawValue[Int], m.asModel),
+            err(execMsg(model /#/ 'disclosureFiscalYear, m.asModel),
               "max bonus and threshold bonus calculations are wrong"))
     }
     results.reduceValidations(model)
@@ -440,7 +424,7 @@ object top5 extends StandardWorkflowFactory {
 
 
   def executivesValidation(model: Model): Validated[Model] = {
-    if (model.contains('executives))
+    model.validate('executives) {
         formulaValidation(model) andThen
         founderValidation(model) andThen
         bodValidation(model) andThen
@@ -451,18 +435,16 @@ object top5 extends StandardWorkflowFactory {
         timeVestRsValueValidation(model) andThen
         optionsExercisableValidation(model) andThen
         nonEmptyTransitionPeriods(model)
-    else
-      Valid(model)
+    }
   }
 
   def grantTypeValidation(model: Model): Validated[Model] = {
     def validateGrantTypeUse: Validated[Model] = {
       val path = Path('grantTypes, 'stockOptions, 'use)
       val use = model(path).getRawValue[Boolean]
-      if (!use || (model(path.init).asModel - path.last.routeValue).isComplete)
-        Valid(model)
-      else
+      model.validateUnless(!use || (model(path.init).asModel - path.last.routeValue).isComplete) {
         Invalid(err(path.titles.mkString(" - "), "Incomplete data"))
+      }
     }
 
     def validateGrantTypeMinPayout = {
@@ -473,9 +455,8 @@ object top5 extends StandardWorkflowFactory {
         .getOrElse(Valid(model))
     }
 
-    if (model.contains('grantTypes)) {
+    model.validate('grantTypes) {
       validateGrantTypeUse andThen validateGrantTypeMinPayout
-    } else
-      Valid(model)
+    }
   }
 }

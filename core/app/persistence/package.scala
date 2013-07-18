@@ -30,9 +30,9 @@ package object persistence {
   def updatePeers(model: Model)(implicit db: MongoDB) = {
     companies.update(
       MongoDBObject(
-        "ticker.value" -> model(Path('ticker)).getRawValue[String],
-        "fiscalYear.value" -> model(Path('fiscalYear)).getRawValue[Int],
-        "peerTicker.value" -> model(Path('peerTicker)).getRawValue[String]),
+        "ticker.value" -> model /!/ 'ticker,
+        "fiscalYear.value" -> model /#/ 'fiscalYear,
+        "peerTicker.value" -> model /!/ 'peerTicker),
       TPeers.marshall(model), true)
   }
 
