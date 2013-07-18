@@ -1,54 +1,54 @@
 package persistence
 
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
 import org.scalatest.FunSuite
-import persistence.query._
 import com.mongodb.casbah.commons.MongoDBObject
+import org.joda.time.DateTime
+import persistence.query._
 
 class QuerySpec extends FunSuite {
+
+  def conditionLastYear = s""""disclosureFiscalYear.value" : ${new DateTime().minusYears(1).getYear}"""
 
   test("can create query with only a condition") {
     val query = QueryExecutives(Seq(Seq(EqualCondition("executives.firstName.value", "Robert H."))), Seq())
     val mongoQuery = query.exampleExecutives.head.toString
-    assert("""{ "executives.firstName.value" : "Robert H."}""" == mongoQuery)
+    assert(s"""{ "executives.firstName.value" : "Robert H." , ${conditionLastYear}}""" === mongoQuery)
   }
 
   test("can create a query with only a condition with operators") {
-    val query = QueryExecutives(Seq(Seq(ConditionWithOperators("disclosureFiscalYear.value", Seq("$gte" -> 2010, "$lte" -> 2011)))), Seq())
+    val query = QueryExecutives(Seq(Seq(ConditionWithOperators("age.value", Seq("$gte" -> 10, "$lte" -> 11)))), Seq())
     val mongoQuery = query.exampleExecutives.head.toString
-
-    assert("""{ "disclosureFiscalYear.value" : { "$gte" : 2010 , "$lte" : 2011}}""" === mongoQuery)
+    assert(s"""{ "age.value" : { "$$gte" : 10 , "$$lte" : 11} , ${conditionLastYear}}""" === mongoQuery)
   }
 
   test("can create a query with multiple conditions") {
     val query = QueryExecutives(Seq(Seq(
         EqualCondition("executives.firstName.value", "Robert H."),
-        ConditionWithOperators("disclosureFiscalYear.value", Seq("$gte" -> 2010, "$lte" -> 2011))
+        ConditionWithOperators("year.value", Seq("$gte" -> 2010, "$lte" -> 2011))
     )), Seq())
     val mongoQuery = query.exampleExecutives.head.toString
 
-    assert("""{ "executives.firstName.value" : "Robert H." , "disclosureFiscalYear.value" : { "$gte" : 2010 , "$lte" : 2011}}""" === mongoQuery)
+    assert(s"""{ "executives.firstName.value" : "Robert H." , "year.value" : { "$$gte" : 2010 , "$$lte" : 2011} , ${conditionLastYear}}""" === mongoQuery)
   }
 
   test("can create a query with or conditions") {
     val query = QueryExecutives(Seq(
         Seq(EqualCondition("executives.firstName.value", "Robert H.")),
-        Seq(ConditionWithOperators("disclosureFiscalYear.value", Seq("$gte" -> 2010)))
+        Seq(ConditionWithOperators("year.value", Seq("$gte" -> 2010)))
     ), Seq())
     val mongoQuery = query.toString
 
-    assert("""{ "$or" : [ { "executives.firstName.value" : "Robert H."} , { "disclosureFiscalYear.value" : { "$gte" : 2010}}]}""" == mongoQuery)
+    assert(s"""{ "$$or" : [ { "executives.firstName.value" : "Robert H." , ${conditionLastYear}} , { "year.value" : { "$$gte" : 2010} , ${conditionLastYear}}]}""" == mongoQuery)
   }
 
   test("can create a query with extra condition") {
     val query = QueryExecutives(
       Seq(Seq(EqualCondition("executives.firstName.value", "Robert H."))),
-      Seq(ConditionWithOperators("disclosureFiscalYear.value", Seq("$gte" -> 2010)))
+      Seq(ConditionWithOperators("year.value", Seq("$gte" -> 2010)))
     )
 
     val mongoQuery = query.exampleExecutives.head.toString
-    assert("""{ "executives.firstName.value" : "Robert H." , "disclosureFiscalYear.value" : { "$gte" : 2010}}""" === mongoQuery)
+    assert(s"""{ "executives.firstName.value" : "Robert H." , "year.value" : { "$$gte" : 2010} , ${conditionLastYear}}""" === mongoQuery)
   }
 
 }
