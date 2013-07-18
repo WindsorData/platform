@@ -73,9 +73,9 @@ object Api extends Controller with SpreadsheetDownloader {
 
     val results = query().map { company =>
       Map(
-        "name" -> company(Path('name)).getRawValue[String],
-        "ticker" -> company(Path('ticker)).getRawValue[String],
-        "year" -> company(Path('disclosureFiscalYear)).getRawValue[Int].toString
+        "name" -> company /!/ 'name,
+        "ticker" -> company /!/ 'ticker,
+        "year" -> (company /#/ 'disclosureFiscalYear).toString
       )
     }
 
