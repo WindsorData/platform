@@ -18,12 +18,12 @@
   <div class="side-container quick-launch">
     <h2 class="title">Quick Launch</h2>
     <div class="content">
-      <%= form_tag('/groups') do %>
+      <%= form_tag(group_search_path) do %>
         <label class="label">Select peer group
           <%= select_tag :group, options_from_collection_for_select(groups, "id", "name") %>
         </label>
         <label class="label">Select report
-          <%= select_tag :report, options_for_select(Constants::REPORTS) %>
+          <%= select_tag :report, options_for_select(Constants::REPORT_TYPES) %>
         </label>
         <%= submit_tag "Select" %>
         <%= link_to('Create new peer group', groups_path, class: 'right') %>

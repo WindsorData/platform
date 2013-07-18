@@ -14,9 +14,11 @@ WindosorFrontend::Application.routes.draw do
 
   get "search/quick_search",  as: :quick_search
   get "search/full_search",   as: :full_search
-  post "search/results",      as: :search_result
-
   get   "files/upload",       as: :file_upload
-  post  "files/send_file",    as: :send_file
 
+  post "search/results",      as: :search_result
+  post  "files/send_file",    as: :send_file
+  post "search/download",     as: :file_download
+  post "search/group_search", as: :group_search
+  
 end

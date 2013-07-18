@@ -52,4 +52,5 @@ WindosorFrontend::Application.configure do
   config.post_batch_path = '/api/companies/batch'
 
   config.post_query_path = '/api/companies/search'
+  config.post_download_report_path = '/api/companies/report'
 end
