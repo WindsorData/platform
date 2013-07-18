@@ -22,38 +22,35 @@ trait PeersReport {
     }
   }
 
-  def doReport(models: Seq[Model])
-              (calculation: ((String, Seq[Model])) => (String, Seq[(BigDecimal, String)])) =
+  def calculation(models: Seq[Model])(peers: (String, Seq[Model])) : (String, Seq[(BigDecimal, String)])
+
+  def apply(models: Seq[Model]): Seq[Model] =
     models.groupBy(_ /!/ 'peerTicker)
       .toSeq
-      .map(makeReport _ compose calculation)
+      .map(makeReport _ compose calculation(models))
       .sortByWeight
-
-  def apply(models: Seq[Model]): Seq[Model]
 }
 
 object UnnormalizedPeersOfPeersReport extends PeersReport {
 
-  def apply(models: Seq[Model]) = doReport(models) {
+  override def calculation(models: Seq[Model])(peers: (String, Seq[Model])) = peers match {
     case (secondaryPeer, primaryPeers) =>
-      (secondaryPeer, primaryPeers.map(peer => (1: BigDecimal, peer /!/ 'ticker)))
+      secondaryPeer -> primaryPeers.map(peer => BigDecimal(1) -> peer /!/ 'ticker)
   }
+
 }
 
 object NormalizedPeersOfPeersReport extends PeersReport {
 
-  def apply(models: Seq[Model]) : Seq[Model] = doReport(models) {
+  override def calculation(models: Seq[Model])(peers: (String, Seq[Model])) = peers match {
     case (secondaryPeer, primaryPeers) => {
       val weights =
         models
           .groupBy(_ /!/ 'ticker)
           .map { case (primaryPeer, secondaryPeers) =>
-            (primaryPeer, BigDecimal(100) / secondaryPeers.size) }
+            primaryPeer -> BigDecimal(100) / secondaryPeers.size }
 
-      (secondaryPeer,
-        primaryPeers.map { peer =>
-          (weights(peer /!/ 'ticker), peer /!/ 'ticker)
-        })
+      secondaryPeer -> primaryPeers.map { it => weights(it /!/ 'ticker) -> it /!/ 'ticker}
     }
   }
 }

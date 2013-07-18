@@ -28,7 +28,7 @@ sealed trait Element extends ElementLike[Element] with ElementValueOps {
   def rawValue[A]  : Option[A] =  asValue[A].value
 
   /** Answers the elements at the given key,
-    * spreading at the {{{*}}} path parth, if present.
+    * spreading at the {{{*}}} path part if present.
     * */
   def applySeq(path : Path) : Seq[Element] = umatch((path, this)) {
     case (* :: tail, self: Col) => self.elements.map(_.apply(tail))

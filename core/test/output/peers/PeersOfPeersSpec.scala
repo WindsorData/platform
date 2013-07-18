@@ -1,5 +1,6 @@
 package output.peers
 
+import _root_.persistence.PeersDb
 import org.scalatest.FlatSpec
 import com.mongodb.casbah.MongoClient
 import libt._

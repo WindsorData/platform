@@ -31,7 +31,7 @@ object PeersDb {
         peerKey(path) -> model(path).getRawValue[String]
       }:_*)
 
-  def peerKey(path: Path) : String = path.titles.mkString(".") + ".value"
+  def peerKey(path: Path) : String = (path ++ Path('value)).joinWithDots
 
   def indirectPeersOf(ticker: String)(implicit db: MongoDB) : Seq[Model] =
     peers.find(MongoDBObject("peerTicker.value" -> ticker))
@@ -40,7 +40,8 @@ object PeersDb {
     val results = tickers.toSeq.foldLeft(MongoDBList.newBuilder) {  (builder, it) =>
       builder += MongoDBObject("ticker.value" -> it)
     }.result
-    peers.find(MongoDBObject("$or" -> results))
+    if(results.nonEmpty) peers.find(MongoDBObject("$or" -> results))
+    else Seq()
   }
 
   def peersOfPeersOf(ticker: String)(implicit db: MongoDB) : Seq[Model] =
