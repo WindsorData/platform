@@ -52,9 +52,11 @@ class DocSrcCombiner(
     yearsWithKeys.concatMap(_._1) andThen {
       (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped.map {
         case ((year, key, elemWrap), executives, company) =>
-          Valid(Model(company.elements
-            + ('disclosureFiscalYear -> Value(year.get))
-            + (key -> elemWrap(executives))))
+          year.map { it =>
+            Model(company.elements
+              + ('disclosureFiscalYear -> Value(it))
+              + (key -> elemWrap(executives)))
+          }
       }.concat
     }
   }
