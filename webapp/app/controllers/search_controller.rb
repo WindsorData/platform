@@ -19,17 +19,23 @@ class SearchController < ApplicationController
     json_query = QueryGenerator.json_query(params_hash)
     path = Rails.application.config.backend_host + Rails.application.config.post_query_path
 
-    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
-      # do something with the response
-    end
     @tickers = []
-    @tickers << {ticker: 'appl', name: 'Apple Inc'}
-    @tickers << {ticker: 'goog', name: 'Google Inc'} 
+    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
+      @tickers = JSON.parse(response)
+    end
   end
 
   def download
-    tickers = params[:tickers]
-    perform_search(tickers, Constants::TOP5_REPORT)
+    json_query = params.except(:controller, :action, :authenticity_token, :utf8, :role_form).to_json.gsub(/(")(\d+)(")/, ' \2')
+    path = Rails.application.config.backend_host + Rails.application.config.post_download_report_path  
+    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
+      if response.code == 200
+        send_data(response.body, filename: "elexcel.xls")
+      else
+        flash[:error] = "There was an error"
+        render "results"
+      end
+    end
   end
 
   def group_search
@@ -42,16 +48,9 @@ class SearchController < ApplicationController
     @groups = current_user.is_client? ? Group.by_company(current_user.company) : @groups = Group.all
   end
 
+  # TODO: Use in full and groups search
   def perform_search(tickers, report_type)
     path = Rails.application.config.backend_host
-    # RestClient.post(path, tickers: tickers) do |response, request|
-    #   JSON.parse(response.body)
-    #   file_name = "#{Time.now.strftime("%Y-%m-%d-%H:%M:%S")}_#{current_user.email}.xls"
-    #   File.open("#{Rails.root.to_s}/tmp/#{file_name}", "wb") do |file|        
-    #     file.write(response.body)        
-    #     send_file file.path
-    #   end
-    # end
   end
 
 end

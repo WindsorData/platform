@@ -17,7 +17,7 @@ class FilesController < ApplicationController
       if response.code == 200
         flash[:notice] = "Upload successfully completed"
       else
-        flash[:error] = "The uploaded file is invallid"
+        flash[:error] = "The uploaded file is invalid"
       end
       @upload_log = UploadLog.create({upload_type: type, message: response.body, user: current_user})
     end

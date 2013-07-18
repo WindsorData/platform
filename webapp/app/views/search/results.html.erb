@@ -1,10 +1,16 @@
-<h1 class="main-title">Insert search results here</h1>
-<%= form_tag(file_download_path, class: "main-form" ) do %>
-  <% @tickers.each{ |k| %>
-    <% if k.is_a? Hash %>
-      <%= check_box_tag 'tickers[]', k[:ticker] %> <%= k[:name] %>
-      </br>
-    <% end %>
-  <% } %>
-  <button type="submit" class="btn right">Download File</button>
+<h1 class="main-title">Search results</h1>
+<% if @tickers.blank? %>
+  No search results.
+<% else %>
+  <%= form_tag(file_download_path, class: "main-form" ) do %>
+    Years before: <%= select_tag 'range', options_for_select((1..3), 1) %>
+    </br>
+    <% @tickers.each{ |k| %>
+      <% if k.is_a? Hash %>
+        <%= check_box_tag 'companies[]', k["ticker"] %> <%= k["name"] %>
+        </br>
+      <% end %>
+    <% } %>
+    <button type="submit" class="btn right">Download File</button>
+  <% end %>
 <% end %>
