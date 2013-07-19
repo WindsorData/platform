@@ -23,6 +23,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
+  //TODO: remove this when database is consolidated
   implicit def saveAction(m: Model, db: MongoDB) = updateCompany(m)(db)
 
   override val entryReaders =
@@ -43,7 +44,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)
   def newBod = uploadSingleSpreadsheet(bod.Workflow)(MongoClient()("windsor-bod"), (m, db) => updateCompany(m)(db) )
-  def newPeers = uploadSingleSpreadsheet(peers.Workflow)(MongoClient()("windsor-peers"), (m, db) => updatePeers(m)(db) )
+  def newPeers = uploadSingleSpreadsheet(peers.Workflow)(MongoClient()("windsor-peers"), (m, db) => PeersDb.update(m)(db) )
 
   def newCompanies =
     UploadAndReadAction(db, saveAction) {

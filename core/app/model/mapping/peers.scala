@@ -26,14 +26,12 @@ package object peers {
     Path('peerTicker),
     Path('value))
 
-  val pk = Seq(Path('peerTicker), Path('ticker), Path('fiscalYear))
-
   def Workflow: FrontPhase[Seq[Model]] =
-    MappingPhase(Mapping) >> {
-      (_, xs) => Validated(xs.head.filter { model =>
-        pk.forall(model(_).rawValue[Any].nonEmpty)
-      })
-    }
+    MappingPhase(Mapping) >> CombinerPhase
 
   def Mapping = WorkbookMapping(Seq(Area(TPeers, Offset(1, 1), None, ColumnOrientedLayout(RawValueReader), peersMapping)))
+  def CombinerPhase : Phase[Seq[Seq[Model]], Seq[Model]] =
+    (_, xs) => Validated(xs.head.filter { model =>
+      peerId.forall(_.forall(model.nonEmpty(_)))
+    })
 }
