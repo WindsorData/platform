@@ -52,7 +52,5 @@ trait Persistence {
   def findAllMap[A](mapper: Model => A): Seq[A] =
     findAll.map(mapper).toSet.toSeq
 
-  def clean = collection.drop()
-
-  def drop = db.dropDatabase()
+  def drop = collection.drop()
 }
