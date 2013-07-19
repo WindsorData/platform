@@ -12,7 +12,7 @@ import libt._
 
 class TestDriver extends FunSpec {
 
-  describe("tmodel persistence") {
+  describe("tmodel Persistence") {
 
     it("can marshall values") {
       val schema = TString

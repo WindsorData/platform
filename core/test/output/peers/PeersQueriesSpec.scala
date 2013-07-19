@@ -26,7 +26,7 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
 
   override def beforeAll() {
     PeersDb.clean
-    PeersDb.save(models)
+    PeersDb.insert(models:_*)
   }
 
   override def afterAll() {
@@ -35,15 +35,15 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
 
   behavior of "Peers Queries for Reports"
 
-    it should "Get companies that have a target Company as a Peer" taggedAs(DbTest) in {
-      assert(PeersDb.indirectPeersOf("A") ===
-        Seq(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
+    it should "Get collection that have a target Company as a Peer" taggedAs(DbTest) in {
+      assert(PeersDb.indirectPeersOf("A").toList ===
+        List(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
             Model('ticker -> Value("C"),'peerTicker -> Value("A"))))
     }
 
     it should "Get Direct Peers for a single target Company" taggedAs(DbTest) in {
-      assert(PeersDb.peersOf("B") ===
-        Seq(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
+      assert(PeersDb.peersOf("B").toList ===
+        List(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
             Model('ticker -> Value("B"),'peerTicker -> Value("C"))))
     }
 
@@ -55,15 +55,15 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
       assert(PeersDb.peersOf() === Seq())
     }
 
-    it should "Get Direct Peers for target companies" taggedAs(DbTest) in {
-      assert(PeersDb.peersOf("A","B") ===
-        Seq(Model('ticker -> Value("A"),'peerTicker -> Value("B")),
+    it should "Get Direct Peers for target collection" taggedAs(DbTest) in {
+      assert(PeersDb.peersOf("A","B").toList ===
+        List(Model('ticker -> Value("A"),'peerTicker -> Value("B")),
             Model('ticker -> Value("A"),'peerTicker -> Value("C")),
             Model('ticker -> Value("B"),'peerTicker -> Value("A")),
             Model('ticker -> Value("B"),'peerTicker -> Value("C"))))
     }
 
-    it should "Get Peers of Peers companies for a target Company" taggedAs(DbTest) in {
+    it should "Get Peers of Peers collection for a target Company" taggedAs(DbTest) in {
       assert(PeersDb.peersOfPeersOf("A").toList ===
         List(
           // B peers

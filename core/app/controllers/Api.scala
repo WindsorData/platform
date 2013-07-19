@@ -7,7 +7,7 @@ import play.api.libs.json.Json._
 import play.api.mvc._
 
 import persistence.query._
-import persistence._
+import persistence.CompaniesDb._
 
 import model.Commons._
 
@@ -22,7 +22,7 @@ object Api extends Controller with SpreadsheetDownloader {
   implicit val db = MongoClient()("windsor")
 
   def tickers = Action {
-    Ok(toJson(findAllCompaniesNames.map {name => Map("name" -> name)}))
+    Ok(toJson(findAllTickers.map {name => Map("name" -> name)}))
   }
 
   def primaryRoles = valuesToJson(TPrimaryValues)

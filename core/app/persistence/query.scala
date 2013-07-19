@@ -1,7 +1,7 @@
 package persistence
 
 import com.mongodb.casbah.Imports._
-import persistence._
+import persistence.CompaniesDb._
 import org.joda.time.DateTime
 import libt.Path
 
@@ -14,7 +14,7 @@ object query {
     def exampleExecutives = executives.map {it => (it ++ advanced :+ filterLastYear).map(_.asMongoQuery).reduce(_ ++ _)}
     def query = MongoDBObject("$or" -> exampleExecutives)
 
-    def apply()(implicit db: MongoDB) = findByExample(db, query)
+    def apply()(implicit db: MongoDB) = find(query)
     override def toString = query.toString
 
     def filterLastYear = EqualCondition(Path('disclosureFiscalYear , 'value).joinWithDots, new DateTime().minusYears(1).getYear)

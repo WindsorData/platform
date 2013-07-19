@@ -1,5 +1,6 @@
 package controllers
 
+import _root_.persistence.PeersDb
 import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
@@ -8,7 +9,7 @@ import play.api.mvc._
 import com.mongodb.casbah.MongoDB
 import com.mongodb.casbah.MongoClient
 
-import persistence._
+import persistence.CompaniesDb._
 
 import model.mapping._
 
@@ -24,7 +25,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   val YearRanges = List(1, 2, 3)
   implicit val db = MongoClient()("windsor")
   //TODO: remove this when database is consolidated
-  implicit def saveAction(m: Model, db: MongoDB) = updateCompany(m)(db)
+  implicit def saveAction(m: Model, db: MongoDB) = update(m)(db)
 
   override val entryReaders =
     Seq(
@@ -43,7 +44,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newCompany = uploadSingleSpreadsheet(top5.Workflow)
   def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)
-  def newBod = uploadSingleSpreadsheet(bod.Workflow)(MongoClient()("windsor-bod"), (m, db) => updateCompany(m)(db) )
+  def newBod = uploadSingleSpreadsheet(bod.Workflow)(MongoClient()("windsor-bod"), (m, db) => update(m)(db) )
   def newPeers = uploadSingleSpreadsheet(peers.Workflow)(MongoClient()("windsor-peers"), (m, db) => PeersDb.update(m)(db) )
 
   def newCompanies =
@@ -84,14 +85,14 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def searchCompany = Action {
     Ok(views.html.searchCompanies(companyForm,
-      allCompanies :: findAllCompaniesNames.toList,
+      (allCompanies,allCompanies) :: findAllCompaniesId.toList,
       YearRanges))
   }
 
   def doSearch = Action { implicit request =>
     companyForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.searchCompanies(formWithErrors, findAllCompaniesNames, YearRanges)),
+        BadRequest(views.html.searchCompanies(formWithErrors, findAllCompaniesId, YearRanges)),
       success = values => values match {
         case (names, range) =>
           createSpreadsheetResult(names, range) match {
@@ -102,7 +103,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   }
 
   def companies = Action {
-    Ok(views.html.companies(findAllCompanies.asInstanceOf[List[Model]]))
+    Ok(views.html.companies(findAll.toList))
   }
 
 }
