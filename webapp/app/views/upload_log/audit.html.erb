@@ -1,4 +1,16 @@
 <h1>Upload Log</h1>
+
+<div class="form-container" id="forms-container">
+  <%= form_tag(:audit_log, :method => 'get', class: "main-form") do %>
+    <%= label_tag :user %>: <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %><br/>
+    Created date: <%= text_field_tag(:date_since) %> to: <%= text_field_tag(:date_to) %>
+    <div class="form-actions">
+      <button type="submit" class="btn-small">Search</button>
+    </div>
+  <% end %>
+</div>
+
+<br/>
 <% @logs.each do |log| %>
     <%= content_tag :div, log.user.email %>
     <%= content_tag :div, log.created_at %>

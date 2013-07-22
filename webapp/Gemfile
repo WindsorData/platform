@@ -3,6 +3,7 @@ source 'https://rubygems.org'
 gem 'rails', '3.2.12'
 
 gem 'jquery-rails'
+gem 'jquery-ui-rails'
 gem 'devise'
 gem 'pg'
 gem 'cancan'
@@ -10,6 +11,7 @@ gem 'annotate'
 gem 'inherited_resources'
 gem 'rest-client'
 gem 'kaminari'
+gem 'american_date'
 
 # Gems used only for assets and not required
 # in production environments by default.
