@@ -15,6 +15,7 @@ class Ability
       end
       can   :perform, :quick_search
       can   :perform, :full_search
+      can   :perform, :recent_search      
     when 'admin'
       can   :upload, :file
       can   :perform, :full_search
@@ -31,6 +32,7 @@ class Ability
       end
       can   :perform, :quick_search
       can   :perform, :full_search
+      can   :perform, :recent_search
     end
   end
 end

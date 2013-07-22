@@ -44,7 +44,7 @@ class SearchController < ApplicationController
   end
 
   def recent_search
-    authorize!(:perform, :full_search)    
+    authorize!(:perform, :recent_search)
     @params_hash = JSON.parse(Search.find(params[:id]).json_query)
   end
 
