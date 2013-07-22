@@ -46,7 +46,9 @@ POST    /companies/reports/batch                controllers.Application.newCompa
 
 ##Query a Company
 GET     /companies/search                       controllers.Application.searchCompany
-POST    /companies/search                       controllers.Application.doSearch
+GET     /companies/search/bod                   controllers.Application.searchBod
+POST    /companies/search                       controllers.Application.doStandardSearch
+POST    /companies/search/bod                   controllers.Application.doBodSearch
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

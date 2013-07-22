@@ -1,10 +1,11 @@
-@(companyForm: Form[(Seq[String],Int)], companyNames: Seq[(String,String)], companyYears: List[Int])
+@(companyForm: Form[(Seq[String],Int)], companyNames: Seq[(String,String)], companyYears: List[Int], action: Call)
 @import helper._
 
 @main("Search Companies") {
     
     <a href="/companies">Home</a>
-    @form(routes.Application.doSearch) {
+
+    @form(action) {
         
         @for( ((cusip, ticker), index) <- companyNames.zip((0 to companyNames.size).map("checkMe[" + _.toString + "]")) ) {
            @checkbox(

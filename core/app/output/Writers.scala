@@ -5,15 +5,26 @@ import java.io.OutputStream
 import org.apache.poi.ss.usermodel.Workbook
 import model._
 import util.FileManager
-import libt.util._
 import libt._
 import libt.spreadsheet._
-import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
-import libt.reduction._
+import model.ExecutivesBod._
+import model.mapping.bod._
 import output.mapping._
+import libt.TModel
+import output.ValueAreaLayout
+import output.MetadataAreaLayout
+import libt.spreadsheet.reader.Area
+import output.FlattedArea
+import scala.Some
+import libt.spreadsheet.reader.ColumnOrientedLayout
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
 
-object SpreadsheetWriter {
+trait OutputWriter {
+  val schema: TModel
+  val fileName: String
+  def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit
 
   def outputArea(
     layout: FlattedAreaLayout,
@@ -21,14 +32,67 @@ object SpreadsheetWriter {
     flatteningPK: Path,
     flatteningPath: Path,
     writeStrategy: WriteStrategy) =
-    FlattedArea(
-      PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
-      PK(flatteningPK),
-      flatteningPath,
-      TCompanyFiscalYear,
-      layout,
-      outputMapping,
-      writeStrategy)
+      FlattedArea(
+        PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
+        PK(flatteningPK),
+        flatteningPath,
+        schema,
+        layout,
+        outputMapping,
+        writeStrategy)
+
+  def write(out: OutputStream, companies: Seq[Model], range: Int): Unit = {
+    FileManager.loadResource(fileName) {
+      x =>
+      {
+        val wb = WorkbookFactory.create(x)
+        write(wb, companies, range)
+        wb.write(out)
+      }
+    }
+  }
+}
+
+object BodWriter extends OutputWriter {
+  val schema = TModel(
+    TBod.elementTypes ++
+    TModel('ticker -> TString, 'name -> TString, 'disclosureFiscalYear -> TInt).elementTypes : _*)
+
+  val fileName = "EmptyBodOutputTemplate.xls"
+
+  def bodArea(range: Int) =
+    Area(schema= schema,
+      offset= Offset(4,0),
+      limit= None,
+      orientation= ColumnOrientedLayout(RawValueReader),
+      columns= Seq[Strip](Path('ticker),
+                          Path('name),
+                          Path('disclosureFiscalYear),
+                          Gap, Gap, Gap, Gap, Gap) ++ bodMapping)
+
+  def metadataArea(range: Int) =
+    outputArea(
+      MetadataAreaLayout(Offset(1, 0)),
+      execDbOutputMapping.filter(_ match {
+        case Gap => false
+        case _ => true
+      }),
+      Path(),
+      Path('bod, *),
+      FullWriteStrategy)
+
+  def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit =
+    WorkbookMapping(Seq(bodArea(yearRange))).write(
+      Model.flattenWith(
+        models,
+        PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
+        Path('bod, *)), out)
+}
+
+
+object StandardWriter extends OutputWriter {
+  val schema = TCompanyFiscalYear
+  val fileName = "EmptyStandardOutputTemplate.xls"
 
   def execDBArea(range: Int, yearOffset: Option[Int]) =
     outputArea(
@@ -113,20 +177,9 @@ object SpreadsheetWriter {
   }
 
   def loadTemplateInto(out: OutputStream) =
-    FileManager.loadResource("EmptyOutputTemplate.xls") {
+    FileManager.loadResource("EmptyStandardOutputTemplate.xls") {
       x => WorkbookFactory.create(x).write(out)
     }
-
-  def write(out: OutputStream, companies: Seq[Model], executivesRange: Int): Unit = {
-    FileManager.loadResource("EmptyOutputTemplate.xls") {
-      x =>
-        {
-          val wb = WorkbookFactory.create(x)
-          write(wb, companies, executivesRange)
-          wb.write(out)
-        }
-    }
-  }
 
   /**
     * [[output.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
@@ -134,7 +187,7 @@ object SpreadsheetWriter {
     * @param yearOffset the negative year offset (0 is last year, 1 is previous year, and so on)
     */
   case class ExecutivesWriteStrategy(/*TODO remove*/range: Int, yearOffset: Option[Int]) extends WriteStrategy {
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet)  {
+    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
       def Desc[T: Ordering] = implicitly[Ordering[T]].reverse
       if (range >= 0) {
         val validModels = models
@@ -158,6 +211,21 @@ object SpreadsheetWriter {
         models.filter(_('disclosureFiscalYear).asValue[Int].value.get == lastYear),
         sheet,
         area)
+    }
+  }
+
+  case class MultipleYearWriteStrategy(range: Int) extends WriteStrategy {
+    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
+      if (range >= 0) {
+        val validModels =
+          models
+            .groupBy(_ /!/ 'ticker)
+            .flatMap { case (ticker, ms) =>
+              ms.sortBy(_ /#/ 'disclosureFiscalYear).reverse.take(range)
+            }
+            .toSeq
+        area.layout.write(validModels, sheet, area)
+      }
     }
   }
 }

@@ -15,6 +15,7 @@ import libt._
 import libt.json._
 import controllers.generic.SpreadsheetDownloader
 import output.PeersPeersReport
+import output.StandardWriter
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -86,7 +87,7 @@ object Api extends Controller with SpreadsheetDownloader {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreadsheetResult(companies, range)(ExecutivesDb) match {
+      createSpreadsheetResult(StandardWriter, companies, range)(ExecutivesDb) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }

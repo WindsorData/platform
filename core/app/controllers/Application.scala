@@ -12,6 +12,8 @@ import libt.spreadsheet.reader.workflow._
 import libt.error._
 import libt._
 import controllers.generic._
+import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
+import output.{StandardWriter, BodWriter, OutputWriter}
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
@@ -81,21 +83,30 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def searchCompany = Action {
     Ok(views.html.searchCompanies(companyForm,
       (ExecutivesDb.allCompanies,ExecutivesDb.allCompanies) :: ExecutivesDb.findAllCompaniesId.toList,
-      YearRanges))
+      YearRanges, routes.Application.doStandardSearch()))
   }
 
-  def doSearch = Action { implicit request =>
+  def searchBod = Action {
+    Ok(views.html.searchCompanies(companyForm,
+      BodDb.findAllCompaniesId.toList,
+      YearRanges, routes.Application.doBodSearch()))
+  }
+
+  def doSearch(writer: OutputWriter, db: CompaniesDb) = Action { implicit request =>
     companyForm.bindFromRequest.fold(
       formWithErrors =>
-        BadRequest(views.html.searchCompanies(formWithErrors, ExecutivesDb.findAllCompaniesId, YearRanges)),
+        BadRequest(views.html.searchCompanies(formWithErrors, db.findAllCompaniesId, YearRanges, routes.Application.doStandardSearch())),
       success = values => values match {
         case (names, range) =>
-          createSpreadsheetResult(names, range)(ExecutivesDb) match {
+          createSpreadsheetResult(writer, names, range)(db) match {
             case Some(response) => response
             case None => Ok(views.html.searchWithoutResults())
           }
       })
   }
+
+  def doStandardSearch = doSearch(StandardWriter, ExecutivesDb)
+  def doBodSearch = doSearch(BodWriter, BodDb)
 
   def companies = Action {
     Ok(views.html.companies(ExecutivesDb.findAll.toList))
