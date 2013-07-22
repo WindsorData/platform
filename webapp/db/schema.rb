@@ -11,7 +11,8 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130710212323) do
+ActiveRecord::Schema.define(:version => 20130722174234) do
+
   create_table "companies", :force => true do |t|
     t.string   "name"
     t.string   "address"
@@ -51,11 +52,20 @@ ActiveRecord::Schema.define(:version => 20130710212323) do
     t.string   "type"
   end
 
+  create_table "searches", :force => true do |t|
+    t.integer  "user_id"
+    t.text     "json_query"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "company_id"
+  end
+
   create_table "tickers", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
     t.string   "ticker"
+    t.string   "cusip"
   end
 
   create_table "upload_logs", :force => true do |t|

@@ -7,7 +7,7 @@
     </br>
     <% @tickers.each{ |k| %>
       <% if k.is_a? Hash %>
-        <%= check_box_tag 'companies[]', k["ticker"] %> <%= k["name"] %>
+        <%= check_box_tag 'companies[]', k["cusip"] %> <%= k["name"] %>
         </br>
       <% end %>
     <% } %>
