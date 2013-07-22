@@ -9,7 +9,7 @@ object DbTest extends Tag("com.windsor.tags.DbTest")
 
 class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
 
-  implicit val db = MongoClient()("windsor-peers-specs")
+  import PeersDb._
 
   val models = Seq(
     // A peers
@@ -25,46 +25,46 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
     Model('ticker -> Value("C"),'peerTicker -> Value("B")))
 
   override def beforeAll() {
-    PeersDb.clean
-    PeersDb.save(models)
+    clean
+    insert(models:_*)
   }
 
   override def afterAll() {
-    PeersDb.drop
+    drop
   }
 
   behavior of "Peers Queries for Reports"
 
-    it should "Get companies that have a target Company as a Peer" taggedAs(DbTest) in {
-      assert(PeersDb.indirectPeersOf("A") ===
-        Seq(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
+    it should "Get collection that have a target Company as a Peer" taggedAs(DbTest) in {
+      assert(indirectPeersOf("A").toList ===
+        List(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
             Model('ticker -> Value("C"),'peerTicker -> Value("A"))))
     }
 
     it should "Get Direct Peers for a single target Company" taggedAs(DbTest) in {
-      assert(PeersDb.peersOf("B") ===
-        Seq(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
+      assert(peersOf("B").toList ===
+        List(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
             Model('ticker -> Value("B"),'peerTicker -> Value("C"))))
     }
 
     it should "Get empty seq for a target company with no peers" taggedAs(DbTest) in {
-      assert(PeersDb.peersOf("D") === Seq())
+      assert(peersOf("D") === Seq())
     }
 
     it should "Get empty seq for no target company" taggedAs(DbTest) in {
-      assert(PeersDb.peersOf() === Seq())
+      assert(peersOf() === Seq())
     }
 
-    it should "Get Direct Peers for target companies" taggedAs(DbTest) in {
-      assert(PeersDb.peersOf("A","B") ===
-        Seq(Model('ticker -> Value("A"),'peerTicker -> Value("B")),
+    it should "Get Direct Peers for target collection" taggedAs(DbTest) in {
+      assert(peersOf("A","B").toList ===
+        List(Model('ticker -> Value("A"),'peerTicker -> Value("B")),
             Model('ticker -> Value("A"),'peerTicker -> Value("C")),
             Model('ticker -> Value("B"),'peerTicker -> Value("A")),
             Model('ticker -> Value("B"),'peerTicker -> Value("C"))))
     }
 
-    it should "Get Peers of Peers companies for a target Company" taggedAs(DbTest) in {
-      assert(PeersDb.peersOfPeersOf("A").toList ===
+    it should "Get Peers of Peers collection for a target Company" taggedAs(DbTest) in {
+      assert(peersOfPeersOf("A").toList ===
         List(
           // B peers
           Model('ticker -> Value("B"),'peerTicker -> Value("A")),

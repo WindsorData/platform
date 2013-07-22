@@ -1,5 +1,6 @@
 package controllers
 
+import _root_.persistence.CompaniesDb
 import com.mongodb.casbah.MongoClient
 
 import play.api.libs.json.JsValue
@@ -19,10 +20,8 @@ import controllers.generic.SpreadsheetDownloader
 
 object Api extends Controller with SpreadsheetDownloader {
 
-  implicit val db = MongoClient()("windsor")
-
   def tickers = Action {
-    Ok(toJson(findAllCompaniesNames.map {name => Map("name" -> name)}))
+    Ok(toJson(ExecutivesDb.findAllTickers.map {name => Map("name" -> name)}))
   }
 
   def primaryRoles = valuesToJson(TPrimaryValues)
@@ -71,7 +70,7 @@ object Api extends Controller with SpreadsheetDownloader {
     val json : JsValue = request.body.asJson.get
     val query: QueryExecutives = QueryParser.query(json)
 
-    val results = query().map { company =>
+    val results = query(ExecutivesDb).map { company =>
       Map(
         "name" -> company /!/ 'name,
         "ticker" -> company /!/ 'ticker,
@@ -86,7 +85,7 @@ object Api extends Controller with SpreadsheetDownloader {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreadsheetResult(companies, range) match {
+      createSpreadsheetResult(companies, range)(ExecutivesDb) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
