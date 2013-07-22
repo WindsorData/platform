@@ -6,7 +6,7 @@
 GET     /                                       controllers.Application.index
 
 ## REST API
-GET     /api/tickers                                     controllers.Api.tickers
+GET     /api/companies                                   controllers.Api.companies
 GET     /api/schema/values/roles/primary                 controllers.Api.primaryRoles
 GET     /api/schema/values/roles/secondary               controllers.Api.secondaryRoles
 GET     /api/schema/values/roles/level                   controllers.Api.level
