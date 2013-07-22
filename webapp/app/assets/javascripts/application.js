@@ -12,6 +12,7 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require jquery.ui.datepicker
 //= require modernizr
 //= require css_browser_selector
 //= require jquery.tokeninput
