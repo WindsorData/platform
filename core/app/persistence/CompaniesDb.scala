@@ -24,4 +24,7 @@ case class CompaniesDb(db: MongoDB) extends Persistence {
   def findAllCompaniesId: Seq[(String,String)] =
     findAllMap(company => company /!/ 'cusip -> company /!/ 'ticker)
 
+  def findAllCompaniesIdWithNames: Seq[(String,String,String)] =
+    findAllMap(company => (company /!/ 'cusip, company /!/ 'ticker, company /!/ 'name))
+
 }

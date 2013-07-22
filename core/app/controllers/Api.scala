@@ -20,8 +20,10 @@ import controllers.generic.SpreadsheetDownloader
 
 object Api extends Controller with SpreadsheetDownloader {
 
-  def tickers = Action {
-    Ok(toJson(ExecutivesDb.findAllTickers.map {name => Map("name" -> name)}))
+  def companies = Action {
+    Ok(toJson(ExecutivesDb.findAllCompaniesIdWithNames.map { case (cusip, ticker, name) =>
+      Map("cusip" -> cusip, "ticker" -> ticker, "name" -> name)
+    }))
   }
 
   def primaryRoles = valuesToJson(TPrimaryValues)
@@ -73,7 +75,7 @@ object Api extends Controller with SpreadsheetDownloader {
     val results = query(ExecutivesDb).map { company =>
       Map(
         "name" -> company /!/ 'name,
-        "ticker" -> company /!/ 'ticker,
+        "cusip" -> company /!/ 'cusip,
         "year" -> (company /#/ 'disclosureFiscalYear).toString
       )
     }
