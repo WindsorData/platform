@@ -5,15 +5,15 @@ import libt.persistence._
 import libt._
 
 trait Persistence {
-  type DBO = DBObject
   val TDBSchema: TModel
   protected val colName: String
   protected val pk: Seq[Path]
+  protected val db: MongoDB
 
   def marshall = TDBSchema.marshall(_)
   def unmarshall = TDBSchema.unmarshall(_)
 
-  protected def collection(implicit db: MongoDB) = db(colName)
+  protected def collection = db(colName)
 
   implicit def mongoCollection2Models(result: MongoCollection#CursorType): Seq[Model] =
     result.toSeq.map(unmarshall(_).asModel)
@@ -21,7 +21,7 @@ trait Persistence {
   def operatorExpression(property: String, operator: String, values: Any) =
     MongoDBObject(property -> MongoDBObject(operator -> values))
 
-  def insert(models: Model*)(implicit db: MongoDB) = {
+  def insert(models: Model*) = {
     models.foreach(model => collection.insert(TDBSchema.marshall(model)))
   }
 
@@ -33,7 +33,7 @@ trait Persistence {
 
   def key(path: Path) : String = (path ++ Path('value)).joinWithDots
 
-  def update(models: Model*)(implicit db: MongoDB) = {
+  def update(models: Model*) = {
     models.foreach{ model =>
       collection.update(
         singlePKQuery(model),
@@ -41,14 +41,14 @@ trait Persistence {
     }
   }
 
-  def find(query: DBO)(implicit db: MongoDB): Seq[Model] = collection.find(query)
+  def find(query: DBO): Seq[Model] = collection.find(query)
 
-  def findAll(implicit db: MongoDB): Seq[Model] = collection.find
+  def findAll: Seq[Model] = collection.find
 
-  def findAllMap[A](mapper: Model => A)(implicit db: MongoDB): Seq[A] =
+  def findAllMap[A](mapper: Model => A): Seq[A] =
     findAll.map(mapper).toSet.toSeq
 
-  def clean(implicit db: MongoDB) = collection.drop()
+  def clean = collection.drop()
 
-  def drop(implicit db: MongoDB) = db.dropDatabase()
+  def drop = db.dropDatabase()
 }

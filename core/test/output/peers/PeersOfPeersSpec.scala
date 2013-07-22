@@ -1,14 +1,10 @@
 package output.peers
 
-import _root_.persistence.PeersDb
 import org.scalatest.FlatSpec
-import com.mongodb.casbah.MongoClient
 import libt._
 import output._
 
 class PeersOfPeersSpec extends FlatSpec {
-
-  implicit val db = MongoClient()("windsor-peers-specs")
 
   // Direct Peers of some company A
   val models =
