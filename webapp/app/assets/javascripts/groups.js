@@ -4,6 +4,7 @@ $(document).ready(function() {
     hintText: "Type in a ticker",
     prePopulate: $("#tickers_tokens").data("pre"),
     theme: "facebook",
-    preventDuplicates: true
+    preventDuplicates: true,
+    propertyToSearch: "ticker"
   });
 });
