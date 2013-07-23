@@ -27,20 +27,13 @@ class SearchController < ApplicationController
 
   def download
     json_query = params.except(:controller, :action, :authenticity_token, :utf8, :role_form).to_json.gsub(/(")(\d+)(")/, ' \2')
-    path = Rails.application.config.backend_host + Rails.application.config.post_download_report_path  
-    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
-      if response.code == 200
-        send_data(response.body, filename: "elexcel.xls")
-      else
-        flash[:error] = "There was an error"
-        render "results"
-      end
-    end
+    perform_search(json_query, Constants::TOP5_REPORT)
   end
 
   def group_search
-    tickers = Group.find(params[:group]).tickers.map(&:ticker)
-    perform_search(tickers, params[:report])
+    tickers = Group.find(params[:group]).tickers.map(&:cusip)
+    json_query = { range: 1, companies: tickers }.to_json.gsub(/(")(\d+)(")/, ' \2')
+    perform_search(json_query, params[:report])
   end
 
   private
@@ -48,9 +41,16 @@ class SearchController < ApplicationController
     @groups = current_user.is_client? ? Group.by_company(current_user.company) : @groups = Group.all
   end
 
-  # TODO: Use in full and groups search
-  def perform_search(tickers, report_type)
-    path = Rails.application.config.backend_host
+  def perform_search(json_query, report_type)
+    path = Rails.application.config.backend_host + Rails.application.config.post_download_report_path  
+    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
+      if response.code == 200
+        send_data(response.body, filename: "report.xls")
+      else
+        flash[:error] = "There was an error"
+        render "results"
+      end
+    end
   end
 
 end

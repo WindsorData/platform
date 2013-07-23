@@ -37,6 +37,7 @@ WindosorFrontend::Application.configure do
 
   # Backend params
   config.backend_host = 'http://localhost:9000'
+
   config.get_companies_path = '/api/companies'
   config.get_primary_roles_path = '/api/schema/values/roles/primary'
   config.get_secondary_roles_path = '/api/schema/values/roles/secondary'  
