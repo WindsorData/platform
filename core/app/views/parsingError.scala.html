@@ -1,4 +1,4 @@
-@(errors: Seq[(String,Seq[String])])
+@(errors: Seq[(String, String, Seq[String])])
 @import helper._
 
 <div>
@@ -6,8 +6,11 @@
         <div>
             <h3>@error._1</h3>
         </div>
+        <div>
+            <h3>@error._2</h3>
+        </div>
         <ul>
-            @for(e <- error._2) {
+            @for(e <- error._3) {
                 <li>@e</li>
             }
         </ul>
