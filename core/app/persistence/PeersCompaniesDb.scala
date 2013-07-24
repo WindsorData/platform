@@ -12,7 +12,8 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
   protected val pk: Seq[Path] = peerId
 
   def indirectPeersOf(ticker: String) : Seq[Model] =
-    find(MongoDBObject("peerTicker.value" -> ticker))
+    findWith(MongoDBObject("peerTicker.value" -> ticker),
+      MongoDBObject("ticker.value" -> 1, "companyName.value" -> 1))
 
   def peersOf(tickers: String*) : Seq[Model] =
     if(tickers.nonEmpty)
@@ -22,5 +23,7 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
 
   def peersOfPeersOf(ticker: String) : Seq[Model] =
     peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*)
+
+  def allTickers: Seq[Model] = findAllWith(MongoDBObject("ticker.value" -> 1))
 
 }

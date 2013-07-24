@@ -9,7 +9,8 @@ object DbTest extends Tag("com.windsor.tags.DbTest")
 
 class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
 
-  import PeersDb._
+  val db = PeersCompaniesDb(MongoClient()("windsor-peers-specs"))
+  import db._
 
   val models = Seq(
     // A peers
@@ -37,8 +38,7 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
 
     it should "Get collection that have a target Company as a Peer" taggedAs(DbTest) in {
       assert(indirectPeersOf("A").toList ===
-        List(Model('ticker -> Value("B"),'peerTicker -> Value("A")),
-            Model('ticker -> Value("C"),'peerTicker -> Value("A"))))
+        List(Model('ticker -> Value("B")), Model('ticker -> Value("C"))))
     }
 
     it should "Get Direct Peers for a single target Company" taggedAs(DbTest) in {

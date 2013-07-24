@@ -1,9 +1,6 @@
 package controllers
 
-import _root_.persistence.CompaniesDb
-import com.mongodb.casbah.MongoClient
-
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsString, JsValue}
 import play.api.libs.json.Json._
 import play.api.mvc._
 
@@ -94,4 +91,14 @@ object Api extends Controller with SpreadsheetDownloader {
     } .getOrElse(BadRequest("invalid json"))
   }
 
+  def incomingPeers = Action { request =>
+    val ticker = (request.body.asJson.get \ "ticker").as[String]
+    Ok(toJson(PeersDb.indirectPeersOf(ticker).map(_.asJson)))
+  }
+
+  def allPeersTickers = Action { request =>
+    Ok(toJson(PeersDb.allTickers.map(_.asJson).toSet))
+  }
+
 }
+
