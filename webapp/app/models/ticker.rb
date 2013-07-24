@@ -18,5 +18,5 @@ class Ticker < ActiveRecord::Base
   validates :ticker, presence: true, uniqueness: true
   validates :cusip, presence: true, uniqueness: true
 
-  scope :containing_chars, lambda { |s| where("name ilike ?", "%#{s}%") }
+  scope :containing_chars, lambda { |s| where("ticker ilike ?", "%#{s}%") }
 end
