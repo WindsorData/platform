@@ -11,4 +11,6 @@
 
 class CompanyPeer < ActiveRecord::Base
   attr_accessible :name, :ticker
+
+  scope :containing_chars, lambda { |s| where("ticker ilike ?", "%#{s}%") }
 end

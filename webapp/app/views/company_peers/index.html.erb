@@ -1,1 +1,8 @@
-company peers
+<%= form_tag(group_search_path) do %>
+
+  <div class="field">
+    <%= text_field_tag :company_peers_tokens, id: 'company_peers_tokens' %>
+    <%= submit_tag 'Search', class: 'big-button' %>
+  </div>
+
+<% end %>

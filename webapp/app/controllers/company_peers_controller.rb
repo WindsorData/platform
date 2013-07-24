@@ -6,13 +6,11 @@ class CompanyPeersController < ApplicationController
 
   # GET /groups/tickers.json
   def company_peers
-    # [{"name":"Demand Media Inc","ticker":"DMD","year":"2011"}]
-
     @company_peers = CompanyPeer.containing_chars(params[:q])
-    
+    # [{"name":"Corba Cumbia Inc","ticker":"CCI"}]
     respond_to do |format|
       format.html
-      format.json { render json: @tickers.map(&:attributes) }
+      format.json { render json: @company_peers.map(&:attributes) }
     end
   end
 end

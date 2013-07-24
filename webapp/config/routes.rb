@@ -1,5 +1,4 @@
 WindosorFrontend::Application.routes.draw do
-  get "upload_log/audit",     as: :audit_log
 
   root to: "home#index"
   devise_for :users
@@ -23,6 +22,9 @@ WindosorFrontend::Application.routes.draw do
   post "search/download",     as: :file_download
   post "search/group_search", as: :group_search
 
+  get "upload_log/audit",     as: :audit_log
+
   get 'company_peers/index',  as: :company_peers
+  get 'company_peers',        to: 'company_peers#company_peers'
   
 end
