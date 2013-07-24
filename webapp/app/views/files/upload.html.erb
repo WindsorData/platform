@@ -1,8 +1,11 @@
+<h1>Upload new file</h1>
+
 <%= form_tag(send_file_path, multipart: true, class: "custom") do %>
   <%= render 'layouts/messages' %>
   <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
   <%= file_field_tag 'file', required: :true %>
-  <%= submit_tag 'Upload', class: 'big-button' %>
+  <br>
+  <%= submit_tag 'Upload', class: 'button' %>
   <% if @upload_log %>
     <%= render 'layouts/upload_results', results: @upload_log.results %>
   <% end %>
