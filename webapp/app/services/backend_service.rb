@@ -1,17 +1,18 @@
 class BackendService
 
   def self.update_search_values
-    path = Rails.application.config.backend_host
-    load_values(path + Rails.application.config.get_tickers_path, Ticker)
+    rails_config = Rails.application.config
+    path = rails_config.backend_host
+    load_values(path + rails_config.get_companies_path, Ticker)
 
-    load_values(path + Rails.application.config.get_primary_roles_path, PrimaryRole)
-    load_values(path + Rails.application.config.get_secondary_roles_path, SecondaryRole)
-    load_values(path + Rails.application.config.get_level_roles_path, LevelRole)
-    load_values(path + Rails.application.config.get_scope_roles_path, ScopeRole)
-    load_values(path + Rails.application.config.get_bod_roles_path, BodRole)
+    load_values(path + rails_config.get_primary_roles_path, PrimaryRole)
+    load_values(path + rails_config.get_secondary_roles_path, SecondaryRole)
+    load_values(path + rails_config.get_level_roles_path, LevelRole)
+    load_values(path + rails_config.get_scope_roles_path, ScopeRole)
+    load_values(path + rails_config.get_bod_roles_path, BodRole)
 
-    load_values(path + Rails.application.config.get_cash_compensations_path, CashCompensation)
-    load_values(path + Rails.application.config.get_equity_compensations_path, EquityCompensation)
+    load_values(path + rails_config.get_cash_compensations_path, CashCompensation)
+    load_values(path + rails_config.get_equity_compensations_path, EquityCompensation)
   end
 
   private
