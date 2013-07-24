@@ -3,7 +3,7 @@
 # Table name: upload_logs
 #
 #  id          :integer          not null, primary key
-#  user        :string(255)
+#  user_id     :integer
 #  message     :text
 #  upload_type :string(255)
 #  created_at  :datetime         not null

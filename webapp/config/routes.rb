@@ -22,5 +22,7 @@ WindosorFrontend::Application.routes.draw do
   post  "files/send_file",    as: :send_file
   post "search/download",     as: :file_download
   post "search/group_search", as: :group_search
+
+  get 'company_peers/index',  as: :company_peers
   
 end

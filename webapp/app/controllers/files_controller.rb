@@ -53,6 +53,7 @@ class FilesController < ApplicationController
         Rails.application.config.post_dilution_path
       when 'batch'
         Rails.application.config.post_batch_path
+      # add peers data case
     end
   end
 
