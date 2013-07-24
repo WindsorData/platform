@@ -1,4 +1,4 @@
-<%= form_for(@user) do |f| %>
+<%= form_for(@user, html: {class: "custom"}) do |f| %>
   <% if @user.errors.any? %>
     <div id="error_explanation" class="form-error cf">
       <h2 class="left"><%= pluralize(@user.errors.count, "error") %> prohibited this user from being saved:</h2>
