@@ -1,33 +1,52 @@
-<div class="column-3">
-  <!-- activity log -->
-  <div class="side-container activity-log">
-    <h2 class="title">Activity Log</h2>
-    <div class="content">
-      <ul class="documents-list">
-        <li class="document"><a href="#">Document 01</a></li>
-        <li class="document"><a href="#">Document 02</a></li>
-        <li class="document"><a href="#">Document 03</a></li>
-        <li class="document"><a href="#">Document 04</a></li>
-      </ul>
-    </div>
-  </div>
+<div class="large-3 columns activity-log">
+
+  <h2 class="title">Activity Log</h2>
+
+  <ul class="side-nav">
+    <li><a href="#">Document 01</a></li>
+    <li><a href="#">Document 02</a></li>
+    <li><a href="#">Document 03</a></li>
+    <li><a href="#">Document 04</a></li>
+  </ul>
+
 </div>
 
-<div class="column-9">
+<div class="large-9 columns">
   <!-- quick launch -->
   <div class="side-container quick-launch">
     <h2 class="title">Quick Launch</h2>
     <div class="content">
-      <%= form_tag(group_search_path) do %>
-        <label class="label">Select peer group
-          <%= select_tag :group, options_from_collection_for_select(groups, "id", "name") %>
-        </label>
-        <label class="label">Select report
-          <%= select_tag :report, options_for_select(Constants::REPORT_TYPES) %>
-        </label>
-        <%= submit_tag "Select" %>
-        <%= link_to('Create new peer group', groups_path, class: 'right') %>
-      <% end %>
+      <form class="custom">
+        <div class="row">
+          <div class="small-12">
+            <%= form_tag('/groups') do %>
+              <div class="row ">
+                <div class="large-12 columns">
+                  <label for="right-label">Select peer group</label>
+                  <%= select_tag :group, options_from_collection_for_select(groups, "id", "name") %>
+                </div>
+              </div>
+              <div class="row ">
+                <div class="small-12 columns">
+                  <label for="right-label">Select report</label>
+                  <%= select_tag :report, options_for_select(Constants::REPORT_TYPES) %>
+                </div>
+              </div>
+              <div class="row">
+                <div class="small-12 columns">
+                  <div class="left">
+                    <%= submit_tag "Select", class: 'small button success' %>
+                  </div>
+                  <div class="left">
+                    <span>| or </span>
+                    <%= link_to('Create new peer group', groups_path) %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>

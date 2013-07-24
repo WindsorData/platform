@@ -11,5 +11,7 @@
  *= require_self
  *= require token-input-facebook
  *= require jquery.ui.datepicker
- *= require_tree ./all
- */
+ *= require_tree .
+ *= require foundation_and_overrides
+ *= require windsor
+*/

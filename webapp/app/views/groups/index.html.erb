@@ -4,21 +4,25 @@
 <%= render 'form' %>
 
 <!-- admin groups table -->
-<table class="table">
-  <thead>
-    <tr>
-      <th>Group name</th>
-      <th class="icon-column text-center">Edit</th>
-      <th class="icon-column text-center">Remove</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @groups.each do |group| %>
-      <tr>
-        <td><%= link_to group.name, group %></td>
-        <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_group_path(group), class: 'btn-icon' %></td>
-        <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, group, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<div class="row">
+  <div class="large-12 columns">
+    <table>
+      <thead>
+        <tr>
+          <th width="80%">Group name</th>
+          <th width="10%">Edit</th>
+          <th width="10%">Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @groups.each do |group| %>
+          <tr>
+            <td><%= link_to group.name, group %></td>
+            <td><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_group_path(group), class: 'btn-icon' %></td>
+            <td><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, group, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
