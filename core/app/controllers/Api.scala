@@ -89,7 +89,7 @@ object Api extends Controller with SpreadsheetDownloader {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
-    } .getOrElse(BadRequest("invalid json"))
+    }.getOrElse(BadRequest("invalid json"))
   }
 
   def incomingPeers = Action { request =>
