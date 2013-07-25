@@ -19,6 +19,7 @@ POST    /api/companies/report                            controllers.Api.compani
 
 #Peers Reports
 POST    /api/companies/report/peers/incoming             controllers.Api.incomingPeers
+POST    /api/companies/report/peers/peers                controllers.Api.peersPeers
 GET     /api/companies/report/peers/tickers              controllers.Api.allPeersTickers
 
 ## Upload files

@@ -31,6 +31,13 @@ trait PeersReport {
       .sortByWeight
 }
 
+object PeersReport {
+  def apply(models: Seq[Model]) =
+    Model(
+      'normalized -> Col(NormalizedPeersOfPeersReport(models): _*),
+      'unnormalized -> Col(UnnormalizedPeersOfPeersReport(models): _*))
+}
+
 object UnnormalizedPeersOfPeersReport extends PeersReport {
 
   override def calculation(models: Seq[Model])(peers: (String, Seq[Model])) = peers match {

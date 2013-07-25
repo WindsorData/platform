@@ -13,6 +13,7 @@ import libt.util.Strings._
 import parser._
 import libt._
 import controllers.generic.SpreadsheetDownloader
+import output.{PeersReport, NormalizedPeersOfPeersReport}
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -94,6 +95,11 @@ object Api extends Controller with SpreadsheetDownloader {
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]
     Ok(toJson(PeersDb.indirectPeersOf(ticker).map(_.asJson)))
+  }
+
+  def peersPeers = Action { request =>
+    val ticker = (request.body.asJson.get \ "ticker").as[String]
+    Ok(toJson(PeersReport(PeersDb.peersOfPeersOf(ticker)).asJson))
   }
 
   def allPeersTickers = Action { request =>
