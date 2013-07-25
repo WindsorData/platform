@@ -26,5 +26,6 @@ WindosorFrontend::Application.routes.draw do
 
   get 'company_peers/index',  as: :company_peers
   get 'company_peers',        to: 'company_peers#company_peers'
+  post 'company_peers/search_result'
   
 end

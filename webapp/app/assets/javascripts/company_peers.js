@@ -1,9 +1,11 @@
 $(document).ready(function() {
-  $("#company_peers_tokens").tokenInput("/company_peers.json", {
+  $("#company_peer_ticker").tokenInput("/company_peers.json", {
     crossDomain: false,
-    hintText: "Type in a company ticker",
+    hintText: "Type in a company peer ticker",
     theme: "facebook",
     propertyToSearch: 'ticker',
-    preventDuplicates: true
+    preventDuplicates: true,
+    tokenValue: 'ticker',
+    tokenLimit: 1 // remove to select more than one
   });
 });

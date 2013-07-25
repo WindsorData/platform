@@ -24,4 +24,4 @@ group2.save!
 PrimaryRole.create!([{name: "CTO"},{name: "CFO"}])
 
 # Company Peers
-CompanyPeer.create!([{name: "Coompany Ticker 1", ticker: "CT1"}, {name: "Company Ticker 2", ticker: "CT2"}])
+CompanyPeer.create!([{name: "Coompany Ticker 1", ticker: "CT1"}, {name: "BIIB", ticker: "BIIB"}])

@@ -1,0 +1,5 @@
+Company Peer: <%= @company_peer.name %> (<%= @company_peer.ticker %>)
+
+<% @companies_peers.each { |peer| %>
+  <p><%= peer['companyName'] %>(<%= peer['ticker'] %>)</p> 
+<% } %>
