@@ -1,5 +1,6 @@
 package output
 
+import _root_.persistence.PeersDb
 import libt._
 
 trait PeersReport {
@@ -40,11 +41,12 @@ trait PeersReport {
       .sortByWeight
 }
 
-object PeersReport {
-  def apply(models: Seq[Model]) =
+object PeersPeersReport {
+  def apply(models: (Seq[Model],Seq[Model])) =
     Model(
-      'normalized -> Col(NormalizedPeersOfPeersReport(models): _*),
-      'unnormalized -> Col(UnnormalizedPeersOfPeersReport(models): _*))
+      'primaryPeers -> Col(models._1: _*),
+      'normalized -> Col(NormalizedPeersOfPeersReport(models._2): _*),
+      'unnormalized -> Col(UnnormalizedPeersOfPeersReport(models._2): _*))
 }
 
 object UnnormalizedPeersOfPeersReport extends PeersReport {
