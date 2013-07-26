@@ -1,0 +1,13 @@
+<%= form_tag(peers_peers_single_ticker_result_path) do %>
+  <div class="field">
+    <%= text_field_tag :company_peer_ticker %>
+    <%= submit_tag 'Search', class: 'big-button' %>
+  </div>
+<% end %>
+
+<%= form_tag(peers_peers_ticker_list_result_path) do %>
+  <div class="field">
+    <%= text_field_tag :company_peer_tickers_manual %>
+    <%= submit_tag 'Search', class: 'big-button' %>
+  </div>
+<% end %>

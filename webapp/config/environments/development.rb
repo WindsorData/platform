@@ -36,12 +36,14 @@ WindosorFrontend::Application.configure do
   config.assets.debug = true
 
   # Backend params
-  config.backend_host = 'http://localhost:9000'
+  config.backend_host = 'http://192.168.161.185:9000'
   
   config.get_companies_path = '/api/companies'
 
   config.get_company_peers_path ='/api/companies/report/peers/tickers'
   config.post_incoming_peers_path = '/api/companies/report/peers/incoming'
+  config.post_peers_peers_single_ticker_path = '/api/companies/report/peers/peers'
+  config.post_peers_peers_ticker_list_path = '/api/companies/report/peers/peersFromPrimary'
 
   config.get_primary_roles_path = '/api/schema/values/roles/primary'
   config.get_secondary_roles_path = '/api/schema/values/roles/secondary'  

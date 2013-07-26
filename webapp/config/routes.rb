@@ -28,7 +28,9 @@ WindosorFrontend::Application.routes.draw do
   get 'company_peers/peers_peers'
   get 'incoming_peers',        to: 'company_peers#incoming_peers'
   get 'peers_peers',        to: 'company_peers#peers_peers'
+
   post 'company_peers/incoming_peers_result', as: 'incoming_peers_result'
-  post 'company_peers/peers_peers_result', as: 'peers_peers_result'
+  post 'company_peers/peers_peers_single_ticker_result', as: 'peers_peers_single_ticker_result'
+  post 'company_peers/peers_peers_ticker_list_result', as: 'peers_peers_ticker_list_result'
   
 end
