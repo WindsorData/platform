@@ -14,6 +14,9 @@
 </div>
 
 <h1>Secondary Peers</h1>
+
+<input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized</br>
+<input type="radio" name="secondary_type" value="Unnormalized">Unnormalized
 <div id="normalized">
   <h2>Normalized</h2>
   <ul>
@@ -32,7 +35,7 @@
   </ul>
 </div>
 
-<div id="unnormalized">
+<div id="unnormalized"  class="hidden">
   <h2>Unnormalized</h2>
   <ul>
     <% @companies_peers["unnormalized"].each{|secondary| %>

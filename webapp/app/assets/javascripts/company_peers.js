@@ -16,4 +16,9 @@ $(document).ready(function() {
     text == "Switch to Tickers List" ?  $("#toggleFormLink").text("Switch to Single Ticker") : $("#toggleFormLink").text("Switch to Tickers List");
   });
 
+  $("input[name=secondary_type]").click(function(e){
+    $("#normalized").toggleClass("hidden");
+    $("#unnormalized").toggleClass("hidden");
+  });
+
 });
