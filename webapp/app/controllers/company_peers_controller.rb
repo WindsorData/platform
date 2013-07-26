@@ -1,10 +1,10 @@
 class CompanyPeersController < ApplicationController
-  def index
+  def incoming_peers
     # Get company peers json
     # @companies
   end
 
-  def search_result
+  def incoming_peers_result
     ticker = params[:company_peer_ticker]
     @company_peer = CompanyPeer.find_by_ticker(ticker)
 
@@ -20,10 +20,13 @@ class CompanyPeersController < ApplicationController
     end
   end
 
+  def peers_peers
+    
+  end
+
   # GET /company_peers.json
   def company_peers
     @company_peers = CompanyPeer.containing_chars(params[:q])
-    # [{"name":"Corba Cumbia Inc","ticker":"CCI"}]
     respond_to do |format|
       format.html
       format.json { render json: @company_peers.map(&:attributes) }
