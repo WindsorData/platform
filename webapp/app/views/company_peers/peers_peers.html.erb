@@ -1,13 +1,21 @@
-<%= form_tag(peers_peers_single_ticker_result_path) do %>
-  <div class="field">
-    <%= text_field_tag :company_peer_ticker %>
-    <%= submit_tag 'Search', class: 'big-button' %>
-  </div>
-<% end %>
+<a href="#" id="toggleFormLink">Switch to Single Ticker</a>
 
-<%= form_tag(peers_peers_ticker_list_result_path) do %>
-  <div class="field">
-    <%= text_field_tag :company_peer_tickers_manual %>
-    <%= submit_tag 'Search', class: 'big-button' %>
-  </div>
-<% end %>
+<div id="ticker_list_form" >
+  <h3>Ticker List Manual</h3>  
+  <%= form_tag(peers_peers_ticker_list_result_path) do %>
+    <div class="field">
+      <%= text_field_tag :company_peer_tickers_manual %>
+      <%= submit_tag 'Search', class: 'big-button' %>
+    </div>
+  <% end %>
+</div>
+
+<div id="single_ticker_form" class="hidden">
+  <h3>Target Company Ticker</h3>
+  <%= form_tag(peers_peers_single_ticker_result_path) do %>
+    <div class="field">
+      <%= text_field_tag :company_peer_ticker %>
+      <%= submit_tag 'Search', class: 'big-button' %>
+    </div>
+  <% end %>
+</div>
