@@ -102,6 +102,12 @@ object Api extends Controller with SpreadsheetDownloader {
     Ok(toJson(PeersPeersReport(PeersDb.peersOfPeersOf(ticker)).asJson))
   }
 
+  def peersPeersFromPrimaryPeers = Action { request =>
+    val tickers = (request.body.asJson.get \ "tickers").as[Seq[String]]
+    Ok(toJson(PeersPeersReport(
+      PeersDb.namesFromPrimaryPeers(tickers: _*) -> PeersDb.peersOf(tickers: _*)).asJson))
+  }
+
   def allPeersTickers = Action { request =>
     Ok(toJson(PeersDb.allTickers.map(_.asJson).toSet))
   }

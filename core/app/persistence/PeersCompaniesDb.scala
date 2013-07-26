@@ -21,11 +21,22 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
     else
       Seq()
 
-  def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) = {
-    val primaryPeers = peersOf(ticker).toSeq.map(_.intersect(Seq(Path('peerTicker), Path('peerCoName))))
-    (primaryPeers, peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*))
-  }
+  def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) =
+    (primaryPeers(ticker), peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*))
+
+  def primaryPeers(tickers: String*): Seq[Model] =
+    peersOf(tickers: _*).toSeq.map(_.intersect(Seq(Path('peerTicker), Path('peerCoName))))
 
   def allTickers: Seq[Model] = findAllWith(MongoDBObject("ticker.value" -> 1))
+
+  def namesFromPrimaryPeers(tickers: String*): Seq[Model] =
+    findWith(
+      MongoDBObject("$or" -> tickers.map(it => MongoDBObject("peerTicker.value" -> it))),
+      MongoDBObject("peerCoName.value" -> 1, "peerTicker.value" -> 1))
+    .groupBy(_ /!/ 'peerTicker).map { case (peerTicker, peerName) =>
+      Model(
+        'peerTicker -> Value(peerTicker),
+        'peerName -> Value(peerName.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName))
+    }.toSeq
 
 }
