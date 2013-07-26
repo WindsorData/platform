@@ -7,6 +7,9 @@
         <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
       </div>
       <div class="large-4 columns">
+        <%= label_tag :ticker %> <%= select_tag :ticker, options_from_collection_for_select(@tickers, "id", "ticker"), {include_blank: true} %>
+      </div>
+      <div class="large-4 columns">
         Created date <%= text_field_tag(:date_since) %>
       </div>
       <div class="large-4 columns">
