@@ -36,7 +36,7 @@ WindosorFrontend::Application.configure do
   config.assets.debug = true
 
   # Backend params
-  config.backend_host = 'http://192.168.161.185:9000'
+  config.backend_host = 'http://localhost:9000'
   
   config.get_companies_path = '/api/companies'
 

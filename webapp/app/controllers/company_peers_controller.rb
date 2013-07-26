@@ -22,7 +22,7 @@ class CompanyPeersController < ApplicationController
     json_query = { ticker: ticker }.to_json
 
     find_peers(path, json_query)
-    
+    render "peers_peers_result"
   end
 
   def peers_peers_ticker_list_result
@@ -31,7 +31,7 @@ class CompanyPeersController < ApplicationController
     json_query = { tickers: tickers }.to_json
 
     find_peers(path, json_query)
-    # @companies_peers
+    render "peers_peers_result"  
   end
 
   # GET /company_peers.json

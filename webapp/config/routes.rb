@@ -25,7 +25,6 @@ WindosorFrontend::Application.routes.draw do
   get "upload_log/audit",     as: :audit_log
 
   get 'company_peers', to: 'company_peers#company_peers'
-  get 'company_peers/peers_peers'
   get 'incoming_peers',        to: 'company_peers#incoming_peers'
   get 'peers_peers',        to: 'company_peers#peers_peers'
 
