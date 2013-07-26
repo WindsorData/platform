@@ -1,8 +1,9 @@
 <% results.each do |element| %>
-    <%= content_tag :div, element['file'] %>
     <div>
+      <%= content_tag :div, "Filename: " + element.file_name %>
+      <%= content_tag :div, "Ticker: " + element.ticker.ticker %>
       <ul>
-        <% element['errors'].each do |message| %>
+        <% JSON.parse(element['messages']).each do |message| %>
             <%= content_tag :li, message %>
         <% end %>
       </ul>

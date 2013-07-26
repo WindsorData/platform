@@ -25,7 +25,7 @@
     <%= content_tag :div, log.user.email %>
     <%= content_tag :div, log.created_at %>
     <%= content_tag :div, log.upload_type %>
-    <%= render 'layouts/upload_results', results: log.results %>
+    <%= render 'layouts/upload_results', results: log.detail_upload_files %>
 <% end %>
 
 <%= paginate @logs %>
