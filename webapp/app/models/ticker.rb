@@ -11,7 +11,6 @@
 #
 
 class Ticker < ActiveRecord::Base
-  # extend JSONLoadable
 
   attr_accessible :name, :ticker, :cusip
   has_and_belongs_to_many :groups
