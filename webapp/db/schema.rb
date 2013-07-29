@@ -62,6 +62,14 @@ ActiveRecord::Schema.define(:version => 20130726172458) do
     t.string   "type"
   end
 
+  create_table "searches", :force => true do |t|
+    t.integer  "user_id"
+    t.text     "json_query"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+    t.integer  "company_id"
+  end
+
   create_table "tickers", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false
@@ -72,7 +80,6 @@ ActiveRecord::Schema.define(:version => 20130726172458) do
 
   create_table "upload_logs", :force => true do |t|
     t.integer  "user_id"
-    t.text     "message"
     t.string   "upload_type"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
