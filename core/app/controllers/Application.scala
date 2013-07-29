@@ -47,11 +47,11 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       (request, dataset) => {
         val file = dataset.ref.file
         val workbook = WorkbookFactory.create(file)
-        keyed.Validated.flatConcat(Seq((dataset.filename, cusip(workbook), reader.readFile(file.getAbsolutePath))))
+        keyed.Validated.flatConcat(Seq((dataset.filename -> cusip(workbook), reader.readFile(file.getAbsolutePath))))
       }
     }
 
-  def UploadAndReadAction(db: Persistence)(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) =
+  def UploadAndReadAction(db: Persistence)(readOp: (UploadRequest, UploadFile) => keyed.Validated[FileAndCusip, Model]) =
     UploadSpreadsheetAction {
       (request, dataset) =>
         readOp(request, dataset) match {
@@ -70,8 +70,8 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
         }
     }
 
-  def messagesToJson(errors: Seq[keyed.KeyedMessage]) =
-    Map("results" -> errors.map { case (file, cusip, messages) => Map("file" -> toJson(file), "cusip" -> toJson(cusip) , "messages" -> toJson(messages)) })
+  def messagesToJson(errors: Seq[keyed.KeyedMessage[FileAndCusip]]) =
+    Map("results" -> errors.map { case ((file, cusip), messages) => Map("file" -> toJson(file), "cusip" -> toJson(cusip) , "messages" -> toJson(messages)) })
 
   def reports = Action {
     Ok(views.html.reports())

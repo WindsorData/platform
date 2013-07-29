@@ -2,11 +2,11 @@ package libt.error
 
 package object keyed {
 
-  type KeyedMessage = (String, String, Seq[String])
+  type KeyedMessage[M] = (M, Seq[String])
 
-  type Validated[A] = generic.Validated[KeyedMessage, Seq[A]]
-  type Invalid = generic.Invalid[KeyedMessage]
-  type Doubtful[+A] = generic.Doubtful[KeyedMessage, A]
+  type Validated[M, A] = generic.Validated[KeyedMessage[M], Seq[A]]
+  type Invalid[M] = generic.Invalid[KeyedMessage[M]]
+  type Doubtful[M, +A] = generic.Doubtful[KeyedMessage[M], A]
 
   val Doubtful = generic.Doubtful
   val Valid = generic.Valid
@@ -14,12 +14,12 @@ package object keyed {
 
   object Validated {
 
-    def flatConcat[A](results: Seq[(String, String, generic.Validated[String, Seq[A]])]): Validated[A] = {
+    def flatConcat[M, A](results: Seq[(M, generic.Validated[String, Seq[A]])]): Validated[M, A] = {
       results concatMap {
-        case (key, cusip, result) => result match {
+        case (key, result) => result match {
           case v@Valid(_) => v
-          case Doubtful(v, w@_*) => Doubtful(v, (key, cusip, w))
-          case i => Invalid((key, cusip, i.messages))
+          case Doubtful(v, w@_*) => Doubtful(v, (key, w))
+          case i => Invalid((key, i.messages))
         }
       } map(_.flatten)
     }
