@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130722174234) do
+ActiveRecord::Schema.define(:version => 20130726172458) do
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -28,6 +28,16 @@ ActiveRecord::Schema.define(:version => 20130722174234) do
     t.datetime "updated_at", :null => false
     t.string   "type"
   end
+
+  create_table "detail_upload_files", :force => true do |t|
+    t.text    "file_name"
+    t.integer "ticker_id"
+    t.integer "upload_log_id"
+    t.text    "messages"
+  end
+
+  add_index "detail_upload_files", ["ticker_id"], :name => "index_detail_upload_files_on_ticker_id"
+  add_index "detail_upload_files", ["upload_log_id"], :name => "index_detail_upload_files_on_upload_log_id"
 
   create_table "groups", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -62,7 +72,6 @@ ActiveRecord::Schema.define(:version => 20130722174234) do
 
   create_table "upload_logs", :force => true do |t|
     t.integer  "user_id"
-    t.text     "message"
     t.string   "upload_type"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false

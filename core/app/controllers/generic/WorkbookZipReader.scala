@@ -6,24 +6,28 @@ import libt.spreadsheet.reader.workflow._
 import libt.error._
 import libt._
 import scala.Predef._
+import model.mapping.cusip
+import org.apache.poi.ss.usermodel.WorkbookFactory
 
 /**Trait that provides behavior for reading zipped spreadsheet sets */
 trait WorkbookZipReader {
 
   val entryReaders : Seq[EntryReader]
 
+  type FileAndCusip = (String, String)
+
   //TODO use monadic validated error hadndling
-  def readZipFileEntries(filePath: String): Seq[(String, Validated[Seq[Model]])] = {
+  def readZipFileEntries(filePath: String): Seq[(FileAndCusip, Validated[Seq[Model]])] = {
     try {
       readZipFile(new ZipFile(filePath))
     } catch {
-      case e : Exception => Seq(filePath -> Invalid(e.getMessage))
+      case e : Exception => Seq((filePath -> "Unknown", Invalid(e.getMessage)))
     }
   }
 
   protected def readZipFile[A](file: ZipFile) =
     readersWithEntries(file)
-      .map { case (reader, entry) => (entry.getName(), reader(file.getInputStream(entry))) }
+      .map { case (reader, entry) => (entry.getName() -> cusip(WorkbookFactory.create(file.getInputStream(entry))), reader(file.getInputStream(entry))) }
       .toSeq
 
   protected def readersWithEntries[A](file: ZipFile) = {

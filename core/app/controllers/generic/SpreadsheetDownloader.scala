@@ -17,7 +17,7 @@ trait SpreadsheetDownloader { self: Controller =>
   def createSpreadsheetResult(names: Seq[String], range: Int)(db: CompaniesDb): Option[Result] = {
     db.findCompaniesBy(names) match {
       case Nil => None
-      case companies: Seq[String] =>
+      case companies =>
         Some(Ok(writeToByteArray(companies, range)).withHeaders(
           CONTENT_TYPE -> "application/octet-stream",
           CONTENT_DISPOSITION -> "attachment; filename=company.xls"))

@@ -7,6 +7,6 @@
   <br>
   <%= submit_tag 'Upload', class: 'button' %>
   <% if @upload_log %>
-    <%= render 'layouts/upload_results', results: @upload_log.results %>
+    <%= render 'layouts/upload_results', results: @upload_log.detail_upload_files %>
   <% end %>
 <% end %>

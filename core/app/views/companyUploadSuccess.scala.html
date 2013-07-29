@@ -1,4 +1,4 @@
-@(errors: Seq[(String,Seq[String])])
+@(messages: Seq[((String, String), Seq[String])])
 @import helper._
 
 @main("Windsor Companies") {
@@ -6,12 +6,15 @@
 	<a href="/companies/reports">Back</a><br>
 	<label>File uploaded successfully</label>
 	<br>
-	@for(error <- errors) {
+	@for(((file, cusip), models) <- messages) {
         <div>
-            <h3>@error._1</h3>
+            <h3>@file</h3>
+        </div>
+        <div>
+            <h3>@cusip</h3>
         </div>
         <ul>
-            @for(e <- error._2) {
+            @for(e <- models) {
                 <li>@e</li>
             }
         </ul>

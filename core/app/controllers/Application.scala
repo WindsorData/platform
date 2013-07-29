@@ -1,23 +1,17 @@
 package controllers
 
+import org.apache.poi.ss.usermodel.WorkbookFactory
 import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
-
-import com.mongodb.casbah.MongoDB
-import com.mongodb.casbah.MongoClient
-
 import persistence._
-
 import model.mapping._
-
 import util.FileManager._
-
 import libt.spreadsheet.reader.workflow._
 import libt.error._
 import libt._
-import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
+import controllers.generic._
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
@@ -50,30 +44,34 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
     UploadAndReadAction(db) {
-      (request, dataset) => keyed.Validated.flatConcat(Seq(dataset.filename -> reader.readFile(dataset.ref.file.getAbsolutePath)))
+      (request, dataset) => {
+        val file = dataset.ref.file
+        val workbook = WorkbookFactory.create(file)
+        keyed.Validated.flatConcat(Seq((dataset.filename -> cusip(workbook), reader.readFile(file.getAbsolutePath))))
+      }
     }
 
-  def UploadAndReadAction(db: Persistence)(readOp: (UploadRequest, UploadFile) => keyed.Validated[Model]) =
+  def UploadAndReadAction(db: Persistence)(readOp: (UploadRequest, UploadFile) => keyed.Validated[FileAndCusip, Model]) =
     UploadSpreadsheetAction {
       (request, dataset) =>
         readOp(request, dataset) match {
           case Invalid(errors@_*) =>
             request match {
               case Accepts.Html() => BadRequest(views.html.parsingError(errors))
-              case Accepts.Json() => BadRequest(toJson(errorsToJson(errors)))
+              case Accepts.Json() => BadRequest(toJson(messagesToJson(errors)))
             }
           case result => {
             db.update(result.get: _*)
             request match {
               case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
-              case Accepts.Json() => Ok("")
+              case Accepts.Json() => Ok(toJson(messagesToJson(result.messages)))
             }
           }
         }
     }
 
-  def errorsToJson(errors: Seq[keyed.KeyedMessage]) =
-    Map("results" -> errors.map { case (file, errors) => Map("file" -> toJson(file), "errors" -> toJson(errors)) })
+  def messagesToJson(errors: Seq[keyed.KeyedMessage[FileAndCusip]]) =
+    Map("results" -> errors.map { case ((file, cusip), messages) => Map("file" -> toJson(file), "cusip" -> toJson(cusip) , "messages" -> toJson(messages)) })
 
   def reports = Action {
     Ok(views.html.reports())

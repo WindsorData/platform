@@ -1,12 +1,10 @@
 class FilesController < ApplicationController
   before_filter {|c| c.authorize!(:upload, :file)}
 
-  def upload
-  end
-
   def send_file
-    post_file(params[:type], params[:file])
+    result = post_file(params[:type], params[:file])
     BackendService.update_search_values
+    @upload_log = save_result_upload(params[:type], result)
     render 'files/upload'
   end
 
@@ -19,8 +17,30 @@ class FilesController < ApplicationController
       else
         flash[:error] = "The uploaded file is invalid"
       end
-      @upload_log = UploadLog.create({upload_type: type, message: response.body, user: current_user})
+      response
     end
+  end
+
+  private
+  def save_result_upload(type, result_upload)
+    results = JSON.parse(result_upload)["results"]
+    details = results.collect { |result|
+      DetailUploadFile.create(
+          {
+              file_name: result["file"],
+              ticker: Ticker.find_by_cusip(result["cusip"]),
+              messages: result["messages"].to_s
+          }
+      )
+    }
+
+    UploadLog.create(
+        {
+            upload_type: type,
+            user: current_user,
+            detail_upload_files: details
+        }
+    )
   end
 
   def path_by_upload_type(type)
