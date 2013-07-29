@@ -9,22 +9,18 @@ trait PeersReport {
     def sortByWeight = models.sortBy(_ /%/ 'weight).reverse
   }
 
-  implicit def bigDecimal2RichBigDecimal(number: BigDecimal) = new {
-    def with2Decimals = number.setScale(2, BigDecimal.RoundingMode.HALF_UP)
-  }
-
   def makeReport(models: Seq[Model])(peerPeer: (String, Seq[(BigDecimal, String)])) = {
     peerPeer match {
       case (secondPeer, primaryPeers) =>
         Model(
           'secondPeer -> Value(secondPeer),
           'secondPeerName -> Value(models.find( _ /!/ 'peerTicker == secondPeer).get /!/ 'peerCoName),
-          'weight -> Value(primaryPeers.map(it => it._1).sum.roundUp(1)),
+          'weight -> Value(primaryPeers.map(it => it._1).sum.roundUp(2)),
           'primaryPeersWeights ->
             Col(primaryPeers.map {
               case (w, peer) =>
                 Model(
-                  'weight -> Value(w.with2Decimals),
+                  'weight -> Value(w.roundUp(2)),
                   'primaryPeer -> Value(peer),
                   'primaryPeerName -> Value(models.find( _ /!/ 'ticker == peer).get /!/ 'companyName))
             }: _*)

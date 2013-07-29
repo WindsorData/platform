@@ -2,6 +2,7 @@ package output
 
 import org.scalatest.FlatSpec
 import play.api.libs.json._
+import libt.json._
 import libt._
 
 class ElementToJsonSpec extends FlatSpec {
