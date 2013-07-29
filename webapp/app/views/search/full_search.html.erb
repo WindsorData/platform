@@ -47,7 +47,21 @@
               <input type="text" placeholder="Less than ($)" name='[role_form][eq_comp][lt]'>
             </div>
           </div>
-
+          
+          <!-- compensation arrangements -->
+<!--           <div class="item-form cf">
+            <p class="label">Compensation arrangements</p>
+            <%= label_tag 'Yes' %> <%= radio_button_tag 'comp_arrang', 'Yes' %>
+            <%= label_tag 'No' %> <%= radio_button_tag 'comp_arrang', 'No' %>
+            <%= label_tag 'N/A' %> <%= radio_button_tag 'comp_arrang', 'N/A' %>
+          </div> -->
+          <!-- reload options -->
+<!--           <div class="item-form cf">
+            <p class="label">Reload options</p>
+            <%= label_tag 'Yes' %> <%= radio_button_tag 'reload_opt', 'Yes' %>
+            <%= label_tag 'No' %> <%= radio_button_tag 'reload_opt', 'No' %>
+            <%= label_tag 'N/A' %> <%= radio_button_tag 'reload_opt', 'N/A' %>
+          </div> -->
           <!-- CEO tenure -->
           <div class="row">
             <div class="large-12 columns">
@@ -167,9 +181,10 @@
         </div>
         <div class="item-form cf">
           <p>Net Income</p>
-          <input type="checkbox">
-          <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
-          <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
+          <p class="label">Revenue</p>
+          <%= check_box_tag 'revenue_chk' %>
+          <input type="text" name='[income_statement][revenue][gt]' placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
+          <input type="text" name='[income_statement][revenue][lt]' placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
         </div>
       </div>
 

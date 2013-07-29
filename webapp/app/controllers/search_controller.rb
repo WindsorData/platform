@@ -1,5 +1,3 @@
-require 'open-uri'
-
 class SearchController < ApplicationController
   before_filter :find_groups, only: [:quick_search, :full_search]
 
