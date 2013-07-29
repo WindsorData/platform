@@ -52,14 +52,6 @@ ActiveRecord::Schema.define(:version => 20130722174234) do
     t.string   "type"
   end
 
-  create_table "searches", :force => true do |t|
-    t.integer  "user_id"
-    t.text     "json_query"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
-    t.integer  "company_id"
-  end
-
   create_table "tickers", :force => true do |t|
     t.string   "name"
     t.datetime "created_at", :null => false

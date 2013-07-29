@@ -11,7 +11,6 @@
 #
 
 class Ticker < ActiveRecord::Base
-  extend JSONLoadable
 
   attr_accessible :name, :ticker, :cusip
   has_and_belongs_to_many :groups
@@ -19,4 +18,14 @@ class Ticker < ActiveRecord::Base
   validates :cusip, presence: true, uniqueness: true
 
   scope :containing_chars, lambda { |s| where("ticker ilike ?", "%#{s}%") }
+
+  def self.load_json(json)
+    JSON.parse(json).each{|attrs|
+      if t = find_by_cusip(attrs["cusip"])
+        t.update_attributes(attrs)
+      else
+        create(attrs)
+      end
+    }
+  end
 end
