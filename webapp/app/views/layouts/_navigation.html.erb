@@ -16,7 +16,6 @@
     <!-- Left Nav Section -->
     <ul class="left">
       <li class="divider"></li>
-<<<<<<< HEAD
       <% if user_signed_in? %>
         <li class="<%= request.fullpath == users_path ? 'active' : '' %>">
           <%= link_to('users', users_path, class: 'nav-link') if can? :manage, User %>
