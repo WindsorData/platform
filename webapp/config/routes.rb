@@ -4,10 +4,15 @@ WindosorFrontend::Application.routes.draw do
   devise_for :users
 
   resources :users, except: [:show, :new]
-  resources :companies
   resources :groups, except: [:new] do
     collection do
       get :tickers
+    end
+  end
+  resources :companies do
+    collection do
+      get   :delete_info
+      post  :perform_info_deletion
     end
   end
 

@@ -1,0 +1,9 @@
+<%= form_tag(perform_info_deletion_companies_path) do %>
+
+  <div class="field">
+    <%= text_field_tag :ticker %>
+    <%= text_field_tag :year, nil, placeholder: "Year" %>
+    <%= submit_tag 'Delete', class: 'big-button' %>
+  </div>
+
+<% end %>
