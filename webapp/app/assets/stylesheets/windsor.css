@@ -85,3 +85,9 @@ table {
   color: red;
   font-size: 14px;
 }
+
+
+/* ---- labels ---- */
+.radio-button {
+  display: inline-block;
+}

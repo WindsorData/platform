@@ -65,42 +65,94 @@
           <hr>
 
           <!-- other criteria -->
-          <h3 class="subtitle">other criteria</h3>
-
           <div class="row">
-            <!-- Founder -->
+            <!-- compensation arrangements -->
+            <div class="large-3 columns">
+              <span>Compensation arrangements</span>
+            </div>
+            <div class="large-9 columns">
+              <label class="radio-button" for="radio1">
+                <%= radio_button_tag 'comp_arrang', 'Yes' %>
+                <span class="custom radio"></span> YES
+              </label>
+              <label class="radio-button" for="radio1">
+                <%= radio_button_tag 'comp_arrang', 'No' %>
+                <span class="custom radio"></span> NO
+              </label>
+              <label class="radio-button" for="radio1">
+                <%= radio_button_tag 'comp_arrang', 'N/A' %>
+                <span class="custom radio"></span> N/A
+              </label>
+            </div>
+          </div>
+
+          <!-- reload options -->
+          <div class="row">
+            <div class="large-3 columns">
+              <span>Reload options</span>
+            </div>
+            <div class="large-9 columns">
+              <label class="radio-button" for="radio1">
+                <%= radio_button_tag 'reload_opt', 'Yes' %>
+                <span class="custom radio"></span> YES
+              </label>
+              <label class="radio-button" for="radio1">
+                <%= radio_button_tag 'reload_opt', 'No' %>
+                <span class="custom radio"></span> NO
+              </label>
+              <label class="radio-button" for="radio1">
+                <%= radio_button_tag 'reload_opt', 'N/A' %>
+                <span class="custom radio"></span> N/A
+              </label>
+            </div>
+          </div>
+
+          <!-- Founder -->
+          <div class="row">
             <div class="large-3 columns">
               <span>Founder</span>
-              <label for="radio1">
+            </div>
+            <div class="large-9 columns">
+              <label class="radio-button" for="radio1">
                 <%= radio_button_tag '[role_form][founder]', 'Yes' %>
                 <span class="custom radio"></span> YES
               </label>
-              <label for="radio1">
+              <label class="radio-button" for="radio1">
                 <%= radio_button_tag '[role_form][founder]', 'No' %>
                 <span class="custom radio"></span> NO
               </label>
-              <label for="radio1">
+              <label class="radio-button" for="radio1">
                 <%= radio_button_tag '[role_form][founder]', 'N/A' %>
                 <span class="custom radio"></span> N/A
               </label>
             </div>
+          </div>
 
-            <!-- transition period -->
+          <!-- transition period -->
+          <div class="row">
             <div class="large-3 columns">
               <span>Transition period</span>
-              <label for="radio1">
+            </div>
+            <div class="large-9 columns">
+              <label class="radio-button" for="radio1">
                 <%= radio_button_tag '[role_form][trans_period]', 'Yes' %>
                 <span class="custom radio"></span> YES
               </label>
-              <label for="radio1">
+              <label class="radio-button" for="radio1">
                 <%= radio_button_tag '[role_form][trans_period]', 'No' %>
                 <span class="custom radio"></span> NO
               </label>
-              <label for="radio1">
+              <label class="radio-button" for="radio1">
                 <%= radio_button_tag '[role_form][trans_period]', 'N/A' %>
                 <span class="custom radio"></span> N/A
               </label>
+            </div>  
+          </div>
+
+            <div class="large-3 columns">
+              <a class="button cto" href="#" id="js-new-form">Add another role</a>
             </div>
+
           </div>
 
         </div>
