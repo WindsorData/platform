@@ -43,7 +43,11 @@ trait Persistence {
 
   def find(query: DBO): Seq[Model] = collection.find(query)
 
+  def findWith(query: DBO, projection: DBO): Seq[Model] = collection.find(query, projection)
+
   def findAll: Seq[Model] = collection.find
+
+  def findAllWith(projection: DBO): Seq[Model] = collection.find(MongoDBObject(),projection)
 
   def findAllMap[A](mapper: Model => A): Seq[A] =
     findAll.map(mapper).toSet.toSeq

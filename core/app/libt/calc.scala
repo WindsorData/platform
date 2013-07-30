@@ -1,5 +1,6 @@
 package libt
 
+import libt.util.math._
 import javax.script.{ScriptException, ScriptEngineManager}
 
 package object calc {
@@ -16,7 +17,7 @@ package object calc {
   }
 
   implicit class ValueCalcOps(val self: Value[BigDecimal]) {
-    def round(number: BigDecimal) = number.setScale(2, BigDecimal.RoundingMode.HALF_UP)
+    def round(number: BigDecimal) = number.roundUp(2)
     def isConsistent =
       (for (v <- self.value; c <- self.calc; result = Calc(c)())
         yield result.nonEmpty &&

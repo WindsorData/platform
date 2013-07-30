@@ -7,9 +7,10 @@ import model._
 
 import libt.spreadsheet.reader._
 import libt.spreadsheet._
-import libt._
 import libt.calc._
 import libt.error._
+import libt.util.math._
+import libt._
 
 import java.util.Date
 import org.joda.time.DateTime
@@ -354,7 +355,7 @@ object top5 extends StandardWorkflowFactory {
                   n <- (timeVest /% 'number)
                   p <- (timeVest /% 'price)
                   v <- (timeVest /% 'value)
-                  product = (n * p).setScale(0, BigDecimal.RoundingMode.HALF_UP) / 1000
+                  product = (n * p).roundUp(0) / 1000
                   if product != v
                 } yield Invalid(
                   err("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + "TimeVestRs",

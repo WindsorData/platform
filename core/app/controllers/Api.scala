@@ -1,9 +1,6 @@
 package controllers
 
-import _root_.persistence.CompaniesDb
-import com.mongodb.casbah.MongoClient
-
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsString, JsValue}
 import play.api.libs.json.Json._
 import play.api.mvc._
 
@@ -15,7 +12,9 @@ import model.Commons._
 import libt.util.Strings._
 import parser._
 import libt._
+import libt.json._
 import controllers.generic.SpreadsheetDownloader
+import output.PeersPeersReport
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -91,7 +90,28 @@ object Api extends Controller with SpreadsheetDownloader {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
-    } .getOrElse(BadRequest("invalid json"))
+    }.getOrElse(BadRequest("invalid json"))
+  }
+
+  def incomingPeers = Action { request =>
+    val ticker = (request.body.asJson.get \ "ticker").as[String]
+    Ok(toJson(PeersDb.indirectPeersOf(ticker).map(_.asJson)))
+  }
+
+  def peersPeers = Action { request =>
+    val ticker = (request.body.asJson.get \ "ticker").as[String]
+    Ok(toJson(PeersPeersReport(PeersDb.peersOfPeersOf(ticker)).asJson))
+  }
+
+  def peersPeersFromPrimaryPeers = Action { request =>
+    val tickers = (request.body.asJson.get \ "tickers").as[Seq[String]]
+    Ok(toJson(PeersPeersReport(
+      PeersDb.namesFromPrimaryPeers(tickers: _*) -> PeersDb.peersOf(tickers: _*)).asJson))
+  }
+
+  def allPeersTickers = Action { request =>
+    Ok(toJson(PeersDb.allTickers.map(_.asJson).toSet))
   }
 
 }
+

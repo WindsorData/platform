@@ -1,5 +1,6 @@
 package output
 
+import libt.util.math._
 import libt._
 
 trait PeersReport {
@@ -8,15 +9,20 @@ trait PeersReport {
     def sortByWeight = models.sortBy(_ /%/ 'weight).reverse
   }
 
-  def makeReport(peerPeer: (String, Seq[(BigDecimal, String)])) = {
+  def makeReport(models: Seq[Model])(peerPeer: (String, Seq[(BigDecimal, String)])) = {
     peerPeer match {
       case (secondPeer, primaryPeers) =>
         Model(
           'secondPeer -> Value(secondPeer),
-          'weight -> Value(primaryPeers.map(it => it._1).sum.setScale(1, BigDecimal.RoundingMode.HALF_UP)),
+          'secondPeerName -> Value(models.find( _ /!/ 'peerTicker == secondPeer).get /!/ 'peerCoName),
+          'weight -> Value(primaryPeers.map(it => it._1).sum.roundUp(2)),
           'primaryPeersWeights ->
             Col(primaryPeers.map {
-              case (w, peer) => Model('weight -> Value(w), 'primaryPeer -> Value(peer))
+              case (w, peer) =>
+                Model(
+                  'weight -> Value(w.roundUp(2)),
+                  'primaryPeer -> Value(peer),
+                  'primaryPeerName -> Value(models.find( _ /!/ 'ticker == peer).get /!/ 'companyName))
             }: _*)
         )
     }
@@ -27,8 +33,16 @@ trait PeersReport {
   def apply(models: Seq[Model]): Seq[Model] =
     models.groupBy(_ /!/ 'peerTicker)
       .toSeq
-      .map(makeReport _ compose calculation(models))
+      .map(makeReport(models) _ compose calculation(models))
       .sortByWeight
+}
+
+object PeersPeersReport {
+  def apply(models: (Seq[Model],Seq[Model])) =
+    Model(
+      'primaryPeers -> Col(models._1: _*),
+      'normalized -> Col(NormalizedPeersOfPeersReport(models._2): _*),
+      'unnormalized -> Col(UnnormalizedPeersOfPeersReport(models._2): _*))
 }
 
 object UnnormalizedPeersOfPeersReport extends PeersReport {
