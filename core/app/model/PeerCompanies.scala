@@ -8,7 +8,7 @@ object PeerCompanies {
     'companyName -> TString,
     'ticker -> TString,
     'src_doc -> TString,
-    'filing_date -> TDate,
+    'filingDate -> TDate,
     'group -> TString,
     'fiscalYear	-> TInt,
     'comments	-> TString,
@@ -20,5 +20,5 @@ object PeerCompanies {
     'peerTicker -> TString,
     'value -> TAny)
 
-  val peerId = Seq(Path('peerTicker), Path('ticker))
+  val peerId = Seq(Path('peerTicker), Path('ticker), Path('filingDate), Path('fiscalYear))
 }

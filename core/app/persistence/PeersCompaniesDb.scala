@@ -16,16 +16,29 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
       MongoDBObject("ticker.value" -> 1, "companyName.value" -> 1))
 
   def peersOf(tickers: String*) : Seq[Model] =
-    if(tickers.nonEmpty)
+    if(tickers.nonEmpty) {
       find(MongoDBObject("$or" -> tickers.map(it => MongoDBObject("ticker.value" -> it))))
+      .groupBy(_ /!/ 'ticker)
+      .flatMap {
+        case (_, xs) =>
+          val maxFilingDate = xs.map(_ /@/ 'filingDate).max
+          val maxFiscalYear = xs.map(_ /#/ 'fiscalYear).max
+          xs
+            .filter(_ /@/ 'filingDate == maxFilingDate)
+            .filter(_ /#/ 'fiscalYear == maxFiscalYear)
+        case (_, Nil) => Seq()
+      }
+      .toSeq
+    }
     else
       Seq()
 
-  def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) =
+  def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) = {
     (primaryPeers(ticker), peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*))
+  }
 
-  def primaryPeers(tickers: String*): Seq[Model] =
-    peersOf(tickers: _*).toSeq.map(_.intersect(Seq(Path('peerTicker), Path('peerCoName))))
+  def primaryPeers(ticker: String): Seq[Model] =
+    peersOf(ticker).toSeq.map(_.intersect(Seq(Path('peerTicker), Path('peerCoName))))
 
   def allTickers: Seq[Model] = findAllWith(MongoDBObject("ticker.value" -> 1))
 
@@ -40,3 +53,4 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
     }.toSeq
 
 }
+
