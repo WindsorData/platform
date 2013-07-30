@@ -1,12 +1,19 @@
 <h1>Upload new file</h1>
-
-<%= form_tag(send_file_path, multipart: true, class: "custom") do %>
-  <%= render 'layouts/messages' %>
-  <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
-  <%= file_field_tag 'file', required: :true %>
-  <br>
-  <%= submit_tag 'Upload', class: 'button' %>
-  <% if @upload_log %>
-    <%= render 'layouts/upload_results', results: @upload_log.detail_upload_files %>
-  <% end %>
-<% end %>
+<hr>
+<div class="row">
+  <div class="large-3 columns">
+    <%= form_tag(send_file_path, multipart: true, class: "custom") do %>
+      <%= render 'layouts/messages' %>
+      <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
+      <%= file_field_tag 'file', required: :true %>
+      <br>
+      <%= submit_tag 'Upload', class: 'button' %>
+  </div>
+  <div class="large-9 columns">
+      <% if @upload_log %>
+        <%= render 'layouts/upload_results', results: @upload_log.detail_upload_files %>
+      <% end %>
+  </div>
+    <% end %>
+  </div>
+</div>
