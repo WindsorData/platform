@@ -14,21 +14,26 @@
       </div>
       <div class="large-4 columns">
         to <%= text_field_tag(:date_to) %>
+
       </div>
-    </div>
-    <div class="form-actions">
-      <button type="submit" class="btn-small">Search</button>
-    </div>
 
-  <% end %>
+    <% end %>
+  </div>
+
+  <div class="large-9 columns">
+    <% @logs.each do |log| %>
+      <div class="log-container">
+        <%= content_tag :div, log.user.email, class: 'user' %>
+        <%= content_tag :div, log.created_at, class: 'date' %>
+        <div class="upload-type-container">
+          <span>Document type:</span> 
+          <%= content_tag :span, log.upload_type, class: 'upload-type' %>
+        </div>
+        <%= render 'layouts/upload_results', results: log.results %>
+      </div>
+      <hr>
+    <% end %>
+  </div>
+
+  <%= paginate @logs %>
 </div>
-
-<br/>
-<% @logs.each do |log| %>
-    <%= content_tag :div, log.user.email %>
-    <%= content_tag :div, log.created_at %>
-    <%= content_tag :div, log.upload_type %>
-    <%= render 'layouts/upload_results', results: log.detail_upload_files %>
-<% end %>
-
-<%= paginate @logs %>
