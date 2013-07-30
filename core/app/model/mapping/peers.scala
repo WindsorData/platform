@@ -14,7 +14,7 @@ package object peers {
     Path('companyName),
     Path('ticker),
     Path('src_doc),
-    Path('filing_date),
+    Path('filingDate),
     Path('group),
     Path('fiscalYear),
     Path('comments),

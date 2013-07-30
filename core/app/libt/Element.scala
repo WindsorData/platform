@@ -1,6 +1,7 @@
 package libt
 
 import libt.util._
+import java.util.Date
 
 trait ElementValueOps { self : Element =>
   def isEmpty(route:PathPart) = (this / route).rawValue.isEmpty
@@ -9,10 +10,12 @@ trait ElementValueOps { self : Element =>
   def /#(route:PathPart) = (this / route).rawValue[Int]
   def /%(route:PathPart) = (this / route).rawValue[BigDecimal]
   def /!(route:PathPart) = (this / route).rawValue[String]
+  def /@(route:PathPart) = (this / route).rawValue[Date]
 
   def /#/(route:PathPart) = (this /# route).get
   def /%/(route:PathPart) = (this /% route).get
   def /!/(route:PathPart) = (this /! route).get
+  def /@/(route:PathPart) = (this /@ route).get
 
   def getRawValue[A] : A = rawValue[A].get
 }
