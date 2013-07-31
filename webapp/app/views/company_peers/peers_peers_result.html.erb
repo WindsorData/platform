@@ -1,15 +1,26 @@
 <% if @company_peer %>
-  <%= @company_peer.name %> (<%= @company_peer.ticker %>)
-<% end %>
+  <%= @company_peer.name %> (<%= @company_peer.ticker %>) "SECONDARY PEER"
+<% end %></br></br>
 
-<h1>Secondary Peers</h1>
 <div class="row">
-  <div class="large-8 columns">
+  <div class="large-4 columns">
     <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized
     <input type="radio" name="secondary_type" value="Unnormalized">Unnormalized
+  </div>
+  <div class="large-4 columns">
+    <%= select_tag :topAmount, options_for_select((5..50).step(5).push("All results"), "All results") %>
+  </div>
+  <div class="large-4 columns">
+    <% if @company_peer %>
+      <%= @company_peer.name %> (<%= @company_peer.ticker %>) "PRIMARY PEER"
+    <% end %>
+  </div>
+</div>
 
+<div class="row">
+  <div class="large-8 columns">
+  
     <div id="normalized">
-      <h2>Normalized</h2>
       <div class="section-container accordion" data-section="accordion">
         <% @companies_peers["normalized"].each{|secondary| %>
           <section>
@@ -28,7 +39,6 @@
     </div>
 
     <div id="unnormalized"  class="hidden">
-      <h2>Unnormalized</h2>
       <div class="section-container accordion" data-section="accordion">
         <% @companies_peers["unnormalized"].each{|secondary| %>
           <section>
@@ -48,7 +58,6 @@
   </div>
 
   <div class="large-4 columns">
-    <h1>Primary Peers</h1>
     <div id="primary-peers" class="panel">
       <% @companies_peers["primaryPeers"].each{|primary| %>
         <%= primary["peerCoName"] %>(<%= primary["peerTicker"] %>)</br>

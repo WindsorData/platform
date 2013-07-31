@@ -7,7 +7,7 @@ $(document).ready(function() {
     preventDuplicates: true,
     tokenValue: 'ticker',
     tokenLimit: 1 // remove to select more than one
-  });
+  });  
 
   $("#toggleFormLink").click(function(){ 
     $("#single_ticker_form").toggleClass("hidden");
@@ -20,5 +20,24 @@ $(document).ready(function() {
     $("#normalized").toggleClass("hidden");
     $("#unnormalized").toggleClass("hidden");
   });
+  
+  $("#topAmount").change(function(){
+    filterTopPeersType("#normalized div.accordion section");
+    filterTopPeersType("#unnormalized div.accordion section");    
+  });
 
+  function filterTopPeersType(list){
+    $(list).each(function(){
+      $(this).removeClass("hidden");
+    });
+
+    var topAmount = $("#topAmount option:selected").val();
+    if(!isNaN(topAmount)){
+      $(list).each(function(index){ 
+        if(index >= topAmount){ 
+          $(this).addClass("hidden")
+        } 
+      });
+    }
+  }
 });
