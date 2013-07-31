@@ -1,46 +1,62 @@
 <div class="span9">
-  <%= form_tag(search_result_path, class: "main-form" ) do %>
+  <%= form_tag(search_result_path, class: "main-form custom" ) do %>
+  <fieldset>
   <legend class="legend">Executive compensation</legend>
-    <div class="form-container" id="forms-container">      
+    <div class="form-container relative" id="forms-container">      
       
     <% @params_hash.each_with_index { |(k, value), i|%>
-    <fieldset>
     <% if k.starts_with? 'role_form' %>
         <div class="basic-group">
-          <div class="role-selector">
-            <div class="item-form cf">
-              <label class="label">Role</label>
+          <div class="role-selector row">
+
+            <div class="large-6 columns">
+              <label>Role</label>
               <%= select_tag "[role_form_#{i + 1}[role]",
                 options_from_collection_for_select(@primary_roles, "name", "name", @params_hash[k].try(:[], "role")), {include_blank: true} %>
             </div>
             
-            <div class="item-form cf">
-              <label class="label">Pay rank</label>
+            <div class="large-6 columns">
+              <label>Pay rank</label>
               <%= select_tag "[role_form_#{i + 1}][pay_rank]", options_for_select((1..5), @params_hash[k].try(:[], "pay_rank")), {include_blank: true} %>
             </div>
           </div>
 
           <div class="filters">
-          <!-- cash compensation -->
-          <div class="item-form cf">
-            <p class="label">cash compensation</p>
-            <%= select_tag "[role_form_#{i + 1}][cash_comp][type]",
-              options_from_collection_for_select(@cash_comp_values, "field", "value",
-              @params_hash[k].try(:[], "cash_comp").try(:[], "type")), {include_blank: true} %>
+            <!-- cash compensation -->
+            <div class="row">
+              <div class="large-12 columns">
+                <p>cash compensation</p>
+              </div>
+              <div class="large-4 columns">
+              <%= select_tag "[role_form_#{i + 1}][cash_comp][type]",
+                options_from_collection_for_select(@cash_comp_values, "field", "value",
+                @params_hash[k].try(:[], "cash_comp").try(:[], "type")), {include_blank: true} %>
+              </div>
+              <div  class="large-4 columns">
+              <%= text_field_tag "[role_form_#{i + 1}][cash_comp][gt]", @params_hash[k].try(:[], "cash_comp").try(:[], "gt"), placeholder: "Greater than ($)" %>
+              </div>
+              <div class="large-4 columns">
+              <%= text_field_tag "[role_form_#{i + 1}][cash_comp][lt]", @params_hash[k].try(:[], "cash_comp").try(:[], "lt"), placeholder: "Less than ($)" %>
+              </div>
+            </div>
 
-            <%= text_field_tag "[role_form_#{i + 1}][cash_comp][gt]", @params_hash[k].try(:[], "cash_comp").try(:[], "gt"), placeholder: "Greater than ($)" %>
-            <%= text_field_tag "[role_form_#{i + 1}][cash_comp][lt]", @params_hash[k].try(:[], "cash_comp").try(:[], "lt"), placeholder: "Less than ($)" %>
-          </div>
-          <!-- equity compensation -->
-          <div class="item-form cf">
-            <p class="label">equity compensation</p>
-            <%= select_tag "[role_form_#{i + 1}][eq_comp][type]",
-              options_from_collection_for_select(@eq_comp_values, "field", "value",
-              @params_hash[k].try(:[], "eq_comp").try(:[], "type")), {include_blank: true} %>
-
-            <%= text_field_tag "[role_form_#{i + 1}][eq_comp][gt]", @params_hash[k].try(:[], "eq_comp").try(:[], "gt"), placeholder: "Greater than ($)" %>
-            <%= text_field_tag "[role_form_#{i + 1}][eq_comp][lt]", @params_hash[k].try(:[], "eq_comp").try(:[], "lt"), placeholder: "Less than ($)" %>
-          </div>
+            <!-- equity compensation -->
+            <div class="row">
+              <div class="large-12 columns">
+                <label>equity compensation</label>
+              </div>
+              <div class="large-4 columns">
+                <%= select_tag "[role_form_#{i + 1}][eq_comp][type]",
+                options_from_collection_for_select(@eq_comp_values, "field", "value",
+                @params_hash[k].try(:[], "eq_comp").try(:[], "type")), {include_blank: true} %>
+              </div>
+              <div class="large-4 columns">
+                <%= text_field_tag "[role_form_#{i + 1}][eq_comp][gt]", @params_hash[k].try(:[], "eq_comp").try(:[], "gt"), placeholder: "Greater than ($)" %>
+              </div>
+              <div class="large-4 columns">
+                <%= text_field_tag "[role_form_#{i + 1}][eq_comp][lt]", @params_hash[k].try(:[], "eq_comp").try(:[], "lt"), placeholder: "Less than ($)" %>
+              </div>
+            </div>
           
           <!-- compensation arrangements -->
 <!--           <div class="item-form cf">
@@ -57,10 +73,16 @@
             <%= label_tag 'N/A' %> <%= radio_button_tag 'reload_opt', 'N/A' %>
           </div> -->
           <!-- CEO tenure -->
-          <div class="item-form cf">
-            <p class="label">CEO tenure</p>
-            <%= text_field_tag "[role_form_#{i + 1}][ceo_tenure][gt]", @params_hash[k].try(:[], "ceo_tenure").try(:[], "gt"), placeholder: "Greater than (yrs)" %>
-            <%= text_field_tag "[role_form_#{i + 1}][ceo_tenure][lt]", @params_hash[k].try(:[], "ceo_tenure").try(:[], "gt"), placeholder: "Less than (yrs)" %>
+          <div class="row">
+            <div class="large-12 columns">
+              <label>CEO tenure</label>
+            </div>
+            <div class="large-6 columns">
+              <%= text_field_tag "[role_form_#{i + 1}][ceo_tenure][gt]", @params_hash[k].try(:[], "ceo_tenure").try(:[], "gt"), placeholder: "Greater than (yrs)" %>
+            </div>
+            <div class="large-6 columns">
+              <%= text_field_tag "[role_form_#{i + 1}][ceo_tenure][lt]", @params_hash[k].try(:[], "ceo_tenure").try(:[], "gt"), placeholder: "Less than (yrs)" %>
+            </div>
           </div>
           <!-- other criteria -->
           <p class="subtitle">other criteria</p>
@@ -74,12 +96,18 @@
             </div>
 
             <!-- transition period -->
-            <div class="item-form cf">
-              <p class="label">Transition period</p>
-              <%= label_tag 'Yes' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'Yes', @params_hash[k].try(:[], "trans_period") == "Yes" %>
-              <%= label_tag 'No' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'No', @params_hash[k].try(:[], "trans_period") == "No" %>
-              <%= label_tag 'N/A' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'N/A', @params_hash[k].try(:[], "trans_period") == "N/A" %>
+            <div class="row">
+              <div class="large-3 columns">
+                <p class="label">Transition period</p>
+              </div>
+              <div class="large-9 columns">
+                <%= label_tag 'Yes' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'Yes', @params_hash[k].try(:[], "trans_period") == "Yes" %>
+              
+                <%= label_tag 'No' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'No', @params_hash[k].try(:[], "trans_period") == "No" %>
+                <%= label_tag 'N/A' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'N/A', @params_hash[k].try(:[], "trans_period") == "N/A" %>
+              </div>
             </div>
+            
           </div>
         </div>
       </div>
