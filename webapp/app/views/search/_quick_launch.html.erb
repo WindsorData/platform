@@ -2,26 +2,16 @@
   <!-- activity log -->
   <div class="recent-search-container">
     <h2 class="title">Recent Searches</h2>
-
-    <div class="recent-search-item">
-      <p class="username">username</p>
-      <p class="report">Report type</p>
-      <button class="small button">View</button>
-    </div>
-
-    <!-- <div class="content">
-      <% unless @searches.blank? %>
-        <ul class="documents-list">
-          <% @searches.each{ |s| %>
-            <li class="document">
-              <a href="<%= recent_search_path(s) %>">
-                <%= s.user.email + s.created_at.strftime("%Y-%m-%d %H:%M:%S") %>
-              </a>
-            </li>
-          <% } %>
-        </ul>
-      <% end %>
-    </div> -->
+    <% unless @searches.blank? %>
+      <% @searches.each{ |s| %>
+        <div class="recent-search-item">
+          <p class="username"><%= s.user.email %></p>
+          <p class="report"><%= s.created_at.strftime("%Y-%m-%d %H:%M:%S") %></p>
+          <p class="report">ADD TO SEARCH MODEL</p>
+          <button href="<%= recent_search_path(s) %>" class="small button">View</button>
+        </div>
+      <% } %>
+    <% end %>
   </div>
 </div>
 
