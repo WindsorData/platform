@@ -6,7 +6,7 @@ class BackendService
 
     load_values(path + rails_config.get_companies_path, Ticker)
 
-    # load_values(path + rails_config.get_company_peers_path, CompanyPeer)
+    load_values(path + rails_config.get_company_peers_path, CompanyPeer)
 
     load_values(path + rails_config.get_primary_roles_path, PrimaryRole)
     load_values(path + rails_config.get_secondary_roles_path, SecondaryRole)

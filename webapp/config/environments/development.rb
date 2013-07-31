@@ -10,7 +10,7 @@ WindosorFrontend::Application.configure do
   config.whiny_nils = true
 
   # Show full error reports and disable caching
-  config.consider_all_requests_local       = true
+  config.consider_all_requests_local       =  true
   config.action_controller.perform_caching = false
 
   # Don't care if the mailer can't send
@@ -57,6 +57,7 @@ WindosorFrontend::Application.configure do
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
   config.post_batch_path = '/api/companies/batch'
+  config.post_peers_path = '/api/companies/peers'
 
   config.post_query_path = '/api/companies/search'
   config.post_download_report_path = '/api/companies/report'

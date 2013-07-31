@@ -6,6 +6,7 @@ class Constants
   GUIDELINESS_FILE = 'guidelines'
   DILUTION_FILE = 'dilution'
   BATCH_FILE = 'batch'
-  PEERS_FILE = 'peers_file'
+  PEERS_FILE = 'peers'
+
   FILE_TYPES = [TOP_5_FILE, GUIDELINESS_FILE, DILUTION_FILE, BATCH_FILE, PEERS_FILE]
 end

@@ -10,6 +10,7 @@
 #
 
 class CompanyPeer < ActiveRecord::Base
+	extend JSONLoadable
   attr_accessible :name, :ticker
 
   scope :containing_chars, lambda { |s| where("ticker ilike ?", "%#{s}%") }

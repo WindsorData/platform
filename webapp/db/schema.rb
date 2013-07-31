@@ -12,6 +12,7 @@
 # It's strongly recommended to check this file into your version control system.
 
 ActiveRecord::Schema.define(:version => 20130726172458) do
+
   create_table "companies", :force => true do |t|
     t.string   "name"
     t.string   "address"
@@ -22,7 +23,7 @@ ActiveRecord::Schema.define(:version => 20130726172458) do
 
   create_table "company_peers", :force => true do |t|
     t.string   "ticker",     :null => false
-    t.string   "name",       :null => false
+    t.string   "name"
     t.datetime "created_at", :null => false
     t.datetime "updated_at", :null => false
   end
