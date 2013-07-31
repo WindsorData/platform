@@ -35,13 +35,8 @@
       </div>
       <div class="row">
         <div class="small-12 columns">
-          <div class="left">
-            <%= submit_tag "Select", class: 'small button success' %>
-          </div>
-          <div class="left">
-            <span>| or </span>
-            <%= link_to('Create new peer group', groups_path) %>
-          </div>
+          <%= submit_tag "Select", class: 'button success' %>
+          <%= link_to('Create new peer group', groups_path) %>
         </div>
       </div>
     <% end %>
