@@ -20,4 +20,8 @@ group2.tickers << ticker_aapl
 group2.tickers << ticker_fb
 group2.save!
 
+# Roles
 PrimaryRole.create!([{name: "CTO"},{name: "CFO"}])
+
+# Company Peers
+CompanyPeer.create!([{name: "Coompany Ticker 1", ticker: "CT1"}, {name: "BIIB", ticker: "BIIB"}])

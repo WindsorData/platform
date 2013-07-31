@@ -40,6 +40,15 @@
         <li class="<%= request.fullpath == audit_log_path ? 'active' : '' %>">        
           <%= link_to('upload log', audit_log_path, class: 'nav-link') if can? :audit, :upload_log %>
         </li>
+        <li class="divider"></li>
+        <li class="<%= request.fullpath == incoming_peers_path ? 'active' : '' %>">
+          <%= link_to('Incoming Peers', incoming_peers_path, class: 'nav-link') %>
+        </li>
+        <li class="divider"></li>
+        <li class="<%= request.fullpath == peers_peers_path ? 'active' : '' %>">
+          <%= link_to('Peers Peers', peers_peers_path, class: 'nav-link') %>
+        </li>
+        
       <% end %>
       <li class="divider"></li>
     </ul>

@@ -1,0 +1,9 @@
+<h1>Search For Companies</h1>
+
+<%= form_tag(incoming_peers_result_path) do %>
+  <div class="field">
+    <p>Target Company Ticker</p>
+    <%= text_field_tag :company_peer_ticker %>
+    <%= submit_tag 'Search', class: 'big-button' %>
+  </div>
+<% end %>

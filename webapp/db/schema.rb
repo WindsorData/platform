@@ -21,6 +21,13 @@ ActiveRecord::Schema.define(:version => 20130726172458) do
     t.datetime "updated_at",    :null => false
   end
 
+  create_table "company_peers", :force => true do |t|
+    t.string   "ticker",     :null => false
+    t.string   "name"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
+  end
+
   create_table "compensations", :force => true do |t|
     t.string   "field"
     t.string   "value"

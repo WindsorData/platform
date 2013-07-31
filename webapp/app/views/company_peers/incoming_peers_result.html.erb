@@ -1,0 +1,6 @@
+Company Ticker: <%= @company_peer.name %> (<%= @company_peer.ticker %>)
+<div class="panel">
+  <% @companies_peers.each { |peer| %>
+    <p><%= peer['companyName'] %>(<%= peer['ticker'] %>)</p>
+  <% } %>
+<div>
