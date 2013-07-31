@@ -1,8 +1,15 @@
-<div class="column-3">
+<div class="large-3 columns">
   <!-- activity log -->
-  <div class="side-container activity-log">
+  <div class="recent-search-container">
     <h2 class="title">Recent Searches</h2>
-    <div class="content">
+
+    <div class="recent-search-item">
+      <p class="username">username</p>
+      <p class="report">Report type</p>
+      <button class="small button">View</button>
+    </div>
+
+    <!-- <div class="content">
       <% unless @searches.blank? %>
         <ul class="documents-list">
           <% @searches.each{ |s| %>
@@ -14,7 +21,7 @@
           <% } %>
         </ul>
       <% end %>
-    </div>
+    </div> -->
   </div>
 </div>
 
