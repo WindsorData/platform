@@ -2,6 +2,22 @@
   display: none;
 }
 
+.absolute {
+  position: absolute;
+}
+
+.relative {
+  position: relative;
+}
+
+.padding-bottom-10 {
+  padding-bottom: 10px;
+}
+
+.padding-top-10 {
+  padding-top: 10px;
+}
+
 .top-bar {
   position: fixed;
   width: 100%;
@@ -87,7 +103,30 @@ table {
 }
 
 
-/* ---- labels ---- */
+/* ---- search form ---- */
 .radio-button {
   display: inline-block;
+}
+
+.cto {
+  bottom: 0;
+  right: 0;
+  margin-bottom: 0;
+}
+
+.inline-elements * {
+  line-height: 1.6;
+}
+
+.inline-elements .subtitle {
+  font-weight: bold;
+}
+
+.advanced-search hr {
+  margin-top: 0;
+}
+
+.inline-elements input[type="text"] {
+  display: inline-block;
+  width: 75%;
 }

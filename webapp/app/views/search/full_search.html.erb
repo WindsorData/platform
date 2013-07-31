@@ -2,7 +2,7 @@
   <%= form_tag(search_result_path, class: "main-form custom" ) do %>
   <fieldset>
   <legend class="legend">Executive compensation</legend>
-    <div class="form-container" id="forms-container">
+    <div class="form-container relative" id="forms-container">      
       <div class="basic-group hidden">
         <hr>
         <div class="role-selector row">
@@ -65,7 +65,7 @@
           <hr>
 
           <!-- other criteria -->
-          <div class="row">
+          <div class="row padding-bottom-10">
             <!-- compensation arrangements -->
             <div class="large-3 columns">
               <span>Compensation arrangements</span>
@@ -87,7 +87,7 @@
           </div>
 
           <!-- reload options -->
-          <div class="row">
+          <div class="row padding-bottom-10">
             <div class="large-3 columns">
               <span>Reload options</span>
             </div>
@@ -108,7 +108,7 @@
           </div>
 
           <!-- Founder -->
-          <div class="row">
+          <div class="row padding-bottom-10">
             <div class="large-3 columns">
               <span>Founder</span>
             </div>
@@ -149,9 +149,8 @@
             </div>  
           </div>
 
-            <div class="large-3 columns">
-              <a class="button cto" href="#" id="js-new-form">Add another role</a>
-            </div>
+          <!-- add another role button -->
+          <a class="button cto absolute" href="#" id="js-new-form">Add another role</a>
 
           </div>
 
