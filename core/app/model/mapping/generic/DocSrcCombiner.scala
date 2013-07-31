@@ -48,7 +48,7 @@ class DocSrcCombiner(
     }
 
   override def apply(wb: Workbook, results: Seq[Seq[Model]]): Validated[Seq[Model]] = {
-    val yearsWithKeys = years(wb.getSheetAt(0))
+    val yearsWithKeys = years(wb.getSheetAt(0)).filter(!_._1.isInvalid)
     yearsWithKeys.concatMap(_._1) andThen {
       (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped.map {
         case ((year, key, elemWrap), executives, company) =>
