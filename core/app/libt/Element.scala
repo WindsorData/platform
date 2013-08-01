@@ -12,10 +12,13 @@ trait ElementValueOps { self : Element =>
   def /!(route:PathPart) = (this / route).rawValue[String]
   def /@(route:PathPart) = (this / route).rawValue[Date]
 
-  def /#/(route:PathPart) = (this /# route).get
-  def /%/(route:PathPart) = (this /% route).get
-  def /!/(route:PathPart) = (this /! route).get
-  def /@/(route:PathPart) = (this /@ route).get
+  def /#/(route:PathPart) = get(route)(/#)
+  def /%/(route:PathPart) = get(route)(/%)
+  def /!/(route:PathPart) = get(route)(/!)
+  def /@/(route:PathPart) = get(route)(/@)
+
+  private def get[A](route:PathPart)(accessor: PathPart => Option[A]) =
+    (accessor(route)).getOrElse { sys.error(s"no value for $route") }
 
   def getRawValue[A] : A = rawValue[A].get
 }
