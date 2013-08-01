@@ -23,7 +23,7 @@ class Top5ValidationsSpec extends FunSpec {
           'functionalMatches -> Model(
             'primary -> primary),
           'transitionPeriod -> transition), year, first, last)
-    it("should validation executive's transition period between different fiscal years") {
+    it("should validate executive's transition period between different fiscal years") {
       assert(
         top5.transitionPeriodValidation(
           Seq(model("Example", "A", 2012, Value("foo"), Value("No")),
@@ -38,13 +38,13 @@ class Top5ValidationsSpec extends FunSpec {
         top5.transitionPeriodValidation(
           Seq(model("Example", "C", 2012, Value("foo"), Value("No")),
             model("Example", "C", 2011, Value("bar"), Value("No")),
-            model("Example", "C", 2010, Value("bar"), Value("No")))).exists(_.isInvalid))
+            model("Example", "C", 2010, Value("bar"), Value("No")))).exists(_.isDoubtful))
 
       assert(
         top5.transitionPeriodValidation(
           Seq(model("Example", "D", 2012, Value("foo"), Value("No")),
             model("Example", "D", 2011, Value("foo"), Value("No")),
-            model("Example", "D", 2010, Value("bar"), Value("No")))).exists(_.isInvalid))
+            model("Example", "D", 2010, Value("bar"), Value("No")))).exists(_.isDoubtful))
     }
 
     it("should validate executives with the same first name and last name between different fiscal years") {
@@ -154,18 +154,20 @@ class Top5ValidationsSpec extends FunSpec {
     }
 
     it("should validate current base salary and target bonus with next fiscal year data") {
-      def model(nextBaseSalary: BigDecimal, nextTargetBonus: BigDecimal) =
+      def model(nextBaseSalary: Value[BigDecimal], nextTargetBonus: Value[BigDecimal]) =
         createModel(
           Model(
             'cashCompensations -> Model(
               'baseSalary -> Value(200: BigDecimal),
               'targetBonus -> Value(10: BigDecimal),
               'nextFiscalYearData -> Model(
-                'baseSalary -> Value(nextBaseSalary),
-                'targetBonus -> Value(nextTargetBonus)))))
+                'baseSalary -> nextBaseSalary,
+                'targetBonus -> nextTargetBonus))))
 
-      assert(top5.nextFiscalYearDataValidation(model(100, 1)).isDoubtful)
-      assert(!top5.nextFiscalYearDataValidation(model(300, 100)).isDoubtful)
+      assert(top5.nextFiscalYearDataValidation(model(Value(100), Value(1))).isDoubtful)
+      assert(!top5.nextFiscalYearDataValidation(model(Value(300), Value(100))).isDoubtful)
+      assert(!top5.nextFiscalYearDataValidation(model(Value(), Value(100))).isDoubtful)
+      assert(!top5.nextFiscalYearDataValidation(model(Value(300), Value())).isDoubtful)
     }
 
     it("should validate perf cash") {

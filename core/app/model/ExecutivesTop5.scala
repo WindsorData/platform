@@ -38,9 +38,10 @@ object ExecutivesTop5 {
           "ROI",
           "Working Capital")
           
-  val TMetrics = TCol(TModel(
-    'select -> TMetricsSelect,
-    'typeIn -> TString))
+  val TMetrics = TCol(
+    TModel(
+      'select -> TMetricsSelect,
+      'typeIn -> TString))
 
   val TPerformanceVesting = TModel(
     'useShares -> TXBool,

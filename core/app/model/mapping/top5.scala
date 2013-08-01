@@ -14,6 +14,11 @@ import libt._
 
 import java.util.Date
 import org.joda.time.DateTime
+import libt.Index
+import scala.Some
+import libt.spreadsheet.reader.Area
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
 
 object top5 extends StandardWorkflowFactory {
 
@@ -26,7 +31,8 @@ object top5 extends StandardWorkflowFactory {
       Path(rootPath, 'timeVest, 'vesting),
       Path(rootPath, 'minPayout),
       Path(rootPath, 'maxPayout)) ++
-      Multi(Path(rootPath, 'metrics), 4, Path('select), Path('typeIn))
+      Multi(Path(rootPath, 'metrics), 3, Path('select)) ++
+      Multi(Path(rootPath, 'metrics), 3, Path('typeIn))
 
   val grantTypesMapping =
     Seq[Strip](
@@ -115,7 +121,9 @@ object top5 extends StandardWorkflowFactory {
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
 
-  override def SheetValidation = model => grantTypeValidation(model) andThen executivesValidation(model)
+  override def SheetValidation = model =>
+    grantTypeValidation(model) andThen
+    executivesValidation(model)
 
   def gzip(sheets: Seq[Seq[Validated[Model]]]): Seq[Seq[Validated[Model]]] = sheets match {
         case m1 :: m2 :: Nil => m1.zip(m2).map { case (x, y) => Seq(x,y)}
@@ -124,11 +132,14 @@ object top5 extends StandardWorkflowFactory {
   
   override def WorkbookValidationPhase =
     (_, models) =>
-    	  gzip(Seq(
+    	  if(models.nonEmpty)
+          gzip(Seq(
     	      transitionPeriodValidation(models),
     	      optionGrantsVsGrantType(models),
             execDbTimeVestValidation(models)))
     	  .concatMap(_.reduce((a, b) => a andThen b))
+        else
+          Valid(models)
 
   def execDbTimeVestValidation(models: Seq[Model]) = {
     val lastYear = models.maxBy(_ /#/ 'disclosureFiscalYear) /#/ 'disclosureFiscalYear
@@ -187,7 +198,7 @@ object top5 extends StandardWorkflowFactory {
        (execs._2 /! 'transitionPeriod)) match {
           case (Some(rol0), Some(rol1), Some(isTransition))
           if ((rol0 == rol1 && isTransition == "Yes") || (rol0 != rol1 && isTransition == "No")) =>
-            Invalid(
+            Doubtful(model,
               s"Error on ExecDb ${(model /#/ 'disclosureFiscalYear)} " +
                 s"- ${(execs._2 /!/ 'firstName)} " +
                 s"${(execs._2 /!/ 'lastName)} : Transition Period is wrong")
@@ -244,19 +255,21 @@ object top5 extends StandardWorkflowFactory {
 
   def nextFiscalYearDataValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
-      m =>
-        ((m / 'cashCompensations /% 'baseSalary),
-          (m / 'cashCompensations / 'nextFiscalYearData /% 'baseSalary),
-          (m / 'cashCompensations /% 'targetBonus),
-          (m / 'cashCompensations / 'nextFiscalYearData /% 'targetBonus)) match {
-            case (Some(baseSalary), Some(nextBaseSalary), Some(targetBonus), Some(nextTargetBonus)) if (baseSalary <= nextBaseSalary && targetBonus <= nextTargetBonus) =>
-              Valid(model)
-            case (_, None, _, None) => Valid(model)
-            case _ =>
-              Doubtful(model,
-                warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
-                		"current base salary and target bonus are equal or greater that next fiscal year data"))
-          }
+      m => {
+        val result : Seq[Validated[Model]] = Seq(
+          m / 'cashCompensations /% 'baseSalary -> m / 'cashCompensations / 'nextFiscalYearData /% 'baseSalary,
+          m / 'cashCompensations /% 'targetBonus -> m / 'cashCompensations / 'nextFiscalYearData /% 'targetBonus).map { it =>
+            it match {
+              case (Some(currentValue), Some(nextValue)) if currentValue <= nextValue => Valid(model)
+              case (_, None) => Valid(model)
+              case (None, _) => Valid(model)
+              case _ =>
+                Doubtful(model,
+                  warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel),
+                    "current base salary and target bonus are equal or greater that next fiscal year data"))
+            }}
+         result.reduce( (a, b) => a andThen b)
+      }
     }
 
   def bodValidation(model: Model): Validated[Model] =
@@ -355,8 +368,8 @@ object top5 extends StandardWorkflowFactory {
                   n <- (timeVest /% 'number)
                   p <- (timeVest /% 'price)
                   v <- (timeVest /% 'value)
-                  product = (n * p).roundUp(0) / 1000
-                  if product != v
+                  product = ((n * p) / 1000).roundUp(0)
+                  if product != v.roundUp(0)
                 } yield Invalid(
                   err("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + "TimeVestRs",
                     "Number multiplied by price should be equal to value"))).getOrElse(Valid(model))
