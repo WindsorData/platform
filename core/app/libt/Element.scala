@@ -90,6 +90,16 @@ case class Value[A](
   def metadataSeq = Seq(calc, comment, note, link)
   
   def isComplete = value.nonEmpty
+
+  override def toString() = {
+    def usefullMetadataSeq = if (metadataSeq.forall(_.isEmpty)) Seq() else metadataSeq
+    (value +: usefullMetadataSeq).map {
+      case None => ""
+      case Some(x) => x.toString
+    } mkString (":")
+  }
+
+
 }
 object Value {
   
@@ -163,6 +173,9 @@ case class Model(elements: Set[(Symbol, Element)])
      yield element.asModel ++ (this intersect rootPk)
 
   def isComplete = elements.forall { case (_, element) => element.isComplete }
+
+  override def toString() =
+    "Model(" + elements.map { case (key, value) => s"${key.name}:$value" }.mkString(",") + ")"
 }
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)
