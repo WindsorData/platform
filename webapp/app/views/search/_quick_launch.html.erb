@@ -7,8 +7,8 @@
         <div class="recent-search-item">
           <p class="username"><%= s.user.email %></p>
           <p class="report"><%= s.created_at.strftime("%Y-%m-%d %H:%M:%S") %></p>
-          <p class="report">ADD TO SEARCH MODEL</p>
-          <button href="<%= recent_search_path(s) %>" class="small button">View</button>
+          <p class="report"><%= s.report_type %></p>
+          <a href="<%= recent_search_path(s) %>" class="small button">View</a>
         </div>
       <% } %>
     <% end %>
@@ -42,7 +42,7 @@
                     <%= submit_tag "Select", class: 'small button success' %>
                   </div>
                   <div class="left">
-                    <span>| or </span>
+                    <span> or </span>
                     <%= link_to('Create new peer group', groups_path) %>
                   </div>
                 </div>

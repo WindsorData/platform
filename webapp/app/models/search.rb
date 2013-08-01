@@ -2,16 +2,17 @@
 #
 # Table name: searches
 #
-#  id         :integer          not null, primary key
-#  user_id    :integer
-#  json_query :text
-#  created_at :datetime         not null
-#  updated_at :datetime         not null
-#  company_id :integer
+#  id          :integer          not null, primary key
+#  user_id     :integer
+#  json_query  :text
+#  created_at  :datetime         not null
+#  updated_at  :datetime         not null
+#  company_id  :integer
+#  report_type :string(255)
 #
 
 class Search < ActiveRecord::Base
-  attr_accessible :json_query, :user, :company
+  attr_accessible :json_query, :user, :company, :report_type
   belongs_to :user
   belongs_to :company
 
