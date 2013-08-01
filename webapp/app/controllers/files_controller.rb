@@ -3,8 +3,8 @@ class FilesController < ApplicationController
 
   def send_file
     result = post_file(params[:type], params[:file])
-    BackendService.update_search_values
     @upload_log = save_result_upload(params[:type], result)
+    BackendService.update_search_values
     render 'files/upload'
   end
 
@@ -28,7 +28,7 @@ class FilesController < ApplicationController
       DetailUploadFile.create(
           {
               file_name: result["file"],
-              ticker: Ticker.find_by_cusip(result["cusip"]),
+              ticker: result["ticker"],
               messages: result["messages"].to_s
           }
       )
