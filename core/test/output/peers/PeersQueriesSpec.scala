@@ -13,19 +13,22 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
   val db = PeersCompaniesDb(MongoClient()("windsor-peers-specs"))
   import db._
 
-  val models = Seq(
-    // A peers
-    Model('ticker -> Value("A"), 'filingDate -> Value(new DateTime().toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("B"), 'peerTicker -> Value("B")),
-    Model('ticker -> Value("A"), 'filingDate -> Value(new DateTime().toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("C"), 'peerTicker -> Value("C")),
+  val models = {
+    val time: DateTime = new DateTime()
+    Seq(
+      // A peers
+      Model('ticker -> Value("A"), 'filingDate -> Value(time.toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("B"), 'peerTicker -> Value("B")),
+      Model('ticker -> Value("A"), 'filingDate -> Value(time.toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("C"), 'peerTicker -> Value("C")),
 
-    // B peers
-    Model('ticker -> Value("B"), 'filingDate -> Value(new DateTime().toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("A"), 'peerTicker -> Value("A")),
-    Model('ticker -> Value("B"), 'filingDate -> Value(new DateTime().toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("C"), 'peerTicker -> Value("C")),
-    Model('ticker -> Value("B"), 'filingDate -> Value(new DateTime().minusDays(1).toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("C"), 'peerTicker -> Value("WillNotAppear")),
+      // B peers
+      Model('ticker -> Value("B"), 'filingDate -> Value(time.toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("A"), 'peerTicker -> Value("A")),
+      Model('ticker -> Value("B"), 'filingDate -> Value(time.toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("C"), 'peerTicker -> Value("C")),
+      Model('ticker -> Value("B"), 'filingDate -> Value(time.minusDays(1).toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("C"), 'peerTicker -> Value("WillNotAppear")),
 
-    // C peers
-    Model('ticker -> Value("C"), 'filingDate -> Value(new DateTime().toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("A"), 'peerTicker -> Value("A")),
-    Model('ticker -> Value("C"), 'filingDate -> Value(new DateTime().toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("B"), 'peerTicker -> Value("B")))
+      // C peers
+      Model('ticker -> Value("C"), 'filingDate -> Value(time.toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("A"), 'peerTicker -> Value("A")),
+      Model('ticker -> Value("C"), 'filingDate -> Value(time.toDate), 'fiscalYear -> Value(2013), 'peerCoName -> Value("B"), 'peerTicker -> Value("B")))
+  }
 
   override def beforeAll() {
     clean
@@ -59,7 +62,7 @@ class PeersQueriesSpec extends FlatSpec with BeforeAndAfterAll {
     }
 
     it should "Get Direct Peers for target collection" taggedAs(DbTest) in {
-      assert(peersOf("A","B").toList.map(_ - 'peerCoName- 'filingDate - 'fiscalYear).toSet ===
+      assert(peersOf("A","B").toList.map(_ - 'peerCoName - 'filingDate - 'fiscalYear).toSet ===
         Set(Model('ticker -> Value("A"),'peerTicker -> Value("B")),
             Model('ticker -> Value("A"),'peerTicker -> Value("C")),
             Model('ticker -> Value("B"),'peerTicker -> Value("A")),
