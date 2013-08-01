@@ -20,13 +20,13 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
       find(MongoDBObject("$or" -> tickers.map(it => MongoDBObject("ticker.value" -> it))))
       .groupBy(_ /!/ 'ticker)
       .flatMap {
+        case (_, Nil) => Seq()
         case (_, xs) =>
           val maxFilingDate = xs.map(_ /@/ 'filingDate).max
           val maxFiscalYear = xs.map(_ /#/ 'fiscalYear).max
           xs
             .filter(_ /@/ 'filingDate == maxFilingDate)
             .filter(_ /#/ 'fiscalYear == maxFiscalYear)
-        case (_, Nil) => Seq()
       }
       .toSeq
     }
