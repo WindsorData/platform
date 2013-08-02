@@ -20,7 +20,7 @@ class SearchController < ApplicationController
 
   def results
     params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
-    Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company)
+    Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company, report_type: Constants::TOP5_REPORT)
     json_query = QueryGenerator.json_query(params_hash)
     path = Rails.application.config.backend_host + Rails.application.config.post_query_path
 

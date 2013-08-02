@@ -14,4 +14,43 @@
 
 table {
 	width: 100%;
-} 
+}
+
+
+/* ---- quick launch ---- */
+.recent-search-container {
+  background-color: #EEE;
+  margin-top: 15px;
+  padding: 0 15px 10px;
+}
+
+.recent-search-item {
+  position: relative;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #CCC;
+}
+
+.recent-search-item:last-child {
+  border-bottom: none;
+}
+
+.recent-search-item .username,
+.recent-search-item .report {
+  margin: 0;
+}
+
+.recent-search-item .username {
+  font-weight: bold;
+}
+
+.recent-search-item .report {
+  font-size: 0.8em;
+}
+
+.recent-search-item button {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+  margin: 0;
+}

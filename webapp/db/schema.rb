@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130726172458) do
+ActiveRecord::Schema.define(:version => 20130801173446) do
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -72,9 +72,10 @@ ActiveRecord::Schema.define(:version => 20130726172458) do
   create_table "searches", :force => true do |t|
     t.integer  "user_id"
     t.text     "json_query"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",  :null => false
+    t.datetime "updated_at",  :null => false
     t.integer  "company_id"
+    t.string   "report_type"
   end
 
   create_table "tickers", :force => true do |t|
