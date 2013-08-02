@@ -46,8 +46,9 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
     UploadAndReadAction(db) {
       (request, dataset) => {
         val file = dataset.ref.file
+        val original_filename = request.body.dataParts.getOrElse("filename", Seq(dataset.filename)).head
         val workbook = WorkbookFactory.create(file)
-        keyed.Validated.flatConcat(Seq((dataset.filename -> cusip(workbook), reader.readFile(file.getAbsolutePath))))
+        keyed.Validated.flatConcat(Seq((original_filename -> cusip(workbook), reader.readFile(file.getAbsolutePath))))
       }
     }
 
