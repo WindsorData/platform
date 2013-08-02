@@ -16,6 +16,7 @@ class Ability
       can   :perform, :quick_search
       can   :perform, :full_search
       can   :perform, :recent_search      
+      can   :perfom,  :delete_info
     when 'admin'
       can   :upload, :file
       can   :perform, :full_search
