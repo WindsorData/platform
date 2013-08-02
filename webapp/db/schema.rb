@@ -11,7 +11,8 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130801173446) do
+ActiveRecord::Schema.define(:version => 20130801190348) do
+
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -38,12 +39,12 @@ ActiveRecord::Schema.define(:version => 20130801173446) do
 
   create_table "detail_upload_files", :force => true do |t|
     t.text    "file_name"
-    t.integer "ticker_id"
     t.integer "upload_log_id"
     t.text    "messages"
+    t.string  "ticker"
   end
 
-  add_index "detail_upload_files", ["ticker_id"], :name => "index_detail_upload_files_on_ticker_id"
+  add_index "detail_upload_files", ["ticker"], :name => "index_detail_upload_files_on_ticker"
   add_index "detail_upload_files", ["upload_log_id"], :name => "index_detail_upload_files_on_upload_log_id"
 
   create_table "groups", :force => true do |t|

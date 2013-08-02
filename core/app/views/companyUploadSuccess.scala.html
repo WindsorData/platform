@@ -6,12 +6,12 @@
 	<a href="/companies/reports">Back</a><br>
 	<label>File uploaded successfully</label>
 	<br>
-	@for(((file, cusip), models) <- messages) {
+	@for(((file, ticker), models) <- messages) {
         <div>
             <h3>@file</h3>
         </div>
         <div>
-            <h3>@cusip</h3>
+            <h3>@ticker</h3>
         </div>
         <ul>
             @for(e <- models) {

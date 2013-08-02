@@ -2,7 +2,7 @@
     <div>
       <%= content_tag :div, "Filename: " + element.file_name %>
       <% if element.ticker %>
-	    <%= content_tag :div, "Ticker: " + element.ticker.ticker %>
+      <%= content_tag :div, "Ticker: " + element.ticker %>
       <% end %>
       <ul>
         <% JSON.parse(element['messages']).each do |message| %>
