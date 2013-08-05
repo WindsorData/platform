@@ -9,7 +9,7 @@
   <b>Tickers:</b>
   <% @group.tickers.each{|t| %>
     <br/>
-    <%= t.name %>
+    <%= t.name %> (<%= t.ticker %>)
   <% } %>
 </p>
 <br/>
