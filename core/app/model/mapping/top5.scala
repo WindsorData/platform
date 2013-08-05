@@ -146,7 +146,7 @@ object top5 extends StandardWorkflowFactory {
                   (mTtdc / 'cashCompensations /% 'baseSalary getOrElse(0: BigDecimal))) +
                   (mTtdc / 'calculated / 'equityCompValue / 'options /% 'value getOrElse(0: BigDecimal)) +
                   (mTtdc / 'calculated / 'equityCompValue / 'timeVestRs /% 'value getOrElse(0: BigDecimal)) +
-                  (mTtdc / 'calculated / 'equityCompValue / 'perfRS /% 'value getOrElse(0: BigDecimal)) +
+                  (mTtdc / 'calculated / 'equityCompValue / 'perfRs /% 'value getOrElse(0: BigDecimal)) +
                   (mTtdc / 'calculated / 'equityCompValue /% 'perfCash getOrElse(0: BigDecimal))
 
 
@@ -159,9 +159,9 @@ object top5 extends StandardWorkflowFactory {
               builder += equityCalc(Path('timeVestRs, 'shares), Sum(Path('timeVestRS, *, 'number)), m)
               builder += equityCalc(Path('timeVestRs, 'price), Average(Path('timeVestRS, *, 'price)), m)
 
-              builder += equityCalc(Path('perfRS, 'value), Sum(Path('performanceVestRS, *, 'targetValue)), m)
-              builder += equityCalc(Path('perfRS, 'shares), Sum(Path('performanceVestRS, *, 'targetNumber)), m)
-              builder += equityCalc(Path('perfRS, 'price), Average(Path('performanceVestRS, *, 'grantDatePrice)), m)
+              builder += equityCalc(Path('perfRs, 'value), Sum(Path('performanceVestRS, *, 'targetValue)), m)
+              builder += equityCalc(Path('perfRs, 'shares), Sum(Path('performanceVestRS, *, 'targetNumber)), m)
+              builder += equityCalc(Path('perfRs, 'price), Average(Path('performanceVestRS, *, 'grantDatePrice)), m)
 
               builder += equityCalc(Path('perfCash), Sum(Path('performanceCash, *, 'targetValue)), m)
 

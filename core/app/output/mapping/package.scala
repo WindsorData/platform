@@ -8,6 +8,15 @@ import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
 import model.ExecutivesTop5._
 import libt.spreadsheet.reader.SheetDefinition
+import libt.reduction.Average
+import libt.reduction.Sum
+import libt.reduction.SubstractAll
+import libt.spreadsheet.EnumCheck
+import libt.reduction.Average
+import libt.reduction.Sum
+import libt.reduction.SubstractAll
+import libt.spreadsheet.ComplexEnumCheck
+import libt.spreadsheet.Calc
 
 package object mapping {
 
@@ -143,7 +152,7 @@ package object mapping {
     Gap, //Leave Blank
     Feature('functionalMatches, 'primary),
     Feature('founder),
-    Gap, //TTDC Pay Rank Calculation
+    Feature('calculated, 'ttdcPayRank),
 
     //Cash Compensation
     //Current Year
@@ -151,7 +160,7 @@ package object mapping {
     Feature('cashCompensations, 'baseSalary),
     Feature('cashCompensations, 'actualBonus),
 
-    Gap, // TTDC Pay calculation
+    Feature('calculated, 'ttdc),
     Feature('cashCompensations, 'targetBonus),
     Feature('cashCompensations, 'thresholdBonus),
     Feature('cashCompensations, 'maxBonus),
@@ -161,29 +170,24 @@ package object mapping {
 
     //Equity Comp Value
     Gap,
-    Tag("Options Value", Calc(Sum(Path('optionGrants, *, 'value)))),
-    Calc(Sum(Path('optionGrants, *, 'number))),
-    Calc(Average(Path('optionGrants, *, 'price))),
+    Feature('calculated, 'equityCompValue, 'options, 'value),
+    Feature('calculated, 'equityCompValue, 'options, 'options),
+    Feature('calculated, 'equityCompValue, 'options, 'exPrice),
     Gap, //Leave Blank
     //Time Vest RS
-    Calc(Sum(Path('timeVestRS, *, 'value))),
-    Calc(Sum(Path('timeVestRS, *, 'number))),
-    Calc(Average(Path('timeVestRS, *, 'price))),
+    Feature('calculated, 'equityCompValue, 'timeVestRs, 'value),
+    Feature('calculated, 'equityCompValue, 'timeVestRs, 'shares),
+    Feature('calculated, 'equityCompValue, 'timeVestRs, 'price),
     //Perf RS
-    Calc(Sum(Path('performanceVestRS, *, 'targetValue))),
-    Calc(Sum(Path('performanceVestRS, *, 'targetNumber))),
-    Calc(Average(Path('performanceVestRS, *, 'grantDatePrice))),
+    Feature('calculated, 'equityCompValue, 'perfRs, 'value),
+    Feature('calculated, 'equityCompValue, 'perfRs, 'shares),
+    Feature('calculated, 'equityCompValue, 'perfRs, 'price),
     //Perf Cash
-    Calc(Sum(Path('performanceCash, *, 'targetValue))),
+    Feature('calculated, 'equityCompValue, 'perfCash),
 
     //Carried Interest
     Gap,
-    Calc(SubstractAll(
-      Path('carriedInterest, 'ownedShares),
-      Path('beneficialOwnership),
-      Path('options),
-      Path('unvestedRestrictedStock),
-      Path('disclaimBeneficialOwnership))),
+    Feature('calculated, 'carriedInterest, 'ownedShares),
     Feature('carriedInterest, 'outstandingEquityAwards, 'vestedOptions),
     Feature('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions),
     Feature('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
