@@ -45,17 +45,18 @@ class FilesController < ApplicationController
 
   def path_by_upload_type(type)
     case type
-      when 'top5'
+      when Constants::TOP_5_FILE
         Rails.application.config.post_top5_path
-      when 'guidelines'
+      when Constants::GUIDELINESS_FILE
         Rails.application.config.post_guidelines_path
-      when 'dilution'
+      when Constants::DILUTION_FILE
         Rails.application.config.post_dilution_path
-      when 'batch'
+      when Constants::BATCH_FILE
         Rails.application.config.post_batch_path
-      when 'peers'
+      when Constants::PEERS_FILE
         Rails.application.config.post_peers_path
-      # add peers data case
+      when Constants::BOD_FILE
+        Rails.application.config.post_bod_path
     end
   end
 
