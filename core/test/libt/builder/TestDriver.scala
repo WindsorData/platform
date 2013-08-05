@@ -39,6 +39,16 @@ class TestDriver extends FlatSpec {
         Model('bar -> Value("foo"))))
   }
 
+  it should "create models with multiple nested fields" in {
+    val builder = new ModelBuilder()
+    builder += (Path('foo, 'bar) -> Value("foo"))
+    builder += (Path('foo, 'bor) -> Value("bar"))
+    assert(builder.build === Model(
+      'foo -> Model(
+        'bar -> Value("foo"),
+        'bor -> Value("bar"))))
+  }
+
   ignore should "create models with collection of values" in {
     fail()
   }

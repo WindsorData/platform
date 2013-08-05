@@ -90,6 +90,7 @@ object ExecutivesTop5 {
     'cashCompensations -> TModel(
       'baseSalary -> TNumber,
       'actualBonus -> TNumber,
+      'ttdc -> TNumber,
       'retentionBonus -> TNumber,
       'signOnBonus -> TNumber,
       'targetBonus -> TNumber,
@@ -143,6 +144,25 @@ object ExecutivesTop5 {
         'vestedOptions -> TNumber,
         'unvestedOptions -> TNumber,
         'timeVestRS -> TNumber,
-        'perfVestRS -> TNumber)))
+        'perfVestRS -> TNumber)),
+
+     'calculated -> TModel(
+       'ttdc -> TNumber,
+       'ttdcPayRank -> TInt,
+       'carriedInterest -> TModel('ownedShares -> TNumber),
+       'equityCompValue -> TModel(
+         'options -> TModel(
+           'value -> TNumber,
+           'options -> TNumber,
+           'exPrice -> TNumber),
+         'timeVestRs -> TModel(
+           'value -> TNumber,
+           'shares -> TNumber,
+           'price -> TNumber),
+         'perfRs -> TModel(
+           'value -> TNumber,
+           'shares -> TNumber,
+           'price -> TNumber),
+         'perfCash -> TNumber)))
 
 }
