@@ -1,7 +1,7 @@
 package libt
 
-import libt.util._
 import java.util.Date
+import libt.util._
 
 trait ElementValueOps { self : Element =>
   def isEmpty(route:PathPart) = (this / route).rawValue.isEmpty
@@ -56,6 +56,10 @@ sealed trait Element extends ElementLike[Element] with ElementValueOps {
    */
   def isComplete : Boolean
   
+  def merge(element: Element) : Element
+  
+  protected def incompatibleTypes = throw new IllegalArgumentException("incompaible types")
+  
 }
 
 /*=======Value=======*/
@@ -102,6 +106,10 @@ case class Value[A](
     } mkString (":")
   }
 
+  def merge(other: Element) = other match {
+  	case v: Value[_] => v
+  	case _ => incompatibleTypes
+  }
 
 }
 object Value {
@@ -125,6 +133,15 @@ case class Col(elements: Element*)
   override def apply(index: Int) = elements(index)
   def size = elements.size
   def isComplete = elements.forall(_.isComplete)
+
+  def merge(other:Element) = other match {
+    case Col(otherElements @ _*) => Col(elements.zipWithPadding(otherElements).map {
+      case (Some(e1), Some(e2)) => e1.merge(e2)
+      case (Some(e1), _) => e1
+      case (_, e2) => e2.get
+    }.force: _*)
+    case _ => incompatibleTypes
+  }
 }
 
 /*=======Model=======*/
@@ -179,10 +196,17 @@ case class Model(elements: Set[(Symbol, Element)])
 
   override def toString() =
     "Model(" + elements.map { case (key, value) => s"${key.name}:$value" }.mkString(",") + ")"
+
+  def merge(other: Element) = other match {
+    case Model(otherElements) => Model((elements ++ otherElements).groupBy(key).mapValues {
+      _.reduce( (e1, e2) => (key(e1), value(e1).merge(value(e2))))
+    }.values.toSet)
+    case _ => incompatibleTypes
+  }
 }
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)
-  
+
   /**Converts a sequence of models into a sequence of flattened models*/
   def flattenWith(models: Seq[Model], rootPk: PK, flatteningPath: Path): Seq[Model] =
     models.flatMap(_.flattenWith(rootPk, flatteningPath))

@@ -100,5 +100,4 @@ class ModelSpec extends FunSpec {
           'value -> Value("day"))))
     }
   }
-
 }
