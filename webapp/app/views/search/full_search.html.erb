@@ -2,8 +2,9 @@
   <%= form_tag(search_result_path, class: "main-form custom" ) do %>
   <fieldset>
   <legend class="legend">Executive compensation</legend>
-    <div class="form-container" id="forms-container">      
+    <div class="form-container" id="forms-container">
       <div class="basic-group hidden">
+        <hr>
         <div class="role-selector row">
           <div class="large-6 columns">
             <label>Role</label>
@@ -150,17 +151,11 @@
                 <span class="custom radio"></span> N/A
               </label>
             </div>
-
-            <div class="large-3 columns">
-              <a class="button cto" href="#" id="js-new-form">Add another role</a>
-            </div>
-
           </div>
 
         </div>
 
       </div>
-
     </div>
     </fieldset>
 
@@ -255,6 +250,7 @@
     <div class="form-actions">
       <button type="submit" class="btn">Search</button>
       <a href="#" id="advanced-search-button">Show Advanced search</a>
+      <a class="button cto" href="#" id="js-new-form">Add another role</a>
     </div>
   <% end %>
 </div>
