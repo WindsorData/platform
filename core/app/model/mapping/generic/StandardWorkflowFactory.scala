@@ -14,13 +14,16 @@ import libt._
 trait StandardWorkflowFactory {
 
   def Workflow: FrontPhase[Seq[Model]] =
-	  MappingPhase(Mapping) >> 
+	  MappingPhase(Mapping) >>
 	  CombinerPhase >>
-	  SheetValidationPhase >>
+    AgreggationPhase >>
+    SheetValidationPhase >>
 	  WorkbookValidationPhase
 
   /**Phase for combining data sheets */
   def CombinerPhase : Phase[Seq[Seq[Model]], Seq[Model]]
+
+  def AgreggationPhase : Phase[Seq[Model], Seq[Model]] = (_, models) => Valid(models)
 
   /**Phase for validating isolated sheets*/
   def SheetValidationPhase: Phase[Seq[Model], Seq[Model]] =

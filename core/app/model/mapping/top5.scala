@@ -10,12 +10,23 @@ import libt.spreadsheet._
 import libt.calc._
 import libt.error._
 import libt.util.math._
+import libt.builder.ModelBuilder
 import libt._
 
 import java.util.Date
 import org.joda.time.DateTime
-import libt.Index
+import libt.spreadsheet.reader.workflow._
 import scala.Some
+import libt.reduction.{SubstractAll, Reduction, Average, Sum}
+import libt.spreadsheet.reader.Area
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
+import scala.Some
+import libt.spreadsheet.reader.Area
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
+import scala.Some
+import libt.Col
 import libt.spreadsheet.reader.Area
 import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
@@ -120,6 +131,57 @@ object top5 extends StandardWorkflowFactory {
       (25, 'executives, colWrapping),
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
+
+  override def AgreggationPhase : Phase[Seq[Model], Seq[Model]] =
+    (_, models) =>
+      Valid(models.map { model =>
+        if(model.contains('executives)) {
+          model.merge(Model('executives -> Col(model.applySeq(Path('executives, *)).map { m => {
+              def equityCalc(path: Path, calc: Reduction, elem: Element) =
+                (Path('calculated, 'equityCompValue) ++ path, Value(calc.reduce(elem)))
+
+              def calculateTTDC(mTtdc: Model): BigDecimal =
+                ((if(mTtdc / 'cashCompensations /% 'targetBonus isEmpty) 1: BigDecimal
+                 else ((mTtdc / 'cashCompensations /% 'targetBonus get) + 1)) *
+                (mTtdc / 'cashCompensations /% 'baseSalary getOrElse(0: BigDecimal))) +
+                (mTtdc / 'calculated / 'equityCompValue / 'options /% 'value getOrElse(0: BigDecimal)) +
+                (mTtdc / 'calculated / 'equityCompValue / 'timeVestRs /% 'value getOrElse(0: BigDecimal)) +
+                (mTtdc / 'calculated / 'equityCompValue / 'perfRS /% 'value getOrElse(0: BigDecimal)) +
+                (mTtdc / 'calculated / 'equityCompValue /% 'perfCash getOrElse(0: BigDecimal))
+
+
+                val builder = new ModelBuilder()
+                builder += equityCalc(Path('options, 'value), Sum(Path('optionGrants, *, 'value)), m)
+                builder += equityCalc(Path('options, 'options), Sum(Path('optionGrants, *, 'number)), m)
+                builder += equityCalc(Path('options, 'exPrice), Average(Path('optionGrants, *, 'price)), m)
+
+                builder += equityCalc(Path('timeVestRs, 'value), Sum(Path('timeVestRS, *, 'value)), m)
+                builder += equityCalc(Path('timeVestRs, 'shares), Sum(Path('timeVestRS, *, 'number)), m)
+                builder += equityCalc(Path('timeVestRs, 'price), Average(Path('timeVestRS, *, 'price)), m)
+
+                builder += equityCalc(Path('perfRS, 'value), Sum(Path('performanceVestRS, *, 'targetValue)), m)
+                builder += equityCalc(Path('perfRS, 'shares), Sum(Path('performanceVestRS, *, 'targetNumber)), m)
+                builder += equityCalc(Path('perfRS, 'price), Average(Path('performanceVestRS, *, 'grantDatePrice)), m)
+
+                builder += equityCalc(Path('perfCash), Sum(Path('performanceCash, *, 'targetValue)), m)
+
+                builder += (Path('calculated, 'carriedInterest, 'ownedShares),
+                  Value(SubstractAll(
+                    Path('carriedInterest, 'ownedShares),
+                    Path('beneficialOwnership),
+                    Path('options),
+                    Path('unvestedRestrictedStock),
+                    Path('disclaimBeneficialOwnership)).reduce(m)))
+
+                val modelWithPartialCalcs = m.asModel ++ builder.build
+
+                modelWithPartialCalcs.merge(Model('calculated -> Model('ttdc -> Value(calculateTTDC(modelWithPartialCalcs)))))
+              }
+            }: _*)))
+        }
+        else
+          model
+      }.map(_.asModel))
 
   override def SheetValidation = model =>
     grantTypeValidation(model) andThen
@@ -473,4 +535,5 @@ object top5 extends StandardWorkflowFactory {
       validateGrantTypeUse andThen validateGrantTypeMinPayout
     }
   }
+
 }
