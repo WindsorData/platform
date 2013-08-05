@@ -20,10 +20,9 @@
   <div class="side-container quick-launch">
     <h2 class="title">Quick Launch</h2>
     <div class="content">
-      <form class="custom">
+      <%= form_tag(group_search_path, class: "custom") do %>
         <div class="row">
           <div class="small-12">
-            <%= form_tag('/groups') do %>
               <div class="row ">
                 <div class="large-12 columns">
                   <label for="right-label">Select peer group</label>
@@ -47,10 +46,9 @@
                   </div>
                 </div>
               </div>
-            <% end %>
           </div>
         </div>
-      </form>
+      <% end %>
     </div>
   </div>
 </div>
