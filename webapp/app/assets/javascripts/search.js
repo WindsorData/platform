@@ -10,7 +10,7 @@ $(function() {
     form_counter ++;
   }
 
-  $("#js-new-form").click(function() {
+  $("#js-new-form").on("click", function() {
     addExecutiveForm();
   });
 
