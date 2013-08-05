@@ -39,14 +39,14 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def newCompanies =
     UploadAndReadAction(ExecutivesDb) {
-      data => keyed.Validated.flatConcat(readZipFileEntries(data.file().getAbsolutePath))
+      data => keyed.Validated.flatConcat(readZipFileEntries(data.file.getAbsolutePath))
     }
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
     UploadAndReadAction(db) {
       (uploadData : UploadData) => {
-        val file = uploadData.file()
-        val originalFilename = uploadData.originalName()
+        val file = uploadData.file
+        val originalFilename = uploadData.originalName
         val workbook = WorkbookFactory.create(file)
         keyed.Validated.flatConcat(Seq((originalFilename -> ticker(workbook), reader.readFile(file.getAbsolutePath))))
       }
@@ -54,16 +54,16 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def UploadAndReadAction(db: Persistence)(readOp: UploadData => keyed.Validated[FileAndTicker, Model]) =
     UploadSpreadsheetAction {
-      case data @ UploadData(request, dataset) =>
+      case data =>
         readOp(data) match {
           case Invalid(errors@_*) =>
-            request match {
+            data.request match {
               case Accepts.Html() => BadRequest(views.html.parsingError(errors))
               case Accepts.Json() => BadRequest(toJson(messagesToJson(errors)))
             }
           case result => {
             db.update(result.get: _*)
-            request match {
+            data.request match {
               case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
               case Accepts.Json() => Ok(toJson(messagesToJson(result.messages)))
             }
