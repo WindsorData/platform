@@ -39,23 +39,23 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def newCompanies =
     UploadAndReadAction(ExecutivesDb) {
-      (request, dataset) => keyed.Validated.flatConcat(readZipFileEntries(dataset.ref.file.getAbsolutePath))
+      data => keyed.Validated.flatConcat(readZipFileEntries(data.file().getAbsolutePath))
     }
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
     UploadAndReadAction(db) {
-      (request, dataset) => {
-        val file = dataset.ref.file
-        val original_filename = request.body.dataParts.getOrElse("filename", Seq(dataset.filename)).head
+      (uploadData : UploadData) => {
+        val file = uploadData.file()
+        val originalFilename = uploadData.originalName()
         val workbook = WorkbookFactory.create(file)
-        keyed.Validated.flatConcat(Seq((original_filename -> ticker(workbook), reader.readFile(file.getAbsolutePath))))
+        keyed.Validated.flatConcat(Seq((originalFilename -> ticker(workbook), reader.readFile(file.getAbsolutePath))))
       }
     }
 
-  def UploadAndReadAction(db: Persistence)(readOp: (UploadRequest, UploadFile) => keyed.Validated[FileAndTicker, Model]) =
+  def UploadAndReadAction(db: Persistence)(readOp: UploadData => keyed.Validated[FileAndTicker, Model]) =
     UploadSpreadsheetAction {
-      (request, dataset) =>
-        readOp(request, dataset) match {
+      case data @ UploadData(request, dataset) =>
+        readOp(data) match {
           case Invalid(errors@_*) =>
             request match {
               case Accepts.Html() => BadRequest(views.html.parsingError(errors))
