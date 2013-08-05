@@ -136,48 +136,55 @@ object top5 extends StandardWorkflowFactory {
     (_, models) =>
       Valid(models.map { model =>
         if(model.contains('executives)) {
-          model.merge(Model('executives -> Col(model.applySeq(Path('executives, *)).map { m => {
+          val execsWithCalcs = model.applySeq(Path('executives, *)).map { m => {
               def equityCalc(path: Path, calc: Reduction, elem: Element) =
                 (Path('calculated, 'equityCompValue) ++ path, Value(calc.reduce(elem)))
 
               def calculateTTDC(mTtdc: Model): BigDecimal =
                 ((if(mTtdc / 'cashCompensations /% 'targetBonus isEmpty) 1: BigDecimal
-                 else ((mTtdc / 'cashCompensations /% 'targetBonus get) + 1)) *
-                (mTtdc / 'cashCompensations /% 'baseSalary getOrElse(0: BigDecimal))) +
-                (mTtdc / 'calculated / 'equityCompValue / 'options /% 'value getOrElse(0: BigDecimal)) +
-                (mTtdc / 'calculated / 'equityCompValue / 'timeVestRs /% 'value getOrElse(0: BigDecimal)) +
-                (mTtdc / 'calculated / 'equityCompValue / 'perfRS /% 'value getOrElse(0: BigDecimal)) +
-                (mTtdc / 'calculated / 'equityCompValue /% 'perfCash getOrElse(0: BigDecimal))
+                else ((mTtdc / 'cashCompensations /% 'targetBonus get) + 1)) *
+                  (mTtdc / 'cashCompensations /% 'baseSalary getOrElse(0: BigDecimal))) +
+                  (mTtdc / 'calculated / 'equityCompValue / 'options /% 'value getOrElse(0: BigDecimal)) +
+                  (mTtdc / 'calculated / 'equityCompValue / 'timeVestRs /% 'value getOrElse(0: BigDecimal)) +
+                  (mTtdc / 'calculated / 'equityCompValue / 'perfRS /% 'value getOrElse(0: BigDecimal)) +
+                  (mTtdc / 'calculated / 'equityCompValue /% 'perfCash getOrElse(0: BigDecimal))
 
 
-                val builder = new ModelBuilder()
-                builder += equityCalc(Path('options, 'value), Sum(Path('optionGrants, *, 'value)), m)
-                builder += equityCalc(Path('options, 'options), Sum(Path('optionGrants, *, 'number)), m)
-                builder += equityCalc(Path('options, 'exPrice), Average(Path('optionGrants, *, 'price)), m)
+              val builder = new ModelBuilder()
+              builder += equityCalc(Path('options, 'value), Sum(Path('optionGrants, *, 'value)), m)
+              builder += equityCalc(Path('options, 'options), Sum(Path('optionGrants, *, 'number)), m)
+              builder += equityCalc(Path('options, 'exPrice), Average(Path('optionGrants, *, 'price)), m)
 
-                builder += equityCalc(Path('timeVestRs, 'value), Sum(Path('timeVestRS, *, 'value)), m)
-                builder += equityCalc(Path('timeVestRs, 'shares), Sum(Path('timeVestRS, *, 'number)), m)
-                builder += equityCalc(Path('timeVestRs, 'price), Average(Path('timeVestRS, *, 'price)), m)
+              builder += equityCalc(Path('timeVestRs, 'value), Sum(Path('timeVestRS, *, 'value)), m)
+              builder += equityCalc(Path('timeVestRs, 'shares), Sum(Path('timeVestRS, *, 'number)), m)
+              builder += equityCalc(Path('timeVestRs, 'price), Average(Path('timeVestRS, *, 'price)), m)
 
-                builder += equityCalc(Path('perfRS, 'value), Sum(Path('performanceVestRS, *, 'targetValue)), m)
-                builder += equityCalc(Path('perfRS, 'shares), Sum(Path('performanceVestRS, *, 'targetNumber)), m)
-                builder += equityCalc(Path('perfRS, 'price), Average(Path('performanceVestRS, *, 'grantDatePrice)), m)
+              builder += equityCalc(Path('perfRS, 'value), Sum(Path('performanceVestRS, *, 'targetValue)), m)
+              builder += equityCalc(Path('perfRS, 'shares), Sum(Path('performanceVestRS, *, 'targetNumber)), m)
+              builder += equityCalc(Path('perfRS, 'price), Average(Path('performanceVestRS, *, 'grantDatePrice)), m)
 
-                builder += equityCalc(Path('perfCash), Sum(Path('performanceCash, *, 'targetValue)), m)
+              builder += equityCalc(Path('perfCash), Sum(Path('performanceCash, *, 'targetValue)), m)
 
-                builder += (Path('calculated, 'carriedInterest, 'ownedShares),
-                  Value(SubstractAll(
-                    Path('carriedInterest, 'ownedShares),
-                    Path('beneficialOwnership),
-                    Path('options),
-                    Path('unvestedRestrictedStock),
-                    Path('disclaimBeneficialOwnership)).reduce(m)))
+              builder += (Path('calculated, 'carriedInterest, 'ownedShares),
+                Value(SubstractAll(
+                  Path('carriedInterest, 'ownedShares),
+                  Path('beneficialOwnership),
+                  Path('options),
+                  Path('unvestedRestrictedStock),
+                  Path('disclaimBeneficialOwnership)).reduce(m)))
 
-                val modelWithPartialCalcs = m.asModel ++ builder.build
+              val modelWithPartialCalcs = m.asModel ++ builder.build
 
-                modelWithPartialCalcs.merge(Model('calculated -> Model('ttdc -> Value(calculateTTDC(modelWithPartialCalcs)))))
-              }
-            }: _*)))
+              modelWithPartialCalcs.merge(Model('calculated -> Model('ttdc -> Value(calculateTTDC(modelWithPartialCalcs)))))
+            }
+          }
+
+          val ttdcRankings = execsWithCalcs.map(_ / 'calculated /%/ 'ttdc).sorted.reverse.zip(1 to 5)
+
+          model.merge(Model('executives -> Col(execsWithCalcs.map { exec =>
+            val rank = ttdcRankings.find(_._1 == exec / 'calculated /%/ 'ttdc).get._2
+            exec.merge(Model('calculated -> Model('ttdcPayRank -> Value(rank))))
+          }: _*)))
         }
         else
           model

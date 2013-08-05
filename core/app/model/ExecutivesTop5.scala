@@ -148,6 +148,7 @@ object ExecutivesTop5 {
 
      'calculated -> TModel(
        'ttdc -> TNumber,
+       'ttdcPayRank -> TInt,
        'carriedInterest -> TModel('ownedShares -> TNumber),
        'equityCompValue -> TModel(
          'options -> TModel(
