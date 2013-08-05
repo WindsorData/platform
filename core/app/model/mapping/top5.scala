@@ -268,7 +268,7 @@ object top5 extends StandardWorkflowFactory {
           case (Some(rol0), Some(rol1), Some(isTransition))
           if ((rol0 == rol1 && isTransition == "Yes") || (rol0 != rol1 && isTransition == "No")) =>
             Doubtful(model,
-              s"Error on ExecDb ${(model /#/ 'disclosureFiscalYear)} " +
+              s"Warning on ExecDb ${(model /#/ 'disclosureFiscalYear)} " +
                 s"- ${(execs._2 /!/ 'firstName)} " +
                 s"${(execs._2 /!/ 'lastName)} : Transition Period is wrong")
           case _ => Valid(model)

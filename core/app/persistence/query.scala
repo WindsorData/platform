@@ -11,7 +11,12 @@ object query {
   type Operator = (String, Any)
 
   case class QueryExecutives(executives: Seq[Filter], advanced: Filter) {
-    def exampleExecutives = executives.map {it => (it ++ advanced :+ filterLastYear).map(_.asMongoQuery).reduce(_ ++ _)}
+    def exampleExecutives = {
+      executives match {
+        case Nil => Seq(filterLastYear.asMongoQuery)
+        case _ => executives.map {it => (it ++ advanced :+ filterLastYear).map(_.asMongoQuery).reduce(_ ++ _)}
+      }
+    }
     def query = MongoDBObject("$or" -> exampleExecutives)
 
     def apply(db: Persistence) = db.find(query)
