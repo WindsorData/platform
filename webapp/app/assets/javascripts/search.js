@@ -3,6 +3,7 @@ $(function() {
   
   addExecutiveForm();
   replaceElementNameWithCounter();
+  disableAdvancedSearchFormInputs();
   
   function addExecutiveForm(){
     $('.basic-group.hidden').clone().removeClass('hidden').addClass("cloned").appendTo('#forms-container');
@@ -33,5 +34,8 @@ $(function() {
     var el = $(this).closest('div').children("input[type='text']");
     el.attr("disabled", !this.checked);
   });
+  function disableAdvancedSearchFormInputs(){
+    $('.advanced-search .item-form input[type=text]').attr("disabled", true);
+  }
 
 });
