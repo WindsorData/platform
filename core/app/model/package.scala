@@ -1,7 +1,6 @@
 import libt._
 
 package object model {
-  import persistence._
   import model.ExecutivesGuidelines._
   import model.ExecutivesTop5._
   import model.ExecutivesSTBonusPlan._
