@@ -11,12 +11,12 @@ class FilesController < ApplicationController
   private
   def post_file(type, file)
     path = Rails.application.config.backend_host + path_by_upload_type(type)
-    params_post = {
+    payload = {
         filename: params[:file].original_filename,
         path_fs: file.path
     }
 
-    RestClient.post(path + "?upload_method=fs", params_post, {accept: :json}) do |response, _|
+    RestClient::Request.execute(:method => :post, :url => "#{path}?upload_method=fs", :payload => payload, :headers => {accept: :json}, :timeout => -1) do |response, _|
       if response.code == 200
         flash[:notice] = "Upload successfully completed"
       else
