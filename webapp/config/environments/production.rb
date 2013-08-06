@@ -75,6 +75,7 @@ WindosorFrontend::Application.configure do
   config.post_peers_peers_single_ticker_path = '/api/companies/report/peers/peers'
   config.post_peers_peers_ticker_list_path = '/api/companies/report/peers/peersFromPrimary'
 
+  # Get search form values
   config.get_primary_roles_path = '/api/schema/values/roles/primary'
   config.get_secondary_roles_path = '/api/schema/values/roles/secondary'  
   config.get_cash_compensations_path = '/api/schema/values/cashCompensations'
@@ -83,11 +84,15 @@ WindosorFrontend::Application.configure do
   config.get_scope_roles_path = '/api/schema/values/roles/scope'
   config.get_bod_roles_path = '/api/schema/values/roles/bod'
   
+  # File upload paths
   config.post_top5_path = '/api/companies/top5'
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
   config.post_batch_path = '/api/companies/batch'
+  config.peers_path = '/api/companies/peers'
+  config.post_bod_path = '/api/companies/bod'
 
+  # Search paths
   config.post_query_path = '/api/companies/search'
   config.post_download_report_path = '/api/companies/report'
 end

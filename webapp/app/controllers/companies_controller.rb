@@ -18,11 +18,21 @@ class CompaniesController < ApplicationController
   def perform_info_deletion
     authorize!(:perfom, :delete_info)
     path = Rails.application.config.backend_host + "/api/companies/#{params[:ticker]}/year/#{params[:year]}"
+    backend_delete(path)    
+  end
+
+  def delete_db
+    path = Rails.application.config.backend_host + Rails.application.config.peers_path
+    authorize!(:perfom, :delete_info)    
+    backend_delete(path)
+  end
+
+  def backend_delete(path)
     RestClient.delete(path, {accept: :json}) do |response, _|
       if response.code == 200
         flash[:notice] = "Information deleted successfully"
       end
     end
-    render 'delete_info'
+    render 'delete_info'    
   end
 end

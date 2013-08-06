@@ -13,6 +13,7 @@ WindosorFrontend::Application.routes.draw do
     collection do
       get   :delete_info
       post  :perform_info_deletion
+      post  :delete_db
     end
   end
 
