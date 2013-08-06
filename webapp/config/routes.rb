@@ -39,7 +39,8 @@ WindosorFrontend::Application.routes.draw do
 
   # Export Files
   post 'company_peers/peers_peers_file', as: :export_peers_peers
-  
+  post 'company_peers/incoming_peers_file', as: :export_incoming_peers
+
   # Upload Log
   get "upload_log/audit", as: :audit_log
 end
