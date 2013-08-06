@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+
+  <Styles>
+    <ss:Style ss:ID="1">
+      <ss:Font ss:Bold="1"/>
+      <ss:Alignment ss:Horizontal="Center"/>   
+    </ss:Style>
+  </Styles>
+  <Worksheet ss:Name="company peers">
+    <Table>
+      <Column ss:Width="250"/>
+      <Column ss:Width="150"/>
+      <Column ss:Width="80"/>
+      <Column ss:Width="80"/>
+      <Row ss:StyleID="1">
+        <Cell><Data ss:Type="String">Company Name</Data></Cell>
+        <Cell><Data ss:Type="String">Ticker</Data></Cell>
+        <Cell><Data ss:Type="String">Score</Data></Cell>
+        <Cell><Data ss:Type="String">Simple Count</Data></Cell>
+      </Row>
+    <% @companies_peers.each do |peer| %>
+      <Row>
+        <Cell><Data ss:Type="String"><%= peer[1][0]["secondPeerName"] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= peer[1][0]["secondPeer"]  %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= peer[1][0]["weight"] %></Data></Cell>
+        <Cell><Data ss:Type="Number"><%= peer[1][1]["weight"] %></Data></Cell>
+      </Row>
+    <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

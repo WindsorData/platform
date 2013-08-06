@@ -28,9 +28,9 @@ class CompanyPeersController < ApplicationController
   def peers_peers_ticker_list_result
     tickers = params[:company_peer_tickers_manual].split(",")
     path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_ticker_list_path    
-    json_query = { tickers: tickers }.to_json
+    @json_query = { tickers: tickers }.to_json
 
-    find_peers(path, json_query)
+    find_peers(path, @json_query)
     render "peers_peers_result"  
   end
 
@@ -40,6 +40,19 @@ class CompanyPeersController < ApplicationController
     respond_to do |format|
       format.html
       format.json { render json: @company_peers.map(&:attributes) }
+    end
+  end
+
+  def peers_peers_file
+    path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_ticker_list_path    
+    json_query = params[:json_query]
+    
+    find_peers(path, json_query)
+    
+    @companies_peers = (@companies_peers["normalized"] + @companies_peers["unnormalized"]).group_by { |p| p["secondPeer"] }
+    
+    respond_to do |format|
+      format.xls { render 'peers_peers'}
     end
   end
   
