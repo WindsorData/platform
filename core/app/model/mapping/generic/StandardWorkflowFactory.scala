@@ -6,6 +6,7 @@ import libt.spreadsheet._
 import libt.error.generic.Validated._
 import libt.error._
 import libt._
+import model.validation._
 
 /**trait for objects that act as a factory of workflows
   * for reading standard Windsor workbooks-  workbooks that have
@@ -27,7 +28,14 @@ trait StandardWorkflowFactory {
 
   /**Phase for validating isolated sheets*/
   def SheetValidationPhase: Phase[Seq[Model], Seq[Model]] =
-  (_, models) => { models.concatMap(SheetValidation) }
+  (_, models) => {
+    val result = models.concatMap(SheetValidation)
+    if(models.exists(_ /! 'cusip nonEmpty))
+      result
+    else
+      result andThen Invalid(err("ExecDb - DocSrc"
+        ,"cusip can't be blank"))
+  }
 
   /**Phase for validating bunchs of sheets*/
   def WorkbookValidationPhase: Phase[Seq[Model], Seq[Model]] = IdPhase
