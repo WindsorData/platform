@@ -17,6 +17,7 @@ GET     /api/schema/values/equityCompensations           controllers.Api.equityC
 POST    /api/companies/search                            controllers.Api.companiesSearch
 POST    /api/companies/report                            controllers.Api.companiesReport
 DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
+DELETE  /api/companies/peers                             controllers.Api.removePeersData
 
 #Peers Reports
 POST    /api/companies/report/peers/incoming             controllers.Api.incomingPeers

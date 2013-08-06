@@ -118,5 +118,11 @@ object Api extends Controller with SpreadsheetDownloader {
     ExecutivesDb.remove(cusip, disclosureFiscalYear)
     Ok
   }
+
+  def removePeersData = Action {
+    PeersDb.drop
+    Ok
+  }
+
 }
 
