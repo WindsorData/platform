@@ -48,74 +48,10 @@
               <input type="text" placeholder="Less than ($)" name='[role_form][eq_comp][lt]'>
             </div>
           </div>
-          
-          <!-- compensation arrangements -->
-<!--           <div class="item-form cf">
-            <p class="label">Compensation arrangements</p>
-            <%= label_tag 'Yes' %> <%= radio_button_tag 'comp_arrang', 'Yes' %>
-            <%= label_tag 'No' %> <%= radio_button_tag 'comp_arrang', 'No' %>
-            <%= label_tag 'N/A' %> <%= radio_button_tag 'comp_arrang', 'N/A' %>
-          </div> -->
-          <!-- reload options -->
-<!--           <div class="item-form cf">
-            <p class="label">Reload options</p>
-            <%= label_tag 'Yes' %> <%= radio_button_tag 'reload_opt', 'Yes' %>
-            <%= label_tag 'No' %> <%= radio_button_tag 'reload_opt', 'No' %>
-            <%= label_tag 'N/A' %> <%= radio_button_tag 'reload_opt', 'N/A' %>
-          </div> -->
-          <!-- CEO tenure -->
-          <div class="row">
-            <div class="large-12 columns">
-              <label>CEO tenure</label>
-            </div>
-            <div class="large-6 columns">
-              <input type="text" name='[role_form][ceo_tenure][gt]' placeholder="Greater than (yrs)">
-            </div>
-            <div class="large-6 columns">
-              <input type="text" name='[role_form][ceo_tenure][lt]' placeholder="Less than (yrs)">
-            </div>
-          </div>
-
           <hr>
 
           <!-- other criteria -->
           <h3 class="subtitle">other criteria</h3>
-
-          <div class="row">
-            <div class="large-3 columns">
-              <!-- compensation arrangements -->
-              <span>Compensation arrangements</span>
-              <label for="radio1">
-                <%= radio_button_tag 'comp_arrang', 'Yes' %>
-                <span class="custom radio"></span> YES
-              </label>
-              <label for="radio1">
-                <%= radio_button_tag 'comp_arrang', 'No' %>
-                <span class="custom radio"></span> No
-              </label>
-              <label for="radio1">
-                <%= radio_button_tag 'comp_arrang', 'N/A' %>
-                <span class="custom radio"></span> N/A
-              </label>
-            </div>
-
-            <div class="large-3 pull-6 columns">
-              <!-- reload options -->
-              <span>Reload options</span>
-              <label for="radio1">
-                <%= radio_button_tag 'reload_opt', 'Yes' %>
-                <span class="custom radio"></span> Yes
-              </label>
-              <label for="radio1">
-                <%= radio_button_tag 'reload_opt', 'No' %>
-                <span class="custom radio"></span> No
-              </label>
-              <label for="radio1">
-                <%= radio_button_tag 'reload_opt', 'N/A' %>
-                <span class="custom radio"></span> N/A
-              </label>
-            </div>
-          </div>
 
           <div class="row">
             <!-- Founder -->
@@ -130,7 +66,7 @@
                 <span class="custom radio"></span> NO
               </label>
               <label for="radio1">
-                <%= radio_button_tag '[role_form][founder]', 'N/A' %>
+                <%= radio_button_tag '[role_form][founder]', '' %>
                 <span class="custom radio"></span> N/A
               </label>
             </div>
@@ -147,7 +83,7 @@
                 <span class="custom radio"></span> NO
               </label>
               <label for="radio1">
-                <%= radio_button_tag '[role_form][trans_period]', 'N/A' %>
+                <%= radio_button_tag '[role_form][trans_period]', '' %>
                 <span class="custom radio"></span> N/A
               </label>
             </div>
