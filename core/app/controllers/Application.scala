@@ -1,5 +1,6 @@
 package controllers
 
+import _root_.util.FileManager
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import play.api.libs.json.Json._
 import play.api.data.Forms._
@@ -49,8 +50,14 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       (uploadData : UploadData) => {
         val file = uploadData.file
         val originalFilename = uploadData.originalName
-        val workbook = WorkbookFactory.create(file)
-        keyed.Validated.flatConcat(Seq((originalFilename -> ticker(workbook), reader.readFile(file.getAbsolutePath))))
+
+        var tickerName : String = null
+        FileManager.loadFile(file.getAbsolutePath) { stream =>
+          val workbook = WorkbookFactory.create(stream)
+          tickerName = ticker(workbook)
+        }
+
+        keyed.Validated.flatConcat(Seq((originalFilename -> tickerName, reader.readFile(file.getAbsolutePath))))
       }
     }
 
