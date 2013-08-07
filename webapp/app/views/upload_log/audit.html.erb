@@ -1,22 +1,12 @@
 <h1>Upload Log</h1>
 <hr>
-<div class="form-container" id="forms-container">
-  <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
-    <div class="row">
-      <div class="large-4 columns">
-        <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
-      </div>
-      <div class="large-4 columns">
-        <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "id", "ticker"), {include_blank: true} %>
-      </div>
-      <div class="large-4 columns">
-        Created date <%= text_field_tag(:date_since) %>
-      </div>
-      <div class="large-4 columns">
-        to <%= text_field_tag(:date_to) %>
-
-      </div>
-
+<div class="row">
+  <div class="large-3 columns">
+    <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
+      <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
+      <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "id", "ticker"), {include_blank: true} %>
+      Created date <%= text_field_tag(:date_since) %>
+      to <%= text_field_tag(:date_to) %>
     <% end %>
   </div>
 
@@ -34,6 +24,5 @@
       <hr>
     <% end %>
   </div>
-
-  <%= paginate @logs %>
 </div>
+<%= paginate @logs %>
