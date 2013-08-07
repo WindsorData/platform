@@ -14,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.Workbook
 import org.joda.time.DateTime
+import java.util.Date
 
 /**
  * *
@@ -30,21 +31,34 @@ class DocSrcCombiner(
     yearsPositionWithKeys: Seq[(Int, Symbol, Seq[Model] => Element)])
     extends Phase[Seq[Seq[Model]], Seq[Model]] {
 
-  def dateCellToYear(r: Seq[Row]): Validated[Int] = {
-    val dateCell = r.get(0).getCell(2)
-    try {
-      Valid(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get).getYear())
-    } catch {
-      case e: NoSuchElementException =>
-        Invalid(ReaderError().noFiscalYearProvidedAt(dateCell))
-      case e: RuntimeException =>
-        Invalid(ReaderError(e.getMessage()).description(dateCell))
+  def fiscalYearAndMetadata(r: Seq[Row]): Validated[Model] = {
+    def dateCellToValue(dateCell: Cell): Validated[DateTime] =
+      try {
+        Valid(new DateTime(blankToNone(_.getDateCellValue)(dateCell).get))
+      } catch {
+        case e: NoSuchElementException =>
+          Invalid(ReaderError().noFiscalYearProvidedAt(dateCell))
+        case e: RuntimeException =>
+          Invalid(ReaderError(e.getMessage()).description(dateCell))
+      }
+
+    dateCellToValue(r.get(0).getCell(2)).map { date =>
+      Model(
+        'disclosureFiscalYear -> Value(date.getYear),
+        'def14a -> Value(blankToNone(_.getDateCellValue)(r.get(1).getCell(2)), None, None),
+        'tenK -> Value(blankToNone(_.getDateCellValue)(r.get(2).getCell(2)), None, None),
+        'otherDocs -> Col((4 to 12).filterNot(_ == 8).map { i =>
+          Model(
+            'type -> Value(blankToNone(_.getStringCellValue)(r.get(i).getCell(1)), None, None),
+            'date -> Value(blankToNone(_.getDateCellValue)(r.get(i).getCell(2)), None, None))
+        }: _*))
     }
+
   }
 
   def years(sheet: Sheet) =
     yearsPositionWithKeys.map {
-      case (yearIndex, key, elemWrap) => (dateCellToYear(sheet.rows.drop(yearIndex)), key, elemWrap)
+      case (yearIndex, key, elemWrap) => (fiscalYearAndMetadata(sheet.rows.drop(yearIndex)), key, elemWrap)
     }
 
   override def apply(wb: Workbook, results: Seq[Seq[Model]]): Validated[Seq[Model]] = {
@@ -52,10 +66,8 @@ class DocSrcCombiner(
     yearsWithKeys.concatMap(_._1) andThen {
       (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped.map {
         case ((year, key, elemWrap), executives, company) =>
-          year.map { it =>
-            Model(company.elements
-              + ('disclosureFiscalYear -> Value(it))
-              + (key -> elemWrap(executives)))
+          year.map { yearAndMetadata =>
+            Model(company.elements + (key -> elemWrap(executives))) ++ yearAndMetadata
           }
       }.concat
     }
