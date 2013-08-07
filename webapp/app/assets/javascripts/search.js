@@ -3,7 +3,6 @@ $(function() {
   
   addExecutiveForm();
   replaceElementNameWithCounter();
-  disableAdvancedSearchFormInputs();
   
   function addExecutiveForm(){
     $('.basic-group.hidden').clone().removeClass('hidden').addClass("cloned").appendTo('#forms-container');
@@ -13,12 +12,6 @@ $(function() {
 
   $("#js-new-form").on("click", function() {
     addExecutiveForm();
-  });
-
-  $("#advanced-search-button").click(function() {
-    $(".advanced-search").toggleClass('hidden');
-    var text = $("#advanced-search-button").text();
-    $("#advanced-search-button").text(text == "Show Advanced search" ? "Hide Advanced Search" : "Show Advanced search");
   });
 
   function replaceElementNameWithCounter(){
@@ -34,8 +27,5 @@ $(function() {
     var el = $(this).closest('div').children("input[type='text']");
     el.attr("disabled", !this.checked);
   });
-  function disableAdvancedSearchFormInputs(){
-    $('.advanced-search .item-form input[type=text]').attr("disabled", true);
-  }
 
 });

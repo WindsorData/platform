@@ -1,13 +1,9 @@
 class QueryGenerator
 
   def self.json_query(params_hash)
-    query = {executives: [], advanced: []}
+    query = {executives: []}
     params_hash.each_with_index { |(key, value), index|
-      if key.starts_with? 'role'
-        build_role_query(index, key, params_hash, query)
-      else
-        build_advanced_search_query(key, params_hash, query)
-      end
+      build_role_query(index, key, params_hash, query)
     }
     
     # Clear values
@@ -23,21 +19,6 @@ class QueryGenerator
       "{}"
     else
       query.to_json.gsub(/(")(\d+)(")/, ' \2')
-    end
-  end
-
-  def self.build_advanced_search_query(k1, params_hash, query)
-    if params_hash[k1].is_a? Hash
-      params_hash[k1].each { |k2, v2|
-        if !params_hash[k1][k2]['gt'].blank? && !params_hash[k1][k2]['lt'].blank?
-          hash = {key: k1 + "." + k2, operators: [{operator: 'gt', value: params_hash[k1][k2]['gt']}, {operator: 'lt', value: params_hash[k1][k2]['lt']}]}
-        elsif !params_hash[k1][k2]['gt'].blank?
-          hash = {key: k1 + "." + k2, operators: [{operator: 'gt', value: params_hash[k1][k2]['gt']}]}
-        elsif !params_hash[k1][k2]['lt'].blank?
-          hash = {key: k1 + "." + k2, operators: [{operator: 'lt', value: params_hash[k1][k2]['lt']}]}
-        end
-        query[:advanced] << hash
-      }
     end
   end
 
