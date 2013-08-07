@@ -1,31 +1,36 @@
-<h1 class="main-title">Listing companies</h1>
-<hr>
-<%= render 'form' %>
-<br/>
-<table>
-  <thead>
+<div class="row">
+<div class="large-12 columns">
+  <h1 class="main-title">Listing companies</h1>
+  <hr>
+</div>
+<div class="large-3 columns">
+  <%= render 'form' %>
+</div>
+<div class="large-9 columns">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Contact email</th>
+        <th colspan="2"> Actions</th>
+      </tr>
+    </thead>
+    
+
+  <% @companies.each do |company| %>
     <tr>
-      <th>Name</th>
-      <th>Address</th>
-      <th>Contact email</th>
-      <th colspan="2"> Actions</th>
+      <td><%= company.name %></td>
+      <td><%= company.address %></td>
+      <td><%= company.contact_email %></td>
+      <!-- <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_company_path(company), class: 'btn-icon' %></td> -->
+      <td class="icon-column text-center"><%= link_to 'edit', edit_company_path(company), class: 'btn-icon' %></td>
+      <!-- <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, company, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td> -->
+      <td class="icon-column text-center"><%= link_to 'delete', company, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
     </tr>
-  </thead>
-  
-
-<% @companies.each do |company| %>
-  <tr>
-    <td><%= company.name %></td>
-    <td><%= company.address %></td>
-    <td><%= company.contact_email %></td>
-    <!-- <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_company_path(company), class: 'btn-icon' %></td> -->
-    <td class="icon-column text-center"><%= link_to 'edit', edit_company_path(company), class: 'btn-icon' %></td>
-    <!-- <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, company, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td> -->
-    <td class="icon-column text-center"><%= link_to 'delete', company, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
-  </tr>
-<% end %>
-</table>
-
+  <% end %>
+  </table>
+</div>
 <%= paginate @companies %>
 
-<br />
+</div>

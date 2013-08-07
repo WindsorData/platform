@@ -10,20 +10,8 @@
       </ul>
     </div>
   <% end %>
-
-  <div class="field">
-    <%= f.label :name %><br />
-    <%= f.text_field :name %>
-  </div>
-  <div class="field">
-    <%= f.label :address %><br />
-    <%= f.text_field :address %>
-  </div>
-  <div class="field">
-    <%= f.label :contact_email %><br />
-    <%= f.text_field :contact_email %>
-  </div>
-  <div class="actions">
-    <%= f.submit class: "button" %>
-  </div>
+  <%= f.text_field :name, :placeholder => "Name" %>
+  <%= f.text_field :address, :placeholder => "Address" %>
+  <%= f.text_field :contact_email, :placeholder => "Contact Email" %>
+  <%= f.submit class: "button postfix success" %>
 <% end %>
