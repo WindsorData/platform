@@ -14,8 +14,10 @@ class QueryGenerator
     query.keys.each { |k|
       query.delete(k) if query[k].empty?
     }
-    query[:executives][0][:executivesFilters].delete_if {|x| x.blank? }
-    query[:executives][0].delete(:executivesFilters) if query[:executives][0][:executivesFilters].blank?
+    query[:executives].each_with_index { |(k, v), index|
+      query[:executives][index][:executivesFilters].delete_if {|x| x.blank? }
+      query[:executives][index].delete(:executivesFilters) if query[:executives][index][:executivesFilters].blank?
+    }
     query[:executives].delete_if {|x| x.blank?}
     query.delete(:executives) if query[:executives].blank?
 
