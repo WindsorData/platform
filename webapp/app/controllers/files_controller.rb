@@ -59,7 +59,7 @@ class FilesController < ApplicationController
       when Constants::BATCH_FILE
         Rails.application.config.post_batch_path
       when Constants::PEERS_FILE
-        Rails.application.config.post_peers_path
+        Rails.application.config.peers_path
       when Constants::BOD_FILE
         Rails.application.config.post_bod_path
     end

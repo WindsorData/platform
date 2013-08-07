@@ -1,9 +1,15 @@
+Delete company-year information
 <%= form_tag(perform_info_deletion_companies_path) do %>
-
   <div class="field">
     <%= text_field_tag :ticker %>
     <%= text_field_tag :year, nil, placeholder: "Year" %>
     <%= submit_tag 'Delete', class: 'big-button' %>
   </div>
-
+<% end %>
+<br>
+Delete Peers database
+<%= form_tag(delete_db_companies_path) do %>
+  <div class="field">
+    <%= submit_tag 'Delete Peers database', class: 'big-button red' %>
+  </div>
 <% end %>
