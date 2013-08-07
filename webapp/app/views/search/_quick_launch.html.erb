@@ -1,3 +1,7 @@
+<div class="large-12 columns">
+  <h1 class="title">Quick Launch</h1>
+  <hr>
+</div>
 <div class="large-3 columns">
   <!-- activity log -->
   <div class="recent-search-container">
@@ -17,8 +21,6 @@
 
 <div class="large-9 columns">
   <!-- quick launch -->
-  <h1 class="title">Quick Launch</h1>
-  <hr>
   <form class="custom">
     <%= form_tag('/groups') do %>
       <div class="row ">
@@ -35,7 +37,7 @@
       </div>
       <div class="row">
         <div class="small-12 columns">
-          <%= submit_tag "Select", class: 'button success' %>
+          <%= submit_tag "Select", class: 'button' %>
           <%= link_to('Create new peer group', groups_path) %>
         </div>
       </div>
