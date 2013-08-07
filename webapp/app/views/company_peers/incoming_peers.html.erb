@@ -1,9 +1,15 @@
 <h1>Search For Companies</h1>
 <hr>
-<%= form_tag(incoming_peers_result_path) do %>
-  <div class="field">
-    <p>Target Company Ticker</p>
-    <%= text_field_tag :company_peer_ticker %>
-    <%= submit_tag 'Search', class: 'big-button' %>
-  </div>
-<% end %>
+<div class="row">
+  <%= form_tag(incoming_peers_result_path) do %>
+    <div class="large-3 columns">
+      <p>Target Company Ticker</p>
+    </div>
+    <div class="large-7 columns">
+      <%= text_field_tag :company_peer_ticker %>
+    </div>
+    <div class="large-2 columns">
+      <%= submit_tag 'Search', class: 'button postfix' %>
+    </div>
+  <% end %>
+</div>
