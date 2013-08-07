@@ -1,14 +1,20 @@
 <h1 class="title">Delete Info</h1>
 <hr>
->>>>>>> Title in all pages
-<%= form_tag(perform_info_deletion_companies_path) do %>
-  <div class="field">
-    <%= text_field_tag :ticker %>
-    <%= text_field_tag :year, nil, placeholder: "Year" %>
-    <%= submit_tag 'Delete', class: 'big-button', data: { confirm: "Are you sure you want to delete information for this ticker and year?" } %>
-  </div>
-<% end %>
-<br>
+<div class="row">
+  <%= form_tag(perform_info_deletion_companies_path) do %>
+    <div class="large-4 columns">
+      <%= text_field_tag :ticker %>
+    </div>
+    <div class="large-4 columns">
+      <%= text_field_tag :year, nil, placeholder: "Year" %>
+    </div>
+    <div class="large-4 columns">
+      <%= submit_tag 'Delete', class: 'button postfix alert' %>
+    </div>
+
+  <% end %>
+</div>
+
 Delete Peers database
 <%= form_tag(delete_db_companies_path) do %>
   <div class="field">
