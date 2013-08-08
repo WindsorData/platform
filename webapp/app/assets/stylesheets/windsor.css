@@ -117,6 +117,16 @@ table {
 }
 
 /* upload log */
+.log-container .log-item {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EEE;
+}
+
+.log-container .log-item:last-child {
+  border-bottom: none;
+}
+
 .log-container .user {
   font-weight: bold;
   text-transform: uppercase;
@@ -128,23 +138,38 @@ table {
   margin-top: 3px;
 }
 
-.log-container .upload-type-container {
-  margin: 7px 0 10px;
+.log-container .file-name,
+.log-container .ticker-name {
+  display: inline-block;
+  font-size: 0.8em;
 }
 
-.log-container .upload-type-container span:first-child   {
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.log-container .upload-type {
+.log-container .file-name {
   text-transform: uppercase;
   font-weight: bold;
 }
 
-.log-container .error {
-  color: red;
+.log-container .ticker-name {
+  text-transform: uppercase;
+  padding-left: 5px;
+  margin-left: 5px;
+  border-left: 1px solid #EEE;
+}
+
+.log-container .file-type {
+  margin: 10px 0 3px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.log-container .no-bullet {
+  margin-bottom: 0;
+}
+
+.log-container li {
+  color: #CE0909;
   font-size: 14px;
+  line-height: 1.5;
 }
 
 
@@ -174,4 +199,34 @@ table {
 .inline-elements input[type="text"] {
   display: inline-block;
   width: 75%;
+}
+
+/* ---- alert ---- */
+.alert {
+  position: fixed;
+  bottom: 0;
+  right: 20px;
+  width: 300px;
+  padding: 10px;
+  color: #FFF;
+}
+
+.alert .close {
+  position: absolute;
+  display: block;
+  color: #FFF;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.alert.alert-error {
+  background: #CE0909;
+}
+
+.alert.alert-success {
+  background: #2E942E;
 }

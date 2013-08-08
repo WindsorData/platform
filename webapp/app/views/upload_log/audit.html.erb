@@ -14,12 +14,14 @@
     <% end %>
   </div>
 
-  <div class="large-9 columns">
+  <div class="large-9 columns log-container">
     <% @logs.each do |log| %>
-        <%= content_tag :div, log.user.email %>
-        <%= content_tag :div, log.created_at %>
-        <%= content_tag :div, log.upload_type %>
+      <div class="log-item">
+        <%= content_tag :div, log.user.email, class: "user" %>
+        <%= content_tag :div, log.created_at, class: "date" %>
+        <%= content_tag :div, log.upload_type, class: "file-type" %>
         <%= render 'layouts/upload_results', results: log.detail_upload_files %>
+      </div>
     <% end %>
     <%= paginate @logs %>
   </div>
