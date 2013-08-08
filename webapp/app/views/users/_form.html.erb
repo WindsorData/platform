@@ -10,14 +10,9 @@
       </ul>
     </div>
   <% end %>
-  <%= f.select(:role, options_for_select(User::ROLES, @user.role)) %>
-  <div id="company_fields">
-     <%= f.select(:company, options_from_collection_for_select(Company.all, :id, :name, @user.company.try(:id))) %> <%= link_to 'new company', new_company_path %>
-  </div>
-  
-  <%= f.email_field :email, placeholder: "email" %>
-  
-  <div class="actions">
-    <%= f.submit class: "button" %>
-  </div>
+    <%= f.select(:role, options_for_select(User::ROLES, @user.role)) %>
+    <%= f.select(:company, options_from_collection_for_select(Company.all, :id, :name, @user.company.try(:id))) %> 
+    <%= link_to 'new company', new_company_path, class: "button tiny secondary" %>
+    <%= f.email_field :email, placeholder: "email" %>
+    <%= f.submit class: "button success postfix" %>
 <% end %>

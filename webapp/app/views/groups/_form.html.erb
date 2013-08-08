@@ -2,12 +2,7 @@
   <% if @group.errors.any? %>
     <%= render 'layouts/model_errors', errors: @group.errors %>
   <% end %>
-
-  <div class="field">
     <%= f.text_field :name, placeholder: 'Group name', class: 'group-name inline-block' %>
     <%= f.text_field :tickers_tokens, id: 'tickers_tokens', "data-pre" => @group.tickers.map(&:attributes).to_json %>
-  </div>
-  <br>
-  <%= f.submit class: 'button' %>
-
+    <%= f.submit class: 'button postfix success margin-top-1em' %>
 <% end %>

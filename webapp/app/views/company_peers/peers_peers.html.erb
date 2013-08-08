@@ -1,7 +1,8 @@
 <a href="#" id="toggleFormLink">Switch to Single Ticker</a>
 
 <div id="ticker_list_form" >
-  <h3>Ticker List Manual</h3>  
+  <h1>Ticker List Manual</h1>
+  <hr>
   <%= form_tag(peers_peers_ticker_list_result_path) do %>
     <div class="field">
       <%= text_field_tag :company_peer_tickers_manual %>
@@ -11,7 +12,8 @@
 </div>
 
 <div id="single_ticker_form" class="hidden">
-  <h3>Target Company Ticker</h3>
+  <h1>Target Company Ticker</h1>
+  <hr>
   <%= form_tag(peers_peers_single_ticker_result_path) do %>
     <div class="field">
       <%= text_field_tag :company_peer_ticker %>

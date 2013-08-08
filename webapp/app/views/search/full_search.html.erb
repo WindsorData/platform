@@ -1,10 +1,9 @@
+<h1 class="title">Executive compensation</h1>
+<hr>
 <div class="span9">
   <%= form_tag(search_result_path, class: "main-form custom" ) do %>
-  <fieldset>
-  <legend class="legend">Executive compensation</legend>
-    <div class="form-container" id="forms-container">
+    <div class="form-container relative" id="forms-container">      
       <div class="basic-group hidden">
-        <hr>
         <div class="role-selector row">
           <div class="large-6 columns">
             <label>Role</label>
@@ -65,12 +64,12 @@
           <hr>
 
           <!-- other criteria -->
-          <h3 class="subtitle">other criteria</h3>
-
-          <div class="row">
-            <!-- Founder -->
+          <!-- Founder -->
+          <div class="row padding-bottom-10">
             <div class="large-3 columns">
               <span>Founder</span>
+            </div>
+            <div class="large-9 columns radio-button">
               <label for="radio1">
                 <%= radio_button_tag '[role_form][founder]', 'X' %>
                 <span class="custom radio"></span> YES
@@ -84,10 +83,14 @@
                 <span class="custom radio"></span> N/A
               </label>
             </div>
+          </div>
 
-            <!-- transition period -->
+          <!-- transition period -->
+          <div class="row">
             <div class="large-3 columns">
               <span>Transition period</span>
+            </div>
+            <div class="large-9 columns radio-button">
               <label for="radio1">
                 <%= radio_button_tag '[role_form][trans_period]', 'Yes' %>
                 <span class="custom radio"></span> YES
@@ -100,19 +103,22 @@
                 <%= radio_button_tag '[role_form][trans_period]', 'N/A' %>
                 <span class="custom radio"></span> N/A
               </label>
-            </div>
+            </div>  
+          </div>
+
+          <!-- add another role button -->
+          <a class="button secondary cto absolute" href="#" id="js-new-form">Add another role</a>
+
           </div>
 
         </div>
 
       </div>
     </div>
-    </fieldset>
 
     <div class="hidden">
       <label for="radio1"><input name="radio1" type="radio" id="radio1" disabled style="display:none;"><span class="custom radio"></span> Radio Button 3</label>
     </div>
-
 
     <div class="form-actions">
       <button type="submit" class="btn">Search</button>

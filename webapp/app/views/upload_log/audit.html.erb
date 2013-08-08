@@ -1,34 +1,26 @@
-<h1>Upload Log</h1>
+<div class="row">
+  <div class="large-12 columns">
+    <h1>Upload Log</h1>
+    <br>
+  </div>
 
-<div class="form-container" id="forms-container">
-  <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
-    <div class="row">
-      <div class="large-4 columns">
+  <div class="large-3 columns" id="forms-container">
+    <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
         <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
-      </div>
-      <div class="large-4 columns">
         <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "id", "ticker"), {include_blank: true} %>
-      </div>
-      <div class="large-4 columns">
         Created date <%= text_field_tag(:date_since) %>
-      </div>
-      <div class="large-4 columns">
         to <%= text_field_tag(:date_to) %>
-      </div>
-    </div>
-    <div class="form-actions">
-      <button type="submit" class="btn-small">Search</button>
-    </div>
+        <button type="submit" class="btn-small">Search</button>
+    <% end %>
+  </div>
 
-  <% end %>
+  <div class="large-9 columns">
+    <% @logs.each do |log| %>
+        <%= content_tag :div, log.user.email %>
+        <%= content_tag :div, log.created_at %>
+        <%= content_tag :div, log.upload_type %>
+        <%= render 'layouts/upload_results', results: log.detail_upload_files %>
+    <% end %>
+    <%= paginate @logs %>
+  </div>
 </div>
-
-<br/>
-<% @logs.each do |log| %>
-    <%= content_tag :div, log.user.email %>
-    <%= content_tag :div, log.created_at %>
-    <%= content_tag :div, log.upload_type %>
-    <%= render 'layouts/upload_results', results: log.detail_upload_files %>
-<% end %>
-
-<%= paginate @logs %>
