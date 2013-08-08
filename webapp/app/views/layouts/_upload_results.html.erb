@@ -1,11 +1,13 @@
 <% results.each do |element| %>
-  <div>
-    <%= content_tag :div, "Filename: " + element.file_name %>
-    <%= content_tag :div, "Ticker: " + element.ticker.ticker %>
-    <ul class="no-bullet">
-      <% JSON.parse(element['messages']).each do |message| %>
-        <%= content_tag :li, message, class: 'error' %>
+    <div>
+      <%= content_tag :div, "Filename: " + element.file_name %>
+      <% if element.ticker %>
+      <%= content_tag :div, "Ticker: " + element.ticker %>
       <% end %>
-    </ul>
-  </div>
+      <ul>
+        <% JSON.parse(element['messages']).each do |message| %>
+            <%= content_tag :li, message %>
+        <% end %>
+      </ul>
+    </div>
 <% end %>
