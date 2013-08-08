@@ -3,7 +3,6 @@
 <div class="row">
   <div class="large-3 columns">
     <%= form_tag(send_file_path, multipart: true, class: "custom") do %>
-      <%= render 'layouts/messages' %>
       <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
       <%= file_field_tag 'file', required: :true %>
       <br>
