@@ -200,3 +200,29 @@ table {
   display: inline-block;
   width: 75%;
 }
+
+/* ---- alert ---- */
+.alert {
+  position: fixed;
+  bottom: 0;
+  right: 20px;
+  width: 250px;
+  padding: 10px;
+}
+
+.alert .close {
+  position: absolute;
+  display: block;
+  color: #FFF;
+  top: 0;
+  right: 0;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.alert.alert-error {
+  background: #CE0909;
+  color: #FFF;
+}
