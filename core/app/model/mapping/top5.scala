@@ -179,10 +179,11 @@ object top5 extends StandardWorkflowFactory {
             }
           }
 
-          val ttdcRankings = execsWithCalcs.map(_ / 'calculated /%/ 'ttdc).sorted.reverse.zip(1 to 5)
+          val ttdcRankings = execsWithCalcs.sortBy(_ / 'calculated /%/ 'ttdc)
+                              .reverse.map(it => it /!/ 'firstName -> it /!/ 'lastName).zip(1 to 5)
 
           model.merge(Model('executives -> Col(execsWithCalcs.map { exec =>
-            val rank = ttdcRankings.find(_._1 == exec / 'calculated /%/ 'ttdc).get._2
+            val rank = ttdcRankings.find(_._1 == exec /!/ 'firstName -> exec /!/ 'lastName).get._2
             exec.merge(Model('calculated -> Model('ttdcPayRank -> Value(rank))))
           }: _*)))
         }
