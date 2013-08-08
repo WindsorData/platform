@@ -9,7 +9,7 @@
       <%= text_field_tag :year, nil, placeholder: "Year" %>
     </div>
     <div class="large-4 columns">
-      <%= submit_tag 'Delete', class: 'button postfix alert' %>
+      <%= submit_tag 'Delete', class: 'button postfix alert', data: { confirm: "Are you sure you want to delete information for this ticker and year?" } %>
     </div>
 
   <% end %>
