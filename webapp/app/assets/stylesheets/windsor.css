@@ -149,7 +149,7 @@ table {
 
 
 /* ---- search form ---- */
-.radio-button {
+.radio-button label {
   display: inline-block;
 }
 

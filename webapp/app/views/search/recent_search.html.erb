@@ -1,5 +1,5 @@
 <div class="span9">
-  <%= form_tag(search_result_path, class: "main-form custom" ) do %>
+  <%= form_tag(search_result_path, class: "main-form " ) do %>
   <fieldset>
   <legend class="legend">Executive compensation</legend>
     <div class="form-container relative" id="forms-container">      
@@ -58,20 +58,6 @@
               </div>
             </div>
           
-          <!-- compensation arrangements -->
-<!--           <div class="item-form cf">
-            <p class="label">Compensation arrangements</p>
-            <%= label_tag 'Yes' %> <%= radio_button_tag 'comp_arrang', 'Yes', true %>
-            <%= label_tag 'No' %> <%= radio_button_tag 'comp_arrang', 'No' %>
-            <%= label_tag 'N/A' %> <%= radio_button_tag 'comp_arrang', 'N/A' %>
-          </div> -->
-          <!-- reload options -->
-<!--           <div class="item-form cf">
-            <p class="label">Reload options</p>
-            <%= label_tag 'Yes' %> <%= radio_button_tag 'reload_opt', 'Yes' %>
-            <%= label_tag 'No' %> <%= radio_button_tag 'reload_opt', 'No' %>
-            <%= label_tag 'N/A' %> <%= radio_button_tag 'reload_opt', 'N/A' %>
-          </div> -->
           <!-- CEO tenure -->
           <div class="row">
             <div class="large-12 columns">
@@ -88,7 +74,7 @@
           <p class="subtitle">other criteria</p>
           <div class="item-form cf">
             <!-- Founder -->
-            <div class="item-form cf">
+            <div class="radio-button item-form cf ">
               <p class="label">Founder</p>
               <%= label_tag 'Yes' %> <%= radio_button_tag "[role_form_#{i + 1}][founder]", 'Yes', @params_hash[k].try(:[], "founder") == "Yes" %>
               <%= label_tag 'No' %> <%= radio_button_tag "[role_form_#{i + 1}][founder]", 'No', @params_hash[k].try(:[], "founder") == "No" %>
@@ -100,7 +86,7 @@
               <div class="large-3 columns">
                 <p class="label">Transition period</p>
               </div>
-              <div class="large-9 columns">
+              <div class="large-9 columns radio-button">
                 <%= label_tag 'Yes' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'Yes', @params_hash[k].try(:[], "trans_period") == "Yes" %>
               
                 <%= label_tag 'No' %> <%= radio_button_tag "[role_form_#{i + 1}][trans_period]", 'No', @params_hash[k].try(:[], "trans_period") == "No" %>
@@ -114,92 +100,14 @@
     <% end %>
     </fieldset>
     <% } %>
-    
 
-      <!-- advanced search -->
-      <!-- <div class="advanced-search hidden"> -->
-      <div class="advanced-search">
-        <!-- general criteria -->
-        <fieldset>
-       
-        <!-- financials -->
-        <legend class="legend">Advanced Search</legend>
-        <div class="general-criteria">
-          <p class="subtitle">Income Statement</p>
-          <div class="item-form cf">
-            <p class="label">Revenue</p>
-            <%= check_box_tag 'revenue_chk', '', 
-              !@params_hash.try(:[], "income_statement").try(:[], "revenue").try(:[], "gt").blank? ||
-              !@params_hash.try(:[], "income_statement").try(:[], "revenue").try(:[], "lt").blank? %>
-            <%= text_field_tag "[income_statement][revenue][gt]",
-              @params_hash.try(:[], "income_statement").try(:[], "revenue").try(:[], "gt"), placeholder: "Greater than" %> <span>$ MMs</span>
-            <%= text_field_tag "[income_statement][revenue][lt]",
-              @params_hash.try(:[], "income_statement").try(:[], "revenue").try(:[], "lt"), placeholder: "Lower than" %> <span>$ MMs</span>
-          </div>
-<!--           <div class="item-form cf">
-            <p class="label">Net Income</p>
-            <input type="checkbox">
-            <input type="text" placeholder="Greater than" disabled="disabled"> <span>$ MMs</span>
-            <input type="text" placeholder="Lower than" disabled="disabled"> <span>$ MMs</span>
-          </div> -->
-        </div>
+    <div class="hidden">
+      <label for="radio1"><input name="radio1" type="radio" id="radio1" disabled style="display:none;"><span class="custom radio"></span> Radio Button 3</label>
+    </div>
 
-        <div class="general-criteria">
-          <p class="subtitle">Valuations</p>
-          <div class="item-form cf">
-            <p class="label">Market Cap</p>
-            <%= check_box_tag 'valuations_market_cap_chk', '', 
-              !@params_hash.try(:[], "valuations").try(:[], "market_cap").try(:[], "gt").blank? ||
-              !@params_hash.try(:[], "valuations").try(:[], "market_cap").try(:[], "lt").blank? %>      
-            <%= text_field_tag "[valuations][market_cap][gt]",
-              @params_hash.try(:[], "valuations").try(:[], "market_cap").try(:[], "gt"), placeholder: "Greater than" %> <span>$ MMs</span>
-            <%= text_field_tag "[valuations][market_cap][lt]",
-              @params_hash.try(:[], "valuations").try(:[], "market_cap").try(:[], "lt"), placeholder: "Lower than" %> <span>$ MMs</span>
-          </div>
-          <div class="item-form cf">
-            <p class="label">Price to Earning (P/E)</p>
-            <%= check_box_tag 'pe_chk', '', 
-              !@params_hash.try(:[], "valuations").try(:[], "pe").try(:[], "gt").blank? ||
-              !@params_hash.try(:[], "valuations").try(:[], "pe").try(:[], "lt").blank? %>
-            <%= text_field_tag "[valuations][pe][gt]",
-              @params_hash.try(:[], "valuations").try(:[], "pe").try(:[], "gt"), placeholder: "Greater than" %> <span>$ MMs</span>
-            <%= text_field_tag "[valuations][pe][lt]",
-              @params_hash.try(:[], "valuations").try(:[], "pe").try(:[], "lt"), placeholder: "Lower than" %> <span>$ MMs</span>
-          </div>
-        </div>
+    <div class="form-actions">
+      <button type="submit" class="btn">Search</button>
+    </div>
 
-        <div class="general-criteria">
-          <p class="subtitle">Stock Price Performance</p>
-          <div class="item-form cf">
-            <p class="label">Earnings per Share (EPS)</p>
-            <%= check_box_tag 'pe_chk', '', 
-              !@params_hash.try(:[], "stock_price_performance").try(:[], "eps").try(:[], "gt").blank? ||
-              !@params_hash.try(:[], "stock_price_performance").try(:[], "eps").try(:[], "lt").blank? %>
-            <%= text_field_tag "[stock_price_performance][eps][gt]",
-              @params_hash.try(:[], "stock_price_performance").try(:[], "eps").try(:[], "gt"), placeholder: "Greater than" %> <span>$</span>
-            <%= text_field_tag "[stock_price_performance][eps][lt]",
-              @params_hash.try(:[], "stock_price_performance").try(:[], "eps").try(:[], "lt"), placeholder: "Lower than" %> <span>$</span> 
-          </div>
-        </div>
-
-        <div class="general-criteria">
-          <p class="subtitle">Profitability</p>
-          <div class="item-form cf">
-            <p class="label">Return on Equity</p>
-            <%= check_box_tag 'roe', '', 
-              !@params_hash.try(:[], "profitability").try(:[], "roe").try(:[], "gt").blank? ||
-              !@params_hash.try(:[], "profitability").try(:[], "roe").try(:[], "lt").blank? %>
-            <%= text_field_tag "[profitability][roe][gt]",
-              @params_hash.try(:[], "profitability").try(:[], "roe").try(:[], "gt"), placeholder: "Greater than" %> <span>$</span>
-            <%= text_field_tag "[profitability][roe][lt]",
-              @params_hash.try(:[], "profitability").try(:[], "roe").try(:[], "lt"), placeholder: "Lower than" %> <span>$</span>  
-          </div>
-        </div>
-      </fieldset>
-
-      </div>
-      <div class="form-actions">
-        <button type="submit" class="btn">Search</button>
-      </div>
   <% end %>
 </div>
