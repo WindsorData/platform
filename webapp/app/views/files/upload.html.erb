@@ -6,7 +6,7 @@
       <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
       <%= file_field_tag 'file', required: :true %>
       <br>
-      <%= submit_tag 'Upload', class: 'button' %>
+      <%= submit_tag 'Upload', class: 'button postfix success margin-top-1em' %>
   </div>
   <div class="large-9 columns log-container">
       <% if @upload_log %>
