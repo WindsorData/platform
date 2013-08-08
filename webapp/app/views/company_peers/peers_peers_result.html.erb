@@ -1,7 +1,10 @@
 <% if @company_peer %>
   <%= @company_peer.name %> (<%= @company_peer.ticker %>) "SECONDARY PEER"
 <% end %></br></br>
-<%= form_tag(export_peers_peers_path(format: "xls")) do %>
+
+<% path = request.path == "/company_peers/peers_peers_ticker_list_result" ? export_peers_peers_ticker_list_path(format: "xls") : export_peers_peers_single_ticker_path(format: "xls") %>
+
+<%= form_tag(path) do %>
   <%= hidden_field_tag 'json_query', @json_query %>
   <%= submit_tag 'Download XLS', class: 'big-button' %>
 <% end %>

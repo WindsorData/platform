@@ -39,7 +39,9 @@ WindosorFrontend::Application.routes.draw do
   post 'company_peers/peers_peers_ticker_list_result', as: :peers_peers_ticker_list_result
 
   # Export Files
-  post 'company_peers/peers_peers_file', as: :export_peers_peers
+  post 'company_peers/peers_peers_single_ticker_file', as: :export_peers_peers_single_ticker
+  post 'company_peers/peers_peers_ticker_list_file', as: :export_peers_peers_ticker_list
+
   post 'company_peers/incoming_peers_file', as: :export_incoming_peers
 
   # Upload Log
