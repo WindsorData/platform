@@ -3,13 +3,13 @@ Delete company-year information
   <div class="field">
     <%= text_field_tag :ticker %>
     <%= text_field_tag :year, nil, placeholder: "Year" %>
-    <%= submit_tag 'Delete', class: 'big-button' %>
+    <%= submit_tag 'Delete', class: 'big-button', data: { confirm: "Are you sure you want to delete information for this ticker and year?" } %>
   </div>
 <% end %>
 <br>
 Delete Peers database
 <%= form_tag(delete_db_companies_path) do %>
   <div class="field">
-    <%= submit_tag 'Delete Peers database', class: 'big-button red' %>
+    <%= submit_tag 'Delete Peers database', class: 'big-button red', data: { confirm: "Are you sure you want to delete companies database?" } %>
   </div>
 <% end %>
