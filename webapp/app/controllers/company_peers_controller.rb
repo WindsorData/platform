@@ -53,17 +53,14 @@ class CompanyPeersController < ApplicationController
     end
   end
 
-  def peers_peers_file
-    path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_ticker_list_path    
-    json_query = params[:json_query]
-    
-    find_peers(path, json_query)
-    
-    @companies_peers = (@companies_peers["normalized"] + @companies_peers["unnormalized"]).group_by { |p| p["secondPeer"] }
-    
-    respond_to do |format|
-      format.xls { render 'peers_peers_result'}
-    end
+  def peers_peers_single_ticker_file
+    path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_single_ticker_path
+    download_peers_peers_file(path)
+  end
+
+  def peers_peers_ticker_list_file
+    path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_ticker_list_path
+    download_peers_peers_file(path)
   end
   
   private
@@ -74,6 +71,18 @@ class CompanyPeersController < ApplicationController
         @companies_peers = JSON.parse(response.body)
       else
       end
+    end
+  end
+
+  def download_peers_peers_file(path)
+    json_query = params[:json_query]
+    
+    find_peers(path, json_query)
+    
+    @companies_peers = (@companies_peers["normalized"] + @companies_peers["unnormalized"]).group_by { |p| p["secondPeer"] }
+    
+    respond_to do |format|
+      format.xls { render 'peers_peers_result'}
     end
   end
 end
