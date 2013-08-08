@@ -206,8 +206,9 @@ table {
   position: fixed;
   bottom: 0;
   right: 20px;
-  width: 250px;
+  width: 300px;
   padding: 10px;
+  color: #FFF;
 }
 
 .alert .close {
@@ -224,5 +225,8 @@ table {
 
 .alert.alert-error {
   background: #CE0909;
-  color: #FFF;
+}
+
+.alert.alert-success {
+  background: #2E942E;
 }
