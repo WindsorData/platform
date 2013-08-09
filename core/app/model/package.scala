@@ -12,8 +12,9 @@ package object model {
     'ticker -> TString,
     'name -> TString,
     'disclosureFiscalYear -> TInt,
-    'def14a -> TInt,
-    'tenK -> TInt,
+    'def14a -> TDate,
+    'tenK -> TDate,
+    'otherDocs -> TCol(TModel('type -> TString, 'date -> TDate)),
 
     'grantTypes -> TGrantTypes,
     'usageAndSVTData -> TUsageAndSVTData,
