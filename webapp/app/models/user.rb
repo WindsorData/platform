@@ -21,7 +21,6 @@
 
 class User < ActiveRecord::Base
   ROLES = %w[super admin client]
-  before_validation :generate_random_password
   
   devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable
@@ -35,11 +34,12 @@ class User < ActiveRecord::Base
       role == k
     end
   end
-  
-  private
+
   def generate_random_password
+    generated_password = Devise.friendly_token.first(Rails.application.config.devise.password_length.min)
     unless self.password && self.password_confirmation && self.password == self.password_confirmation
-      self.password = self.password_confirmation = Devise.friendly_token.first(Rails.application.config.devise.password_length.min)  
+      self.password = self.password_confirmation = generated_password
     end
+    generated_password
   end
 end
