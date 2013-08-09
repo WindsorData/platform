@@ -1,22 +1,13 @@
 package output
 
 import libt.spreadsheet._
-import libt.reduction._
 import libt._
 import model.mapping._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
 import model.ExecutivesTop5._
-import libt.spreadsheet.reader.SheetDefinition
-import libt.reduction.Average
-import libt.reduction.Sum
-import libt.reduction.SubstractAll
 import libt.spreadsheet.EnumCheck
-import libt.reduction.Average
-import libt.reduction.Sum
-import libt.reduction.SubstractAll
 import libt.spreadsheet.ComplexEnumCheck
-import libt.spreadsheet.Calc
 
 package object mapping {
 

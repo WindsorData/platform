@@ -14,17 +14,22 @@ class TestDriver extends FunSpec {
       assert(results === Seq())
     }
 
+    it("should be able to import 1 company fiscal years with executives") {
+      val results = top5.Workflow.readFile("test/input/FullValuesWithOneYear.xlsx").get
+      assert(results.size === 2)
+    }
+
     it("should be able to import 3 company fiscal years with executives") {
 
       val results = top5.Workflow.readFile("test/input/FullValuesOnly.xlsx").get
 
-      assert(results.size === 4)
+      assert(results.size === 3)
 
       assert(results.head('cusip) === Value("73271"))
       assert(results.head('ticker) === Value("BV"))
       assert(results.head('name) === Value("Bazaarvoice Inc"))
 
-      (1 to 3).zip(Seq(2012, 2011, 2010)).foreach {
+      (1 to 2).zip(Seq(2012, 2011)).foreach {
         case (index, year) =>
           assert(results(index)('disclosureFiscalYear) === Value(year))
       }

@@ -183,10 +183,12 @@ object top5 extends StandardWorkflowFactory {
             }
           }
 
-          val ttdcRankings = execsWithCalcs.sortBy(_ / 'calculated /%/ 'ttdc)
+          val ttdcRankings = execsWithCalcs
+                              .filter(_ /! 'lastName nonEmpty)
+                              .sortBy(_ / 'calculated /%/ 'ttdc)
                               .reverse.map(it => it /!/ 'firstName -> it /!/ 'lastName).zip(1 to 5)
 
-          model.merge(Model('executives -> Col(execsWithCalcs.map { exec =>
+          model.merge(Model('executives -> Col(execsWithCalcs.filter(_ /! 'lastName nonEmpty).map { exec =>
             val rank = ttdcRankings.find(_._1 == exec /!/ 'firstName -> exec /!/ 'lastName).get._2
             exec.merge(Model('calculated -> Model('ttdcPayRank -> Value(rank))))
           }: _*)))
@@ -264,6 +266,10 @@ object top5 extends StandardWorkflowFactory {
 	  }
   }
 
+  /**
+   * This validation needs data from the last 3 years. It will validate only if there's
+   * data from those 3 last years. If not, it will be skipped
+   */
   def transitionPeriodValidation(models: Seq[Model]): Seq[Validated[Model]] = {
 
     def validateTransition(model: Model)(execs: (Element, Element)): Validated[Model] =
@@ -314,7 +320,7 @@ object top5 extends StandardWorkflowFactory {
           (execs, execs.applySeq(Path('executives, *)))
         }
 
-    if (executives.isEmpty)
+    if (executives.isEmpty || executives.size < 3)
       models.map(Valid(_))
     else {
       val firstPairsOfExecutives = combineSameExecutives(executives(0), executives(1))
