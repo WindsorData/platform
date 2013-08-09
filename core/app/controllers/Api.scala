@@ -34,7 +34,7 @@ object Api extends Controller with SpreadsheetDownloader {
 
   def cashCompensations = pathsToJson(
     Relative(
-      Path('executives, 'cashCompensations),
+      Path('cashCompensations),
       Path('baseSalary),
       Path('bonus),
       Path('salaryAndBonus)
@@ -43,8 +43,7 @@ object Api extends Controller with SpreadsheetDownloader {
   )
 
   def equityCompensations = pathsToJson(
-    Relative(
-      Path('executives),
+    Seq(
       Path('optionGrants),
       Path('timeVestRS),
       Path('performanceVestRS)

@@ -14,7 +14,7 @@ object query {
     def exampleExecutives = {
       executives match {
         case Nil => Seq(filterLastYear.asMongoQuery)
-        case _ => executives.map {it => (it ++ advanced :+ filterLastYear).map(_.asMongoQuery).reduce(_ ++ _)}
+        case _ => executives.map {it => ElemMatch("executives", it ++ advanced).asMongoQuery ++ filterLastYear.asMongoQuery}
       }
     }
     def query = MongoDBObject("$or" -> exampleExecutives)
@@ -31,6 +31,10 @@ object query {
 
   case class EqualCondition(property: String, value: Any) extends Condition {
     def asMongoQuery = MongoDBObject(property -> value)
+  }
+
+  case class ElemMatch(property: String, conditions: Seq[Condition]){
+    def asMongoQuery = MongoDBObject(property -> MongoDBObject("$elemMatch" -> conditions.map(_.asMongoQuery).reduce(_ ++ _)))
   }
 
   case class ConditionWithOperators(property: String, operators: Seq[Operator]) extends Condition {
