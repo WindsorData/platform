@@ -23,7 +23,7 @@
 
 $(function() {
   $(".close").click(function () {
-    $(".alert").remove();
+    $(".alert-message").remove();
   });
   $('input, textarea').placeholder();
 });

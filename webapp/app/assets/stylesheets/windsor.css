@@ -202,7 +202,7 @@ table {
 }
 
 /* ---- alert ---- */
-.alert {
+.alert-message {
   position: fixed;
   bottom: 0;
   right: 20px;
@@ -211,7 +211,7 @@ table {
   color: #FFF;
 }
 
-.alert .close {
+.alert-message .close {
   position: absolute;
   display: block;
   color: #FFF;
@@ -223,10 +223,10 @@ table {
   cursor: pointer;
 }
 
-.alert.alert-error {
+.alert-message.alert-error {
   background: #CE0909;
 }
 
-.alert.alert-success {
+.alert-message.alert-success {
   background: #2E942E;
 }
