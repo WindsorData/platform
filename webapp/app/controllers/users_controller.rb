@@ -3,6 +3,17 @@ class UsersController < ApplicationController
   authorize_resource
   before_filter :ensamble_company, only:[:update, :create]
 
+  def edit_account
+    @user = current_user
+  end
+
+  def update_account
+    @user = User.find(current_user.id)
+    @user.update_attributes(params[:user])
+    sign_in @user, :bypass => true
+    redirect_to root_path
+  end
+
   def update
     update! { users_path }
   end

@@ -1,0 +1,15 @@
+<h2>Edit Account</h2>
+<%= form_for(@user, :url => { :action => "update_account" } ) do |f| %>
+  <div class="field">
+    <%= f.label :password, "Password" %>
+    <%= f.password_field :password, :autocomplete => "off"  %>
+  </div>
+  <br />
+  <div class="field">
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation %>
+  </div>
+  <div class="action_container">
+    <%= f.submit %>
+  </div>
+<% end %>

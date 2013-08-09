@@ -3,12 +3,19 @@ WindosorFrontend::Application.routes.draw do
   root to: "home#index"
   devise_for :users
 
-  resources :users, except: [:show, :new]
+  resources :users, except: [:show, :new] do
+    collection do
+      get 'edit_account'
+      put 'update_account'
+    end
+  end
+
   resources :groups, except: [:new] do
     collection do
       get :tickers
     end
   end
+  
   resources :companies do
     collection do
       get   :delete_info

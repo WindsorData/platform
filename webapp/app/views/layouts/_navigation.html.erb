@@ -61,7 +61,7 @@
     <ul class="right">
       <li class="divider"></li>
       <li>
-        <a class="nav-link"><%= current_user.email %></a>
+        <%= link_to(current_user.email, edit_account_users_path, class: "nav-link")  %>
       </li>
       <li class="has-form">
         <% if user_signed_in? %>
