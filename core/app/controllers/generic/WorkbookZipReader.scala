@@ -17,17 +17,14 @@ trait WorkbookZipReader {
   type FileAndTicker = (String, String)
 
   //TODO use monadic validated error hadndling
-  def readZipFileEntries(filePath: String): Seq[(FileAndTicker, Validated[Seq[Model]])] = {
-    try {
-      readZipFile(new ZipFile(filePath))
-    } catch {
-      case e : Exception => Seq((filePath -> "Unknown", Invalid(e.getMessage)))
-    }
-  }
+  def readZipFileEntries(filePath: String): Seq[(FileAndTicker, Validated[Seq[Model]])] = readZipFile(new ZipFile(filePath))
 
   protected def readZipFile[A](file: ZipFile) =
     readersWithEntries(file)
-      .map { case (reader, entry) => (entry.getName() -> ticker(WorkbookFactory.create(file.getInputStream(entry))), reader(file.getInputStream(entry))) }
+      .map { case (reader, entry) => {
+        val tickerName = entry.getName.split("-")(0)
+        (entry.getName() -> tickerName, reader(file.getInputStream(entry)))
+      } }
       .toSeq
 
   protected def readersWithEntries[A](file: ZipFile) = {

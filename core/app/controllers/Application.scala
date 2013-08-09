@@ -42,7 +42,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   def newCompanies =
     UploadAndReadAction(ExecutivesDb) {
-      data => keyed.Validated.flatConcat(readZipFileEntries(data.file.getAbsolutePath))
+      data => keyed.Validated.flatConcat(readZipFileEntries(data.file.getAbsolutePath).toList)
     }
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
@@ -64,7 +64,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def UploadAndReadAction(db: Persistence)(readOp: UploadData => keyed.Validated[FileAndTicker, Model]) =
     UploadSpreadsheetAction {
       case data =>
-        readOp(data) match {
+        safeReadOp(readOp, data) match {
           case Invalid(errors@_*) =>
             data.request match {
               case Accepts.Html() => BadRequest(views.html.parsingError(errors))
@@ -79,6 +79,14 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
           }
         }
     }
+
+  def safeReadOp(readOp: UploadData => keyed.Validated[FileAndTicker, Model], data: UploadData) : keyed.Validated[FileAndTicker, Model] = {
+    try {
+      readOp(data)
+    } catch {
+      case e : Exception => Invalid((data.originalName -> "Unknown", Seq(e.getMessage)))
+    }
+  }
 
   def messagesToJson(errors: Seq[keyed.KeyedMessage[FileAndTicker]]) =
     Map("results" -> errors.map { case ((file, ticker), messages) => Map("file" -> toJson(file), "ticker" -> toJson(ticker) , "messages" -> toJson(messages)) })

@@ -95,7 +95,7 @@ case class Doubtful[+Message, +A](value: A, override val messages: Message*)
 
 case class Invalid[Message](override val messages: Message*) extends Validated[Message, Nothing] {
 
-  override def get = sys.error("Invald value " + messages.mkString(","))
+  override def get = sys.error("Invalid value " + messages.mkString(","))
 
   override def isInvalid = true
 
