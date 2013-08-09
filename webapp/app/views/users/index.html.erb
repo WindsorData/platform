@@ -23,8 +23,8 @@
             <td><%= user.email %></td>
             <td><%= user.company.try(:name) %></td>
             <td><%= user.role %></td>
-            <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe001;'></span>".html_safe, edit_user_path(user), class: 'btn-icon' %></td>
-            <td class="icon-column text-center"><%= link_to "<span data-icon='&#xe000;'></span>".html_safe, user, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
+            <td class="icon-column text-center"><%= link_to "Edit", edit_user_path(user), class: 'btn-icon' %></td>
+            <td class="icon-column text-center"><%= link_to "Delete", user, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
           </tr>
         <% end %>
       </tbody>
