@@ -8,11 +8,9 @@ $(function() {
     $('.basic-group.hidden').clone().removeClass('hidden').addClass("cloned").appendTo('#forms-container');
     replaceElementNameWithCounter();
     form_counter ++;
-  }
 
-  $("#js-new-form").on("click", function() {
-    addExecutiveForm();
-  });
+    delegateComboClick(); // DOM changed
+  }  
 
   function replaceElementNameWithCounter(){
     var elements = $('.cloned [name^="[role_form]"]');
@@ -23,9 +21,22 @@ $(function() {
     });
   }
 
+  $("#js-new-form").on("click", function() {
+    addExecutiveForm();
+  });
+
   $('input:checkbox').click(function() {
     var el = $(this).closest('div').children("input[type='text']");
     el.attr("disabled", !this.checked);
   });
 
+  function delegateComboClick() {
+    $('.custom.dropdown').delegate('li', 'click', function(e) {
+      var blankSelected = $(e.currentTarget).text() == "";
+      var inputs = $(e.currentTarget).parents('.combo_div').siblings().children('input');
+      inputs.attr("disabled", blankSelected);
+      inputs.val("");
+    });    
+  }
+  
 });
