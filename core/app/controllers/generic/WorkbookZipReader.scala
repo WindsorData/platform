@@ -17,13 +17,7 @@ trait WorkbookZipReader {
   type FileAndTicker = (String, String)
 
   //TODO use monadic validated error hadndling
-  def readZipFileEntries(filePath: String): Seq[(FileAndTicker, Validated[Seq[Model]])] = {
-    try {
-      readZipFile(new ZipFile(filePath))
-    } catch {
-      case e : Exception => Seq((filePath -> "Unknown", Invalid(e.getMessage)))
-    }
-  }
+  def readZipFileEntries(filePath: String): Seq[(FileAndTicker, Validated[Seq[Model]])] = readZipFile(new ZipFile(filePath))
 
   protected def readZipFile[A](file: ZipFile) =
     readersWithEntries(file)
