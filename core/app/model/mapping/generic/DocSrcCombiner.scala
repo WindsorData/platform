@@ -1,7 +1,7 @@
 package model.mapping.generic
 
-import util.WorkbookLogger._
 
+import _root_.util.WorkbookLogger.ReaderError
 import libt.spreadsheet.reader.workflow._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.util._
@@ -9,12 +9,13 @@ import libt.error._
 import libt._
 
 import scala.collection.JavaConversions._
-import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Sheet
-import org.apache.poi.ss.usermodel.Cell
-import org.apache.poi.ss.usermodel.Workbook
+import org.apache.poi.ss.usermodel.{Cell, Row, Sheet, Workbook}
 import org.joda.time.DateTime
 import java.util.Date
+
+trait DocSrcModelCombiner {
+  def combineModels(pointers: Seq[SheetPointer[Validated[Year]]], models: Seq[Seq[Model]], docSrcModel: Model): Validated[Seq[Model]]
+}
 
 /**
  * *
@@ -27,9 +28,19 @@ import java.util.Date
  *
  * @author mcorbanini
  */
-class DocSrcCombiner(
-    yearsPositionWithKeys: Seq[(Int, Symbol, Seq[Model] => Element)])
-    extends Phase[Seq[Seq[Model]], Seq[Model]] {
+trait DocSrcCombiner
+  extends Phase[Seq[Seq[Model]], Seq[Model]] {
+  self: DocSrcModelCombiner =>
+
+  val rowPointers: Seq[SheetPointer[RowNumber]]
+
+  protected def yearPointers(wb: Workbook): Seq[SheetPointer[Validated[Year]]] =
+    yearsPointersBySheet(wb.getSheetAt(0)).filter(!_._1.isInvalid)
+
+  def yearsPointersBySheet(sheet: Sheet) =
+    rowPointers.map {
+      case (yearIndex, key, elemWrap) => (fiscalYearAndMetadata(sheet.rows.drop(yearIndex)), key, elemWrap)
+    }
 
   def fiscalYearAndMetadata(r: Seq[Row]): Validated[Model] = {
     def dateCellToValue(dateCell: Cell): Validated[DateTime] =
@@ -56,24 +67,23 @@ class DocSrcCombiner(
 
   }
 
-  def years(sheet: Sheet) =
-    yearsPositionWithKeys.map {
-      case (yearIndex, key, elemWrap) => (fiscalYearAndMetadata(sheet.rows.drop(yearIndex)), key, elemWrap)
-    }
-
   override def apply(wb: Workbook, results: Seq[Seq[Model]]): Validated[Seq[Model]] = {
-    val yearsWithKeys = years(wb.getSheetAt(0)).filter(!_._1.isInvalid)
+    val yearsWithKeys = yearPointers(wb)
     yearsWithKeys.concatMap(_._1) andThen {
-      (yearsWithKeys, results.tail, Stream.continually(results.head.head)).zipped.map {
-        case ((year, key, elemWrap), executives, company) =>
-          year.map { yearAndMetadata =>
-            Model(company.elements + (key -> elemWrap(executives))) ++ yearAndMetadata
-          }
-      }.concat
+      combineModels(yearsWithKeys, results.tail, results.head.head)
     }
   }
 }
 
-object DocSrcCombiner {
-  def apply(years: (Int, Symbol, Seq[Model] => Element)*) = new DocSrcCombiner(years.toSeq)
+trait StandardDocSrcModelCombiner extends DocSrcModelCombiner {
+  def combineModels(pointers: Seq[SheetPointer[Validated[Year]]], models: Seq[Seq[Model]], docSrcModel: Model) =
+    (pointers, models).zipped.map {
+      case ((year, key, elemWrap), executives) =>
+        year.map {
+          it => it ++ docSrcModel ++ Model(key -> elemWrap(executives))
+        }
+    }.concat
 }
+
+case class StandardDocSrcCombiner(override val rowPointers: SheetPointer[RowNumber]*)
+  extends DocSrcCombiner with StandardDocSrcModelCombiner

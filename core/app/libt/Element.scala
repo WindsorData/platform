@@ -55,7 +55,7 @@ sealed trait Element extends ElementLike[Element] with ElementValueOps {
    * Answers true if all elements of this specific element has values.
    */
   def isComplete : Boolean
-  
+
   def merge(element: Element) : Element
   
   protected def incompatibleTypes = throw new IllegalArgumentException("incompaible types")
@@ -179,6 +179,11 @@ case class Model(elements: Set[(Symbol, Element)])
   def get(key: Symbol) =  elementsMap.get(key)
   def contains(key: Symbol) = elementsMap.contains(key)
 
+  def mergeTypeSafe(other: Model): Model =
+    Model((elements ++ other.elements).groupBy(key).mapValues {
+      _.reduce((e1, e2) => (key(e1), value(e1).merge(value(e2))))
+    }.values.toSet)
+
   /**
    * Flattens this model based on a path - flatteningPath - that points
    * to a Col of Models inside this model or to other element that can be converted
@@ -198,9 +203,7 @@ case class Model(elements: Set[(Symbol, Element)])
     "Model(" + elements.map { case (key, value) => s"${key.name}:$value" }.mkString(",") + ")"
 
   def merge(other: Element) = other match {
-    case Model(otherElements) => Model((elements ++ otherElements).groupBy(key).mapValues {
-      _.reduce( (e1, e2) => (key(e1), value(e1).merge(value(e2))))
-    }.values.toSet)
+    case other:Model => mergeTypeSafe(other)
     case _ => incompatibleTypes
   }
 }

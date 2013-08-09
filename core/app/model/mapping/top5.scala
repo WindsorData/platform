@@ -126,7 +126,7 @@ object top5 extends StandardWorkflowFactory {
         Stream.continually[SheetDefinition](Area(TExecutive, Offset(3, 1), Some(5), DataLayout, executiveMapping)))
 
   override def CombinerPhase =
-    DocSrcCombiner(
+    StandardDocSrcCombiner(
       (10, 'grantTypes, singleModelWrapping),
       (25, 'executives, colWrapping),
       (40, 'executives, colWrapping),
