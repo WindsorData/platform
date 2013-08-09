@@ -4,9 +4,9 @@
 #
 #  id            :integer          not null, primary key
 #  file_name     :text
-#  ticker_id     :integer
 #  upload_log_id :integer
 #  messages      :text
+#  ticker        :string(255)
 #
 
 class DetailUploadFile < ActiveRecord::Base

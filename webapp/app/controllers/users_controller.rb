@@ -19,7 +19,12 @@ class UsersController < ApplicationController
   end
 
   def create
-    create! { users_path }
+    @user = User.new(params[:user])
+    password = @user.generate_random_password
+    if @user.save
+      flash[:notice] = "Email: " + @user.email + " Password: " + password
+    end
+    redirect_to users_path
   end
 
   def index
