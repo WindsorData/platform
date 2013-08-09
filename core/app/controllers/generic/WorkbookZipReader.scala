@@ -27,7 +27,10 @@ trait WorkbookZipReader {
 
   protected def readZipFile[A](file: ZipFile) =
     readersWithEntries(file)
-      .map { case (reader, entry) => (entry.getName() -> ticker(WorkbookFactory.create(file.getInputStream(entry))), reader(file.getInputStream(entry))) }
+      .map { case (reader, entry) => {
+        val tickerName = entry.getName.split("-")(0)
+        (entry.getName() -> tickerName, reader(file.getInputStream(entry)))
+      } }
       .toSeq
 
   protected def readersWithEntries[A](file: ZipFile) = {
