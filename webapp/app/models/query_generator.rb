@@ -46,7 +46,7 @@ class QueryGenerator
           end
         end
       else
-        hash = {key: k2, value: params_hash[k1][k2] == 'No' ? "" : params_hash[k1][k2] } unless params_hash[k1][k2].blank? || params_hash[k1][k2] == 'N/A'
+        hash = {key: k2, value: params_hash[k1][k2] == '_' ? "" : params_hash[k1][k2] } unless params_hash[k1][k2].blank? || params_hash[k1][k2] == 'N/A'
       end
       query[:executives][i1][:executivesFilters][i2] = hash if hash
     }
