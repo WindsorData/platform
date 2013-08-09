@@ -18,7 +18,7 @@ trait SpreadsheetUploader { self: Controller =>
 
   case class UploadDataByRequest(request: UploadRequest) extends UploadData {
     override def file = uploadFile.ref.file
-    override def originalName = uploadFile.filename
+    override def originalName = multipartForm.dataParts.getOrElse("filename", Seq(uploadFile.filename)).head
 
     private def multipartForm = request.body.asMultipartFormData.get
     private def uploadFile : UploadFile = multipartForm.file("dataset").get
