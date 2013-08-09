@@ -1,5 +1,6 @@
 package model
 
+import _root_.mapping._
 import libt.spreadsheet._
 import libt.error._
 import libt._

@@ -1,5 +1,6 @@
 package model.mapping
 
+import _root_.mapping.DilutionMappingComponent
 import model.mapping.generic._
 import model.ExecutivesSVTBSDilution._
 import model.validation._
@@ -10,7 +11,7 @@ import libt.spreadsheet._
 import libt.error._
 import libt._
 
-package object dilution extends StandardWorkflowFactory {
+trait FullDilutionMappingComponent extends DilutionMappingComponent {
 
   val usageAndSVTDataMapping =
     Years(
@@ -24,7 +25,7 @@ package object dilution extends StandardWorkflowFactory {
       Path('cashLTIP, 'grants),
       Path('cashLTIP, 'payouts))
 
-  val blackScholesInputsMapping =
+  val bsInputsMapping =
     Years(
       Path('valuationModel),
       Path('volatility),
@@ -43,20 +44,6 @@ package object dilution extends StandardWorkflowFactory {
     Path('sharesAvailable, 'everGreen, 'yearsLeft),
     Path('sharesAvailable, 'fungible, 'ratio),
     Path('sharesAvailable, 'fungible, 'fullValue))
-
-  def Mapping = WorkbookMapping(
-    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping),
-      Area(TUsageAndSVTData, Offset(3, 1), Some(1), DataLayout, usageAndSVTDataMapping),
-      Area(TBlackScholesInputs, Offset(3, 1), Some(1), DataLayout, blackScholesInputsMapping),
-      Area(TDilution, Offset(4, 1), Some(1), DataLayout, dilutionMapping)))
-
-  def CombinerPhase =
-    new DocSrcCombiner with DilutionDocSrcCombiner {
-      override val rowPointers = Seq(
-        (10, 'usageAndSVTData, singleModelWrapping),
-        (25, 'bsInputs, singleModelWrapping),
-        (40, 'dilution, singleModelWrapping))
-    }
 
   def averageSharesValidation(model: Model) = {
     val results: Seq[Validated[Model]] =
@@ -125,8 +112,9 @@ package object dilution extends StandardWorkflowFactory {
       totalValidation(model) andThen optionAndFullValuesValidation(model)
     }
 
-  override def SheetValidation = model => usageAndSVTValidations(model) andThen dilutionValidations(model)
+}
 
+package object dilution extends StandardWorkflowFactory with FullDilutionMappingComponent {
 
   trait DilutionDocSrcCombiner extends DocSrcModelCombiner {
     def combineModels(pointers: Seq[SheetPointer[Validated[Year]]], models: Seq[Seq[Model]], docSrcModel: Model) =
@@ -141,4 +129,19 @@ package object dilution extends StandardWorkflowFactory {
   }
 
 
+  def Mapping = WorkbookMapping(
+    Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping),
+      Area(TUsageAndSVTData, Offset(3, 1), Some(1), DataLayout, usageAndSVTDataMapping),
+      Area(TBlackScholesInputs, Offset(3, 1), Some(1), DataLayout, bsInputsMapping),
+      Area(TDilution, Offset(4, 1), Some(1), DataLayout, dilutionMapping)))
+
+  def CombinerPhase =
+    new DocSrcCombiner with DilutionDocSrcCombiner {
+      override val rowPointers = Seq(
+        (10, 'usageAndSVTData, singleModelWrapping),
+        (25, 'bsInputs, singleModelWrapping),
+        (40, 'dilution, singleModelWrapping))
+    }
+
+  override def SheetValidation = model => usageAndSVTValidations(model) andThen dilutionValidations(model)
 }

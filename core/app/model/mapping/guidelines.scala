@@ -1,5 +1,6 @@
 package model.mapping
 
+import _root_.mapping.GuidelinesMappingComponent
 import model.mapping.generic._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
@@ -11,9 +12,9 @@ import libt.spreadsheet._
 import libt._
 import libt.error._
 
-package object guidelines extends StandardWorkflowFactory {
+trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
 
-  val GuidelinesSheetMapping =
+  val guidelinesMapping =
     Seq[Strip](
       Path('firstName),
       Path('lastName),
@@ -30,7 +31,7 @@ package object guidelines extends StandardWorkflowFactory {
       Path('numberOfShares),
       Path('multipleOfSalary))
 
-  val STBonusPlanSheetMapping =
+  val stBonusPlanMapping =
     Seq[Strip](
       Path('firstName),
       Path('lastName),
@@ -56,9 +57,59 @@ package object guidelines extends StandardWorkflowFactory {
       Multi(Path('metrics, 'select), 5,
         Path('use),
         Path('weight)) ++
-        Multi(Path('metrics, 'typeIn), 5,
-          Path('type),
-          Path('weight))
+      Multi(Path('metrics, 'typeIn), 5,
+        Path('type),
+        Path('weight))
+
+  def guidelinesDigitValidation(model: Model) =
+    digitValidation(Path('guidelines, *), Seq(Path('numberOfShares)),model)(_ >= 10) andThen
+      digitValidation(Path('guidelines, *), Seq(Path('multipleOfSalary)),model)(_ < 10)
+
+  def guidelinesValidations(model: Model): Validated[Model] = {
+    model.validate('guidelines) {
+      guidelinesDigitValidation(model)
+    }
+  }
+
+  //TODO: FIX ME!
+  def scopeValidation(model: Model) =
+    reduceExecutiveValidations(Path('stBonusPlan, *), model) {
+      m =>
+        (for {
+          corporate <- m(Path('scope, 'corporate, 'use)).rawValue[Boolean]
+          if corporate || !nonEmptyExecutive(m)
+        } yield Valid(model))
+          .getOrElse(
+          Doubtful(model,
+            warning(
+              execMsg((model /#/ 'disclosureFiscalYear), m.asModel)
+                + Path('scope, 'corporate, 'use).titles.mkString(" - "),
+              "Almost always the scope would include Corporate")))
+    }
+
+  def metricsValidation(model: Model) =
+    reduceExecutiveValidations(Path('stBonusPlan, *), model) {
+      m =>
+      {
+        val results = m.applySeq(Path('metrics, 'select, *)) ++ m.applySeq(Path('metrics, 'typeIn, *))
+        if (results.isEmpty)
+          Doubtful(model, "lala")
+        else
+          Valid(model)
+      }
+    }
+
+  def stBonusValidations(model: Model): Validated[Model] = {
+    model.validate('stBonusPlan) {
+      scopeValidation(model) andThen
+        metricsValidation(model)
+    }
+  }
+
+}
+
+
+package object guidelines extends StandardWorkflowFactory with FullGuidelinesMappingComponent {
 
   def Mapping = WorkbookMapping(
     Seq(
@@ -71,62 +122,17 @@ package object guidelines extends StandardWorkflowFactory {
         Offset(3, 1),
         Some(5),
         DataLayout,
-        GuidelinesSheetMapping),
+        guidelinesMapping),
       Area(TExecSTBonusPlan,
         Offset(5, 1),
         Some(5),
         DataLayout,
-        STBonusPlanSheetMapping)))
+        stBonusPlanMapping)))
 
   def CombinerPhase =
     StandardDocSrcCombiner(
       (10, 'guidelines, colWrapping),
       (25, 'stBonusPlan, colWrapping))
 
-  def guidelinesDigitValidation(model: Model) =
-    digitValidation(Path('guidelines, *), Seq(Path('numberOfShares)),model)(_ >= 10) andThen
-    digitValidation(Path('guidelines, *), Seq(Path('multipleOfSalary)),model)(_ < 10)
-  
-  def guidelinesValidations(model: Model): Validated[Model] = {
-    model.validate('guidelines) {
-      guidelinesDigitValidation(model)
-    }
-  } 
-
-  //TODO: FIX ME!
-  def scopeValidation(model: Model) =
-    reduceExecutiveValidations(Path('stBonusPlan, *), model) {
-      m =>
-        (for {
-          corporate <- m(Path('scope, 'corporate, 'use)).rawValue[Boolean]
-          if corporate || !nonEmptyExecutive(m)
-        } yield Valid(model))
-          .getOrElse(
-            Doubtful(model,
-              warning(
-                  execMsg((model /#/ 'disclosureFiscalYear), m.asModel)
-                  + Path('scope, 'corporate, 'use).titles.mkString(" - "),
-            	  "Almost always the scope would include Corporate")))
-  	}
-    
-  def metricsValidation(model: Model) =
-    reduceExecutiveValidations(Path('stBonusPlan, *), model) {
-      m =>
-        {
-          val results = m.applySeq(Path('metrics, 'select, *)) ++ m.applySeq(Path('metrics, 'typeIn, *))
-          if (results.isEmpty)
-            Doubtful(model, "lala")
-          else
-            Valid(model)
-        }
-  	}
-  
-  def stBonusValidations(model: Model): Validated[Model] = {
-    model.validate('stBonusPlan) {
-      scopeValidation(model) andThen
-      metricsValidation(model)
-    }
-  }
-  
-  override def SheetValidation = model =>  guidelinesValidations(model) andThen stBonusValidations(model)
+  override def SheetValidation = model => guidelinesValidations(model) andThen stBonusValidations(model)
 }

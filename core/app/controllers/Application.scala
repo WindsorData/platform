@@ -14,7 +14,7 @@ import libt.error._
 import libt._
 import controllers.generic._
 import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
-import output.{StandardWriter, BodWriter, OutputWriter}
+import output.{FullTop5Writer, StandardTop5Writer, BodWriter, OutputWriter}
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
@@ -108,6 +108,12 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       YearRanges, routes.Application.doStandardSearch()))
   }
 
+  def searchFullCompany = Action {
+    Ok(views.html.searchCompanies(companyForm,
+      (ExecutivesDb.allCompanies,ExecutivesDb.allCompanies) :: ExecutivesDb.findAllCompaniesId.toList,
+      YearRanges, routes.Application.doFullSearch()))
+  }
+
   def searchBod = Action {
     Ok(views.html.searchCompanies(companyForm,
       BodDb.findAllCompaniesId.toList,
@@ -127,7 +133,8 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       })
   }
 
-  def doStandardSearch = doSearch(StandardWriter, ExecutivesDb)
+  def doStandardSearch = doSearch(StandardTop5Writer, ExecutivesDb)
+  def doFullSearch = doSearch(FullTop5Writer, ExecutivesDb)
   def doBodSearch = doSearch(BodWriter, BodDb)
 
   def companies = Action {
