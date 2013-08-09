@@ -230,3 +230,16 @@ table {
 .alert-message.alert-success {
   background: #2E942E;
 }
+
+/* ---- pagination ---- */
+.pagination {
+  text-align: center;
+}
+
+.pagination a {
+  color: #999;
+}
+
+.pagination .current {
+  font-weight: bold;
+}
