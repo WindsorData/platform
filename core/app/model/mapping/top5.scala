@@ -165,6 +165,10 @@ object top5 extends StandardWorkflowFactory {
 
               builder += equityCalc(Path('perfCash), Sum(Path('performanceCash, *, 'targetValue)), m)
 
+            val baseSalary = m / 'cashCompensations /% 'baseSalary getOrElse 0 : BigDecimal
+            val actualBonus = m / 'cashCompensations /% 'actualBonus getOrElse 0 : BigDecimal
+            builder += Path('calculated, 'salaryAndBonus) -> Value(baseSalary + actualBonus)
+
               builder += (Path('calculated, 'carriedInterest, 'ownedShares),
                 Value(SubstractAll(
                   Path('carriedInterest, 'ownedShares),

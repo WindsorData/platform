@@ -27,10 +27,10 @@ package object parser {
 
   trait ConditionParser {
     private val translations = Map(
-      "role" -> Path('executives, 'functionalMatches, 'primary),
-      "pay_rank" -> Path('executives, 'calculated, 'ttdcPayRank),
-      "founder" -> Path('executives, 'founder),
-      "trans_period" -> Path('executives, 'transitionPeriod)
+      "role" -> Path('functionalMatches, 'primary),
+      "pay_rank" -> Path('calculated, 'ttdcPayRank),
+      "founder" -> Path('founder),
+      "trans_period" -> Path('transitionPeriod)
     ).mapValues(path => (path ++ Path('value)).joinWithDots)
 
     /***Parses a json condition*/

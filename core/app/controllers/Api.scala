@@ -20,6 +20,19 @@ import output.StandardWriter
 
 object Api extends Controller with SpreadsheetDownloader {
 
+  val pathsCashCompensations = Relative(
+    Path('cashCompensations),
+    Path('baseSalary),
+    Path('actualBonus)
+  ).:+(Path('calculated, 'salaryAndBonus)).map(_ ++ Path('value))
+
+  val pathsEquityCompensations = Relative(
+    Path('calculated, 'equityCompValue),
+    Path('options),
+    Path('timeVestRs),
+    Path('perfRs)
+  ).map(_ ++ Path('value))
+
   def companies = Action {
     Ok(toJson(ExecutivesDb.findAllCompaniesIdWithNames.map { case (cusip, ticker, name) =>
       Map("cusip" -> cusip, "ticker" -> ticker, "name" -> name)
@@ -33,28 +46,17 @@ object Api extends Controller with SpreadsheetDownloader {
   def bod = valuesToJson(TBodValues)
 
   def cashCompensations = pathsToJson(
-    Relative(
-      Path('cashCompensations),
-      Path('baseSalary),
-      Path('bonus),
-      Path('salaryAndBonus)
-    ).map(_ ++ Path('value)),
-    _(2)
+    pathsCashCompensations.zip(Seq("Base Salary", "Actual Bonus", "Salary And Bonus"))
   )
 
   def equityCompensations = pathsToJson(
-    Seq(
-      Path('optionGrants),
-      Path('timeVestRS),
-      Path('performanceVestRS)
-    ).map(_ ++ Path('value)),
-    _(1)
+    pathsEquityCompensations.zip(Seq("Option Grants", "Time Vest RS", "Performance Vest RS"))
   )
 
-  def pathsToJson(paths: Seq[Path], description : Path => PathPart) : Action[AnyContent] = {
+  def pathsToJson(paths: Seq[(Path, String)]) : Action[AnyContent] = {
     Action {
       Ok(toJson(paths.map {
-         path => Map("field" -> path.joinWithDots, "value" -> description(path).name.upperCaseFromCamelCase.trim)
+        case (path, description) => Map("field" -> path.joinWithDots, "value" -> description)
       }))
     }
   }
