@@ -1,5 +1,10 @@
-<h1 class="main-title">New company</h1>
-
-<%= render 'form' %>
-
-<%= link_to 'Back', companies_path %>
+<div class="row">
+  <div class="large-12 columns">
+    <h1 class="main-title">New company</h1>
+    <hr>
+  </div>
+  <div class="large-4 pull-8 columns">
+    <%= render 'form' %>
+    <%= link_to 'Back', companies_path, class: "button tiny" %>
+  </div>
+</div>
