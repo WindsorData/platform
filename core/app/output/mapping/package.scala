@@ -50,9 +50,9 @@ package object mapping {
         performanceVestingMapping('performanceEquityVesting) ++
         performanceVestingMapping('performanceCashVesting)
 
-  val dilutionMapping =
+  val dilutionMapping = {
+    def Path(ps:PathPart*) = RelativeTo('dilution)(ps)
     Seq[Strip](
-      Gap,
       Path('awardsOutstandings, 'option),
       Path('awardsOutstandings, 'fullValue),
       Path('awardsOutstandings, 'total),
@@ -62,32 +62,35 @@ package object mapping {
       Path('sharesAvailable, 'everGreen, 'yearsLeft),
       Path('sharesAvailable, 'fungible, 'ratio),
       Path('sharesAvailable, 'fungible, 'fullValue))
+  }
 
-  val bsInputsMapping =
+  val bsInputsMapping = {
+    def Path(ps:PathPart*) = RelativeTo('bsInputs)(ps)
     Seq[Strip](
-      Gap,
       Path('valuationModel, 'year1),
       Path('valuationModel, 'year2),
       Path('valuationModel, 'year3)) ++
-      addTYears(
+      Years(
         Path('volatility),
         Path('expectedTerm),
         Path('riskFreeRate),
         Path('dividendYield),
         Path('bs))
+  }
 
-  val usageAndSVTDataMapping =
-    Seq[Strip](Gap) ++
-      addTYears(
-        Path('avgSharesOutstanding),
-        Path('optionsSARs, 'granted),
-        Path('optionsSARs, 'exPrice),
-        Path('optionsSARs, 'cancelled),
-        Path('fullValue, 'sharesGranted),
-        Path('fullValue, 'grantPrice),
-        Path('fullValue, 'sharesCancelled),
-        Path('cashLTIP, 'grants),
-        Path('cashLTIP, 'payouts))
+  val usageAndSVTDataMapping = {
+    def Path(ps:PathPart*) = RelativeTo('usageAndSVTData)(ps)
+    Years(
+      Path('avgSharesOutstanding),
+      Path('optionsSARs, 'granted),
+      Path('optionsSARs, 'exPrice),
+      Path('optionsSARs, 'cancelled),
+      Path('fullValue, 'sharesGranted),
+      Path('fullValue, 'grantPrice),
+      Path('fullValue, 'sharesCancelled),
+      Path('cashLTIP, 'grants),
+      Path('cashLTIP, 'payouts))
+  }
 
   val executiveOwnershipMapping = Seq(
     Gap, //GICS Industry

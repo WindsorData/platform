@@ -13,7 +13,7 @@ import libt._
 package object dilution extends StandardWorkflowFactory {
 
   val usageAndSVTDataMapping =
-    addTYears(
+    Years(
       Path('avgSharesOutstanding),
       Path('optionsSARs, 'granted),
       Path('optionsSARs, 'exPrice),
@@ -25,7 +25,7 @@ package object dilution extends StandardWorkflowFactory {
       Path('cashLTIP, 'payouts))
 
   val blackScholesInputsMapping =
-    addTYears(
+    Years(
       Path('valuationModel),
       Path('volatility),
       Path('expectedTerm),

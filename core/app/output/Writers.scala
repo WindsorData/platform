@@ -20,6 +20,15 @@ import scala.Some
 import libt.spreadsheet.reader.ColumnOrientedLayout
 import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
+import libt.TModel
+import output.ValueAreaLayout
+import output.MetadataAreaLayout
+import libt.spreadsheet.reader.Area
+import output.FlattedArea
+import scala.Some
+import libt.spreadsheet.reader.ColumnOrientedLayout
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
 
 trait OutputWriter {
   val schema: TModel
@@ -118,28 +127,18 @@ object StandardWriter extends OutputWriter {
       Path('guidelines, *),
       LastYearWriteStrategy)
 
-  def usageAndSVTDataArea =
-    outputArea(
-      ValueAreaLayout(Offset(6, 2)),
-      usageAndSVTDataMapping,
-      Path(),
-      Path('usageAndSVTData, *),
-      LastYearWriteStrategy)
 
-  def bsInputsArea =
+  def companyDBArea =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
-      bsInputsMapping,
-      Path(),
-      Path('bsInputs, *),
-      LastYearWriteStrategy)
-
-  def dilutionArea =
-    outputArea(
-      ValueAreaLayout(Offset(6, 2)),
+      Seq(Gap) ++
+      usageAndSVTDataMapping ++
+      Seq(Gap) ++
+      bsInputsMapping ++
+      Seq(Gap) ++
       dilutionMapping,
       Path(),
-      Path('dilution, *),
+      Path('companyDB, *),
       LastYearWriteStrategy)
 
   def grantTypesArea =
@@ -169,9 +168,7 @@ object StandardWriter extends OutputWriter {
         execDBArea(executivesRange - 3, Some(2)), //ExecDB -2
         stBonusPlanArea,
         executiveOwnershipArea,
-        usageAndSVTDataArea,
-        bsInputsArea,
-        dilutionArea,
+        companyDBArea,
         grantTypesArea,
         metadataArea(executivesRange))).write(companies, out)
   }
