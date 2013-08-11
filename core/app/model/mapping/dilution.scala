@@ -13,7 +13,7 @@ import libt._
 package object dilution extends StandardWorkflowFactory {
 
   val usageAndSVTDataMapping =
-    addTYears(
+    Years(
       Path('avgSharesOutstanding),
       Path('optionsSARs, 'granted),
       Path('optionsSARs, 'exPrice),
@@ -25,7 +25,7 @@ package object dilution extends StandardWorkflowFactory {
       Path('cashLTIP, 'payouts))
 
   val blackScholesInputsMapping =
-    addTYears(
+    Years(
       Path('valuationModel),
       Path('volatility),
       Path('expectedTerm),
@@ -51,10 +51,12 @@ package object dilution extends StandardWorkflowFactory {
       Area(TDilution, Offset(4, 1), Some(1), DataLayout, dilutionMapping)))
 
   def CombinerPhase =
-    DocSrcCombiner(
-      (10, 'usageAndSVTData, singleModelWrapping),
-      (25, 'bsInputs, singleModelWrapping),
-      (40, 'dilution, singleModelWrapping))
+    new DocSrcCombiner with DilutionDocSrcCombiner {
+      override val rowPointers = Seq(
+        (10, 'usageAndSVTData, singleModelWrapping),
+        (25, 'bsInputs, singleModelWrapping),
+        (40, 'dilution, singleModelWrapping))
+    }
 
   def averageSharesValidation(model: Model) = {
     val results: Seq[Validated[Model]] =
@@ -124,5 +126,19 @@ package object dilution extends StandardWorkflowFactory {
     }
 
   override def SheetValidation = model => usageAndSVTValidations(model) andThen dilutionValidations(model)
+
+
+  trait DilutionDocSrcCombiner extends DocSrcModelCombiner {
+    def combineModels(pointers: Seq[SheetPointer[Validated[Year]]], models: Seq[Seq[Model]], docSrcModel: Model) =
+      (pointers, models).zipped.map {
+        case ((year, key, elemWrap), executives) => year.map {
+          it => it ++ Model('companyDB -> Model(key -> elemWrap(executives)))
+        }
+      }.concat.map {
+        models =>
+          models.groupBy(_ /#/ 'disclosureFiscalYear).mapValues(_.reduce(_ mergeTypeSafe _) ++ docSrcModel).values.toSeq
+      }
+  }
+
 
 }

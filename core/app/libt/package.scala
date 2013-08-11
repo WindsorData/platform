@@ -25,6 +25,8 @@ package object libt {
 
   def Relative(base: Path, relativePaths: Path*) = relativePaths.map {base ++ _}
 
+  def RelativeTo(base:Symbol)(ps:Seq[PathPart]) : Path = (base :: Path(ps:_*))
+
   /**
    * A PK is just a sequence of Paths that represent
    * the primary identifier an element

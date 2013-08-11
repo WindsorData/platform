@@ -76,7 +76,7 @@ package object bod extends StandardWorkflowFactory {
     Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping),
         Area(TBod, Offset(3, 1), Some(10), DataLayout, bodMapping)))
           
-  override def CombinerPhase = DocSrcCombiner((10, 'bod, colWrapping))
+  override def CombinerPhase = StandardDocSrcCombiner((10, 'bod, colWrapping))
   
   override def SheetValidation = Valid(_)
 

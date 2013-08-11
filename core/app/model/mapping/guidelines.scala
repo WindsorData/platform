@@ -79,7 +79,7 @@ package object guidelines extends StandardWorkflowFactory {
         STBonusPlanSheetMapping)))
 
   def CombinerPhase =
-    DocSrcCombiner(
+    StandardDocSrcCombiner(
       (10, 'guidelines, colWrapping),
       (25, 'stBonusPlan, colWrapping))
 

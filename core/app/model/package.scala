@@ -17,9 +17,10 @@ package object model {
     'otherDocs -> TCol(TModel('type -> TString, 'date -> TDate)),
 
     'grantTypes -> TGrantTypes,
-    'usageAndSVTData -> TUsageAndSVTData,
-    'bsInputs -> TBlackScholesInputs,
-    'dilution -> TDilution,
+    'companyDB -> TModel(
+      'usageAndSVTData -> TUsageAndSVTData,
+      'bsInputs -> TBlackScholesInputs,
+      'dilution -> TDilution),
     
     'executives -> TCol(TExecutive),
     'bod -> TCol(TBod),
