@@ -11,24 +11,6 @@ import libt.spreadsheet.reader._
 import model.ExecutivesBod._
 import model.mapping.bod._
 import output.mapping._
-import libt.TModel
-import output.ValueAreaLayout
-import output.MetadataAreaLayout
-import libt.spreadsheet.reader.Area
-import output.FlattedArea
-import scala.Some
-import libt.spreadsheet.reader.ColumnOrientedLayout
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.Offset
-import libt.TModel
-import output.ValueAreaLayout
-import output.MetadataAreaLayout
-import libt.spreadsheet.reader.Area
-import output.FlattedArea
-import scala.Some
-import libt.spreadsheet.reader.ColumnOrientedLayout
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.Offset
 
 trait OutputWriter {
   val schema: TModel
