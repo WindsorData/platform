@@ -119,3 +119,12 @@ end
 execute "Start Rails Server" do
   command "cd #{rails_app_path} && rbenv exec bundle exec rails server -d"
 end
+
+#################### Add Rails & Play Servers Autostart ########################
+
+cookbook_file "/etc/rc.local" do
+  source "rc.local"
+  mode 0755
+  owner "root"
+  group "root"
+end
