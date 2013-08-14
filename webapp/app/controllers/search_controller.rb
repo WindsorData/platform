@@ -37,7 +37,7 @@ class SearchController < ApplicationController
 
   def group_search
     tickers = Group.find(params[:group]).tickers.map(&:cusip)
-    json_query = { range: 1, companies: tickers }.to_json.gsub(/(")(\d+)(")/, ' \2')
+    json_query = { range: 1, companies: tickers }.to_json
     perform_search(json_query, params[:report])
   end
 
