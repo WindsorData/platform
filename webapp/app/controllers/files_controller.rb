@@ -1,6 +1,16 @@
 class FilesController < ApplicationController
   before_filter {|c| c.authorize!(:upload, :file)}
 
+  ROUTES_UPLOAD = {     Constants::TOP_5_FILE => Rails.application.config.post_top5_path,
+                        Constants::GUIDELINESS_FILE => Rails.application.config.post_guidelines_path,
+                        Constants::DILUTION_FILE => Rails.application.config.post_dilution_path,
+                        Constants::PEERS_FILE => Rails.application.config.peers_path,
+                        Constants::BOD_FILE => Rails.application.config.post_bod_path,
+                        Constants::BATCH_FILE_COMPANIES => Rails.application.config.post_batch_companies_path,
+                        Constants::BATCH_FILE_BOD => Rails.application.config.post_batch_bod_path,
+                        Constants::BATCH_FILE_PEERS => Rails.application.config.post_batch_peers_path
+                   }
+
   def send_file
     result = post_file(params[:type], params[:file])
     @upload_log = save_result_upload(params[:type], result)
@@ -50,20 +60,7 @@ class FilesController < ApplicationController
   end
 
   def path_by_upload_type(type)
-    case type
-      when Constants::TOP_5_FILE
-        Rails.application.config.post_top5_path
-      when Constants::GUIDELINESS_FILE
-        Rails.application.config.post_guidelines_path
-      when Constants::DILUTION_FILE
-        Rails.application.config.post_dilution_path
-      when Constants::BATCH_FILE
-        Rails.application.config.post_batch_path
-      when Constants::PEERS_FILE
-        Rails.application.config.peers_path
-      when Constants::BOD_FILE
-        Rails.application.config.post_bod_path
-    end
+    ROUTES_UPLOAD[type]
   end
 
 end

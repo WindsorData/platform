@@ -20,11 +20,14 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   val YearRanges = List(1, 2, 3)
 
-  override val entryReaders =
+  val entryReadersCompanies =
     Seq(
       EntryReader(top5.Workflow, "Exec Top5 and Grants.xlsx"),
       EntryReader(guidelines.Workflow, "Exec Top5 ST Bonus and Exec Guidelines.xlsx"),
       EntryReader(dilution.Workflow, "Company SVT BS Dilution.xlsx"))
+
+  val entryReadersBod = Seq(EntryReader(bod.Workflow, "BOD.xlsx"))
+  val entryReadersPeers = Seq(EntryReader(peers.Workflow, "Peer_Peer_research.xlsx"))
         
   val companyForm = Form(
     tuple(
@@ -40,9 +43,13 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newBod = uploadSingleSpreadsheet(bod.Workflow)(BodDb)
   def newPeers = uploadSingleSpreadsheet(peers.Workflow)(PeersDb)
 
-  def newCompanies =
-    UploadAndReadAction(ExecutivesDb) {
-      data => keyed.Validated.flatConcat(readZipFileEntries(data.file.getAbsolutePath).toList)
+  def newCompaniesBatch = uploadBatchSpreadSheets(entryReadersCompanies)(ExecutivesDb)
+  def newBodsBatch = uploadBatchSpreadSheets(entryReadersBod)(BodDb)
+  def newPeersBatch = uploadBatchSpreadSheets(entryReadersPeers)(PeersDb)
+
+  def uploadBatchSpreadSheets(readers: Seq[EntryReader])(db: Persistence) =
+    UploadAndReadAction(db) {
+      data => keyed.Validated.flatConcat(readZipFileEntries(data.file.getAbsolutePath, readers).toList)
     }
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
