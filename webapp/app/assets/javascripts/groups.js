@@ -7,4 +7,11 @@ $(document).ready(function() {
     preventDuplicates: true,
     propertyToSearch: "ticker"
   });
+
+  $("#toggleTickerFormLink").click(function(){ 
+    $("#single_ticker_input").toggleClass("hidden");
+    $("#multiple_ticker_input").toggleClass("hidden");
+    var text = $("#toggleTickerFormLink").text();
+    text == "Click to paste tickers list" ?  $("#toggleTickerFormLink").text("Click to sigle ticker autocomplete") : $("#toggleTickerFormLink").text("Click to paste tickers list");
+  });
 });
