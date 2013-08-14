@@ -7,7 +7,7 @@
   <div class="large-3 columns" id="forms-container">
     <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
         <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
-        <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "id", "ticker"), {include_blank: true} %>
+        <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "ticker", "ticker"), {include_blank: true} %>
         Created date <%= text_field_tag(:date_since) %>
         to <%= text_field_tag(:date_to) %>
         <button type="submit" class="button postfix success">Search</button>
