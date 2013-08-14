@@ -2,7 +2,13 @@
   <% if @group.errors.any? %>
     <%= render 'layouts/model_errors', errors: @group.errors %>
   <% end %>
-    <%= f.text_field :name, placeholder: 'Group name', class: 'group-name inline-block' %>
-    <%= f.text_field :tickers_tokens, id: 'tickers_tokens', "data-pre" => @group.tickers.map(&:attributes).to_json %>
+    <%= f.text_field :name, placeholder: 'Group name', class: 'group-name inline-block', required: true %>
+    <a href="#" id="toggleTickerFormLink">Click to paste tickers list</a>
+    <div id="single_ticker_input">
+      <%= f.text_field :tickers_tokens, id: 'tickers_tokens', "data-pre" => @group.tickers.map(&:attributes).to_json %>      
+    </div>
+    <div id="multiple_ticker_input" class="hidden">
+      <%= f.text_field :multiple_tickers_tokens, id: 'multiple_tickers_tokens', placeholder: "Space separated tickers" %>
+    </div>
     <%= f.submit class: 'button postfix success margin-top-1em' %>
 <% end %>
