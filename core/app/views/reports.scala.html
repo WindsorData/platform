@@ -68,7 +68,7 @@
     </div>
 
     <div>
-        @form(action = routes.Application.newCompanies, 'enctype -> "multipart/form-data") {
+        @form(action = routes.Application.newCompaniesBatch, 'enctype -> "multipart/form-data") {
             <!--  -->
             <div>
                 <p>Upload a zip file with TOP5 data sets</p>
@@ -77,6 +77,32 @@
             <p>
                 <input type="submit">
             </p>
+        }
+    </div>
+
+    <div>
+        @form(action = routes.Application.newBodsBatch, 'enctype -> "multipart/form-data") {
+        <!--  -->
+        <div>
+            <p>Upload a zip file with BOD data sets</p>
+        </div>
+        <input type="file" name="dataset">
+        <p>
+            <input type="submit">
+        </p>
+        }
+    </div>
+
+    <div>
+        @form(action = routes.Application.newPeersBatch, 'enctype -> "multipart/form-data") {
+        <!--  -->
+        <div>
+            <p>Upload a zip file with Peers data sets</p>
+        </div>
+        <input type="file" name="dataset">
+        <p>
+            <input type="submit">
+        </p>
         }
     </div>
 

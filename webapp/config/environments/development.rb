@@ -58,9 +58,11 @@ WindosorFrontend::Application.configure do
   config.post_top5_path = '/api/companies/top5'
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
-  config.post_batch_path = '/api/companies/batch'
   config.peers_path = '/api/companies/peers'
   config.post_bod_path = '/api/companies/bod'
+  config.post_batch_companies_path = '/api/companies/batch/companies'
+  config.post_batch_bod_path = '/api/companies/batch/bod'
+  config.post_batch_peers_path = '/api/companies/batch/peers'
 
   # Search paths
   config.post_query_path = '/api/companies/search'

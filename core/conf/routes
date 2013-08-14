@@ -31,7 +31,10 @@ POST    /api/companies/guidelines               controllers.Application.newExecG
 POST    /api/companies/dilution                 controllers.Application.newSVTBSDilution
 POST    /api/companies/bod                      controllers.Application.newBod
 POST    /api/companies/peers                    controllers.Application.newPeers
-POST    /api/companies/batch                    controllers.Application.newCompanies
+
+POST    /api/companies/batch/companies          controllers.Application.newCompaniesBatch
+POST    /api/companies/batch/bod                controllers.Application.newBodsBatch
+POST    /api/companies/batch/peers              controllers.Application.newPeersBatch
 
 # ~~~~
 
@@ -43,7 +46,7 @@ GET     /companies/reports                      controllers.Application.reports
 POST    /companies/reports                      controllers.Application.newCompany
 POST    /companies/reports/guidelines           controllers.Application.newExecGuideline
 POST    /companies/reports/dilution             controllers.Application.newSVTBSDilution
-POST    /companies/reports/batch                controllers.Application.newCompanies
+POST    /companies/reports/batch                controllers.Application.newCompaniesBatch
 
 ##Query a Company
 GET     /companies/search                       controllers.Application.searchCompany

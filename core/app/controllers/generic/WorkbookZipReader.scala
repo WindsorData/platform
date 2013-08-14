@@ -10,22 +10,20 @@ import scala.Predef._
 /**Trait that provides behavior for reading zipped spreadsheet sets */
 trait WorkbookZipReader {
 
-  val entryReaders : Seq[EntryReader]
-
   type FileAndTicker = (String, String)
 
   //TODO use monadic validated error hadndling
-  def readZipFileEntries(filePath: String): Seq[(FileAndTicker, Validated[Seq[Model]])] = readZipFile(new ZipFile(filePath))
+  def readZipFileEntries(filePath: String, readers: Seq[EntryReader]): Seq[(FileAndTicker, Validated[Seq[Model]])] = readZipFile(new ZipFile(filePath), readers)
 
-  protected def readZipFile[A](file: ZipFile) =
-    readersWithEntries(file)
+  protected def readZipFile[A](file: ZipFile, readers: Seq[EntryReader]) =
+    readersWithEntries(file, readers)
       .map { case (reader, entry) => {
         val tickerName = entry.getName.split("/").last.split("-").applyOrElse(0, "Unknown").asInstanceOf[String]
         (entry.getName() -> tickerName, reader(file.getInputStream(entry)))
       } }
       .toSeq
 
-  protected def readersWithEntries[A](file: ZipFile) = {
+  protected def readersWithEntries[A](file: ZipFile, entryReaders: Seq[EntryReader]) = {
     def validEntryWithReader[A](entry: ZipEntry) =
       entryReaders.collectFirst { case e if e.canRead(entry) => (e.workflow, entry) }
 
