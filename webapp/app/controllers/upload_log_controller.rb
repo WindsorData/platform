@@ -17,6 +17,6 @@ class UploadLogController < ApplicationController
               .created_to(to)
               .order('created_at desc').paginated(params)
     @users = User.order('email desc')
-    @tickers = DetailUploadFile.select("distinct(ticker)").where("ticker is not null")
+    @tickers = DetailUploadFile.select("distinct(ticker)").where("ticker is not null").order("ticker")
   end
 end
