@@ -6,8 +6,6 @@ import libt.spreadsheet.reader.workflow._
 import libt.error._
 import libt._
 import scala.Predef._
-import model.mapping.ticker
-import org.apache.poi.ss.usermodel.WorkbookFactory
 
 /**Trait that provides behavior for reading zipped spreadsheet sets */
 trait WorkbookZipReader {
@@ -22,7 +20,7 @@ trait WorkbookZipReader {
   protected def readZipFile[A](file: ZipFile) =
     readersWithEntries(file)
       .map { case (reader, entry) => {
-        val tickerName = entry.getName.split("-")(0)
+        val tickerName = entry.getName.split("/").last.split("-").applyOrElse(0, "Unknown").asInstanceOf[String]
         (entry.getName() -> tickerName, reader(file.getInputStream(entry)))
       } }
       .toSeq
