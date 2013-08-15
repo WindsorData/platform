@@ -15,7 +15,8 @@ GET     /api/schema/values/roles/bod                     controllers.Api.bod
 GET     /api/schema/values/cashCompensations             controllers.Api.cashCompensations
 GET     /api/schema/values/equityCompensations           controllers.Api.equityCompensations
 POST    /api/companies/search                            controllers.Api.companiesSearch
-POST    /api/companies/report                            controllers.Api.companiesReport
+POST    /api/companies/report                            controllers.Api.top5Report
+POST    /api/companies/report/bod                        controllers.Api.bodReport
 DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
 DELETE  /api/companies/peers                             controllers.Api.removePeersData
 
