@@ -19,7 +19,8 @@
     <meta name="author" content="">
 
   	<%= stylesheet_link_tag    "application" %>
-  	<%= javascript_include_tag "vendor/custom.modernizr" %>
+    <%= javascript_include_tag "application" %>
+    <%= javascript_include_tag "vendor/custom.modernizr" %>
     <%= csrf_meta_tags %>
     <%= yield(:head) %>
 
@@ -36,8 +37,6 @@
         <%= yield %>
       </div>
     </div> <!--! end of #main -->
-
-    <%= javascript_include_tag "application" %>
 
   </body>
 </html>

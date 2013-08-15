@@ -26,6 +26,5 @@ $(function() {
     $(".alert-message").remove();
   });
   $('input, textarea').placeholder();
+  $(document).foundation();
 });
-
-$(document).foundation();
