@@ -55,5 +55,7 @@ WindosorFrontend::Application.configure do
   config.post_batch_bod_path = '/api/companies/batch/bod'
   config.post_batch_peers_path = '/api/companies/batch/peers'
 
-  config.post_query_path = '/api/schema/query'
+  # Search paths
+  config.post_query_path = '/api/companies/search'
+  config.post_download_report_path = '/api/companies/report'
 end
