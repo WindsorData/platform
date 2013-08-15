@@ -7,6 +7,7 @@ import libt.error.generic.Validated._
 import libt.error._
 import libt._
 import model.validation._
+import org.apache.poi.ss.usermodel.Workbook
 
 /**trait for objects that act as a factory of workflows
   * for reading standard Windsor workbooks-  workbooks that have
@@ -16,13 +17,16 @@ trait StandardWorkflowFactory {
 
   def Workflow: FrontPhase[Seq[Model]] =
 	  MappingPhase(Mapping) >>
-	  CombinerPhase >>
+    CombinerPhase >>
+    FilterPhase >>
     AgreggationPhase >>
     SheetValidationPhase >>
 	  WorkbookValidationPhase
 
   /**Phase for combining data sheets */
   def CombinerPhase : Phase[Seq[Seq[Model]], Seq[Model]]
+
+  def FilterPhase : Phase[Seq[Model], Seq[Model]] = (_, models) => Valid(models)
 
   def AgreggationPhase : Phase[Seq[Model], Seq[Model]] = (_, models) => Valid(models)
 

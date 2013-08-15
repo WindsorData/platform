@@ -16,15 +16,7 @@ import libt._
 import java.util.Date
 import org.joda.time.DateTime
 import libt.spreadsheet.reader.workflow._
-import scala.Some
-import libt.reduction.{SubstractAll, Reduction, Average, Sum}
-import libt.spreadsheet.reader.Area
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.Offset
-import scala.Some
-import libt.spreadsheet.reader.Area
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.Offset
+import libt.reduction._
 import scala.Some
 import libt.Col
 import libt.spreadsheet.reader.Area
@@ -131,6 +123,20 @@ object top5 extends StandardWorkflowFactory {
       (25, 'executives, colWrapping),
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
+
+
+  override def FilterPhase = (_, models) => Valid(models.map(removeEmptyExecutives))
+
+  def removeEmptyExecutives(model : Model) : Model = {
+    if (model.contains('executives)) {
+      val filtered = model.applySeq(Path('executives, *)).filter(isEmptyExecutive)
+      (model - 'executives) + ('executives -> Col(filtered: _*))
+    } else {
+      model
+    }
+  }
+
+  def isEmptyExecutive(model: Element) : Boolean = model.nonEmpty('firstName) && model.nonEmpty('lastName)
 
   override def AgreggationPhase : Phase[Seq[Model], Seq[Model]] =
     (_, models) =>
@@ -299,7 +305,7 @@ object top5 extends StandardWorkflowFactory {
         case ((_, execs0), (model, execs1)) =>
           (model,
             (execs0 ++ execs1)
-            .filter { e => e.nonEmpty('firstName) && e.nonEmpty('lastName) }
+            .filter { isEmptyExecutive(_) }
             .groupBy(execId)
             .toSeq
             .flatMap {
