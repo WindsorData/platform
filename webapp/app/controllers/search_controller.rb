@@ -54,7 +54,12 @@ class SearchController < ApplicationController
   end
 
   def perform_search(json_query, report_type)
-    path = Rails.application.config.backend_host + Rails.application.config.post_download_report_path  
+    case report_type
+      when Constants::TOP5_REPORT
+        path = Rails.application.config.backend_host + Rails.application.config.post_download_top5_report_path
+      when Constants::BOD_REPORT
+        path = Rails.application.config.backend_host + Rails.application.config.post_download_bod_report_path
+    end
     RestClient.post(path, json_query, {content_type: :json}) do |response, request|
       if response.code == 200
         send_data(response.body, filename: "report.xls")

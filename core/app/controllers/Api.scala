@@ -14,8 +14,7 @@ import parser._
 import libt._
 import libt.json._
 import controllers.generic.SpreadsheetDownloader
-import output.PeersPeersReport
-import output.StandardWriter
+import output.{OutputWriter, BodWriter, PeersPeersReport, StandardWriter}
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -84,16 +83,19 @@ object Api extends Controller with SpreadsheetDownloader {
     Ok(toJson(results.map(toJson(_))))
   }
 
-  def companiesReport = Action { request =>
+  def companiesReport(writer: OutputWriter, db: CompaniesDb) = Action { request =>
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreadsheetResult(StandardWriter, companies, range)(ExecutivesDb) match {
+      createSpreadsheetResult(writer, companies, range)(db) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
     }.getOrElse(BadRequest("invalid json"))
   }
+
+  def top5Report = companiesReport(StandardWriter,ExecutivesDb)
+  def bodReport = companiesReport(BodWriter, BodDb)
 
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]

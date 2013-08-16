@@ -1,6 +1,7 @@
 class Constants
   TOP5_REPORT = 'top5'
-  REPORT_TYPES = [TOP5_REPORT];
+  BOD_REPORT = 'BOD'
+  REPORT_TYPES = [TOP5_REPORT, BOD_REPORT];
   
   TOP_5_FILE = 'top5'
   GUIDELINESS_FILE = 'guidelines'
