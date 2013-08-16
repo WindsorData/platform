@@ -63,6 +63,8 @@ class SearchController < ApplicationController
     RestClient.post(path, json_query, {content_type: :json}) do |response, request|
       if response.code == 200
         send_data(response.body, filename: "report.xls")
+      elsif response.code == 404
+        render "results"
       else
         flash[:error] = "There was an error"
         render "results"
