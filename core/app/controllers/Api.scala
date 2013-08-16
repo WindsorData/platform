@@ -1,6 +1,8 @@
 package controllers
 
-import play.api.libs.json.{JsString, JsValue}
+import controllers.generic.SpreadsheetDownloader
+
+import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.mvc._
 
@@ -9,12 +11,12 @@ import persistence._
 
 import model.Commons._
 
-import libt.util.Strings._
 import parser._
+
 import libt._
 import libt.json._
-import controllers.generic.SpreadsheetDownloader
-import output.{OutputWriter, BodWriter, PeersPeersReport, StandardWriter}
+
+import output._
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -33,9 +35,12 @@ object Api extends Controller with SpreadsheetDownloader {
   ).map(_ ++ Path('value))
 
   def companies = Action {
-    Ok(toJson(ExecutivesDb.findAllCompaniesIdWithNames.map { case (cusip, ticker, name) =>
-      Map("cusip" -> cusip, "ticker" -> ticker, "name" -> name)
-    }))
+    Ok(toJson(
+      List(ExecutivesDb, BodDb)
+        .flatMap { _.findAllCompaniesIdWithNames }
+        .distinct
+        .map { case (cusip, ticker, name) => Map("cusip" -> cusip, "ticker" -> ticker, "name" -> name) }
+    ))
   }
 
   def primaryRoles = valuesToJson(TPrimaryValues)
