@@ -58,4 +58,5 @@ WindosorFrontend::Application.configure do
   # Search paths
   config.post_query_path = '/api/companies/search'
   config.post_download_report_path = '/api/companies/report'
+  config.post_download_full_report_path = '/api/companies/report/full'
 end

@@ -95,7 +95,7 @@ object Api extends Controller with SpreadsheetDownloader {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreadsheetResult(StandardTop5Writer, companies, range)(ExecutivesDb) match {
+      createSpreadsheetResult(writer, companies, range)(ExecutivesDb) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
@@ -104,6 +104,7 @@ object Api extends Controller with SpreadsheetDownloader {
 
   def top5Report = companiesReport(StandardTop5Writer,ExecutivesDb)
   def bodReport = companiesReport(BodWriter, BodDb)
+  def fullReport = companiesReport(FullTop5Writer, ExecutivesDb)
 
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]
