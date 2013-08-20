@@ -23,15 +23,16 @@ class SearchController < ApplicationController
     Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company, report_type: Constants::TOP5_REPORT)
     json_query = QueryGenerator.json_query(params_hash)
     path = Rails.application.config.backend_host + Rails.application.config.post_query_path
+    headers ={content_type: :json}
 
     @tickers = []
-    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
+    RestClient::Request.execute(:method => :post, :url => path, :payload => json_query, :headers => headers, :timeout => -1)  do |response, _|
       @tickers = JSON.parse(response)
     end
   end
 
   def download
-    json_query = params.except(:controller, :action, :authenticity_token, :utf8, :role_form).to_json.gsub(/(")(\d+)(")/, ' \2')
+    json_query = { range: params[:range].to_i, companies: params[:companies]}.to_json
     perform_search(json_query, Constants::TOP5_REPORT)
   end
 
