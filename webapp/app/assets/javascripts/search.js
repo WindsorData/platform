@@ -1,4 +1,4 @@
-$(function() {
+$(document).ready(function() {
   var form_counter = 1;
   
   addExecutiveForm();
@@ -10,7 +10,7 @@ $(function() {
     form_counter ++;
 
     delegateComboClick(); // DOM changed
-  }  
+  };
 
   function replaceElementNameWithCounter(){
     var elements = $('.cloned [name^="[role_form]"]');
@@ -19,7 +19,7 @@ $(function() {
       var replaced = $(this).attr('name').replace("[role_form]", "[role_form_" + form_counter + "]");
       $(this).attr('name', replaced);
     });
-  }
+  };
 
   $("#js-new-form").on("click", function() {
     addExecutiveForm();
@@ -31,12 +31,12 @@ $(function() {
   });
 
   function delegateComboClick() {
-    $('.custom.dropdown').delegate('li', 'click', function(e) {
+    $('.combo_div').delegate('li', 'click', function(e) {
       var blankSelected = $(e.currentTarget).text() == "";
       var inputs = $(e.currentTarget).parents('.combo_div').siblings().children('input');
       inputs.attr("disabled", blankSelected);
       inputs.val("");
     });    
-  }
+  };
   
 });
