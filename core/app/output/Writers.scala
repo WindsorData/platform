@@ -97,7 +97,7 @@ object StandardWriter extends OutputWriter {
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       stBonusPlanOutputMapping,
-      Path('functionalMatches, 'primary),
+      Path('lastName),
       Path('stBonusPlan, *),
       LastYearWriteStrategy)
 
@@ -105,7 +105,7 @@ object StandardWriter extends OutputWriter {
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       executiveOwnershipMapping,
-      Path('functionalMatches, 'primary),
+      Path('lastName),
       Path('guidelines, *),
       LastYearWriteStrategy)
 
@@ -123,6 +123,20 @@ object StandardWriter extends OutputWriter {
       Path('companyDB, *),
       LastYearWriteStrategy)
 
+  def companyDBMetadataArea =
+    outputArea(
+      MetadataAreaLayout(Offset(1, 0)),
+      usageAndSVTDataMapping ++
+      bsInputsMapping ++
+      dilutionMapping
+        .filter(_ match {
+        case Gap => false
+        case _ => true
+      }),
+      Path(),
+      Path('companyDB, *),
+      LastYearWriteStrategy)
+
   def grantTypesArea =
     outputArea(
       ValueAreaLayout(Offset(7, 2)),
@@ -131,10 +145,11 @@ object StandardWriter extends OutputWriter {
       Path('grantTypes, *),
       LastYearWriteStrategy)
 
-  def metadataArea(range: Int) =
+  def execMetadataArea(range: Int) =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      execDbOutputMapping.filter(_ match {
+      execDbOutputMapping
+        .filter(_ match {
         case Gap => false
         case _ => true
       }),
@@ -142,17 +157,58 @@ object StandardWriter extends OutputWriter {
       Path('executives, *),
       ExecutivesWriteStrategy(range, None))
 
+  def stBonusMetadataArea =
+    outputArea(
+      MetadataAreaLayout(Offset(1, 0)),
+      stBonusPlanOutputMapping
+        .filter(_ match {
+        case Gap => false
+        case _ => true
+      }),
+      Path('lastName),
+      Path('stBonusPlan, *),
+      LastYearWriteStrategy)
+
+  def executiveOwnershipMetadataArea =
+    outputArea(
+      MetadataAreaLayout(Offset(1, 0)),
+      executiveOwnershipMapping
+        .filter(_ match {
+        case Gap => false
+        case _ => true
+      }),
+      Path('lastName),
+      Path('guidelines, *),
+      LastYearWriteStrategy)
+
+  def grantTypesMetadataArea =
+    outputArea(
+      MetadataAreaLayout(Offset(1, 0)),
+      grantTypesMapping
+        .filter(_ match {
+        case Gap => false
+        case _ => true
+      }),
+      Path(),
+      Path('grantTypes, *),
+      LastYearWriteStrategy)
+
+
   def write(out: Workbook, companies: Seq[Model], executivesRange: Int): Unit = {
     WorkbookMapping(
       Seq(
         execDBArea(executivesRange - 1, Some(0)), //ExecDB
         execDBArea(executivesRange - 2, Some(1)), //ExecDB -1 
         execDBArea(executivesRange - 3, Some(2)), //ExecDB -2
+        execMetadataArea(executivesRange),
         stBonusPlanArea,
+        stBonusMetadataArea,
         executiveOwnershipArea,
+        executiveOwnershipMetadataArea,
         companyDBArea,
+        companyDBMetadataArea,
         grantTypesArea,
-        metadataArea(executivesRange))).write(companies, out)
+        grantTypesMetadataArea)).write(companies, out)
   }
 
   def loadTemplateInto(out: OutputStream) =
