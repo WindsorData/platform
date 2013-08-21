@@ -95,8 +95,8 @@ package object mapping {
   val executiveOwnershipMapping = Seq(
     Gap, //GICS Industry
     Gap,
-    Gap,
     //Exec Data
+    Feature('lastName),
     Feature('title),
     Feature('functionalMatches, 'primary),
     Feature('use),
@@ -110,8 +110,8 @@ package object mapping {
   val stBonusPlanOutputMapping = Seq(
     Gap, //GICS Industry
     Gap,
-    Gap,
     //Exec Data
+    Feature('lastName),
     Feature('title),
     Feature('functionalMatches, 'primary),
     Feature('useCash),

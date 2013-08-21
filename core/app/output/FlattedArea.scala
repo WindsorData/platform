@@ -1,11 +1,10 @@
 package output
 
-import org.apache.poi.ss.usermodel.Row
+import org.apache.poi.ss.usermodel.{Cell, Row, Sheet}
 import libt.util._
 import libt._
 import libt.spreadsheet.Strip
 import libt.spreadsheet.reader.SheetDefinition
-import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.writer._
@@ -70,7 +69,9 @@ case class FlattedArea(
     def writeRootPKHeaders = writePKHeaders(schema, rootPK)
 
     /**writes each pk of the flattened model*/
-    def writeFlattedPKHeaders = writePKHeaders(flattedSchema, flatteningPK)
+    def writeFlattedPKHeaders =
+      if(flatteningPK.exists(_.nonEmpty))
+        writePKHeaders(flattedSchema, flatteningPK)
 
     def writeFlattedModelFeaturesValues =
       columns.foreachWithOps(flattedModel, flattedSchema) { ops =>
@@ -108,12 +109,15 @@ case class ValueAreaLayout(offset: Offset) extends FlattedAreaLayout {
 }
 
 case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with LibtSizes {
-  override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
+
+  override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) = {
     sheet.defineLimits(offset,
       area.flatteningColSize(models) * area.featuresSize,
       area.headerSize + MetadataSize)
+
     (sheet.rows(offset).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach {
       (rows, flattedModel) =>
+
         rows.foreach { row =>
           val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)), flattedModel)
           headersWriter.writeRootPKHeaders
@@ -123,6 +127,32 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
         val writer = area.newWriter(new RowOrientedWriter(Offset(0, area.completePKSize + offset.columnIndex), rows), flattedModel)
         writer.writeFlattedModelFeaturesMetadataWithTitle
     }
+
+    /**
+     * TODO:
+     * This is almost a hack in order to avoid writing empty rows. The problem is that apache poi
+     * does not have a method to delete an entirely row, it just let you clear all the cell values
+     * for an specific row using removeRow method, not remove it. So it is forced to use shiftRows
+     * method so it can shift empty rows to the bottom.
+     *
+     * The best way to avoid these empty rows will be not writing it at the first time, by changing
+     * the area writer in order to achieve this.
+     */
+
+    var index = 0
+    while (index < sheet.getLastRowNum) {
+      if(isEmpty(sheet.getRow(index))){
+        sheet.shiftRows(index + 1, sheet.getLastRowNum(), -1)
+        index = index - 1 //Adjusts the sweep in accordance to a row removal
+      }
+      index = index + 1
+    }
+
+    def isEmpty(row: Row) =
+      (6 to 9).flatMap { i =>
+        blankToNone(_.getStringCellValue)(row.getCell(i))
+      }.isEmpty
+
   }
 }
 

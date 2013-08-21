@@ -31,7 +31,7 @@ package object util {
   }
 
   def blankToNone[T](mapper: Cell => T)(cell: Cell) =
-    if (cell.getCellType() == Cell.CELL_TYPE_BLANK)
+    if (cell == null || cell.getCellType() == Cell.CELL_TYPE_BLANK)
       None
     else
       Some(mapper(cell))
