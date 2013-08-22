@@ -61,7 +61,13 @@ class SearchController < ApplicationController
       when Constants::BOD_REPORT
         path = Rails.application.config.backend_host + Rails.application.config.post_download_bod_report_path
     end
-    RestClient.post(path, json_query, {content_type: :json}) do |response, request|
+
+    # RestClient.post(path, json_query, {content_type: :json}) do |response, request|
+    RestClient::Request.execute(:method => :post, 
+      :url => path, 
+      :payload => json_query, 
+      :headers => {:content_type => 'application/json'}, 
+      :timeout => -1)  do |response, request|
       if response.code == 200
         send_data(response.body, filename: "report.xls")
       elsif response.code == 404
