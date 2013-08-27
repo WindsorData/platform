@@ -35,7 +35,7 @@ trait WorkbookZipReader {
 
   case class EntryReader(workflow: FrontPhase[Seq[Model]], suffix: String) {
     def canRead(entry: ZipEntry) = {
-      !entry.isDirectory() && suffix == suffixOf(entry) && !entry.getName.contains("__MACOSX")
+        !entry.isDirectory && suffix.equalsIgnoreCase(suffixOf(entry)) && !entry.getName.contains("__MACOSX")
     }
 
     private def suffixOf(entry: ZipEntry) = entry.getName().split("-").last
