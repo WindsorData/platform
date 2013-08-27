@@ -26,7 +26,20 @@ trait StandardWorkflowFactory {
   /**Phase for combining data sheets */
   def CombinerPhase : Phase[Seq[Seq[Model]], Seq[Model]]
 
-  def FilterPhase : Phase[Seq[Model], Seq[Model]] = (_, models) => Valid(models)
+  def FilterPhase : Phase[Seq[Model], Seq[Model]] = (_, models) => Valid(models.map(removeEmptyExecutives))
+
+  def removeEmptyExecutives(model : Model) : Model = {
+    Seq('executives, 'guidelines, 'stBonusPlan).foldLeft(model) { (result, path) =>
+      if (result.contains(path)) {
+        val filtered = result.applySeq(Path(path, *)).filter(isNonEmptyExecutive)
+        (result - path) + (path -> Col(filtered: _*))
+      } else {
+        result
+      }
+    }
+  }
+
+  def isNonEmptyExecutive(model: Element) : Boolean = model.nonEmpty('firstName) && model.nonEmpty('lastName)
 
   def AgreggationPhase : Phase[Seq[Model], Seq[Model]] = (_, models) => Valid(models)
 
