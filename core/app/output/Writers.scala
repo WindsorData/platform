@@ -241,11 +241,13 @@ object StandardWriter extends OutputWriter {
     */
   object LastYearWriteStrategy extends WriteStrategy {
     override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) {
-      val lastYear = models.map(_('disclosureFiscalYear).asValue[Int].value.get).max
-      area.layout.write(
-        models.filter(_('disclosureFiscalYear).asValue[Int].value.get == lastYear),
-        sheet,
-        area)
+      val validModels =
+        models.groupBy(_ /!/ 'cusip)
+          .map { case (cusip, ms) =>
+            ms.sortBy(_ /#/ 'disclosureFiscalYear).last
+          }.toSeq
+
+        area.layout.write(validModels, sheet, area)
     }
   }
 
