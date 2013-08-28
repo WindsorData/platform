@@ -124,20 +124,6 @@ object top5 extends StandardWorkflowFactory {
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
 
-
-  override def FilterPhase = (_, models) => Valid(models.map(removeEmptyExecutives))
-
-  def removeEmptyExecutives(model : Model) : Model = {
-    if (model.contains('executives)) {
-      val filtered = model.applySeq(Path('executives, *)).filter(isEmptyExecutive)
-      (model - 'executives) + ('executives -> Col(filtered: _*))
-    } else {
-      model
-    }
-  }
-
-  def isEmptyExecutive(model: Element) : Boolean = model.nonEmpty('firstName) && model.nonEmpty('lastName)
-
   override def AgreggationPhase : Phase[Seq[Model], Seq[Model]] =
     (_, models) =>
       Valid(models.map { model =>
@@ -305,7 +291,7 @@ object top5 extends StandardWorkflowFactory {
         case ((_, execs0), (model, execs1)) =>
           (model,
             (execs0 ++ execs1)
-            .filter { isEmptyExecutive(_) }
+            .filter { isNonEmptyExecutive(_) }
             .groupBy(execId)
             .toSeq
             .flatMap {
