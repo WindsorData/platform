@@ -223,14 +223,11 @@ object StandardWriter extends OutputWriter {
     */
   case class ExecutivesWriteStrategy(/*TODO remove*/range: Int, yearOffset: Option[Int]) extends WriteStrategy {
     override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
-      def Desc[T: Ordering] = implicitly[Ordering[T]].reverse
       if (range >= 0) {
-        val validModels = models
-          .groupBy(model => model('ticker).asValue[String].value.get)
-          .map { case (ticker, ms) => (ticker, ms.sortBy(_('disclosureFiscalYear).asValue[Int].value.get)(Desc)) }
+        val validModels = ModelGrouper(models).map(_._2)
         yearOffset match {
-        	case Some(p) => area.layout.write(validModels.values.toSeq.map(_(p)), sheet, area)
-        	case None => area.layout.write(validModels.values.toSeq.flatten, sheet, area) 
+        	case Some(p) => area.layout.write(validModels.map(_(p)), sheet, area)
+        	case None => area.layout.write(validModels.flatten, sheet, area)
         }		
       }
     }
@@ -241,28 +238,22 @@ object StandardWriter extends OutputWriter {
     */
   object LastYearWriteStrategy extends WriteStrategy {
     override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) {
-      val validModels =
-        models.groupBy(_ /!/ 'cusip)
-          .map { case (cusip, ms) =>
-            ms.sortBy(_ /#/ 'disclosureFiscalYear).last
-          }.toSeq
-
-        area.layout.write(validModels, sheet, area)
+      val validModels = ModelGrouper(models).map(_._2.head)
+      area.layout.write(validModels, sheet, area)
     }
   }
 
-  case class MultipleYearWriteStrategy(range: Int) extends WriteStrategy {
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
-      if (range >= 0) {
-        val validModels =
-          models
-            .groupBy(_ /!/ 'ticker)
-            .flatMap { case (ticker, ms) =>
-              ms.sortBy(_ /#/ 'disclosureFiscalYear).reverse.take(range)
-            }
-            .toSeq
-        area.layout.write(validModels, sheet, area)
-      }
+  /**
+   * Group models by cusip and these are ordered by disclosureFiscalYear (descending)
+   */
+  object ModelGrouper {
+    def apply(models: Seq[Model]) : Seq[(String, Seq[Model])] = {
+      def Desc[T: Ordering] = implicitly[Ordering[T]].reverse
+      models
+        .groupBy(_ /!/ 'cusip)
+        .map { case (ticker, ms) => ticker -> ms.sortBy(_ /#/ 'disclosureFiscalYear)(Desc) }
+        .toSeq
     }
   }
+
 }
