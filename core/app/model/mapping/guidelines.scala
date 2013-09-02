@@ -20,16 +20,12 @@ trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
       Path('lastName),
       Path('title),
       Path('functionalMatches, 'primary),
-      Path('functionalMatches, 'secondary),
-      Path('functionalMatches, 'level),
-      Path('functionalMatches, 'scope),
-      Path('functionalMatches, 'bod),
       Path('use),
       Path('yearsToAchieve),
-      Path('retention, 'ratio),
-      Path('retention, 'period),
       Path('numberOfShares),
-      Path('multipleOfSalary))
+      Path('multipleOfSalary),
+      Path('retention, 'ratio),
+      Path('retention, 'period))
 
   val stBonusPlanMapping =
     Seq[Strip](
@@ -37,10 +33,6 @@ trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
       Path('lastName),
       Path('title),
       Path('functionalMatches, 'primary),
-      Path('functionalMatches, 'secondary),
-      Path('functionalMatches, 'level),
-      Path('functionalMatches, 'scope),
-      Path('functionalMatches, 'bod),
       Path('useCash),
       Path('useShares),
       Path('bonusType),
