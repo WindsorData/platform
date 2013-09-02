@@ -85,7 +85,7 @@ trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
       {
         val results = m.applySeq(Path('metrics, 'select, *)) ++ m.applySeq(Path('metrics, 'typeIn, *))
         if (results.isEmpty)
-          Doubtful(model, "lala")
+          Doubtful(model, "The bonus plan should have at least one matrix")
         else
           Valid(model)
       }
