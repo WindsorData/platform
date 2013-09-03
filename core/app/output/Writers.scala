@@ -200,7 +200,7 @@ class Top5Writer extends OutputWriter {
   def executiveOwnershipMetadataArea =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      executiveMapping
+      guidelinesMapping
         .filter(_ match {
         case Gap => false
         case _ => true

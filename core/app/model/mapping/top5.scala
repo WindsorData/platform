@@ -111,34 +111,6 @@ trait FullTop5MappingComponent extends Top5MappingComponent {
         Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
         Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
 
-  Multi(Path('timeVestRS), 5,
-    Path('grantDate),
-    Path('number),
-    Path('price),
-    Path('value),
-    Path('type)) ++
-    Multi(Path('performanceVestRS), 2,
-      Path('grantDate),
-      Path('targetNumber),
-      Path('grantDatePrice),
-      Path('targetValue),
-      Path('type)) ++
-    Multi(Path('performanceCash), 2,
-      Path('grantDate),
-      Path('targetValue),
-      Path('payout)) ++
-    Seq[Strip](
-      Path('carriedInterest, 'ownedShares, 'beneficialOwnership),
-      Path('carriedInterest, 'ownedShares, 'options),
-      Path('carriedInterest, 'ownedShares, 'unvestedRestrictedStock),
-      Path('carriedInterest, 'ownedShares, 'disclaimBeneficialOwnership),
-      Path('carriedInterest, 'ownedShares, 'heldByTrust),
-      Path('carriedInterest, 'ownedShares, 'other),
-      Path('carriedInterest, 'outstandingEquityAwards, 'vestedOptions),
-      Path('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions),
-      Path('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
-      Path('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
-
 }
 
 object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {

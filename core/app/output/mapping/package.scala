@@ -144,7 +144,7 @@ package object mapping {
       Feature('metrics, 'typeIn, 1, 'type),
       Feature('metrics, 'typeIn, 1, 'weight))
 
-  val executiveMapping = Seq(
+  def executiveMapping = Seq(
     Gap,
     //Exec Data
     Feature('lastName),
