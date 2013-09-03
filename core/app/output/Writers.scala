@@ -129,7 +129,7 @@ class Top5Writer extends OutputWriter {
       Path('stBonusPlan, *),
       LastYearWriteStrategy)
 
-  def executiveOwnershipArea =
+  def executivesGuidelinesArea =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
       guidelinesMapping,
@@ -197,7 +197,7 @@ class Top5Writer extends OutputWriter {
       Path('stBonusPlan, *),
       LastYearWriteStrategy)
 
-  def executiveOwnershipMetadataArea =
+  def executivesGuidelinesMetadataArea =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
       guidelinesMapping
@@ -231,8 +231,8 @@ class Top5Writer extends OutputWriter {
         execMetadataArea(executivesRange),
         stBonusPlanArea,
         stBonusMetadataArea,
-        executiveOwnershipArea,
-        executiveOwnershipMetadataArea,
+        executivesGuidelinesArea,
+        executivesGuidelinesMetadataArea,
         companyDBArea,
         companyDBMetadataArea,
         grantTypesArea,
