@@ -14,5 +14,5 @@ class CompanyPeer < ActiveRecord::Base
   attr_accessible :name, :ticker
   validates_uniqueness_of :ticker
 
-  scope :containing_chars, lambda { |s| where("ticker ilike ?", "%#{s}%") }
+  scope :containing_chars, lambda { |s| where("ticker ilike ?", "#{s}%") }
 end
