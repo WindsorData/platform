@@ -1,4 +1,6 @@
 package output
+
+import _root_.mapping.{GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Sheet
 import java.io.OutputStream
@@ -10,7 +12,14 @@ import libt.spreadsheet._
 import libt.spreadsheet.reader._
 import model.ExecutivesBod._
 import model.mapping.bod._
+import libt.TModel
+import libt.spreadsheet.reader.Area
+import scala.Some
+import libt.spreadsheet.reader.ColumnOrientedLayout
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
 import output.mapping._
+import model.mapping._
 
 trait OutputWriter {
   val schema: TModel
@@ -44,7 +53,8 @@ trait OutputWriter {
   }
 }
 
-object BodWriter extends OutputWriter {
+object BodWriter extends OutputWriter with StandardMapping{
+  self : Top5MappingComponent =>
   val schema = TModel(
     TBod.elementTypes ++
     TModel('ticker -> TString, 'name -> TString, 'disclosureFiscalYear -> TInt).elementTypes : _*)
@@ -64,7 +74,7 @@ object BodWriter extends OutputWriter {
   def metadataArea(range: Int) =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      execDbOutputMapping.filter(_ match {
+      executiveMapping.filter(_ match {
         case Gap => false
         case _ => true
       }),
@@ -80,15 +90,33 @@ object BodWriter extends OutputWriter {
         Path('bod, *)), out)
 }
 
+trait FullTop5WithTtdcMappingComponent extends FullTop5MappingComponent {
+  override def executiveMapping =
+    Seq[Strip](Gap, Path('calculated, 'ttdc), Path('calculated, 'ttdcPayRank)) ++ super.executiveMapping
+}
 
-object StandardWriter extends OutputWriter {
+object StandardTop5Writer extends Top5Writer with StandardMapping
+
+object FullTop5Writer extends Top5Writer
+  with FullDilutionMappingComponent
+  with FullTop5WithTtdcMappingComponent
+  with FullGuidelinesMappingComponent {
+
+  override val fileName = "EmptyFullOutputTemplate.xls"
+}
+
+class Top5Writer extends OutputWriter {
+  self : DilutionMappingComponent
+    with Top5MappingComponent
+    with GuidelinesMappingComponent =>
+
   val schema = TCompanyFiscalYear
   val fileName = "EmptyStandardOutputTemplate.xls"
 
   def execDBArea(range: Int, yearOffset: Option[Int]) =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
-      execDbOutputMapping,
+      executiveMapping,
       Path('lastName),
       Path('executives, *),
       ExecutivesWriteStrategy(range, yearOffset))
@@ -96,15 +124,15 @@ object StandardWriter extends OutputWriter {
   def stBonusPlanArea =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
-      stBonusPlanOutputMapping,
+      stBonusPlanMapping,
       Path('lastName),
       Path('stBonusPlan, *),
       LastYearWriteStrategy)
 
-  def executiveOwnershipArea =
+  def executivesGuidelinesArea =
     outputArea(
       ValueAreaLayout(Offset(6, 2)),
-      executiveOwnershipMapping,
+      guidelinesMapping,
       Path('lastName),
       Path('guidelines, *),
       LastYearWriteStrategy)
@@ -148,7 +176,7 @@ object StandardWriter extends OutputWriter {
   def execMetadataArea(range: Int) =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      execDbOutputMapping
+      executiveMapping
         .filter(_ match {
         case Gap => false
         case _ => true
@@ -160,7 +188,7 @@ object StandardWriter extends OutputWriter {
   def stBonusMetadataArea =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      stBonusPlanOutputMapping
+      stBonusPlanMapping
         .filter(_ match {
         case Gap => false
         case _ => true
@@ -169,10 +197,10 @@ object StandardWriter extends OutputWriter {
       Path('stBonusPlan, *),
       LastYearWriteStrategy)
 
-  def executiveOwnershipMetadataArea =
+  def executivesGuidelinesMetadataArea =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      executiveOwnershipMapping
+      guidelinesMapping
         .filter(_ match {
         case Gap => false
         case _ => true
@@ -203,18 +231,13 @@ object StandardWriter extends OutputWriter {
         execMetadataArea(executivesRange),
         stBonusPlanArea,
         stBonusMetadataArea,
-        executiveOwnershipArea,
-        executiveOwnershipMetadataArea,
+        executivesGuidelinesArea,
+        executivesGuidelinesMetadataArea,
         companyDBArea,
         companyDBMetadataArea,
         grantTypesArea,
         grantTypesMetadataArea)).write(companies, out)
   }
-
-  def loadTemplateInto(out: OutputStream) =
-    FileManager.loadResource("EmptyStandardOutputTemplate.xls") {
-      x => WorkbookFactory.create(x).write(out)
-    }
 
   /**
     * [[output.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset

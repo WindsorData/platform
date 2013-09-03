@@ -1,5 +1,6 @@
 package output
 
+import _root_.mapping._
 import libt.spreadsheet._
 import libt._
 import model.mapping._
@@ -10,6 +11,11 @@ import libt.spreadsheet.EnumCheck
 import libt.spreadsheet.ComplexEnumCheck
 
 package object mapping {
+
+  trait StandardMapping
+    extends DilutionMappingComponent
+    with Top5MappingComponent
+    with GuidelinesMappingComponent {
 
   def performanceVestingMapping(base: Symbol) =
     Seq[Strip](
@@ -92,7 +98,7 @@ package object mapping {
       Path('cashLTIP, 'payouts))
   }
 
-  val executiveOwnershipMapping = Seq(
+  val guidelinesMapping = Seq(
     Gap, //GICS Industry
     Gap,
     //Exec Data
@@ -107,7 +113,7 @@ package object mapping {
     TGuidelinesPeriod.values.map(value =>
       EnumCheck(Path('retention, 'period), value))
 
-  val stBonusPlanOutputMapping = Seq(
+  val stBonusPlanMapping = Seq(
     Gap, //GICS Industry
     Gap,
     //Exec Data
@@ -138,7 +144,7 @@ package object mapping {
       Feature('metrics, 'typeIn, 1, 'type),
       Feature('metrics, 'typeIn, 1, 'weight))
 
-  val execDbOutputMapping = Seq(
+  def executiveMapping = Seq(
     Gap,
     //Exec Data
     Feature('lastName),
@@ -186,4 +192,5 @@ package object mapping {
     Feature('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions),
     Feature('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
     Feature('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
+  }
 }

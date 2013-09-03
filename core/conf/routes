@@ -17,6 +17,7 @@ GET     /api/schema/values/equityCompensations           controllers.Api.equityC
 POST    /api/companies/search                            controllers.Api.companiesSearch
 POST    /api/companies/report                            controllers.Api.top5Report
 POST    /api/companies/report/bod                        controllers.Api.bodReport
+POST    /api/companies/report/full                       controllers.Api.fullReport
 DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
 DELETE  /api/companies/peers                             controllers.Api.removePeersData
 
@@ -52,7 +53,9 @@ POST    /companies/reports/batch                controllers.Application.newCompa
 ##Query a Company
 GET     /companies/search                       controllers.Application.searchCompany
 GET     /companies/search/bod                   controllers.Application.searchBod
+GET     /companies/search/full                  controllers.Application.searchFullCompany
 POST    /companies/search                       controllers.Application.doStandardSearch
+POST    /companies/search/full                  controllers.Application.doFullSearch
 POST    /companies/search/bod                   controllers.Application.doBodSearch
 
 # Map static resources from the /public folder to the /assets URL path

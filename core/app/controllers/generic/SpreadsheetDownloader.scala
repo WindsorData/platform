@@ -3,7 +3,7 @@ package controllers.generic
 import com.mongodb.casbah.MongoDB
 
 import java.io.ByteArrayOutputStream
-import output.{OutputWriter, StandardWriter}
+import output.OutputWriter
 
 import play.api.mvc.Result
 import play.api.mvc.Controller

@@ -17,6 +17,9 @@ import libt._
 import libt.json._
 
 import output._
+import controllers.generic.SpreadsheetDownloader
+import output.PeersPeersReport
+import output.StandardTop5Writer
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -99,8 +102,9 @@ object Api extends Controller with SpreadsheetDownloader {
     }.getOrElse(BadRequest("invalid json"))
   }
 
-  def top5Report = companiesReport(StandardWriter,ExecutivesDb)
+  def top5Report = companiesReport(StandardTop5Writer, ExecutivesDb)
   def bodReport = companiesReport(BodWriter, BodDb)
+  def fullReport = companiesReport(FullTop5Writer, ExecutivesDb)
 
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]
