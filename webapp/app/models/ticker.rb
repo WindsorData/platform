@@ -17,7 +17,7 @@ class Ticker < ActiveRecord::Base
   validates :ticker, presence: true, uniqueness: true
   validates :cusip, presence: true, uniqueness: true
 
-  scope :containing_chars, lambda { |s| where("ticker ilike ?", "%#{s}%") }
+  scope :containing_chars, lambda { |s| where("ticker ilike ?", "#{s}%") }
 
   def self.load_json(json)
     JSON.parse(json).each{|attrs|
