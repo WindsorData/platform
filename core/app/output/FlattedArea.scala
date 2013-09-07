@@ -3,14 +3,18 @@ package output
 import org.apache.poi.ss.usermodel.{Cell, Row, Sheet}
 import libt.util._
 import libt._
-import libt.spreadsheet.Strip
+import libt.spreadsheet._
 import libt.spreadsheet.reader.SheetDefinition
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.writer._
-import libt.spreadsheet._
 import libt.error._
 import libt._
+import libt.TModel
+import output.FlattedArea
+import libt.TModel
+import output.FlattedArea
+import libt.spreadsheet.Offset
 
 //TODO refactor packages
 /**
@@ -68,22 +72,31 @@ case class FlattedArea(
     /**writes each pk of the root*/
     def writeRootPKHeaders = writePKHeaders(schema, rootPK)
 
-    /**writes each pk of the flattened model*/
-    def writeFlattedPKHeaders =
-      if(flatteningPK.exists(_.nonEmpty))
-        writePKHeaders(flattedSchema, flatteningPK)
-
     def writeFlattedModelFeaturesValues =
       columns.foreachWithOps(flattedModel, flattedSchema) { ops =>
         writer.write(ops.value :: Nil)
       }
 
-    def writeFlattedModelFeaturesMetadataWithTitle =
-      columns.foreachWithOps(flattedModel, flattedSchema) { ops =>
-        writer.write(ops.titles ++ ops.metadata)
+    def writeFlattedModelFeaturesMetadataWithPkAndTitle = {
+      val rootPkOps = pkOps(schema, rootPK)
+      val flatteningPKOps =
+        if (flatteningPK.exists(_.nonEmpty))
+          pkOps(flattedSchema, flatteningPK)
+        else
+          List.fill(flatteningPK.length)(op.Skip)
+
+        columns.foreachWithOps(flattedModel, flattedSchema) { ops =>
+          if (ops.hasMetadata)
+            writer.write(rootPkOps ++ flatteningPKOps ++ ops.titles ++ ops.metadata)
+        }
       }
 
-    private def writePKHeaders(schema: TElement, pk: PK) =
+    def pkOps(schema: TElement, pk: PK) = pk.map { x =>
+      val mapping = TMapping[AnyRef](schema(x).asValue)
+      mapping.writeOp(flattedModel(x).rawValue[AnyRef])
+    }
+
+    private def writePKHeaders(schema: TElement,pk: PK) =
       pk.map(Feature(_)).foreachWithOps(flattedModel, schema) { ops =>
         writer.write(ops.value :: Nil)
       }
@@ -114,45 +127,11 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
     sheet.defineLimits(offset,
       area.flatteningColSize(models) * area.featuresSize,
       area.headerSize + MetadataSize)
-
-    (sheet.rows(offset).grouped(area.featuresSize).toSeq, area.flatten(models)).zipped.foreach {
-      (rows, flattedModel) =>
-
-        rows.foreach { row =>
-          val headersWriter = area.newWriter(new ColumnOrientedWriter(offset.columnIndex, Seq(row)), flattedModel)
-          headersWriter.writeRootPKHeaders
-          headersWriter.writeFlattedPKHeaders
-        }
-
-        val writer = area.newWriter(new RowOrientedWriter(Offset(0, area.completePKSize + offset.columnIndex), rows), flattedModel)
-        writer.writeFlattedModelFeaturesMetadataWithTitle
+    val rows = sheet.rows(offset).iterator
+    area.flatten(models).foreach { flattedModel =>
+      val writer = area.newWriter(new RowOrientedWriter(Offset(0, offset.columnIndex), rows), flattedModel)
+      writer.writeFlattedModelFeaturesMetadataWithPkAndTitle
     }
-
-    /**
-     * TODO:
-     * This is almost a hack in order to avoid writing empty rows. The problem is that apache poi
-     * does not have a method to delete an entirely row, it just let you clear all the cell values
-     * for an specific row using removeRow method, not remove it. So it is forced to use shiftRows
-     * method so it can shift empty rows to the bottom.
-     *
-     * The best way to avoid these empty rows will be not writing it at the first time, by changing
-     * the area writer in order to achieve this.
-     */
-
-    var index = 0
-    while (index < sheet.getLastRowNum) {
-      if(isEmpty(sheet.getRow(index))){
-        sheet.shiftRows(index + 1, sheet.getLastRowNum(), -1)
-        index = index - 1 //Adjusts the sweep in accordance to a row removal
-      }
-      index = index + 1
-    }
-
-    def isEmpty(row: Row) =
-      (6 to 9).flatMap { i =>
-        blankToNone(_.getStringCellValue)(row.getCell(i))
-      }.isEmpty
-
   }
 }
 

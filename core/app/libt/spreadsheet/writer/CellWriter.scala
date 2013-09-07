@@ -43,7 +43,7 @@ class ColumnOrientedWriter(
 
 class RowOrientedWriter(
     override val offset: Offset, 
-    override val rows: Seq[Row]) extends CellWriter with RowOrientedLike {
+    override val rows: TraversableOnce[Row]) extends CellWriter with RowOrientedLike {
   
   override def write(ops: Seq[op.WriteOp]) {
     val nextRow = rowIterator.next

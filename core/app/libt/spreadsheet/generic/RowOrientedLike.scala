@@ -10,8 +10,8 @@ import libt.spreadsheet.Offset
  * */
 trait RowOrientedLike extends SkipeableLike {
   val offset: Offset
-  val rows: Seq[Row]
+  val rows: TraversableOnce[Row]
   
-  protected val rowIterator = rows.drop(offset.rowIndex).iterator
+  protected val rowIterator = rows.toIterator.drop(offset.rowIndex)
   override protected def skip1 = rowIterator.next
 }
