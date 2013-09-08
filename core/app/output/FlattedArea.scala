@@ -78,12 +78,12 @@ case class FlattedArea(
       }
 
     def writeFlattedModelFeaturesMetadataWithPkAndTitle = {
-      val rootPkOps = pkOps(schema, rootPK)
+      val rootPkOps = rootPK.writeOps(schema, flattedModel)
       val flatteningPKOps =
         if (flatteningPK.exists(_.nonEmpty))
-          pkOps(flattedSchema, flatteningPK)
+          flatteningPK.writeOps(flattedSchema, flattedModel)
         else
-          List.fill(flatteningPK.length)(op.Skip)
+          WriteOps.skip(flatteningPK.length)
 
         columns.foreachWithOps(flattedModel, flattedSchema) { ops =>
           if (ops.hasMetadata)
@@ -91,14 +91,10 @@ case class FlattedArea(
         }
       }
 
-    def pkOps(schema: TElement, pk: PK) = pk.map { x =>
-      val mapping = TMapping[AnyRef](schema(x).asValue)
-      mapping.writeOp(flattedModel(x).rawValue[AnyRef])
-    }
 
     private def writePKHeaders(schema: TElement,pk: PK) =
-      pk.map(Feature(_)).foreachWithOps(flattedModel, schema) { ops =>
-        writer.write(ops.value :: Nil)
+      pk.writeOps(schema, flattedModel).foreach { op =>
+        writer.write(op :: Nil)
       }
   }
 }

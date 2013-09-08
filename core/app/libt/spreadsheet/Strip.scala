@@ -29,8 +29,12 @@ trait WriteOps extends LibtSizes {
   def hasMetadata = false
 
   def value : WriteOp
-  def titles : List[WriteOp] = List.fill(TitlesSize)(Skip)
-  def metadata : List[WriteOp] = List.fill(MetadataSize)(Skip)
+  def titles : List[WriteOp] = WriteOps.skip(TitlesSize)
+  def metadata : List[WriteOp] = WriteOps.skip(MetadataSize)
+}
+
+object WriteOps {
+  def skip(n: Int) = List.fill(n)(Skip)
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/
