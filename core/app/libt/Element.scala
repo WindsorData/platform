@@ -95,6 +95,8 @@ case class Value[A](
 
   /**Answers the seq of metadata elements of this value*/
   def metadataSeq = Seq(calc, comment, note, link)
+
+  def hasMetadata = metadataSeq.exists(_.isDefined)
   
   def isComplete = value.nonEmpty
 

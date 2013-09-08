@@ -26,9 +26,15 @@ sealed trait Strip {
 }
 
 trait WriteOps extends LibtSizes {
+  def hasMetadata = false
+
   def value : WriteOp
-  def titles : List[WriteOp] = List.fill(TitlesSize)(Skip)
-  def metadata : List[WriteOp] = List.fill(MetadataSize)(Skip)
+  def titles : List[WriteOp] = WriteOps.skip(TitlesSize)
+  def metadata : List[WriteOp] = WriteOps.skip(MetadataSize)
+}
+
+object WriteOps {
+  def skip(n: Int) = List.fill(n)(Skip)
 }
 
 /**A column whose value is important and should be read or written from and to Model's Value*/
@@ -41,6 +47,7 @@ case class Feature(path: Path) extends Strip {
     val element = model(path).asValue
     override def value = mapping.writeOp(element.value)
     override def metadata = element.metadataSeq.map(op.String(_)).toList
+    override def hasMetadata = element.hasMetadata
     override def titles = path.titles match {
       case Nil => op.Skip :: op.Skip :: Nil
       case it => op.String(Some(it.init.mkString(" - "))) :: op.String(Some(it.last)) :: Nil
@@ -63,6 +70,7 @@ case class Tag(tag: String, column:Strip) extends Strip {
     private val writeOps = column.writeOps(schema, model)
     override def value =  writeOps.value
     override def metadata = writeOps.metadata
+    override def hasMetadata = writeOps.hasMetadata
     override def titles = List(Skip, op.String(Some(tag)))
   }
 }
@@ -76,6 +84,7 @@ case class Calc(reduction: Reduction) extends Strip {
   override def writeOps(schema: TElement, model: Element) = new WriteOps {
     override def value = Numeric(Some(reduction.reduce(model)))
     override def metadata = List(op.String(Some("Calculated")), Skip, Skip, Skip)
+    override def hasMetadata = true
   }
 }
 

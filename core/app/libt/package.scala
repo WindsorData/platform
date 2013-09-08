@@ -1,3 +1,4 @@
+import libt.spreadsheet.Feature
 import play.api.libs.json._
 import play.api.libs.json.Json._
 
@@ -31,8 +32,13 @@ package object libt {
    * A PK is just a sequence of Paths that represent
    * the primary identifier an element
    */
-  //TODO rename
   type PK = Seq[Path]
+
+  implicit class RichPK(val self:PK) {
+    def writeOps(schema: TElement, element: Element) = self.map {
+      Feature(_).writeOps(schema, element).value
+    }
+  }
 
   object PK {
     def apply(elements: Path*) : PK = elements
