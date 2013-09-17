@@ -12,7 +12,7 @@ import libt.spreadsheet._
 import libt._
 import libt.error._
 
-trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
+trait FullOutputGuidelinesMappingComponent extends GuidelinesMappingComponent {
 
   val guidelinesMapping =
     Seq[Strip](
@@ -33,6 +33,57 @@ trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
       Path('lastName),
       Path('title),
       Path('functionalMatches, 'primary),
+      Path('useCash),
+      Path('useShares),
+      Path('bonusType),
+      Path('thresholdTarget),
+      Path('maxTarget),
+      Path('perfPeriod),
+      Path('payoutFrecuency),
+      Path('scope, 'corporate, 'use),
+      Path('scope, 'corporate, 'weight),
+      Path('scope, 'busUnit, 'use),
+      Path('scope, 'busUnit, 'weight),
+      Path('scope, 'individual, 'use),
+      Path('scope, 'individual, 'weight)) ++
+      Multi(Path('metrics, 'select), 5,
+        Path('use),
+        Path('weight)) ++
+      Multi(Path('metrics, 'typeIn), 5,
+        Path('type),
+        Path('weight))
+}
+
+
+trait FullInputGuidelinesMappingComponent extends GuidelinesMappingComponent {
+
+  val guidelinesMapping =
+    Seq[Strip](
+      Path('firstName),
+      Path('lastName),
+      Path('title),
+      Path('functionalMatches, 'primary),
+      Path('functionalMatches, 'secondary),
+      Path('functionalMatches, 'level),
+      Path('functionalMatches, 'scope),
+      Path('functionalMatches, 'bod),
+      Path('use),
+      Path('yearsToAchieve),
+      Path('retention, 'ratio),
+      Path('retention, 'period),
+      Path('numberOfShares),
+      Path('multipleOfSalary))
+
+  val stBonusPlanMapping =
+    Seq[Strip](
+      Path('firstName),
+      Path('lastName),
+      Path('title),
+      Path('functionalMatches, 'primary),
+      Path('functionalMatches, 'secondary),
+      Path('functionalMatches, 'level),
+      Path('functionalMatches, 'scope),
+      Path('functionalMatches, 'bod),
       Path('useCash),
       Path('useShares),
       Path('bonusType),
@@ -101,7 +152,7 @@ trait FullGuidelinesMappingComponent extends GuidelinesMappingComponent {
 }
 
 
-package object guidelines extends StandardWorkflowFactory with FullGuidelinesMappingComponent {
+package object guidelines extends StandardWorkflowFactory with FullInputGuidelinesMappingComponent {
 
   def Mapping = WorkbookMapping(
     Seq(

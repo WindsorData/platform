@@ -100,7 +100,7 @@ object StandardTop5Writer extends Top5Writer with StandardMapping
 object FullTop5Writer extends Top5Writer
   with FullDilutionMappingComponent
   with FullTop5WithTtdcMappingComponent
-  with FullGuidelinesMappingComponent {
+  with FullOutputGuidelinesMappingComponent {
 
   override val fileName = "EmptyFullOutputTemplate.xls"
 }
