@@ -347,22 +347,6 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
       }
     }
 
-  def optionsExercisableValidation(model: Model): Validated[Model] =
-    reduceExecutiveValidations(Path('executives, *), model) {
-      m => {
-        (m / 'carriedInterest / 'ownedShares /% 'options,
-          m / 'carriedInterest / 'outstandingEquityAwards /% 'vestedOptions,
-          m / 'carriedInterest / 'outstandingEquityAwards /% 'unvestedOptions) match {
-          case (Some(options), vested, unvested) if options == 0 && Seq(vested, unvested).flatten.sum > 0 =>
-            Invalid(err("ExecDb - "
-              + execMsg((model /#/ 'disclosureFiscalYear), m.asModel)
-              + Path('carriedInterest, 'ownedShares, 'options).titles.mkString(" - "),
-              " is 0, so vested options and unvested options should be 0 or empty"))
-          case _ => Valid(model)
-        }
-      }
-    }
-
   def timeVestRsValueValidation(model: Model): Validated[Model] =
     reduceExecutiveValidations(Path('executives, *), model) {
       m => {
@@ -376,7 +360,7 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
                 v <- (timeVest /% 'value)
                 product = ((n * p) / 1000).roundUp(0)
                 if product != v.roundUp(0)
-              } yield Invalid(
+              } yield Doubtful(model,
                   err("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + "TimeVestRs",
                     "Number multiplied by price should be equal to value"))).getOrElse(Valid(model))
           }
@@ -454,7 +438,6 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
         ownedSharesValidation(model) andThen
         salaryValidation(model) andThen
         timeVestRsValueValidation(model) andThen
-        optionsExercisableValidation(model) andThen
         nonEmptyTransitionPeriods(model)
     }
   }
@@ -468,16 +451,8 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
       }
     }
 
-    def validateGrantTypeMinPayout = {
-      val path = Path('grantTypes, 'performanceEquityVesting, 'minPayout)
-      (for (minPayout <- model(path).rawValue[Number]; if minPayout != 0)
-      yield Doubtful(model,
-          warning(path.titles.mkString(" - "), "value is not 0%")))
-        .getOrElse(Valid(model))
-    }
-
     model.validate('grantTypes) {
-      validateGrantTypeUse andThen validateGrantTypeMinPayout
+      validateGrantTypeUse
     }
   }
 

@@ -25,10 +25,6 @@ class GrantTypeValidations extends FunSpec {
       assert(top5.grantTypeValidation(createModel(Value(), Value(1))).isInvalid)
       assert(top5.grantTypeValidation(createModel(Value(), Value(0))).isInvalid)
     }
-    
-    it("should be doubtful when minPayout is not 0") {
-      assert(top5.grantTypeValidation(createModel(Value(3), Value(1))).isDoubtful)
-    }
    
     it("should be valid when stock option - use is false or if stock option is complete") {
       assert(top5.grantTypeValidation(createModel(Value(3), Value(1), Value(false))).isValidOrDoubtful)
