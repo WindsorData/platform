@@ -361,7 +361,7 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
                 product = ((n * p) / 1000).roundUp(0)
                 if product != v.roundUp(0)
               } yield Doubtful(model,
-                  err("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + "TimeVestRs",
+                  warning("ExecDb - " + execMsg((model /#/ 'disclosureFiscalYear), m.asModel) + "TimeVestRs",
                     "Number multiplied by price should be equal to value"))).getOrElse(Valid(model))
           }
         results.reduceValidations(m.asModel)
