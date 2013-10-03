@@ -249,7 +249,10 @@ class Top5Writer extends OutputWriter {
       if (range >= 0) {
         val validModels = ModelGrouper(models).map(_._2)
         yearOffset match {
-        	case Some(p) => area.layout.write(validModels.map(_(p)), sheet, area)
+        	case Some(p) => {
+            val modelsForCurrentYear = validModels.flatMap(it => if(it.size > p) Some(it(p)) else None)
+            area.layout.write(modelsForCurrentYear, sheet, area)
+          }
         	case None => area.layout.write(validModels.flatten, sheet, area)
         }		
       }
