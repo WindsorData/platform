@@ -245,11 +245,14 @@ class Top5Writer extends OutputWriter {
     * @param yearOffset the negative year offset (0 is last year, 1 is previous year, and so on)
     */
   case class ExecutivesWriteStrategy(/*TODO remove*/range: Int, yearOffset: Option[Int]) extends WriteStrategy {
+    def modelsForCurrentYear(models: Seq[Seq[Model]], year: Int): Seq[Model] =
+      models.flatMap(it => if(it.size > year) Some(it(year)) else None)
+
     override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
       if (range >= 0) {
         val validModels = ModelGrouper(models).map(_._2)
         yearOffset match {
-        	case Some(p) => area.layout.write(validModels.map(_(p)), sheet, area)
+          case Some(pos) => area.layout.write(modelsForCurrentYear(validModels, pos), sheet, area)
         	case None => area.layout.write(validModels.flatten, sheet, area)
         }		
       }
