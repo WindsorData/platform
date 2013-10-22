@@ -95,7 +95,7 @@ object Api extends Controller with SpreadsheetDownloader {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreadsheetResult(writer, companies, range)(db) match {
+      createCompanyBasedSpreadsheetResult(writer, companies, range)(db) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
@@ -105,6 +105,33 @@ object Api extends Controller with SpreadsheetDownloader {
   def top5Report = companiesReport(StandardTop5Writer, ExecutivesDb)
   def bodReport = companiesReport(BodWriter, BodDb)
   def fullReport = companiesReport(FullTop5Writer, ExecutivesDb)
+
+
+  def rawDataReport(dataFrom: JsValue => (Seq[Model], Seq[Model])) =
+    Action { request =>
+      request.body.asJson.map { json =>
+        val result = createSpreadsheetResult(
+          PeersWriter,
+          RawPeersPeersReport(dataFrom(json)),
+          0)
+        result match {
+          case Some(response) => response
+          case None => NotFound("not found companies")
+        }
+      }.getOrElse(BadRequest("invalid json"))
+    }
+
+  def rawPeersPeers =
+    rawDataReport { json =>
+      val ticker = (json \ "ticker").as[String]
+      PeersDb.peersOfPeersOf(ticker)
+    }
+
+  def rawPeersPeersFromPrimaryPeers =
+    rawDataReport { json =>
+      val tickers = (json \ "tickers").as[Seq[String]]
+      PeersDb.namesFromPrimaryPeers(tickers: _*) -> PeersDb.peersOf(tickers: _*)
+    }
 
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]

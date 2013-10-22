@@ -9,6 +9,15 @@
   <%= submit_tag 'Download XLS', class: 'big-button' %>
 <% end %>
 
+
+<% raw_path = request.path == "/company_peers/peers_peers_single_ticker_result" ? export_peers_peers_raw_data_path : 
+  export_peers_peers_raw_data_from_primary_path %>
+
+<%= form_tag(raw_path) do %>
+  <%= hidden_field_tag 'json_query', @json_query %>
+  <%= submit_tag 'Download Raw Data', class: 'big-button' %>
+<% end %>
+
 <div class="row">
   <div class="large-4 columns">
     <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized

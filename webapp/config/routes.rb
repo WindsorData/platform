@@ -50,9 +50,12 @@ WindosorFrontend::Application.routes.draw do
   # Export Files
   post 'company_peers/peers_peers_single_ticker_file', as: :export_peers_peers_single_ticker
   post 'company_peers/peers_peers_ticker_list_file', as: :export_peers_peers_ticker_list
+  post 'company_peers/peers_peers_raw_data_file', as: :export_peers_peers_raw_data
+  post 'company_peers/peers_peers_raw_data_file_from_primary', as: :export_peers_peers_raw_data_from_primary
 
   post 'company_peers/incoming_peers_file', as: :export_incoming_peers
 
   # Upload Log
   get "upload_log/audit", as: :audit_log
 end
+

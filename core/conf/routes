@@ -24,7 +24,9 @@ DELETE  /api/companies/peers                             controllers.Api.removeP
 #Peers Reports
 POST    /api/companies/report/peers/incoming             controllers.Api.incomingPeers
 POST    /api/companies/report/peers/peers                controllers.Api.peersPeers
+POST    /api/companies/report/peers/peers/raw            controllers.Api.rawPeersPeers
 POST    /api/companies/report/peers/peersFromPrimary     controllers.Api.peersPeersFromPrimaryPeers
+POST    /api/companies/report/peers/peersFromPrimary/raw controllers.Api.rawPeersPeersFromPrimaryPeers
 GET     /api/companies/report/peers/tickers              controllers.Api.allPeersTickers
 
 ## Upload files

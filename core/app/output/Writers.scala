@@ -3,7 +3,7 @@ package output
 import _root_.mapping.{GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Sheet
-import java.io.OutputStream
+import java.io.{FileOutputStream, OutputStream}
 import org.apache.poi.ss.usermodel.Workbook
 import model._
 import util.FileManager
@@ -20,6 +20,18 @@ import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
 import output.mapping._
 import model.mapping._
+import model.PeerCompanies._
+import org.apache.poi.hssf.usermodel.HSSFWorkbook
+import model.mapping.peers._
+import libt.TModel
+import output.ValueAreaLayout
+import output.FlattedArea
+import scala.Some
+import output.MetadataAreaLayout
+import libt.spreadsheet.reader.Area
+import libt.spreadsheet.reader.ColumnOrientedLayout
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.Offset
 
 trait OutputWriter {
   val schema: TModel
@@ -51,6 +63,22 @@ trait OutputWriter {
       }
     }
   }
+}
+
+object PeersWriter extends OutputWriter {
+  val schema = TPeers
+  val fileName = "PeersOutputTemplate.xls"
+
+  def peersArea =
+    Area(
+      schema= schema,
+      offset= Offset(1,0),
+      limit= None,
+      orientation= ColumnOrientedLayout(RawValueReader),
+      columns= peersMapping)
+
+  def write(out: Workbook, models: Seq[Model], yearRange: Int = 0): Unit =
+    WorkbookMapping(Seq(peersArea)).write(models, out)
 }
 
 object BodWriter extends OutputWriter with StandardMapping{

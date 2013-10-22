@@ -34,11 +34,8 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
       Seq()
 
   def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) = {
-    (primaryPeers(ticker), peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*))
+    (peersOf(ticker), peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*))
   }
-
-  def primaryPeers(ticker: String): Seq[Model] =
-    peersOf(ticker).toSeq.map(_.intersect(Seq(Path('peerTicker), Path('peerCoName))))
 
   def allTickers: Seq[Model] = findAllWith(MongoDBObject("ticker.value" -> 1))
 
@@ -49,7 +46,7 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
     .groupBy(_ /!/ 'peerTicker).map { case (peerTicker, peerName) =>
       Model(
         'peerTicker -> Value(peerTicker),
-        'peerName -> Value(peerName.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName))
+        'peerCoName -> Value(peerName.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName))
     }.toSeq
 
 }

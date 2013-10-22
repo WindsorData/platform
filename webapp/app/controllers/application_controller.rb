@@ -24,6 +24,25 @@ class ApplicationController < ActionController::Base
     end
   end
 
+  def report_request(path, payload, filename)
+    RestClient::Request.execute(
+      :method => :post, 
+      :url => path, 
+      :payload => payload, 
+      :headers => {content_type: :json}, 
+      :timeout => -1) do |response, _|
+
+        if response.code == 200
+          send_data(response.body, filename: filename)
+        elsif response.code == 404
+          render "results"
+        else
+          flash[:error] = "There was an error"
+          render "results"
+        end
+      end
+  end
+
   rescue_from CanCan::AccessDenied do
     render "#{Rails.root}/public/401"
   end

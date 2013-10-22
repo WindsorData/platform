@@ -64,20 +64,6 @@ class SearchController < ApplicationController
         path = Rails.application.config.backend_host + Rails.application.config.post_download_full_report_path
     end
 
-    RestClient::Request.execute(:method => :post, 
-        :url => path, 
-        :payload => json_query, 
-        :headers => {content_type: :json}, 
-        :timeout => -1) do |response, _|
-
-      if response.code == 200
-        send_data(response.body, filename: "report.xls")
-      elsif response.code == 404
-        render "results"
-      else
-        flash[:error] = "There was an error"
-        render "results"
-      end
-    end
+    report_request(path, json_query, "report.xls")
   end
 end
