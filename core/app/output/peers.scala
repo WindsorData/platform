@@ -1,34 +1,10 @@
 package output
 
-import _root_.util.FileManager
 import libt.util.math._
 import libt._
-import libt.spreadsheet.reader.{WorkbookMapping, RawValueReader, ColumnOrientedLayout, Area}
-import libt.spreadsheet.{Gap, Strip, Offset}
 import model.PeerCompanies._
-import model.mapping.peers._
-import java.io.{FileOutputStream, OutputStream}
-import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 
-trait PeersReport {
-  type A
-  def apply(models: Seq[Model]): A
-}
-
-object RawPeersReport extends PeersReport {
-  type A = Unit
-
-  def apply(models: Seq[Model]): Unit = {
-    val out = new FileOutputStream("lala.xlsx")
-    PeersWriter.write(out, models, 0)
-    out.close()
-  }
-
-}
-
-trait ScorePeersReport extends PeersReport {
-  type A = Seq[Model]
+trait ScorePeersReport {
   implicit def models2RichModels(models: Seq[Model]) = new {
     def sortByWeight = models.sortBy(_ /%/ 'weight).reverse
   }
@@ -98,5 +74,20 @@ object PeersPeersReport {
 
 object RawPeersPeersReport {
   //TODO: it's avoiding primary peers for now
-  def apply(models: (Seq[Model],Seq[Model])) = models._2
+  def apply(models: (Seq[Model], Seq[Model])): Seq[Model] =
+    models match {
+      case (primaryPeers, secondaryPeers) => {
+        val peersWithoutPeers = primaryPeers.filterNot { primaryPeer =>
+          secondaryPeers.exists( secondaryPeer => secondaryPeer /!/ 'ticker == primaryPeer /!/ 'peerTicker )
+        }
+        secondaryPeers ++ peersWithoutPeers.map { model =>
+          TPeers.prototype(
+            'companyName -> model('peerCoName),
+            'ticker -> model('peerTicker),
+            'src_doc -> model('src_doc),
+            'group -> Value("NONE"),
+            'comments -> Value("No peer group disclosed."))
+        }
+      }
+    }
 }

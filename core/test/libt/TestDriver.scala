@@ -33,8 +33,12 @@ class TestDriver extends FunSpec {
               'bar -> TString,
               'baz -> TString)))
       }
+
     }
 
+  }
+
+  describe("model") {
     describe("can instantiate") {
       it("empty models") {
         Model()
