@@ -40,8 +40,8 @@ class PeersReportsSpec extends FlatSpec {
 
     it should "Add a peerless record when a primary Peer has no peers" in {
       val result: Seq[Model] = RawPeersPeersReport(primaryPeersModels -> secondaryPeersModels)
-      assert(result.map(_ /!/ 'ticker).toSet === primaryPeersModels.map(_ /!/ 'peerTicker).toSet)
-      assert(result.find(model => model /!/ 'ticker == "C").get /!/ 'group === "NONE")
+      assert(result.filterNot(_.contains('primaryPeers)).map(_ /!/ 'ticker).toSet === primaryPeersModels.map(_ /!/ 'peerTicker).toSet)
+      assert(result.filterNot(_.contains('primaryPeers)).find(model => model /!/ 'ticker == "C").get /!/ 'group === "NONE")
     }
 
 }

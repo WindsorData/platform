@@ -26,34 +26,6 @@ trait SheetDefinition {
   def write(models: Seq[Model])(sheet: Sheet): Unit
 }
 
-
-/**
- * [[libt.spreadsheet.reader.SheetDefinition]] that delegates the writing action to
- * a custom write strategy
- *
- * @author mcorbanini
- */
-trait SelectiveSheetDefinition extends SheetDefinition {
-  val writeStrategy: WriteStrategy
-  def write(models: Seq[Model])(sheet: Sheet) =
-    writeStrategy.write(models, this, sheet)
-
-  def selectiveWrite(models: Seq[Model], sheet: Sheet): Unit
-}
-
-trait WriteStrategy {
-  def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet): Unit
-}
-
-/**
- * [[libt.spreadsheet.reader.WriteStrategy]] that completelty delegates on the layout and
- * simply writes everything
- */
-object FullWriteStrategy extends WriteStrategy {
-  def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) =
-    area.selectiveWrite(models, sheet)
-}
-
 /**
  * A declarative description of a mapping of a Model to an
  * Excel file, for both reading from and writing to it
@@ -103,20 +75,6 @@ case class Area(
     orientation.write(this, sheet, models)
 
   def continually = Stream.continually[SheetDefinition](this)
-}
-
-case class SelectiveArea(
-  schema: TModel,
-  offset: Offset,
-  limit: Option[Int],
-  orientation: Layout,
-  columns: Seq[Strip],
-  writeStrategy: WriteStrategy = FullWriteStrategy) extends AreaLike with SelectiveSheetDefinition {
-
-  def read(sheet: Sheet): Validated[Seq[Model]] = ???
-
-  def selectiveWrite(models: Seq[Model], sheet: Sheet) =
-    orientation.write(this, sheet, models)
 }
 
 object AreaGap extends SheetDefinition {

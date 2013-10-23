@@ -33,7 +33,7 @@ case class FlattedArea(
   layout: FlattedAreaLayout,
   columns: Seq[Strip],
   writeStrategy: WriteStrategy = FullWriteStrategy)
-  extends SelectiveSheetDefinition with LibtSizes {
+  extends CustomWriteSheetDefinition with LibtSizes {
 
   def featuresSize = columns.size
 
@@ -88,7 +88,7 @@ case class FlattedArea(
       }
   }
 
-  def selectiveWrite(models: Seq[Model], sheet: Sheet): Unit =
+  def customWrite(models: Seq[Model], sheet: Sheet): Unit =
     layout.write(models, sheet, this)
 }
 

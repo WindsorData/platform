@@ -22,6 +22,7 @@ import libt.spreadsheet.reader.Area
 import libt.spreadsheet.reader.ColumnOrientedLayout
 import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
+import libt.spreadsheet.writer.{FullWriteStrategy, CustomWriteArea, CustomWriteSheetDefinition, WriteStrategy}
 
 trait OutputWriter {
   val schema: TModel
@@ -60,8 +61,8 @@ object PeersWriter extends OutputWriter {
   val fileName = "PeersOutputTemplate.xls"
 
   case class PeersWriteStrategy(select: Seq[Model] => Seq[Model]) extends WriteStrategy {
-    def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) =
-      area.selectiveWrite(select(models), sheet)
+    def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) =
+      area.customWrite(select(models), sheet)
   }
 
   object RawPeersPeersTab extends PeersWriteStrategy(_.filterNot(_.contains('primaryPeers)))
@@ -71,7 +72,7 @@ object PeersWriter extends OutputWriter {
   )
 
   def peersArea(writeStrategy: PeersWriteStrategy) =
-    SelectiveArea(
+    CustomWriteArea(
       schema= schema,
       offset= Offset(1,0),
       limit= None,
@@ -271,7 +272,7 @@ class Top5Writer extends OutputWriter {
   }
 
   /**
-    * [[libt.spreadsheet.reader.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
+    * [[libt.spreadsheet.writer.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
     * @param range
     * @param yearOffset the negative year offset (0 is last year, 1 is previous year, and so on)
     */
@@ -279,24 +280,24 @@ class Top5Writer extends OutputWriter {
     def modelsForCurrentYear(models: Seq[Seq[Model]], year: Int): Seq[Model] =
       models.flatMap(it => if(it.size > year) Some(it(year)) else None)
 
-    def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) = {
+    def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) = {
       if (range >= 0) {
         val validModels = ModelGrouper(models).map(_._2)
         yearOffset match {
-          case Some(pos) => area.selectiveWrite(modelsForCurrentYear(validModels, pos), sheet)
-        	case None => area.selectiveWrite(validModels.flatten, sheet)
+          case Some(pos) => area.customWrite(modelsForCurrentYear(validModels, pos), sheet)
+        	case None => area.customWrite(validModels.flatten, sheet)
         }		
       }
     }
   }
 
   /**
-    * [[libt.spreadsheet.reader.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
+    * [[libt.spreadsheet.writer.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
     */
   object LastYearWriteStrategy extends WriteStrategy {
-    def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) {
+    def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) {
       val validModels = ModelGrouper(models).map(_._2.head)
-      area.selectiveWrite(validModels, sheet)
+      area.customWrite(validModels, sheet)
     }
   }
 

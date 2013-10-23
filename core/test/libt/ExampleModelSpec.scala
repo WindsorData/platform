@@ -2,7 +2,7 @@ package libt
 
 import org.scalatest.FunSpec
 
-class PrototypeModelSpec extends FunSpec {
+class ExampleModelSpec extends FunSpec {
 
   describe("tmodel") {
     describe("can instantiate") {
@@ -11,14 +11,14 @@ class PrototypeModelSpec extends FunSpec {
       }
 
       it("empty prototype models with some custom elements") {
-        val protoModel = TModel('foo -> TString,'bar -> TInt).exampleWith('foo -> Value("something"))
-        assert(protoModel === Model('foo -> Value("something"), 'bar -> Value()))
+        val exampleModel = TModel('foo -> TString,'bar -> TInt).exampleWith('foo -> Value("something"))
+        assert(exampleModel === Model('foo -> Value("something"), 'bar -> Value()))
       }
 
       it("empty prototype models with all elements customized") {
-        val protoModel = TModel('foo -> TString,'bar -> TInt)
+        val exampleModel = TModel('foo -> TString,'bar -> TInt)
           .exampleWith('foo -> Value("something"), 'bar -> Value(1))
-        assert(protoModel === Model('foo -> Value("something"), 'bar -> Value(1)))
+        assert(exampleModel === Model('foo -> Value("something"), 'bar -> Value(1)))
       }
     }
   }

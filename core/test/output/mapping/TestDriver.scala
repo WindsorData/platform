@@ -162,16 +162,19 @@ class TestDriver extends FunSpec {
   def TestArea(schema: TModel, mapping: Seq[Strip]) =
     Area(schema, Offset(0, 0), None, ColumnOrientedLayout(WithMetadataValueReader), mapping)
 
-  //  describe("mapper for output marshalling") {
-  //    it("should write a single numeric value") {
-  //      val mapper = Mapping(Seq(Gap, Feature('aFieldName, NumericType)))
-  //      val sheetResult = mapper.write(Seq(Map('aFieldName -> Value(Some(15), Some("calc"), Some("comment"), Some("note"), Some("link")))))
-  //      assert(15 === sheetResult.cellAt(0, 1).toString.toInt)
-  //      assert("calc" === sheetResult.cellAt(1, 1).toString)
-  //      assert("comment" === sheetResult.cellAt(2, 1).toString)
-  //      assert("note" === sheetResult.cellAt(3, 1).toString)
-  //      assert("link" === sheetResult.cellAt(4, 1).toString)
-  //    }
+//    describe("mapper for output marshalling") {
+//      it("should write a single numeric value") {
+//        val schema = TModel('foo -> TInt)
+//
+//        val mapper = Mapping(Seq(Gap, Feature('aFieldName, NumericType)))
+//        val sheetResult = mapper.write(Seq(Map('aFieldName -> Value(Some(15), Some("calc"), Some("comment"), Some("note"), Some("link")))))
+//        assert(15 === sheetResult.cellAt(0, 1).toString.toInt)
+//        assert("calc" === sheetResult.cellAt(1, 1).toString)
+//        assert("comment" === sheetResult.cellAt(2, 1).toString)
+//        assert("note" === sheetResult.cellAt(3, 1).toString)
+//        assert("link" === sheetResult.cellAt(4, 1).toString)
+//      }
+//    }
   //
   //    it("should write multiple values") {
   //      val mapper = Mapping(Seq(Gap, Feature('numericField, NumericType), Feature('stringField, StringType)))
