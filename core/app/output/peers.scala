@@ -73,7 +73,6 @@ object PeersPeersReport {
 }
 
 object RawPeersPeersReport {
-  //TODO: it's avoiding primary peers for now
   def apply(models: (Seq[Model], Seq[Model])): Seq[Model] =
     models match {
       case (primaryPeers, secondaryPeers) => {
@@ -81,13 +80,13 @@ object RawPeersPeersReport {
           secondaryPeers.exists( secondaryPeer => secondaryPeer /!/ 'ticker == primaryPeer /!/ 'peerTicker )
         }
         secondaryPeers ++ peersWithoutPeers.map { model =>
-          TPeers.prototype(
+          TPeers.exampleWith(
             'companyName -> model('peerCoName),
             'ticker -> model('peerTicker),
             'src_doc -> model('src_doc),
             'group -> Value("NONE"),
             'comments -> Value("No peer group disclosed."))
-        }
+        } :+ Model('primaryPeers -> Col(primaryPeers: _*))
       }
     }
 }

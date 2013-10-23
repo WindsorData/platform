@@ -26,42 +26,97 @@ trait SheetDefinition {
   def write(models: Seq[Model])(sheet: Sheet): Unit
 }
 
+
+/**
+ * [[libt.spreadsheet.reader.SheetDefinition]] that delegates the writing action to
+ * a custom write strategy
+ *
+ * @author mcorbanini
+ */
+trait SelectiveSheetDefinition extends SheetDefinition {
+  val writeStrategy: WriteStrategy
+  def write(models: Seq[Model])(sheet: Sheet) =
+    writeStrategy.write(models, this, sheet)
+
+  def selectiveWrite(models: Seq[Model], sheet: Sheet): Unit
+}
+
+trait WriteStrategy {
+  def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet): Unit
+}
+
+/**
+ * [[libt.spreadsheet.reader.WriteStrategy]] that completelty delegates on the layout and
+ * simply writes everything
+ */
+object FullWriteStrategy extends WriteStrategy {
+  def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) =
+    area.selectiveWrite(models, sheet)
+}
+
 /**
  * A declarative description of a mapping of a Model to an
  * Excel file, for both reading from and writing to it
  *
  * @author flbulgarelli
- * @author metalkorva
+ * @author mcorbanini
  */
-case class Area(
-  schema: TModel,
-  offset: Offset,
-  limit: Option[Int],
-  orientation: Layout,
-  columns: Seq[Strip]) extends SheetDefinition {
+trait AreaLike {
+  val offset: Offset
+  val schema: TModel
+  val limit: Option[Int]
+  val columns: Seq[Strip]
 
-  def read(sheet: Sheet): Validated[Seq[Model]] =
-    orientation.read(this, sheet)
-
-  def write(models: Seq[Model])(sheet: Sheet) = 
-    orientation.write(this, sheet, models)
-  
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) : Validated[Model]= {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
     columns
       .impureMap(column => Validated(column.read(reader, schema, modelBuilder)))
-    	.concat
-    	.map(_ => modelBuilder.build)
+      .concat
+      .map(_ => modelBuilder.build)
   }
 
-  def continually = Stream.continually[SheetDefinition](this)
   /**limits the list of rows groups, if necessary*/
   private [reader] def truncate(rowsGroups: Seq[List[Row]]) =
     limit match {
       case None => rowsGroups
       case Some(limit) => rowsGroups.take(limit)
     }
+}
+
+/**
+ * A standard implementation of an Area.
+ *
+ * @author mcorbanini
+ */
+case class Area(
+  schema: TModel,
+  offset: Offset,
+  limit: Option[Int],
+  orientation: Layout,
+  columns: Seq[Strip]) extends AreaLike with SheetDefinition {
+
+  def read(sheet: Sheet): Validated[Seq[Model]] =
+    orientation.read(this, sheet)
+
+  def write(models: Seq[Model])(sheet: Sheet) = 
+    orientation.write(this, sheet, models)
+
+  def continually = Stream.continually[SheetDefinition](this)
+}
+
+case class SelectiveArea(
+  schema: TModel,
+  offset: Offset,
+  limit: Option[Int],
+  orientation: Layout,
+  columns: Seq[Strip],
+  writeStrategy: WriteStrategy = FullWriteStrategy) extends AreaLike with SelectiveSheetDefinition {
+
+  def read(sheet: Sheet): Validated[Seq[Model]] = ???
+
+  def selectiveWrite(models: Seq[Model], sheet: Sheet) =
+    orientation.write(this, sheet, models)
 }
 
 object AreaGap extends SheetDefinition {

@@ -1,10 +1,8 @@
 package persistence
 
 import com.mongodb.casbah.Imports._
-import libt.persistence._
 import libt._
 import model.PeerCompanies._
-import com.mongodb.casbah.MongoClient
 
 case class PeersCompaniesDb(db: MongoDB) extends Persistence {
   val TDBSchema: TModel = TPeers
@@ -33,9 +31,11 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
     else
       Seq()
 
-  def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) = {
-    (peersOf(ticker), peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*))
-  }
+  def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) =
+    peersOf(ticker) -> peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*)
+
+  def peersOfPeersFromPrimary(tickers: String*) : (Seq[Model],Seq[Model]) =
+    namesFromPrimaryPeers(tickers: _*) -> peersOf(tickers: _*)
 
   def allTickers: Seq[Model] = findAllWith(MongoDBObject("ticker.value" -> 1))
 

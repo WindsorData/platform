@@ -1,7 +1,5 @@
 package controllers
 
-import controllers.generic.SpreadsheetDownloader
-
 import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.mvc._
@@ -10,6 +8,7 @@ import persistence.query._
 import persistence._
 
 import model.Commons._
+import model.PeerCompanies._
 
 import parser._
 
@@ -130,7 +129,10 @@ object Api extends Controller with SpreadsheetDownloader {
   def rawPeersPeersFromPrimaryPeers =
     rawDataReport { json =>
       val tickers = (json \ "tickers").as[Seq[String]]
-      PeersDb.namesFromPrimaryPeers(tickers: _*) -> PeersDb.peersOf(tickers: _*)
+      PeersDb.peersOfPeersFromPrimary(tickers: _*) match {
+        case (primaryPeers, secondaryPeers) =>
+          primaryPeers.map(ppeers => TPeers.exampleWith(ppeers.elements.toSeq: _*)) -> secondaryPeers
+      }
     }
 
   def incomingPeers = Action { request =>
@@ -145,8 +147,9 @@ object Api extends Controller with SpreadsheetDownloader {
 
   def peersPeersFromPrimaryPeers = Action { request =>
     val tickers = (request.body.asJson.get \ "tickers").as[Seq[String]]
+
     Ok(toJson(PeersPeersReport(
-      PeersDb.namesFromPrimaryPeers(tickers: _*) -> PeersDb.peersOf(tickers: _*)).asJson))
+      PeersDb.peersOfPeersFromPrimary(tickers: _*)).asJson))
   }
 
   def allPeersTickers = Action { request =>

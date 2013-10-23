@@ -1,19 +1,13 @@
 package output
 
-import org.apache.poi.ss.usermodel.{Cell, Row, Sheet}
-import libt.util._
-import libt._
+import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet._
-import libt.spreadsheet.reader.SheetDefinition
 import libt.spreadsheet.util._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.writer._
 import libt.error._
 import libt._
 import libt.TModel
-import output.FlattedArea
-import libt.TModel
-import output.FlattedArea
 import libt.spreadsheet.Offset
 
 //TODO refactor packages
@@ -36,14 +30,10 @@ case class FlattedArea(
    */
   flatteningPath: Path,
   schema: TModel,
-  layout: FlattedAreaLayout, 
+  layout: FlattedAreaLayout,
   columns: Seq[Strip],
   writeStrategy: WriteStrategy = FullWriteStrategy)
-  extends SheetDefinition with LibtSizes {
-
-  def write(models: Seq[Model])(sheet: Sheet) = {
-    writeStrategy.write(models, this, sheet)
-  }
+  extends SelectiveSheetDefinition with LibtSizes {
 
   def featuresSize = columns.size
 
@@ -97,6 +87,9 @@ case class FlattedArea(
         writer.write(op :: Nil)
       }
   }
+
+  def selectiveWrite(models: Seq[Model], sheet: Sheet): Unit =
+    layout.write(models, sheet, this)
 }
 
 trait FlattedAreaLayout {
@@ -104,7 +97,7 @@ trait FlattedAreaLayout {
 }
 
 case class ValueAreaLayout(offset: Offset) extends FlattedAreaLayout {
-  override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
+  def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) {
     sheet.defineLimits(offset,
       models.size * area.flatteningColSize(models),
       area.featuresSize)
@@ -119,7 +112,7 @@ case class ValueAreaLayout(offset: Offset) extends FlattedAreaLayout {
 
 case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with LibtSizes {
 
-  override def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) = {
+  def write(models: Seq[Model], sheet: Sheet, area: FlattedArea) = {
     sheet.defineLimits(offset,
       area.flatteningColSize(models) * area.featuresSize,
       area.headerSize + MetadataSize)
@@ -130,17 +123,3 @@ case class MetadataAreaLayout(offset: Offset) extends FlattedAreaLayout with Lib
     }
   }
 }
-
-trait WriteStrategy {
-  def write(models: Seq[Model], area: FlattedArea, sheet: Sheet): Unit
-}
-
-/**
- * [[output.WriteStrategy]] that completelty delegates on the layout and
- * simply writes everything
- */
-object FullWriteStrategy extends WriteStrategy {
-  override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) =
-    area.layout.write(models, sheet, area)
-}
-

@@ -3,7 +3,7 @@ package output
 import _root_.mapping.{GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Sheet
-import java.io.{FileOutputStream, OutputStream}
+import java.io.OutputStream
 import org.apache.poi.ss.usermodel.Workbook
 import model._
 import util.FileManager
@@ -12,22 +12,12 @@ import libt.spreadsheet._
 import libt.spreadsheet.reader._
 import model.ExecutivesBod._
 import model.mapping.bod._
-import libt.TModel
-import libt.spreadsheet.reader.Area
-import scala.Some
-import libt.spreadsheet.reader.ColumnOrientedLayout
-import libt.spreadsheet.reader.WorkbookMapping
-import libt.spreadsheet.Offset
 import output.mapping._
 import model.mapping._
 import model.PeerCompanies._
-import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import model.mapping.peers._
 import libt.TModel
-import output.ValueAreaLayout
-import output.FlattedArea
 import scala.Some
-import output.MetadataAreaLayout
 import libt.spreadsheet.reader.Area
 import libt.spreadsheet.reader.ColumnOrientedLayout
 import libt.spreadsheet.reader.WorkbookMapping
@@ -69,16 +59,29 @@ object PeersWriter extends OutputWriter {
   val schema = TPeers
   val fileName = "PeersOutputTemplate.xls"
 
-  def peersArea =
-    Area(
+  case class PeersWriteStrategy(select: Seq[Model] => Seq[Model]) extends WriteStrategy {
+    def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) =
+      area.selectiveWrite(select(models), sheet)
+  }
+
+  object RawPeersPeersTab extends PeersWriteStrategy(_.filterNot(_.contains('primaryPeers)))
+  object RawPrimaryPeersTab extends PeersWriteStrategy( peers =>
+    peers.find(_.contains('primaryPeers)).map(_ / 'primaryPeers).getOrElse(Col())
+     .asCol.elements.map(_.asModel)
+  )
+
+  def peersArea(writeStrategy: PeersWriteStrategy) =
+    SelectiveArea(
       schema= schema,
       offset= Offset(1,0),
       limit= None,
       orientation= ColumnOrientedLayout(RawValueReader),
-      columns= peersMapping)
+      columns= peersMapping,
+      writeStrategy= writeStrategy)
+
 
   def write(out: Workbook, models: Seq[Model], yearRange: Int = 0): Unit =
-    WorkbookMapping(Seq(peersArea)).write(models, out)
+    WorkbookMapping(Seq(peersArea(RawPeersPeersTab), peersArea(RawPrimaryPeersTab))).write(models, out)
 }
 
 object BodWriter extends OutputWriter with StandardMapping{
@@ -268,7 +271,7 @@ class Top5Writer extends OutputWriter {
   }
 
   /**
-    * [[output.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
+    * [[libt.spreadsheet.reader.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
     * @param range
     * @param yearOffset the negative year offset (0 is last year, 1 is previous year, and so on)
     */
@@ -276,24 +279,24 @@ class Top5Writer extends OutputWriter {
     def modelsForCurrentYear(models: Seq[Seq[Model]], year: Int): Seq[Model] =
       models.flatMap(it => if(it.size > year) Some(it(year)) else None)
 
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
+    def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) = {
       if (range >= 0) {
         val validModels = ModelGrouper(models).map(_._2)
         yearOffset match {
-          case Some(pos) => area.layout.write(modelsForCurrentYear(validModels, pos), sheet, area)
-        	case None => area.layout.write(validModels.flatten, sheet, area)
+          case Some(pos) => area.selectiveWrite(modelsForCurrentYear(validModels, pos), sheet)
+        	case None => area.selectiveWrite(validModels.flatten, sheet)
         }		
       }
     }
   }
 
   /**
-    * [[output.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
+    * [[libt.spreadsheet.reader.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
     */
   object LastYearWriteStrategy extends WriteStrategy {
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) {
+    def write(models: Seq[Model], area: SelectiveSheetDefinition, sheet: Sheet) {
       val validModels = ModelGrouper(models).map(_._2.head)
-      area.layout.write(validModels, sheet, area)
+      area.selectiveWrite(validModels, sheet)
     }
   }
 

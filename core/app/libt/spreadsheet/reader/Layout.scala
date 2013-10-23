@@ -13,22 +13,22 @@ import libt._
  * the exact way a sheet is read and written
  * */
 sealed trait Layout {
-  def read(area: Area, sheet: Sheet): Validated[Seq[Model]]
-  def write(area: Area, sheet: Sheet, models: Seq[Model]) 
+  def read(area: AreaLike, sheet: Sheet): Validated[Seq[Model]]
+  def write(area: AreaLike, sheet: Sheet, models: Seq[Model])
 }
 
 case class RowOrientedLayout(valueReader: ValueReader) extends Layout {
-  override def read(area: Area, sheet: Sheet) =
+  override def read(area: AreaLike, sheet: Sheet) =
     area.makeModel(sheet.rows, new RowOrientedReader(area.offset, _, valueReader)).map(Seq(_))
-  override def write(area: Area, sheet: Sheet, models: Seq[Model]) = ???
+  override def write(area: AreaLike, sheet: Sheet, models: Seq[Model]) = ???
 }
 
 case class ColumnOrientedLayout(valueReader: ValueReader) extends Layout {
-  override def read(area: Area, sheet: Sheet) =
+  override def read(area: AreaLike, sheet: Sheet) =
       effectiveRowGroups(area, sheet).
       concatMap { rows => area.makeModel(rows, new ColumnOrientedReader(area.offset.columnIndex, _, valueReader)) }
 
-  override def write(area: Area, sheet: Sheet, models: Seq[Model]) {
+  override def write(area: AreaLike, sheet: Sheet, models: Seq[Model]) {
     sheet.defineLimits(area.offset, models.size * valueReader.blockSize, area.columns.size)
     (effectiveRowGroups(area, sheet).toSeq, models).zipped.foreach { (row, model) =>
       val writer = new ColumnOrientedWriter(area.offset.columnIndex, row)
@@ -38,6 +38,6 @@ case class ColumnOrientedLayout(valueReader: ValueReader) extends Layout {
     }
   }
 
-  def effectiveRowGroups(area: Area, sheet: Sheet) =
+  def effectiveRowGroups(area: AreaLike, sheet: Sheet) =
     area.truncate(sheet.rows(area.offset).grouped(valueReader.blockSize).map(_.toList).toSeq)
 }
