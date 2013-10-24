@@ -24,6 +24,8 @@ class CompanyPeersController < ApplicationController
     @json_query = { ticker: ticker }.to_json
 
     find_peers(path, @json_query)
+    peers = @companies_peers["primaryPeers"].map{ |x| "#{x["peerCoName"]}(#{x["peerTicker"]})"}.join(";")
+    PeersPeersSearch.create(user: current_user, company: current_user.company, tickers: ticker, peers: peers)
     render "peers_peers_result"
   end
 
@@ -33,11 +35,7 @@ class CompanyPeersController < ApplicationController
     @json_query = { tickers: tickers }.to_json
 
     find_peers(path, @json_query)
-    # This returns @companies_peers.
-    # <% @companies_peers["primaryPeers"].each{|primary| %>
-    #  <%= primary["peerCoName"] %>(<%= primary["peerTicker"] %>)</br>
-    # <% } %>
-    # Loguear
+    PeersPeersSearch.create(user: current_user, company: current_user.company, tickers: tickers.join(";"))
     render "peers_peers_result"  
   end
 

@@ -76,8 +76,8 @@ ActiveRecord::Schema.define(:version => 20131024193230) do
     t.datetime "updated_at",  :null => false
     t.integer  "company_id"
     t.string   "report_type"
-    t.string   "peers"
-    t.string   "tickers"
+    t.text     "peers"
+    t.text     "tickers"
     t.string   "type"
   end
 
