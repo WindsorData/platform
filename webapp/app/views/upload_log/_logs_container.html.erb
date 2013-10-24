@@ -1,0 +1,15 @@
+<% logs.each do |log| %>
+  <div class="log-item">
+    <%= content_tag :div, log.user.email, class: "user" %>
+    <%= content_tag :div, log.created_at, class: "date" %>
+    <%= content_tag :div, log.upload_type, class: "file-type" %>
+    <%= render 'layouts/upload_results', results: log.detail_upload_files %>
+  </div>
+<% end %>
+<%= paginate @logs %>
+<div class="large-5 columns">
+  <%= form_tag(export_upload_log_path(format: "xls"), method: 'get') do %>
+    <%= hidden_field_tag 'logs_ids', logs.map(&:id).join(",") %>
+    <button type="submit" class="button postfix success" name="export">Export</button>
+  <% end %>  
+</div>

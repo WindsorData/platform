@@ -5,24 +5,19 @@
   </div>
 
   <div class="large-3 columns" id="forms-container">
-    <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
+    <%= form_tag(search_upload_log_path, method: 'get', remote: true, class: "main-form custom") do %>
         <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
         <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "ticker", "ticker"), {include_blank: true} %>
         Created date <%= text_field_tag(:date_since) %>
         to <%= text_field_tag(:date_to) %>
-        <button type="submit" class="button postfix success">Search</button>
+        <button type="submit" class="button postfix success" name="display_search">Search</button>
     <% end %>
   </div>
 
-  <div class="large-9 columns log-container">
-    <% @logs.each do |log| %>
-      <div class="log-item">
-        <%= content_tag :div, log.user.email, class: "user" %>
-        <%= content_tag :div, log.created_at, class: "date" %>
-        <%= content_tag :div, log.upload_type, class: "file-type" %>
-        <%= render 'layouts/upload_results', results: log.detail_upload_files %>
-      </div>
-    <% end %>
-    <%= paginate @logs %>
+  
+
+  <div id="log-container" class="large-9 columns log-container">
+    <!-- ajax -->
   </div>
+
 </div>

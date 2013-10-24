@@ -57,5 +57,8 @@ WindosorFrontend::Application.routes.draw do
 
   # Upload Log
   get "upload_log/audit", as: :audit_log
+  get "upload_log/search", as: :search_upload_log
+  get "upload_log/upload_log_file", as: :export_upload_log
+
 end
 
