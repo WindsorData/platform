@@ -8,9 +8,9 @@ class SearchController < ApplicationController
     # Get n recent searches
     n = 5
     if current_user.is_super?
-      @searches = Search.last_ordered_by_date(n)
+      @searches = Top5Search.last_ordered_by_date(n)
     elsif current_user.is_client?
-      @searches = Search.by_company(current_user.company, n)
+      @searches = Top5Search.by_company(current_user.company, n)
     end
   end
   
@@ -20,7 +20,7 @@ class SearchController < ApplicationController
 
   def results
     params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
-    Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company, report_type: Constants::TOP5_REPORT)
+    Top5Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company)
     json_query = QueryGenerator.json_query(params_hash)
     path = Rails.application.config.backend_host + Rails.application.config.post_query_path
     headers ={content_type: :json}
@@ -44,7 +44,7 @@ class SearchController < ApplicationController
 
   def recent_search
     authorize!(:perform, :full_search)    
-    @params_hash = JSON.parse(Search.find(params[:id]).json_query)
+    @params_hash = JSON.parse(Top5Search.find(params[:id]).json_query)
   end
 
   private

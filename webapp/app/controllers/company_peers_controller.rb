@@ -13,6 +13,8 @@ class CompanyPeersController < ApplicationController
     @json_query = { ticker: ticker }.to_json
 
     find_peers(path, @json_query)
+    binding.pry
+    # Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company, report_type: Constants::TOP5_REPORT)
   end
 
   def peers_peers_single_ticker_result
@@ -31,6 +33,11 @@ class CompanyPeersController < ApplicationController
     @json_query = { tickers: tickers }.to_json
 
     find_peers(path, @json_query)
+    # This returns @companies_peers.
+    # <% @companies_peers["primaryPeers"].each{|primary| %>
+    #  <%= primary["peerCoName"] %>(<%= primary["peerTicker"] %>)</br>
+    # <% } %>
+    # Loguear
     render "peers_peers_result"  
   end
 
