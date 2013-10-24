@@ -56,20 +56,9 @@ trait OutputWriter {
   }
 }
 
-object PeersWriter extends OutputWriter {
+case class PeersWriter(reportBuilder: ReportBuilder) extends OutputWriter {
   val schema = TPeers
-  val fileName = "PeersOutputTemplate.xls"
-
-  case class PeersWriteStrategy(select: Seq[Model] => Seq[Model]) extends WriteStrategy {
-    def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) =
-      area.customWrite(select(models), sheet)
-  }
-
-  object RawPeersPeersTab extends PeersWriteStrategy(_.filterNot(_.contains('primaryPeers)))
-  object RawPrimaryPeersTab extends PeersWriteStrategy( peers =>
-    peers.find(_.contains('primaryPeers)).map(_ / 'primaryPeers).getOrElse(Col())
-     .asCol.elements.map(_.asModel)
-  )
+  val fileName = reportBuilder.fileName
 
   def peersArea(writeStrategy: PeersWriteStrategy) =
     CustomWriteArea(
@@ -82,7 +71,7 @@ object PeersWriter extends OutputWriter {
 
 
   def write(out: Workbook, models: Seq[Model], yearRange: Int = 0): Unit =
-    WorkbookMapping(Seq(peersArea(RawPeersPeersTab), peersArea(RawPrimaryPeersTab))).write(models, out)
+    WorkbookMapping(reportBuilder.defineWriters(this)).write(models, out)
 }
 
 object BodWriter extends OutputWriter with StandardMapping{

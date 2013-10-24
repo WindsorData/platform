@@ -106,12 +106,12 @@ object Api extends Controller with SpreadsheetDownloader {
   def fullReport = companiesReport(FullTop5Writer, ExecutivesDb)
 
 
-  def rawDataReport(dataFrom: JsValue => (Seq[Model], Seq[Model])) =
+  def rawDataReport(reportBuilder: ReportBuilder)(dataFrom: JsValue => Seq[Model]) =
     Action { request =>
       request.body.asJson.map { json =>
         val result = createSpreadsheetResult(
-          PeersWriter,
-          RawPeersPeersReport(dataFrom(json)),
+          PeersWriter(reportBuilder),
+          dataFrom(json),
           0)
         result match {
           case Some(response) => response
@@ -121,23 +121,30 @@ object Api extends Controller with SpreadsheetDownloader {
     }
 
   def rawPeersPeers =
-    rawDataReport { json =>
+    rawDataReport(PeersPeersReport) { json =>
       val ticker = (json \ "ticker").as[String]
-      PeersDb.peersOfPeersOf(ticker)
+      PeersPeersReport.raw(PeersDb.peersOfPeersOf(ticker))
+    }
+
+  def rawIncomingPeers =
+    rawDataReport(IncomingPeersReport) { json =>
+      val ticker = (json \ "ticker").as[String]
+      IncomingPeersReport.raw(PeersDb.indirectPeersOf(ticker))
     }
 
   def rawPeersPeersFromPrimaryPeers =
-    rawDataReport { json =>
+    rawDataReport(PeersPeersReport) { json =>
       val tickers = (json \ "tickers").as[Seq[String]]
-      PeersDb.peersOfPeersFromPrimary(tickers: _*) match {
+      val peers = PeersDb.peersOfPeersFromPrimary(tickers: _*) match {
         case (primaryPeers, secondaryPeers) =>
           primaryPeers.map(ppeers => TPeers.exampleWith(ppeers.elements.toSeq: _*)) -> secondaryPeers
       }
+      PeersPeersReport.raw(peers)
     }
 
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]
-    Ok(toJson(PeersDb.indirectPeersOf(ticker).map(_.asJson)))
+    Ok(toJson(IncomingPeersReport(PeersDb.indirectPeersOf(ticker)).map(_.asJson)))
   }
 
   def peersPeers = Action { request =>

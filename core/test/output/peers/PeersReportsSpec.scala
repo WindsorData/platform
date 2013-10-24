@@ -2,7 +2,7 @@ package output.peers
 
 import org.scalatest.FlatSpec
 import libt.{Value, Model}
-import output.RawPeersPeersReport
+import output.PeersPeersReport
 
 class PeersReportsSpec extends FlatSpec {
   val primaryPeersModels =
@@ -39,7 +39,7 @@ class PeersReportsSpec extends FlatSpec {
   behavior of "Peer-Peer Raw Report"
 
     it should "Add a peerless record when a primary Peer has no peers" in {
-      val result: Seq[Model] = RawPeersPeersReport(primaryPeersModels -> secondaryPeersModels)
+      val result: Seq[Model] = PeersPeersReport.raw(primaryPeersModels -> secondaryPeersModels)
       assert(result.filterNot(_.contains('primaryPeers)).map(_ /!/ 'ticker).toSet === primaryPeersModels.map(_ /!/ 'peerTicker).toSet)
       assert(result.filterNot(_.contains('primaryPeers)).find(model => model /!/ 'ticker == "C").get /!/ 'group === "NONE")
     }

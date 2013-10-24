@@ -10,8 +10,7 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
   protected val pk: Seq[Path] = peerId
 
   def indirectPeersOf(ticker: String) : Seq[Model] =
-    findWith(MongoDBObject("peerTicker.value" -> ticker),
-      MongoDBObject("ticker.value" -> 1, "companyName.value" -> 1))
+    find(MongoDBObject("peerTicker.value" -> ticker))
 
   def peersOf(tickers: String*) : Seq[Model] =
     if(tickers.nonEmpty) {

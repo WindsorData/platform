@@ -53,6 +53,11 @@ class CompanyPeersController < ApplicationController
     end
   end
 
+  def incoming_peers_raw_data_file
+    path = Rails.application.config.backend_host + Rails.application.config.post_incoming_peers_raw_data_path
+    report_request(path, params[:json_query], "raw_data.xls")
+  end
+
   def peers_peers_single_ticker_file
     path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_single_ticker_path
     download_peers_peers_file(path)

@@ -54,6 +54,7 @@ WindosorFrontend::Application.routes.draw do
   post 'company_peers/peers_peers_raw_data_file_from_primary', as: :export_peers_peers_raw_data_from_primary
 
   post 'company_peers/incoming_peers_file', as: :export_incoming_peers
+  post 'company_peers/incoming_peers_raw_data_file', as: :export_incoming_peers_raw_data
 
   # Upload Log
   get "upload_log/audit", as: :audit_log

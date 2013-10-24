@@ -2,7 +2,14 @@ package output
 
 import libt.util.math._
 import libt._
+import output.PeersWriter
 import model.PeerCompanies._
+import libt.spreadsheet.writer.{CustomWriteSheetDefinition, WriteStrategy, CustomWriteArea, FullWriteStrategy}
+import org.apache.poi.ss.usermodel.Sheet
+import libt.Col
+import output.PeersWriteStrategy
+import libt.spreadsheet.writer.CustomWriteArea
+import output.PeersWriter
 
 trait ScorePeersReport {
   implicit def models2RichModels(models: Seq[Model]) = new {
@@ -61,19 +68,46 @@ object NormalizedPeersOfPeersReport extends ScorePeersReport {
   }
 }
 
-object PeersPeersReport {
-  def primaryPeersNames(models: Seq[Model]) =
-    models.toSeq.map(_.intersect(Seq(Path('peerTicker), Path('peerCoName))))
+trait ReportBuilder {
+  type InputData
+  val fileName: String
+
+  def peersTitles(titles: Seq[Symbol])(models: Seq[Model]) : Seq[Model] =
+    models.toSeq.map(_.intersect(titles.map(key => Path(key))))
+
+  def defineWriters(writer: PeersWriter): Seq[CustomWriteArea]
+
+  def raw(models: InputData): Seq[Model]
+}
+
+
+case class PeersWriteStrategy(select: Seq[Model] => Seq[Model]) extends WriteStrategy {
+  def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) =
+    area.customWrite(select(models), sheet)
+}
+
+object PeersPeersReport extends ReportBuilder {
+  type InputData = (Seq[Model], Seq[Model])
+  val fileName = "PeersOutputTemplate.xls"
 
   def apply(models: (Seq[Model],Seq[Model])) =
     Model(
-      'primaryPeers -> Col(primaryPeersNames(models._1): _*),
+      'primaryPeers -> Col(peersTitles(Seq('peerTicker, 'peerCoName))(models._1): _*),
       'normalized -> Col(NormalizedPeersOfPeersReport(models._2): _*),
       'unnormalized -> Col(UnnormalizedPeersOfPeersReport(models._2): _*))
-}
 
-object RawPeersPeersReport {
-  def apply(models: (Seq[Model], Seq[Model])): Seq[Model] =
+  private object RawPeersPeersTab extends PeersWriteStrategy(_.filterNot(_.contains('primaryPeers)))
+  private object RawPrimaryPeersTab extends PeersWriteStrategy( peers =>
+    peers.find(_.contains('primaryPeers)).map(_ / 'primaryPeers).getOrElse(Col())
+      .asCol.elements.map(_.asModel)
+  )
+
+  def defineWriters(writer: PeersWriter) =
+    Seq(
+      writer.peersArea(RawPeersPeersTab),
+      writer.peersArea(RawPrimaryPeersTab))
+
+  def raw(models: InputData) =
     models match {
       case (primaryPeers, secondaryPeers) => {
         val peersWithoutPeers = primaryPeers.filterNot { primaryPeer =>
@@ -89,4 +123,22 @@ object RawPeersPeersReport {
         } :+ Model('primaryPeers -> Col(primaryPeers: _*))
       }
     }
+
+}
+
+object IncomingPeersReport extends ReportBuilder {
+  type InputData = Seq[Model]
+  val fileName = "IncomingPeersOutputTemplate.xls"
+
+  def apply(models: Seq[Model]): Seq[Model] =
+    peersTitles(Seq('ticker, 'companyName))(models)
+
+  def raw(models: InputData) = models
+
+  def defineWriters(writer: PeersWriter) =
+    Seq(
+      writer.peersArea(PeersWriteStrategy(
+        peersTitles(Seq('ticker, 'companyName))(_).map(peers => TPeers.exampleWith(peers.elements.toSeq: _*))
+      )),
+      writer.peersArea(PeersWriteStrategy(peers => peers)))
 }
