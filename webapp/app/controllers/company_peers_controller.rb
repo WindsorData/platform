@@ -26,7 +26,7 @@ class CompanyPeersController < ApplicationController
   end
 
   def peers_peers_ticker_list_result
-    tickers = params[:company_peer_tickers_manual].split(" ")
+    tickers = params[:company_peer_tickers_manual].split(" ").map(&:upcase)
     path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_ticker_list_path    
     @json_query = { tickers: tickers }.to_json
 
