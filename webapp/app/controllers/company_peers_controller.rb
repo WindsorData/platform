@@ -13,8 +13,8 @@ class CompanyPeersController < ApplicationController
     @json_query = { ticker: ticker }.to_json
 
     find_peers(path, @json_query)
-    binding.pry
-    # Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company, report_type: Constants::TOP5_REPORT)
+    peers = @companies_peers.map{ |x| "#{x["companyName"]}(#{x["ticker"]})"}.join(";")
+    IncomingPeersSearch.create(user: current_user, company: current_user.company, tickers: ticker, peers: peers)
   end
 
   def peers_peers_single_ticker_result

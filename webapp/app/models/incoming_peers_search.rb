@@ -15,5 +15,5 @@
 #
 
 class IncomingPeersSearch < Search
-
+  attr_accessible :peers, :tickers  
 end
