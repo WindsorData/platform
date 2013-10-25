@@ -15,13 +15,13 @@
 #
 
 class Search < ActiveRecord::Base
-  # attr_accessible :json_query, :user, :company, :report_type
   attr_accessible :user, :company, :report_type
   belongs_to :user
   belongs_to :company
 
-  # validates :json_query, presence: true
   validates :user_id, presence: true
+
+  before_create :set_report_type
 
 
   scope :by_company, lambda { |company, n|
@@ -30,4 +30,8 @@ class Search < ActiveRecord::Base
   scope :last_ordered_by_date, lambda { |n|
     order("created_at desc").limit(n)
   }
+
+  def set_report_type
+    self.report_type = search_type
+  end
 end

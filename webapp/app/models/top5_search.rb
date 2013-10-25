@@ -16,12 +16,9 @@
 
 class Top5Search < Search
   attr_accessible :json_query
-
   validates :json_query, presence: true
 
-  before_create :set_report_type
-
-  def set_report_type
-    self.report_type = Constants::TOP5_REPORT
+  def search_type
+    Constants::TOP5_REPORT
   end
 end

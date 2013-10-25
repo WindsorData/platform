@@ -8,9 +8,9 @@ class SearchController < ApplicationController
     # Get n recent searches
     n = 5
     if current_user.is_super?
-      @searches = Top5Search.last_ordered_by_date(n)
+      @searches = Search.last_ordered_by_date(n)
     elsif current_user.is_client?
-      @searches = Top5Search.by_company(current_user.company, n)
+      @searches = Search.by_company(current_user.company, n)
     end
   end
   

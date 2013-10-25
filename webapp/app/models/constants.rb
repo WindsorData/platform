@@ -2,8 +2,11 @@ class Constants
   TOP5_REPORT = 'top5'
   BOD_REPORT = 'BOD'
   FULL_REPORT = 'Full TOP5'
-  REPORT_TYPES = [TOP5_REPORT, BOD_REPORT, FULL_REPORT];
+  REPORT_TYPES = [TOP5_REPORT, BOD_REPORT, FULL_REPORT]
   
+  INCOMING_PEERS_SEARCH = "Incoming Peers"
+  PEERS_PEERS_SEARCH = "Peers Peers"
+
   TOP_5_FILE = 'top5'
   GUIDELINESS_FILE = 'guidelines'
   DILUTION_FILE = 'dilution'

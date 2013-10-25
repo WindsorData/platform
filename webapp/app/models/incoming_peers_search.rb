@@ -17,5 +17,9 @@
 class IncomingPeersSearch < Search
   attr_accessible :peers, :tickers
   validates :tickers, presence: true
-  validates :peers, presence: true  
+  validates :peers, presence: true
+  
+  def search_type
+    Constants::INCOMING_PEERS_SEARCH
+  end
 end
