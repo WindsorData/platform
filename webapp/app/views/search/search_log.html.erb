@@ -2,23 +2,27 @@
   <div class="large-12 columns">
     <h1><%= @search.report_type %></h1>
     <hr>
-    <%= @search.user.email %><br/>
-    <%= @search.company %><br/>
-    <%= @search.created_at.strftime("%Y-%m-%d at %H:%M") %><br/>  
-    <hr>  
-    <h3>Tickers</h3>
-    <% @search.tickers.split(";").each do |s| %>
-      <h5><%= s %></h5>
-    <% end %>
+    <p>User: <b><%= @search.user.email %></b> | Company: <b><%= @search.company %></b> | Created at: <b><%= @search.created_at.strftime("%Y-%m-%d at %H:%M") %></b></p>
     <hr>
+  </div>  
+  <div class="large-3 columns">
+    <div class="recent-search-container">
+      <h2 class="title">Tickers</h2>
+      <% @search.tickers.split(";").each do |s| %>
+        <p><%= s %></p>
+      <% end %>
+    </div>
+  </div>
+  <div class="large-9 columns">
     <% if @search.peers %>
       <h3>Peers</h3>
       <% @search.peers.split(";").each do |s| %>
-        <h5><%= s %></h5>
+        <p><%= s %></p>
       <% end %>
-      <hr>
     <% end %>
-        
+  </div>
+  <div class="large-12 columns">
+    <hr>
     <%= link_to "Back", quick_search_path %>
-  </div>  
+  </div>
 </div>
