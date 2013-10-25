@@ -29,7 +29,9 @@ WindosorFrontend::Application.routes.draw do
   # Search
   get "search/quick_search",  as: :quick_search
   get "search/full_search",   as: :full_search
-  get "search/recent_search/:id", to: "search#recent_search", as: :recent_search
+  get "search/recent_search/:id", to: "search#recent_search", as: :top_5_recent_search
+  get "search/search_log/:id", to: "search#search_log", as: :search_log
+
 
   post "search/results",      as: :search_result
   post "search/download",     as: :file_download

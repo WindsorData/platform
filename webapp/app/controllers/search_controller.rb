@@ -45,6 +45,12 @@ class SearchController < ApplicationController
   def recent_search
     authorize!(:perform, :full_search)    
     @params_hash = JSON.parse(Top5Search.find(params[:id]).json_query)
+
+    render "top_5_recent_search_log"
+  end
+
+  def search_log
+    @search = Search.find(params[:id])
   end
 
   private
