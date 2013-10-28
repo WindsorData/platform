@@ -33,6 +33,13 @@ class UsersController < ApplicationController
     index!
   end
 
+  def destroy
+    Search.where(user_id: params["id"]).each do |s|
+      s.destroy
+    end
+    destroy!
+  end
+
   private
   def ensamble_company
     if params[:user][:role] == "client"
