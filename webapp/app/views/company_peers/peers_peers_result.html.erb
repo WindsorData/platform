@@ -46,7 +46,8 @@
               </p>
               <div class="content" data-section-content>
                 <% secondary["primaryPeersWeights"].each{|primary| %>
-                  <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>) <a href="#">LINK</a>
+
+                  <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)<a href="<%= primary["link"] %>">LINK</a>
                   <span class="right"><%= primary["weight"] %></span></br>                     
                 <% } %>
               </div>
@@ -64,7 +65,7 @@
               </p>
               <div class="content" data-section-content>
                 <% secondary["primaryPeersWeights"].each{|primary| %>
-                  <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)
+                  <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)<a href="<%= primary["link"] %>">LINK</a>
                   <span class="right"><%= primary["weight"].to_i %></span></br>
                 <% } %>
               </div>
