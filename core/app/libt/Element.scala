@@ -144,6 +144,9 @@ case class Col(elements: Element*)
     }.force: _*)
     case _ => incompatibleTypes
   }
+
+  def map(f: Element => Element) = Col(elements.map(f): _*)
+
 }
 
 /*=======Model=======*/

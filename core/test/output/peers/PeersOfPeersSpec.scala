@@ -11,20 +11,20 @@ class PeersOfPeersSpec extends FlatSpec {
   val models =
     Seq(
       // P peers
-      Model('ticker -> Value("P"), 'companyName -> Value("P"), 'peerTicker -> Value("X"), 'peerCoName -> Value("X")),
-      Model('ticker -> Value("P"), 'companyName -> Value("P"), 'peerTicker -> Value("Y"), 'peerCoName -> Value("Y")),
-      Model('ticker -> Value("P"), 'companyName -> Value("P"), 'peerTicker -> Value("Z"), 'peerCoName -> Value("Z")),
+      Model('ticker -> Value("P"), 'companyName -> Value("P"), 'peerTicker -> Value("X"), 'peerCoName -> Value("X"), 'link -> Value("P-link")),
+      Model('ticker -> Value("P"), 'companyName -> Value("P"), 'peerTicker -> Value("Y"), 'peerCoName -> Value("Y"), 'link -> Value("P-link")),
+      Model('ticker -> Value("P"), 'companyName -> Value("P"), 'peerTicker -> Value("Z"), 'peerCoName -> Value("Z"), 'link -> Value("P-link")),
 
       // Q peers
-      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("B"), 'peerCoName -> Value("B")),
-      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("C"), 'peerCoName -> Value("C")),
-      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("X"), 'peerCoName -> Value("X")),
-      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("Z"), 'peerCoName -> Value("Z")),
+      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("B"), 'peerCoName -> Value("B"), 'link -> Value("Q-link")),
+      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("C"), 'peerCoName -> Value("C"), 'link -> Value("Q-link")),
+      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("X"), 'peerCoName -> Value("X"), 'link -> Value("Q-link")),
+      Model('ticker -> Value("Q"), 'companyName -> Value("Q"), 'peerTicker -> Value("Z"), 'peerCoName -> Value("Z"), 'link -> Value("Q-link")),
 
       // R peers
-      Model('ticker -> Value("R"), 'companyName -> Value("R"), 'peerTicker -> Value("F"), 'peerCoName -> Value("F")),
-      Model('ticker -> Value("R"), 'companyName -> Value("R"), 'peerTicker -> Value("G"), 'peerCoName -> Value("G")),
-      Model('ticker -> Value("R"), 'companyName -> Value("R"), 'peerTicker -> Value("X"), 'peerCoName -> Value("X")))
+      Model('ticker -> Value("R"), 'companyName -> Value("R"), 'peerTicker -> Value("F"), 'peerCoName -> Value("F"), 'link -> Value("R-link")),
+      Model('ticker -> Value("R"), 'companyName -> Value("R"), 'peerTicker -> Value("G"), 'peerCoName -> Value("G"), 'link -> Value("R-link")),
+      Model('ticker -> Value("R"), 'companyName -> Value("R"), 'peerTicker -> Value("X"), 'peerCoName -> Value("X"), 'link -> Value("R-link")))
 
   behavior of "Peer-Peer report calculations"
 
