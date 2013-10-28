@@ -243,3 +243,24 @@ table {
 .pagination .current {
   font-weight: bold;
 }
+
+.search-info-container {
+  background-color: #EEE;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+
+.search-info-container .title {
+  margin: 0;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.search-info-container .info {
+  margin: 0;
+  color: #666;
+}
+
+.list-inside {
+  list-style-position: inside;
+}
