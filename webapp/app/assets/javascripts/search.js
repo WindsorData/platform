@@ -38,5 +38,9 @@ $(document).ready(function() {
       inputs.val("");
     });    
   };
+
+  $('#user').change(function(){
+    debugger;
+  });
   
 });

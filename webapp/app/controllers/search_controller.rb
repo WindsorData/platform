@@ -4,11 +4,19 @@ class SearchController < ApplicationController
   def quick_search
     authorize!(:perform, :quick_search)
     @groups = current_user.is_client? ? Group.by_company(current_user.company) : @groups = Group.all
+    @users = User.order('email desc')
+  end
 
-    # Get n recent searches
-    n = 5
+  def filter_recent_search
+    authorize!(:perform, :quick_search)
+    user_id =  params["user"].to_i unless params["user"].blank?
+    n = params["results"].blank? ? 20 : params["results"].to_i
     if current_user.is_super?
-      @searches = Search.last_ordered_by_date(n)
+      if user_id
+        @searches = Search.last_ordered_by_date(n).where(user_id: user_id)
+      else
+        @searches = Search.last_ordered_by_date(n)
+      end
     elsif current_user.is_client?
       @searches = Search.by_company(current_user.company, n)
     end

@@ -29,6 +29,7 @@ WindosorFrontend::Application.routes.draw do
 
   # Search
   get "search/quick_search",  as: :quick_search
+  get "search/filter_recent_search", as: :filter_recent_search
   get "search/full_search",   as: :full_search
   get "search/recent_search/:id", to: "search#recent_search", as: :top_5_recent_search
   get "search/search_log/:id", to: "search#search_log", as: :search_log

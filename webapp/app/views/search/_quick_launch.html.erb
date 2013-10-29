@@ -8,16 +8,18 @@
     <!-- activity log -->
     <div class="recent-search-container">
       <h2 class="title">Recent Searches</h2>
-      <% unless @searches.blank? %>
-        <% @searches.each{ |s| %>
-          <div class="recent-search-item">
-            <p class="username"><%= s.user.email %></p>
-            <p class="report"><%= s.created_at.strftime("%Y-%m-%d %H:%M:%S") %></p>
-            <p class="report"><%= s.report_type %></p>
-            <a href="<%= log_search_path(s) %>" class="small button">View</a>
-          </div>
-        <% } %>
-      <% end %>
+      <div id="forms-container">
+        <%= form_tag(filter_recent_search_path, method: 'get', remote: true, class: "main-form custom") do %>
+          <% unless current_user.is_client? %>
+            <%= label_tag "User" %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
+          <% end %> <%# Client users cannot search by user. The results are his company's searches %>
+            <%= label_tag "Results" %> <%= select_tag :results, options_for_select((5..20).step(5)), {include_blank: true} %>
+            <button type="submit" class="button postfix success" name="display_search">Search</button>
+        <% end %>
+      </div>
+      <div id="recent-search-results">
+                
+      </div>
     </div>
   </div>
 
