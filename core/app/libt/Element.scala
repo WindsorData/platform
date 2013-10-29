@@ -2,6 +2,7 @@ package libt
 
 import java.util.Date
 import libt.util._
+import scala.util.Try
 
 trait ElementValueOps { self : Element =>
   def isEmpty(route:PathPart) = (this / route).rawValue.isEmpty
@@ -170,7 +171,9 @@ trait ModelAlgebraOps {  this : Model =>
   /**Creates a new model that is a submodel of this one that only
     * contains the elements of the given mask*/
   def intersect(mask: Seq[Path]) =
-    Model(mask.map(path => (path.last.routeValue -> this(path))).toSet)
+    Model(mask
+      .filter(path => Try(this(path)).isSuccess )
+      .map(path => (path.last.routeValue -> this(path))).toSet)
 }
 
 case class Model(elements: Set[(Symbol, Element)])

@@ -19,15 +19,22 @@ trait ScorePeersReport {
   def makeReport(models: Seq[Model])(peerPeer: Model) =
     Model(
       'secondPeer -> peerPeer / 'secondaryPeer,
-      'secondPeerName -> Value(models.find( _ /!/ 'peerTicker == peerPeer /!/ 'secondaryPeer).get /!/ 'peerCoName),
+      'secondPeerName -> {
+        val secondPeer = models.find( _ /!/ 'peerTicker == peerPeer /!/ 'secondaryPeer)
+          .getOrElse(Model())
+        secondPeer.get('peerCoName).getOrElse(Value("notfound"))
+      },
       'weight -> Value(peerPeer('primaryPeers).asCol.elements.map(_.asModel /%/ 'weight).sum.roundUp(2)),
       'primaryPeersWeights ->
         peerPeer('primaryPeers).asCol.map { it =>
           Model(
             'weight -> (it / 'weight).asValue[BigDecimal].map(_.roundUp(2)),
             'primaryPeer -> it / 'ticker,
-            'primaryPeerName -> Value(models.find( _ /!/ 'ticker == (it /!/ 'ticker)).get /!/ 'companyName),
-            'link -> it / 'link)
+            'primaryPeerName -> {
+              val primaryPeer = models.find( _ /!/ 'ticker == (it /!/ 'ticker)).get
+              primaryPeer.get('companyName).getOrElse(Value("notfound"))
+            },
+            'link -> it.asModel.get('link).getOrElse(Value()))
         }
     )
 

@@ -28,6 +28,12 @@ class PeersOfPeersSpec extends FlatSpec {
 
   behavior of "Peer-Peer report calculations"
 
+  it should "handle non defined values" in {
+    val report = UnnormalizedPeersOfPeersReport(Seq(Model('ticker -> Value("P"), 'peerTicker -> Value("X") )))
+    assert(report.forall(model => model.contains('secondPeerName)))
+    assert(report.forall(model => (model / 'primaryPeersWeights).asCol(0).asModel.contains('link)))
+  }
+
   it should "calculate non-normalized peers of peers report" in {
     assert(UnnormalizedPeersOfPeersReport(models).take(2).map(_ - 'primaryPeersWeights - 'secondPeerName) ===
       Seq(

@@ -18,6 +18,10 @@ class ModelSpec extends FunSpec {
     it("should use the last part of the path as key when using non trivial paths") {
       assert((Model('f -> Model('g -> Value("g"))) intersect Seq(Path('f, 'g))) === Model('g -> Value("g")))
     }
+
+    it("should return only the elements that are defined in the source model") {
+      assert((Model('f -> Value("f"), 'g -> Value("g")) intersect Seq(Path('f), Path('a))) === Model('f -> Value("f")))
+    }
   }
 
   describe("get") {
