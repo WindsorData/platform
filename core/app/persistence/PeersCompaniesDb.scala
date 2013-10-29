@@ -48,5 +48,19 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
         'peerCoName -> Value(peerName.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName))
     }.toSeq
 
+  def removeCompany(ticker: String): Either[Model, Seq[Model]] = {
+    val tickers = findWith(
+      MongoDBObject("ticker.value" -> ticker),
+      MongoDBObject("peerTicker.value" -> 1, "peerCoName.value" -> 1))
+
+    val result = collection.remove(MongoDBObject("ticker.value" -> ticker))
+
+    if(tickers.nonEmpty && result.getLastError.ok)
+      Right(tickers)
+    else
+      Left(
+        Model('error ->
+          Value("couldn't remove peer company. Perhaps the ticker does not exists in the database")))
+  }
 }
 

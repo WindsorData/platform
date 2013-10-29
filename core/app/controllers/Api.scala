@@ -173,5 +173,12 @@ object Api extends Controller with SpreadsheetDownloader {
     Ok
   }
 
+  def removePeersCompany(ticker: String) = Action {
+    PeersDb.removeCompany(ticker) match {
+      case Left(model) => NotFound(toJson(model.asJson))
+      case Right(models) => Ok(toJson(models.map(_.asJson)))
+    }
+  }
+
 }
 
