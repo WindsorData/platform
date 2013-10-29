@@ -10,7 +10,7 @@
         <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "ticker", "ticker"), {include_blank: true} %>
         Created date <%= text_field_tag(:date_since) %>
         to <%= text_field_tag(:date_to) %>
-        <button type="submit" class="button postfix success" name="display_search">Search</button>
+        <button id="search-button" type="submit" class="button postfix success" name="display_search">Search</button>
     <% end %>
   </div>
 
