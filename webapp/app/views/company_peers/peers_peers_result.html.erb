@@ -83,18 +83,18 @@
       <div id="primary-peers" class="panel">
         <div class="row">          
           <div class="large-8 columns">
-            <p>
               <% @companies_peers["primaryPeers"].each{|primary| %>
-                  <%= primary["peerCoName"] %> </br>
+              <p class="peer-name" title="<%= primary["peerCoName"] %>">
+                    <%= primary["peerCoName"] %>
+              </p>
               <% } %>
-            </p>
           </div>
           <div class="large-4 columns">
-            <p>
               <% @companies_peers["primaryPeers"].each{|primary| %>
-                  <%= primary["peerTicker"] %> </br>
+              <p class="peer-ticker" title="<%= primary["peerTicker"] %>">
+                <%= primary["peerTicker"] %> 
+              </p>
               <% } %>
-            </p>
           </div>         
         </div><!-- row -->
       </div>

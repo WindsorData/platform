@@ -264,3 +264,13 @@ table {
 .list-inside {
   list-style-position: inside;
 }
+
+.peer-name, 
+.peer-ticker {
+  width: 100%;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin-bottom: 5px;
+}
