@@ -37,10 +37,5 @@ $(document).ready(function() {
       inputs.attr("disabled", blankSelected);
       inputs.val("");
     });    
-  };
-
-  $('#user').change(function(){
-    debugger;
-  });
-  
+  };  
 });
