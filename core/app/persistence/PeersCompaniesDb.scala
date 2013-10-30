@@ -60,7 +60,7 @@ case class PeersCompaniesDb(db: MongoDB) extends Persistence {
     else
       Left(
         Model('error ->
-          Value("couldn't remove peer company. Perhaps the ticker does not exists in the database")))
+          Value(s"couldn't remove peer company $ticker. Perhaps the ticker does not exists in the database")))
   }
 }
 
