@@ -1,13 +1,8 @@
 Company Ticker: <%= @company_peer.name %> (<%= @company_peer.ticker %>)
 
-<%= form_tag(export_incoming_peers_path(format: "xls")) do %>
-  <%= hidden_field_tag 'json_query', @json_query %>
-  <%= submit_tag 'Download XLS', class: 'big-button' %>
-<% end %>
-
 <%= form_tag(export_incoming_peers_raw_data_path) do %>
   <%= hidden_field_tag 'json_query', @json_query %>
-  <%= submit_tag 'Download Raw Data', class: 'big-button' %>
+  <%= submit_tag 'Download Incoming File', class: 'big-button' %>
 <% end %>
 
 <div class="panel">

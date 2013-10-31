@@ -48,16 +48,6 @@ class CompanyPeersController < ApplicationController
     end
   end
 
-  def incoming_peers_file
-    path = Rails.application.config.backend_host + Rails.application.config.post_incoming_peers_path
-    json_query = params[:json_query]
-
-    find_peers(path, json_query)
-    respond_to do |format|
-      format.xls { render 'incoming_peers_result'}
-    end
-  end
-
   def incoming_peers_raw_data_file
     path = Rails.application.config.backend_host + Rails.application.config.post_incoming_peers_raw_data_path
     report_request(path, params[:json_query], "raw_data.xls")
