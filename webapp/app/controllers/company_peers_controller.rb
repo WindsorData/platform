@@ -98,8 +98,9 @@ class CompanyPeersController < ApplicationController
     json_query = params[:json_query]
     
     find_peers(path, json_query)
-    
+    @primary_peers = @companies_peers["primaryPeers"]
     @companies_peers = (@companies_peers["normalized"] + @companies_peers["unnormalized"]).group_by { |p| p["secondPeer"] }
+
     
     respond_to do |format|
       format.xls { render 'peers_peers_result'}
