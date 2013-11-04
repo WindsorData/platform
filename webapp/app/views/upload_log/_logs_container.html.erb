@@ -1,9 +1,12 @@
-<div class="large-4 large-offset-5 columns">
-  <%= form_tag(export_upload_log_path(format: "xls"), method: 'get') do %>
-    <%= hidden_field_tag 'logs_ids', logs.map(&:id).join(",") %>
-    <button type="submit" class="button postfix success" name="export">Export</button>
-  <% end %>  
-</div>
+<% unless logs.blank? %>
+  <div class="large-4 large-offset-5 columns">
+    <%= form_tag(export_upload_log_path(format: "xls"), method: 'get') do %>
+      <%= hidden_field_tag 'logs_ids', logs.map(&:id).join(",") %>
+      <button type="submit" class="button postfix success" name="export">Export</button>
+    <% end %>  
+  </div>
+<% end %>
+
 <% logs.each do |log| %>
   <div class="log-item">
     <%= content_tag :div, log.user.email, class: "user" %>
