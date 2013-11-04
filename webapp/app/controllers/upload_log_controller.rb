@@ -13,7 +13,7 @@ class UploadLogController < ApplicationController
     user_id = params_hash['user'].to_i unless params_hash['user'].blank?
     since = params_hash['date_since'].try(:to_date).try(:beginning_of_day)
     to = params_hash['date_to'].try(:to_date).try(:end_of_day)
-    ticker = params_hash['ticker_name'] unless params_hash['ticker_name'].blank?
+    ticker = params_hash['upload-log-ticker'] unless params_hash['upload-log-ticker'].blank?
 
     @logs = UploadLog
               .with_user(user_id)
@@ -21,6 +21,7 @@ class UploadLogController < ApplicationController
               .created_since(since)
               .created_to(to)
               .order('created_at desc').paginated(params)
+
     respond_to do |format|
       format.js { render 'display_search'}
     end
@@ -32,5 +33,4 @@ class UploadLogController < ApplicationController
       format.xls { render 'upload_log_file'}
     end
   end
-
 end

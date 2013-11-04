@@ -13,5 +13,6 @@ class DetailUploadFile < ActiveRecord::Base
   extend JSONLoadable
 
   attr_accessible :file_name, :messages, :ticker
+  scope :containing_chars, lambda { |s| where("ticker ilike ?", "#{s}%") }
 
 end
