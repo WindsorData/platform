@@ -19,6 +19,8 @@ import output._
 import controllers.generic.SpreadsheetDownloader
 import output.PeersPeersReport
 import output.StandardTop5Writer
+import java.text.SimpleDateFormat
+import org.joda.time.format.DateTimeFormat
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -178,6 +180,25 @@ object Api extends Controller with SpreadsheetDownloader {
       case Left(model) => NotFound(toJson(model.asJson))
       case Right(models) => Ok(toJson(models.map(_.asJson)))
     }
+  }
+
+  def removeSpecificPeer(ticker: String, peerTicker: String) = Action { request =>
+
+    request.body.asJson.map { json =>
+      val fiscalYear = (json \ "fiscalYear").as[Int]
+        
+      val fillingDate = DateTimeFormat.forPattern("MM/dd/YYYY").parseDateTime((json \ "fillingDate").as[String]).toDate
+      val fillingDateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+      val formattedFillingDate =
+        DateTimeFormat.forPattern("yyyy-MM-dd")
+          .parseDateTime(fillingDateFormatter.format(fillingDate))
+
+      PeersDb.removeSpecificPeer(ticker, peerTicker, fiscalYear, formattedFillingDate) match {
+        case Left(model) => NotFound(toJson(model.asJson))
+        case Right(models) => Ok(toJson(models.map(_.asJson)))
+      }
+    }.getOrElse(BadRequest("invalid json"))
+
   }
 
 }

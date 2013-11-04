@@ -21,6 +21,7 @@ POST    /api/companies/report/full                       controllers.Api.fullRep
 DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
 DELETE  /api/companies/peers                             controllers.Api.removePeersData
 DELETE  /api/companies/peers/:ticker                     controllers.Api.removePeersCompany(ticker:String)
+DELETE  /api/companies/peers/:from/:peer                 controllers.Api.removeSpecificPeer(from:String, peer:String)
 
 #Peers Reports
 POST    /api/companies/report/peers/incoming             controllers.Api.incomingPeers
