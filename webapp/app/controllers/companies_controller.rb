@@ -29,20 +29,26 @@ class CompaniesController < ApplicationController
 
   def delete_peers
     company_peer = params[:company_peer_ticker]
-    path = Rails.application.config.backend_host + "/api/companies/peers/#{company_peer}"
+    peer = params[:peer_ticker]
+    path = Rails.application.config.backend_host + "/api/companies/peers"
     authorize!(:perfom, :delete_info)
-    
-    backend_delete(path) do |response|
-      message = 
-        "Information deleted successfully for company peer #{company_peer}<br/><br/>" + 
-        "Peers tickers removed:<br/><br/>" +
-        "<ul>" +
-          JSON.parse(response).map { |peer| "<li>#{peer["peerCoName"]} (#{peer["peerTicker"]})</li>"}.join +
-        "</ul>"
-      flash[:notice] = message.html_safe
 
-      CompanyPeer.where(ticker: company_peer).destroy_all
+    payload = {
+      fiscalYear: params[:fiscal_year].to_i,
+      fillingDate: params[:filling_date],
+      from: company_peer,
+      peer: peer
+    }
+
+    RestClient.post(path, payload.to_json, {content_type: :json}) do |response, _|
+      if response.code == 200
+        flash[:notice] = "Information deleted successfully for company peer #{company_peer}, peer #{peer}" 
+      else
+        flash[:errors] = JSON.parse(response)["error"]
+      end
     end
+
+    render 'delete_info'
   end
 
   def backend_delete(path)
@@ -53,6 +59,8 @@ class CompaniesController < ApplicationController
         else
           flash[:notice] = "Information deleted successfully"
         end
+      else
+        flash[:errors] = JSON.parse(response)["error"]
       end
     end
     render 'delete_info'    

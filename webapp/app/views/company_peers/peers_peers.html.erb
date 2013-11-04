@@ -14,7 +14,7 @@
   <hr>
   <%= form_tag(peers_peers_single_ticker_result_path) do %>
     <div class="field">
-      <%= text_field_tag :company_peer_ticker %>
+      <%= text_field_tag :company_peer_ticker, nil, class: "company-peer-ticker" %>
       <%= submit_tag 'Search', class: 'button success margin-top-1em' %>
     </div>
   <% end %>
