@@ -13,7 +13,7 @@
           <% unless current_user.is_client? %>
             <%= label_tag "User" %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
           <% end %> <%# Client users cannot search by user. The results are his company's searches %>
-            <%= label_tag "Results" %> <%= select_tag :results, options_for_select((5..20).step(5)), {include_blank: true} %>
+            <%= label_tag "Results" %> <%= select_tag :results, options_for_select([5, 15, 25, 50]), {include_blank: true} %>
             <button type="submit" class="button postfix success" name="display_search">Search</button>
         <% end %>
       </div>
