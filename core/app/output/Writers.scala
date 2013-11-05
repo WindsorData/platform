@@ -36,7 +36,7 @@ trait OutputWriter {
     flatteningPath: Path,
     writeStrategy: WriteStrategy) =
       FlattedArea(
-        PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
+        PK(Path('ticker), Path('name), Path('disclosureFiscalYearDate)),
         PK(flatteningPK),
         flatteningPath,
         schema,
