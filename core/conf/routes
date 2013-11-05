@@ -20,7 +20,8 @@ POST    /api/companies/report/bod                        controllers.Api.bodRepo
 POST    /api/companies/report/full                       controllers.Api.fullReport
 DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
 DELETE  /api/companies/peers                             controllers.Api.removePeersData
-DELETE  /api/companies/peers/:ticker                     controllers.Api.removePeersCompany(ticker:String)
+#DELETE  /api/companies/peers/:ticker                     controllers.Api.removePeersCompany(ticker:String)
+POST  /api/companies/peers                               controllers.Api.removeSpecificPeer
 
 #Peers Reports
 POST    /api/companies/report/peers/incoming             controllers.Api.incomingPeers
