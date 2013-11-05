@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "company_peers" %>
+<% end %>
+
 <% if @company_peer %>
   <%= @company_peer.name %> (<%= @company_peer.ticker %>) "SECONDARY PEER"
 <% end %></br></br>
