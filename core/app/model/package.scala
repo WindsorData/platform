@@ -12,6 +12,7 @@ package object model {
     'ticker -> TString,
     'name -> TString,
     'disclosureFiscalYear -> TInt,
+    'disclosureFiscalYearDate -> TDate,
     'def14a -> TDate,
     'tenK -> TDate,
     'otherDocs -> TCol(TModel('type -> TString, 'date -> TDate)),
