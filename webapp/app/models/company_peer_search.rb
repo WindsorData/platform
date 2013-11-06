@@ -15,14 +15,14 @@
 #  group_name  :string(255)
 #
 
-class IncomingPeersSearch < Search
-  attr_accessible :peers, :tickers
+class CompanyPeerSearch < Search
+  attr_accessible :group_name, :tickers
   validates :tickers, presence: true
-  validates :peers, presence: true
+  validates :group_name, presence: true
 
   before_create :set_report_type
 
   def set_report_type
-    self.report_type = Constants::INCOMING_PEERS_SEARCH
+    self.report_type = self.report_type + " - " + Constants::COMPANY_PEERS_SEARCH
   end
 end

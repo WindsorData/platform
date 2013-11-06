@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20131024193230) do
+ActiveRecord::Schema.define(:version => 20131106173059) do
 
   create_table "companies", :force => true do |t|
     t.string   "name"
@@ -79,6 +79,7 @@ ActiveRecord::Schema.define(:version => 20131024193230) do
     t.text     "peers"
     t.text     "tickers"
     t.string   "type"
+    t.string   "group_name"
   end
 
   create_table "tickers", :force => true do |t|

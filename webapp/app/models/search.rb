@@ -9,9 +9,10 @@
 #  updated_at  :datetime         not null
 #  company_id  :integer
 #  report_type :string(255)
-#  peers       :string(255)
-#  tickers     :string(255)
+#  peers       :text
+#  tickers     :text
 #  type        :string(255)
+#  group_name  :string(255)
 #
 
 class Search < ActiveRecord::Base
@@ -21,17 +22,10 @@ class Search < ActiveRecord::Base
 
   validates :user_id, presence: true
 
-  before_create :set_report_type
-
-
   scope :by_company, lambda { |company, n|
     where(company_id: company.id).order("created_at desc").limit(n)
   }
   scope :last_ordered_by_date, lambda { |n|
     order("created_at desc").limit(n)
   }
-
-  def set_report_type
-    self.report_type = search_type
-  end
 end

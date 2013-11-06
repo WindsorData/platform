@@ -6,6 +6,7 @@ class Constants
   
   INCOMING_PEERS_SEARCH = "Incoming Peers"
   PEERS_PEERS_SEARCH = "Peers Peers"
+  COMPANY_PEERS_SEARCH = "Peer Group"
 
   TOP_5_FILE = 'top5'
   GUIDELINESS_FILE = 'guidelines'
