@@ -17,7 +17,6 @@
 
 class PeersPeersSearch < Search
   attr_accessible :peers, :tickers
-  validates :tickers, presence: true
 
   before_create :set_report_type
 
