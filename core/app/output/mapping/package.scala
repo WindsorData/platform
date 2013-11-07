@@ -145,6 +145,10 @@ package object mapping {
       Feature('metrics, 'typeIn, 1, 'weight))
 
   def executiveMapping = Seq(
+    Gap, // GICS Industry
+    Gap, // Annual Rev
+    Gap, // Market Cap
+    Gap, // Proxy Shares
     Gap,
     //Exec Data
     Feature('lastName),
