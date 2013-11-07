@@ -40,7 +40,11 @@ class CompaniesController < ApplicationController
       peer: peer
     }
 
-    RestClient.post(path, payload.to_json, {content_type: :json}) do |response, _|
+    RestClient::Request.execute(
+      :method => :delete, 
+      :url => path, 
+      :payload => payload.to_json, 
+      :headers => {content_type: :json}) do |response, _|
       if response.code == 200
         flash[:notice] = "Information deleted successfully for company peer #{company_peer}, peer #{peer}" 
       else
