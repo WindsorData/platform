@@ -26,6 +26,9 @@ group :assets do
   gem 'zurb-foundation', '~> 4.0.0'
 end
 
+group :development do
+  gem "bullet"
+end
 group :test, :development, :integration do
   gem 'pry'
   gem 'debugger'

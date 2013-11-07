@@ -36,6 +36,9 @@ GEM
     binding_of_caller (0.7.1)
       debug_inspector (>= 0.0.1)
     builder (3.0.4)
+    bullet (4.7.1)
+      activesupport
+      uniform_notifier (>= 1.4.0)
     cancan (1.6.10)
     capybara (2.0.3)
       mime-types (>= 1.16)
@@ -225,6 +228,7 @@ GEM
       kgio (~> 2.6)
       rack
       raindrops (~> 0.7)
+    uniform_notifier (1.4.0)
     warden (1.2.1)
       rack (>= 1.0)
     websocket (1.0.7)
@@ -239,6 +243,7 @@ PLATFORMS
 DEPENDENCIES
   american_date
   annotate
+  bullet
   cancan
   capybara
   coffee-rails (~> 3.2.1)
