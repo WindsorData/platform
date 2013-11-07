@@ -11,22 +11,22 @@
     </div>
   </div>  
   <div class="large-3 columns">
-    <div class="recent-search-container">
-      <h2 class="title">Tickers</h2>
-      <% @search.tickers.split(";").each do |s| %>
-        <p><%= s %></p>
-      <% end %>
-    </div>
+      <div class="recent-search-container">
+        <h2 class="title">Tickers</h2>
+        <% unless @search.tickers.blank? %>
+          <% @search.tickers.split(";").each do |s| %>
+            <p><%= s %></p>
+          <% end %>
+        <% end %>
+      </div>
   </div>
   <div class="large-9 columns">
-    <% if @search.peers %>
-      <h3>Peers</h3>
-      <ul class="square list-inside">
-        <% @search.peers.split(";").each do |s| %>
-          <li><%= s %></li>
-        <% end %>
-      </ul>
-    <% end %>
+    <h3>Peers</h3>
+    <ul class="square list-inside">
+      <% @search.peers.split(";").each do |s| %>
+        <li><%= s %></li>
+      <% end %>
+    </ul>
   </div>
   <div class="large-12 columns">
     <hr>

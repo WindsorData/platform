@@ -30,13 +30,14 @@ class CompanyPeersController < ApplicationController
   end
 
   def peers_peers_ticker_list_result
-    tickers = params[:company_peer_tickers_manual].split(" ").map(&:upcase)
+    search_tickers = params[:company_peer_tickers_manual].split(" ").map(&:upcase)
     path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_ticker_list_path    
-    @json_query = { tickers: tickers }.to_json
-
+    @json_query = { tickers: search_tickers }.to_json
     find_peers(path, @json_query)
-    PeersPeersSearch.create(user: current_user, company: current_user.company, tickers: tickers.join(";"))
-    render "peers_peers_result"  
+    
+    peers = @companies_peers["primaryPeers"].map{ |x| "#{x["peerCoName"]}(#{x["peerTicker"]})"}.join(";")
+    PeersPeersSearch.create(user: current_user, company: current_user.company, peers: peers)
+    render "peers_peers_result" 
   end
 
   # GET /company_peers.json
