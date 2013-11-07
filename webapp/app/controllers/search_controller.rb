@@ -45,8 +45,11 @@ class SearchController < ApplicationController
   end
 
   def group_search
-    tickers = Group.find(params[:group]).tickers.map(&:cusip)
-    json_query = { range: 3, companies: tickers }.to_json
+    group = Group.find(params[:group])
+    tickers = group.tickers.map(&:ticker)
+    CompanyPeerSearch.create(user: current_user, company: current_user.company, tickers: tickers.join(";"), group_name: group.name, report_type: params[:report])
+
+    json_query = { range: 3, companies: group.tickers.map(&:cusip) }.to_json
     perform_search(json_query, params[:report])
   end
 
