@@ -22,8 +22,10 @@ class CompanyPeersController < ApplicationController
     @company_peer = CompanyPeer.find_by_ticker(ticker)
     path = Rails.application.config.backend_host + Rails.application.config.post_peers_peers_single_ticker_path
     @json_query = { ticker: ticker }.to_json
-
     find_peers(path, @json_query)
+
+    check_matches
+
     peers = @companies_peers["primaryPeers"].map{ |x| "#{x["peerCoName"]}(#{x["peerTicker"]})"}.join(";")
     PeersPeersSearch.create(user: current_user, company: current_user.company, tickers: ticker, peers: peers)
     render "peers_peers_result"
@@ -35,9 +37,21 @@ class CompanyPeersController < ApplicationController
     @json_query = { tickers: search_tickers }.to_json
     find_peers(path, @json_query)
     
+    check_matches
+    
     peers = @companies_peers["primaryPeers"].map{ |x| "#{x["peerCoName"]}(#{x["peerTicker"]})"}.join(";")
+
     PeersPeersSearch.create(user: current_user, company: current_user.company, peers: peers)
     render "peers_peers_result" 
+  end
+
+  def check_matches
+    @matches = {}
+    primary_tickers = @companies_peers["primaryPeers"].map{ |x| x["peerTicker"] }
+    secondary_tickers = @companies_peers["normalized"].map{ |x| x["secondPeer"] }
+    secondary_tickers.each{ |s|
+      @matches[s] = primary_tickers.include?(s)
+    }    
   end
 
   # GET /company_peers.json
