@@ -45,7 +45,9 @@
         <div class="section-container accordion" data-section="accordion">
           <% @companies_peers["normalized"].each{|secondary| %>
             <section>
-              <p class="title" data-section-title><%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
+              <p class="title" data-section-title>
+                <%= check_box_tag nil, nil, @matches[secondary['secondPeer']], disabled: true %>
+                <%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
                 <span class="right"><%= secondary["weight"] %></span>
               </p>
               <div class="content" data-section-content>
@@ -64,7 +66,9 @@
         <div class="section-container accordion" data-section="accordion">
           <% @companies_peers["unnormalized"].each{|secondary| %>
             <section>
-              <p class="title" data-section-title><%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
+              <p class="title" data-section-title>
+                <%= check_box_tag nil, nil, @matches[secondary['secondPeer']], disabled: true %>
+                <%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
                 <span class="right"><%= secondary["weight"].to_i %></span>
               </p>
               <div class="content" data-section-content>
