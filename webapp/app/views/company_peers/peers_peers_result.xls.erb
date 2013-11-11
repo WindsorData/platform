@@ -20,17 +20,34 @@
       <Row ss:StyleID="1">
         <Cell><Data ss:Type="String">Company Name</Data></Cell>
         <Cell><Data ss:Type="String">Ticker</Data></Cell>
-        <Cell><Data ss:Type="String">Score</Data></Cell>
+        <Cell><Data ss:Type="String">Normalized</Data></Cell>
         <Cell><Data ss:Type="String">Simple Count</Data></Cell>
       </Row>
-    <% @companies_peers.each do |peer| %>
+      <% @companies_peers.each do |peer| %>
       <Row>
         <Cell><Data ss:Type="String"><%= peer[1][0]["secondPeerName"] %></Data></Cell>
         <Cell><Data ss:Type="String"><%= peer[1][0]["secondPeer"]  %></Data></Cell>
         <Cell><Data ss:Type="String"><%= peer[1][0]["weight"] %></Data></Cell>
         <Cell><Data ss:Type="Number"><%= peer[1][1]["weight"] %></Data></Cell>
       </Row>
-    <% end %>
+      <% end %>
     </Table>
+  </Worksheet>
+
+  <Worksheet ss:Name="primary peers">
+    <Table>
+      <Column ss:Width="250"/>
+      <Column ss:Width="150"/>
+      <Row ss:StyleID="1">
+        <Cell><Data ss:Type="String">Company Name</Data></Cell>
+        <Cell><Data ss:Type="String">Ticker</Data></Cell>
+      </Row>
+      <% @primary_peers.each do |peer| %>
+      <Row>
+        <Cell><Data ss:Type="String"><%= peer["peerCoName"] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= peer["peerTicker"]  %></Data></Cell>
+      </Row>
+      <% end %>
+    </Table>    
   </Worksheet>
 </Workbook>

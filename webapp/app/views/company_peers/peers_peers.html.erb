@@ -1,4 +1,6 @@
-<a href="#" id="toggleFormLink">Switch to Single Ticker</a>
+<% content_for :head do %>
+  <%= javascript_include_tag "company_peers" %>
+<% end %>
 
 <div id="ticker_list_form" >
   <h1>Ticker List Manual</h1>
@@ -11,12 +13,12 @@
   <% end %>
 </div>
 
-<div id="single_ticker_form" class="hidden">
+<div id="single_ticker_form">
   <h1>Target Company Ticker</h1>
   <hr>
   <%= form_tag(peers_peers_single_ticker_result_path) do %>
     <div class="field">
-      <%= text_field_tag :company_peer_ticker %>
+      <%= text_field_tag :company_peer_ticker, nil, class: "company-peer-ticker" %>
       <%= submit_tag 'Search', class: 'button success margin-top-1em' %>
     </div>
   <% end %>

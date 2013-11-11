@@ -31,37 +31,50 @@ trait SheetDefinition {
  * Excel file, for both reading from and writing to it
  *
  * @author flbulgarelli
- * @author metalkorva
+ * @author mcorbanini
  */
-case class Area(
-  schema: TModel,
-  offset: Offset,
-  limit: Option[Int],
-  orientation: Layout,
-  columns: Seq[Strip]) extends SheetDefinition {
+trait AreaLike {
+  val offset: Offset
+  val schema: TModel
+  val limit: Option[Int]
+  val columns: Seq[Strip]
 
-  def read(sheet: Sheet): Validated[Seq[Model]] =
-    orientation.read(this, sheet)
-
-  def write(models: Seq[Model])(sheet: Sheet) = 
-    orientation.write(this, sheet, models)
-  
   private[reader] def makeModel(rows: Seq[Row], orientation: Seq[Row] => CellReader) : Validated[Model]= {
     val modelBuilder = new ModelBuilder()
     val reader = orientation(rows)
     columns
       .impureMap(column => Validated(column.read(reader, schema, modelBuilder)))
-    	.concat
-    	.map(_ => modelBuilder.build)
+      .concat
+      .map(_ => modelBuilder.build)
   }
 
-  def continually = Stream.continually[SheetDefinition](this)
   /**limits the list of rows groups, if necessary*/
   private [reader] def truncate(rowsGroups: Seq[List[Row]]) =
     limit match {
       case None => rowsGroups
       case Some(limit) => rowsGroups.take(limit)
     }
+}
+
+/**
+ * A standard implementation of an Area.
+ *
+ * @author mcorbanini
+ */
+case class Area(
+  schema: TModel,
+  offset: Offset,
+  limit: Option[Int],
+  orientation: Layout,
+  columns: Seq[Strip]) extends AreaLike with SheetDefinition {
+
+  def read(sheet: Sheet): Validated[Seq[Model]] =
+    orientation.read(this, sheet)
+
+  def write(models: Seq[Model])(sheet: Sheet) = 
+    orientation.write(this, sheet, models)
+
+  def continually = Stream.continually[SheetDefinition](this)
 }
 
 object AreaGap extends SheetDefinition {

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+
+  <Styles>
+    <ss:Style ss:ID="1">
+      <ss:Font ss:Bold="1"/>
+      <ss:Alignment ss:Horizontal="Center"/>   
+    </ss:Style>
+    <ss:Style ss:ID="2">
+      <ss:Alignment ss:Horizontal="Center"/>   
+    </ss:Style>
+    <ss:Style ss:ID="3">
+      <ss:Font ss:Color="red"/>
+    </ss:Style>
+  </Styles>
+  <Worksheet ss:Name="File upload logs">
+    <Table>
+      <Column ss:Width="250"/>
+      <Column ss:Width="150"/>
+      <Column ss:Width="100"/>
+      <Column ss:Width="300"/>
+      <Column ss:Width="100"/>
+      <Column ss:Width="700"/>
+      <Row ss:StyleID="1">
+        <Cell><Data ss:Type="String">User</Data></Cell>
+        <Cell><Data ss:Type="String">Date</Data></Cell>      
+        <Cell><Data ss:Type="String">File Type</Data></Cell>        
+        <Cell><Data ss:Type="String">File Name</Data></Cell>                
+        <Cell><Data ss:Type="String">Ticker</Data></Cell>
+        <Cell><Data ss:Type="String">Messages</Data></Cell>
+      </Row>
+    <% @logs.each do |log| %>
+      <% detail_upload_file = log.detail_upload_files.first %>
+      <Row ss:StyleID="2">
+        <Cell><Data ss:Type="String"><%= log.user.email %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= log.created_at %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= log.upload_type %></Data></Cell>          
+        <Cell>
+          <Data ss:Type="String">
+          <% unless detail_upload_file.blank? %>
+            <%= detail_upload_file.file_name %>
+          <% end %>
+          </Data>
+        </Cell>
+        <Cell>
+          <Data ss:Type="String">
+          <% unless detail_upload_file.blank? %>
+            <%= detail_upload_file.ticker %>
+          <% end %>
+          </Data>
+        </Cell>
+        <Cell>
+          <Data ss:Type="String">
+          <% unless detail_upload_file.blank? %>
+            <% JSON.parse(detail_upload_file["messages"]).each do |message| %>
+              <%= message %>
+            <% end %>
+          <% end %>
+          </Data>
+        </Cell>
+      </Row>
+    <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

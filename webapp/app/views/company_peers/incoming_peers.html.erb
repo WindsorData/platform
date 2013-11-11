@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "company_peers" %>
+<% end %>
+
 <h1>Search For Companies</h1>
 <hr>
 <div class="row">
@@ -6,7 +10,7 @@
       <p>Target Company Ticker</p>
     </div>
     <div class="large-7 columns">
-      <%= text_field_tag :company_peer_ticker %>
+      <%= text_field_tag :company_peer_ticker, nil, class: "company-peer-ticker" %>
     </div>
     <div class="large-2 columns">
       <%= submit_tag 'Search', class: 'button postfix' %>

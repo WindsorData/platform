@@ -126,7 +126,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
         BadRequest(views.html.searchCompanies(formWithErrors, db.findAllCompaniesId, YearRanges, routes.Application.doStandardSearch())),
       success = values => values match {
         case (names, range) =>
-          createSpreadsheetResult(writer, names, range)(db) match {
+          createCompanyBasedSpreadsheetResult(writer, names, range)(db) match {
             case Some(response) => response
             case None => Ok(views.html.searchWithoutResults())
           }

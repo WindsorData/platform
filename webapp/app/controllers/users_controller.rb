@@ -29,8 +29,15 @@ class UsersController < ApplicationController
 
   def index
     @user = User.new
-    @users = User.order("email asc").paginated(params)
+    @users = User.order("email asc").paginated(params).includes(:company)
     index!
+  end
+
+  def destroy
+    Search.where(user_id: params["id"]).each do |s|
+      s.destroy
+    end
+    destroy!
   end
 
   private

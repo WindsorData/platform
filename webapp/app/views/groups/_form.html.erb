@@ -1,3 +1,7 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "groups" %>
+<% end %>
+
 <%= form_for(@group) do |f| %>
   <% if @group.errors.any? %>
     <%= render 'layouts/model_errors', errors: @group.errors %>

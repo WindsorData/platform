@@ -56,6 +56,7 @@ trait DocSrcCombiner
     dateCellToValue(r.get(0).getCell(2)).map { date =>
       Model(
         'disclosureFiscalYear -> Value(date.getYear),
+        'disclosureFiscalYearDate -> Value(date.toDate),
         'def14a -> Value(blankToNone(_.getDateCellValue)(r.get(1).getCell(2)), None, None),
         'tenK -> Value(blankToNone(_.getDateCellValue)(r.get(2).getCell(2)), None, None),
         'otherDocs -> Col((4 to 12).filterNot(_ == 8).map { i =>

@@ -24,7 +24,11 @@
             <td><%= user.company.try(:name) %></td>
             <td><%= user.role %></td>
             <td class="icon-column text-center"><%= link_to "Edit", edit_user_path(user), class: 'btn-icon' %></td>
-            <td class="icon-column text-center"><%= link_to "Delete", user, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %></td>
+            <td class="icon-column text-center">
+              <% unless user.id == current_user.id %>
+                <%= link_to "Delete", user, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn-icon' %>
+              <% end %>
+            </td>
           </tr>
         <% end %>
       </tbody>

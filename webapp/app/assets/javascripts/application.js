@@ -19,7 +19,6 @@
 //= require jquery.tokeninput
 //= require jquery.placeholder.min
 //= require prefixfree.min
-//= require_tree
 
 $(function() {
   $(".close").click(function () {

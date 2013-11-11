@@ -1,7 +1,5 @@
 package controllers
 
-import controllers.generic.SpreadsheetDownloader
-
 import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.mvc._
@@ -10,6 +8,7 @@ import persistence.query._
 import persistence._
 
 import model.Commons._
+import model.PeerCompanies._
 
 import parser._
 
@@ -20,6 +19,8 @@ import output._
 import controllers.generic.SpreadsheetDownloader
 import output.PeersPeersReport
 import output.StandardTop5Writer
+import java.text.SimpleDateFormat
+import org.joda.time.format.DateTimeFormat
 
 
 object Api extends Controller with SpreadsheetDownloader {
@@ -95,7 +96,7 @@ object Api extends Controller with SpreadsheetDownloader {
     request.body.asJson.map { json =>
       val range = (json \ "range").as[Int]
       val companies = (json \ "companies").as[Seq[String]]
-      createSpreadsheetResult(writer, companies, range)(db) match {
+      createCompanyBasedSpreadsheetResult(writer, companies, range)(db) match {
         case Some(response) => response
         case None => NotFound("not found companies")
       }
@@ -106,9 +107,46 @@ object Api extends Controller with SpreadsheetDownloader {
   def bodReport = companiesReport(BodWriter, BodDb)
   def fullReport = companiesReport(FullTop5Writer, ExecutivesDb)
 
+
+  def rawDataReport(reportBuilder: ReportBuilder)(dataFrom: JsValue => Seq[Model]) =
+    Action { request =>
+      request.body.asJson.map { json =>
+        val result = createSpreadsheetResult(
+          PeersWriter(reportBuilder),
+          dataFrom(json),
+          0)
+        result match {
+          case Some(response) => response
+          case None => NotFound("not found companies")
+        }
+      }.getOrElse(BadRequest("invalid json"))
+    }
+
+  def rawPeersPeers =
+    rawDataReport(PeersPeersReport) { json =>
+      val ticker = (json \ "ticker").as[String]
+      PeersPeersReport.raw(PeersDb.peersOfPeersOf(ticker))
+    }
+
+  def rawIncomingPeers =
+    rawDataReport(IncomingPeersReport) { json =>
+      val ticker = (json \ "ticker").as[String]
+      IncomingPeersReport.raw(PeersDb.indirectPeersOf(ticker))
+    }
+
+  def rawPeersPeersFromPrimaryPeers =
+    rawDataReport(PeersPeersReport) { json =>
+      val tickers = (json \ "tickers").as[Seq[String]]
+      val peers = PeersDb.peersOfPeersFromPrimary(tickers: _*) match {
+        case (primaryPeers, secondaryPeers) =>
+          primaryPeers.map(ppeers => TPeers.exampleWith(ppeers.elements.toSeq: _*)) -> secondaryPeers
+      }
+      PeersPeersReport.raw(peers)
+    }
+
   def incomingPeers = Action { request =>
     val ticker = (request.body.asJson.get \ "ticker").as[String]
-    Ok(toJson(PeersDb.indirectPeersOf(ticker).map(_.asJson)))
+    Ok(toJson(IncomingPeersReport(PeersDb.indirectPeersOf(ticker)).map(_.asJson)))
   }
 
   def peersPeers = Action { request =>
@@ -118,8 +156,9 @@ object Api extends Controller with SpreadsheetDownloader {
 
   def peersPeersFromPrimaryPeers = Action { request =>
     val tickers = (request.body.asJson.get \ "tickers").as[Seq[String]]
+
     Ok(toJson(PeersPeersReport(
-      PeersDb.namesFromPrimaryPeers(tickers: _*) -> PeersDb.peersOf(tickers: _*)).asJson))
+      PeersDb.peersOfPeersFromPrimary(tickers: _*)).asJson))
   }
 
   def allPeersTickers = Action { request =>
@@ -136,5 +175,34 @@ object Api extends Controller with SpreadsheetDownloader {
     Ok
   }
 
+  def removePeersCompany(ticker: String) = Action { request =>
+    PeersDb.removeCompany(ticker) match {
+      case Left(model) => NotFound(toJson(model.asJson))
+      case Right(models) => Ok(toJson(models.map(_.asJson)))
+    }
+  }
+
+  def removeSpecificPeer = Action { request =>
+
+    request.body.asJson.map { json =>
+      val fiscalYear = (json \ "fiscalYear").as[Int]
+      val ticker = (json \ "from").as[String]
+      val peerTicker = (json \ "peer").as[String]
+
+      val fillingDate = DateTimeFormat.forPattern("MM/dd/YYYY").parseDateTime((json \ "fillingDate").as[String]).toDate
+      val fillingDateFormatter = new SimpleDateFormat("yyyy-MM-dd")
+      val formattedFillingDate =
+        DateTimeFormat.forPattern("yyyy-MM-dd")
+          .parseDateTime(fillingDateFormatter.format(fillingDate))
+
+      PeersDb.removeSpecificPeer(ticker, peerTicker, fiscalYear, formattedFillingDate) match {
+        case Left(model) => NotFound(toJson(model.asJson))
+        case Right(models) => Ok(toJson(models.map(_.asJson)))
+      }
+    }.getOrElse(BadRequest(toJson(Model('error -> Value("invalid json")).asJson)))
+
+  }
+
 }
+
 

@@ -1,0 +1,45 @@
+<div class="row">
+  <div class="large-12 columns">
+    <h1><%= @search.report_type %></h1>
+    <hr>
+    <div class="search-info-container">
+      <h4 class="title">SEARCH INFO</h4>
+      <p class="info"> Requested by <b><%= @search.user.email %></b> 
+      <%= "from " + @search.company.name if @search.company %>
+      on <b><%= @search.created_at.strftime("%Y-%m-%d at %H:%M") %></b>
+      </p>
+    </div>
+  </div>
+  <% if @search.group_name %>
+    <div class="large-3 columns">
+      <div class="recent-search-container">
+        <h2 class="title">Group</h2>
+        <p><%= @search.group_name %></p>
+      </div>
+    </div>
+  <% end %>
+  <div class="large-3 columns">
+      <div class="recent-search-container">
+        <h2 class="title">Tickers</h2>
+        <% unless @search.tickers.blank? %>
+          <% @search.tickers.split(";").each do |s| %>
+            <p><%= s %></p>
+          <% end %>
+        <% end %>
+      </div>
+  </div>
+  <% if @search.peers %>
+    <div class="large-9 columns">
+      <h3>Peers</h3>
+      <ul class="square list-inside">
+        <% @search.peers.split(";").each do |s| %>
+          <li><%= s %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <div class="large-12 columns">
+    <hr>
+    <%= link_to "Back", quick_search_path %>
+  </div>
+</div>

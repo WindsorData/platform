@@ -19,12 +19,15 @@ POST    /api/companies/report                            controllers.Api.top5Rep
 POST    /api/companies/report/bod                        controllers.Api.bodReport
 POST    /api/companies/report/full                       controllers.Api.fullReport
 DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
-DELETE  /api/companies/peers                             controllers.Api.removePeersData
+DELETE  /api/companies/peers                             controllers.Api.removeSpecificPeer
 
 #Peers Reports
 POST    /api/companies/report/peers/incoming             controllers.Api.incomingPeers
+POST    /api/companies/report/peers/incoming/raw         controllers.Api.rawIncomingPeers
 POST    /api/companies/report/peers/peers                controllers.Api.peersPeers
+POST    /api/companies/report/peers/peers/raw            controllers.Api.rawPeersPeers
 POST    /api/companies/report/peers/peersFromPrimary     controllers.Api.peersPeersFromPrimaryPeers
+POST    /api/companies/report/peers/peersFromPrimary/raw controllers.Api.rawPeersPeersFromPrimaryPeers
 GET     /api/companies/report/peers/tickers              controllers.Api.allPeersTickers
 
 ## Upload files

@@ -2,6 +2,14 @@ package libt
 
 import java.util.Date
 import libt.util._
+import scala.util.Try
+import org.joda.time.DateTime
+import libt.Col
+import libt.Route
+import scala.Some
+import libt.Col
+import libt.Route
+import scala.Some
 
 trait ElementValueOps { self : Element =>
   def isEmpty(route:PathPart) = (this / route).rawValue.isEmpty
@@ -144,6 +152,9 @@ case class Col(elements: Element*)
     }.force: _*)
     case _ => incompatibleTypes
   }
+
+  def map(f: Element => Element) = Col(elements.map(f): _*)
+
 }
 
 /*=======Model=======*/
@@ -167,7 +178,9 @@ trait ModelAlgebraOps {  this : Model =>
   /**Creates a new model that is a submodel of this one that only
     * contains the elements of the given mask*/
   def intersect(mask: Seq[Path]) =
-    Model(mask.map(path => (path.last.routeValue -> this(path))).toSet)
+    Model(mask
+      .filter(path => Try(this(path)).isSuccess )
+      .map(path => (path.last.routeValue -> this(path))).toSet)
 }
 
 case class Model(elements: Set[(Symbol, Element)])
@@ -178,7 +191,16 @@ case class Model(elements: Set[(Symbol, Element)])
 
   private val elementsMap = elements.toMap
 
-  def get(key: Symbol) =  elementsMap.get(key)
+  def _get(key: Symbol) = elementsMap.get(key)
+
+  def get(key: Symbol): Option[Element] = _get(key) match {
+    case None if key == 'disclosureFiscalYearDate =>
+      Some((this / 'disclosureFiscalYear).asValue[Int].map{ year =>
+        new DateTime().withDayOfMonth(1).withMonthOfYear(1).withYear(year).toDate
+      })
+    case it => it
+  }
+
   def contains(key: Symbol) = elementsMap.contains(key)
 
   def mergeTypeSafe(other: Model): Model =
@@ -209,6 +231,7 @@ case class Model(elements: Set[(Symbol, Element)])
     case _ => incompatibleTypes
   }
 }
+
 object Model {
   def apply(elements: (Symbol, Element)*): Model = Model(elements.toSet)
 

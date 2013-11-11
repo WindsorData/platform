@@ -1,3 +1,9 @@
+<% content_for :head do %>
+  <script src="/assets/select2.min.js" type="text/javascript" ></script>
+  <link rel="stylesheet" href="/assets/select2.custom.css">
+  <%= javascript_include_tag "upload_log" %>
+<% end %>
+
 <div class="row">
   <div class="large-12 columns">
     <h1>Upload Log</h1>
@@ -5,24 +11,22 @@
   </div>
 
   <div class="large-3 columns" id="forms-container">
-    <%= form_tag(:audit_log, method: 'get', class: "main-form custom") do %>
-        <%= label_tag :user %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
-        <%= label_tag :ticker %> <%= select_tag :ticker_name, options_from_collection_for_select(@tickers, "ticker", "ticker"), {include_blank: true} %>
-        Created date <%= text_field_tag(:date_since) %>
+    <%= form_tag(search_upload_log_path, method: 'get', remote: true, class: "main-form custom") do %>
+        <%= label_tag :user %>
+        <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
+        
+        <%= label_tag "Ticker" %>
+        <%= select_tag "upload-log-ticker", options_from_collection_for_select(@tickers, "ticker", "ticker"), {include_blank: true, 'data-customforms' => "disabled"} %>
+        <%= label_tag "Created date" %> <%= text_field_tag(:date_since) %>
         to <%= text_field_tag(:date_to) %>
-        <button type="submit" class="button postfix success">Search</button>
+        <button id="search-button" type="submit" class="button success" name="display_search">Search</button>
     <% end %>
   </div>
 
-  <div class="large-9 columns log-container">
-    <% @logs.each do |log| %>
-      <div class="log-item">
-        <%= content_tag :div, log.user.email, class: "user" %>
-        <%= content_tag :div, log.created_at, class: "date" %>
-        <%= content_tag :div, log.upload_type, class: "file-type" %>
-        <%= render 'layouts/upload_results', results: log.detail_upload_files %>
-      </div>
-    <% end %>
-    <%= paginate @logs %>
+  
+
+  <div id="log-container" class="large-9 columns log-container">
+    <!-- ajax -->
   </div>
+
 </div>

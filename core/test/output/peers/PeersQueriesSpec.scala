@@ -42,8 +42,8 @@ class PeersQueriesSpec extends FlatSpec {
   behavior of "Peers Queries for Reports"
 
     it should "Get collection that have a target Company as a Peer" in new Fixture {
-      assert(db.indirectPeersOf("A").map(_ - 'peerCoName).toSet ===
-        Set(Model('ticker -> Value("B")), Model('ticker -> Value("C"))))
+      assert(db.indirectPeersOf("A").exists(m => m /!/ 'ticker == "B"))
+      assert(db.indirectPeersOf("A").exists(m => m /!/ 'ticker == "C"))
     }
 
     it should "Get Direct Peers for a single target Company" in new Fixture {

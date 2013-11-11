@@ -73,6 +73,7 @@ WindosorFrontend::Application.configure do
   config.get_company_peers_path ='/api/companies/report/peers/tickers'
   config.post_incoming_peers_path = '/api/companies/report/peers/incoming'
   config.post_peers_peers_single_ticker_path = '/api/companies/report/peers/peers'
+  config.post_peers_peers_raw_data_path ="/api/companies/report/peers/peers/raw"
   config.post_peers_peers_ticker_list_path = '/api/companies/report/peers/peersFromPrimary'
 
   # Get search form values

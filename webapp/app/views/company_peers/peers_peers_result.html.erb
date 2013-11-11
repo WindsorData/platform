@@ -1,74 +1,111 @@
+<% content_for :head do %>
+  <%= javascript_include_tag "company_peers" %>
+<% end %>
+
 <% if @company_peer %>
   <%= @company_peer.name %> (<%= @company_peer.ticker %>) "SECONDARY PEER"
 <% end %></br></br>
 
-<% path = request.path == "/company_peers/peers_peers_ticker_list_result" ? export_peers_peers_ticker_list_path(format: "xls") : export_peers_peers_single_ticker_path(format: "xls") %>
+<% unless @companies_peers["normalized"].blank? %>
+  <% path = request.path == "/company_peers/peers_peers_ticker_list_result" ? export_peers_peers_ticker_list_path(format: "xls") : export_peers_peers_single_ticker_path(format: "xls") %>
 
-<%= form_tag(path) do %>
-  <%= hidden_field_tag 'json_query', @json_query %>
-  <%= submit_tag 'Download XLS', class: 'big-button' %>
-<% end %>
+  <%= form_tag(path) do %>
+    <%= hidden_field_tag 'json_query', @json_query %>
+    <%= submit_tag 'Download XLS', class: 'big-button' %>
+  <% end %>
 
-<div class="row">
-  <div class="large-4 columns">
-    <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized
-    <input type="radio" name="secondary_type" value="Unnormalized">Unnormalized
-  </div>
-  <div class="large-4 columns">
-    <%= select_tag :topAmount, options_for_select((5..50).step(5).push("All results"), "All results") %>
-  </div>
-  <div class="large-4 columns">
-    <% if @company_peer %>
-      <%= @company_peer.name %> (<%= @company_peer.ticker %>) "PRIMARY PEER"
-    <% end %>
-  </div>
-</div>
 
-<div class="row">
-  <div class="large-8 columns">
-  
-    <div id="normalized">
-      <div class="section-container accordion" data-section="accordion">
-        <% @companies_peers["normalized"].each{|secondary| %>
-          <section>
-            <p class="title" data-section-title><%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
-              <span class="right"><%= secondary["weight"] %></span>
-            </p>
-            <div class="content" data-section-content>
-              <% secondary["primaryPeersWeights"].each{|primary| %>
-                <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)
-                <span class="right"><%= primary["weight"] %></span></br>                     
-              <% } %>
-            </div>
-          </section>
-        <% } %>    
+  <% raw_path = request.path == "/company_peers/peers_peers_single_ticker_result" ? export_peers_peers_raw_data_path : 
+    export_peers_peers_raw_data_from_primary_path %>
+
+  <%= form_tag(raw_path) do %>
+    <%= hidden_field_tag 'json_query', @json_query %>
+    <%= submit_tag 'Download Raw Data', class: 'big-button' %>
+  <% end %>
+
+  <div class="row">
+    <div class="large-4 columns">
+      <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized
+      <input type="radio" name="secondary_type" value="Unnormalized">Unnormalized
+    </div>
+    <div class="large-4 columns">
+      <%= select_tag :topAmount, options_for_select((5..50).step(5).push("All results"), "All results") %>
+    </div>
+    <div class="large-4 columns">
+      <% if @company_peer %>
+        <%= @company_peer.name %> (<%= @company_peer.ticker %>) "PRIMARY PEER"
+      <% end %>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="large-8 columns">
+    
+      <div id="normalized">
+        <div class="section-container accordion" data-section="accordion">
+          <% @companies_peers["normalized"].each{|secondary| %>
+            <section>
+              <p class="title" data-section-title>
+                <%= check_box_tag nil, nil, @matches[secondary['secondPeer']], disabled: true %>
+                <%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
+                <span class="right"><%= secondary["weight"] %></span>
+              </p>
+              <div class="content" data-section-content>
+                <% secondary["primaryPeersWeights"].each{|primary| %>
+
+                  <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)<a href="<%= primary["link"] %>">LINK</a>
+                  <span class="right"><%= primary["weight"] %></span></br>                     
+                <% } %>
+              </div>
+            </section>
+          <% } %>    
+        </div>
+      </div>
+
+      <div id="unnormalized"  class="hidden">
+        <div class="section-container accordion" data-section="accordion">
+          <% @companies_peers["unnormalized"].each{|secondary| %>
+            <section>
+              <p class="title" data-section-title>
+                <%= check_box_tag nil, nil, @matches[secondary['secondPeer']], disabled: true %>
+                <%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
+                <span class="right"><%= secondary["weight"].to_i %></span>
+              </p>
+              <div class="content" data-section-content>
+                <% secondary["primaryPeersWeights"].each{|primary| %>
+                  <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)<a href="<%= primary["link"] %>">LINK</a>
+                  <span class="right"><%= primary["weight"].to_i %></span></br>
+                <% } %>
+              </div>
+            </section>      
+          <% } %>    
+        </div>
       </div>
     </div>
+  <% else %>
+    <h3>No results to show</h3>
+  <% end %>
 
-    <div id="unnormalized"  class="hidden">
-      <div class="section-container accordion" data-section="accordion">
-        <% @companies_peers["unnormalized"].each{|secondary| %>
-          <section>
-            <p class="title" data-section-title><%= secondary["secondPeerName"] %>(<%= secondary["secondPeer"] %>)
-              <span class="right"><%= secondary["weight"].to_i %></span>
-            </p>
-            <div class="content" data-section-content>
-              <% secondary["primaryPeersWeights"].each{|primary| %>
-                <%= primary["primaryPeerName"] %>(<%= primary["primaryPeer"] %>)
-                <span class="right"><%= primary["weight"].to_i %></span></br>
+  <% unless @companies_peers["primaryPeers"].blank? %>
+    <div class="large-4 columns">
+      <div id="primary-peers" class="panel">
+        <div class="row">          
+          <div class="large-8 columns">
+              <% @companies_peers["primaryPeers"].each{|primary| %>
+              <p class="peer-name" title="<%= primary["peerCoName"] %>">
+                    <%= primary["peerCoName"] %>
+              </p>
               <% } %>
-            </div>
-          </section>      
-        <% } %>    
+          </div>
+          <div class="large-4 columns">
+              <% @companies_peers["primaryPeers"].each{|primary| %>
+              <p class="peer-ticker" title="<%= primary["peerTicker"] %>">
+                <%= primary["peerTicker"] %> 
+              </p>
+              <% } %>
+          </div>         
+        </div><!-- row -->
       </div>
     </div>
-  </div>
-
-  <div class="large-4 columns">
-    <div id="primary-peers" class="panel">
-      <% @companies_peers["primaryPeers"].each{|primary| %>
-        <%= primary["peerCoName"] %>(<%= primary["peerTicker"] %>)</br>
-      <% } %>    
-    </div>
-  </div>
+  <% end %>
 </div>

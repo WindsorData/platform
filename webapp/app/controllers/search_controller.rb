@@ -4,11 +4,19 @@ class SearchController < ApplicationController
   def quick_search
     authorize!(:perform, :quick_search)
     @groups = current_user.is_client? ? Group.by_company(current_user.company) : @groups = Group.all
+    @users = User.order('email desc')
+  end
 
-    # Get n recent searches
-    n = 5
+  def filter_recent_search
+    authorize!(:perform, :quick_search)
+    user_id =  params["user"].to_i unless params["user"].blank?
+    n = params["results"].blank? ? 20 : params["results"].to_i
     if current_user.is_super?
-      @searches = Search.last_ordered_by_date(n)
+      if user_id
+        @searches = Search.last_ordered_by_date(n).where(user_id: user_id)
+      else
+        @searches = Search.last_ordered_by_date(n)
+      end
     elsif current_user.is_client?
       @searches = Search.by_company(current_user.company, n)
     end
@@ -20,7 +28,7 @@ class SearchController < ApplicationController
 
   def results
     params_hash = params.except(:controller, :action, :authenticity_token, :utf8, :role_form)
-    Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company, report_type: Constants::TOP5_REPORT)
+    Top5Search.create(user: current_user, json_query: params_hash.to_json, company: current_user.company)
     json_query = QueryGenerator.json_query(params_hash)
     path = Rails.application.config.backend_host + Rails.application.config.post_query_path
     headers ={content_type: :json}
@@ -37,14 +45,22 @@ class SearchController < ApplicationController
   end
 
   def group_search
-    tickers = Group.find(params[:group]).tickers.map(&:cusip)
-    json_query = { range: 3, companies: tickers }.to_json
+    group = Group.find(params[:group])
+    tickers = group.tickers.map { |company| company[:name] + " (" + company[:ticker] + ")" }
+    CompanyPeerSearch.create(user: current_user, company: current_user.company, tickers: tickers.join(";"), group_name: group.name, report_type: params[:report])
+    json_query = { range: 3, companies: group.tickers.map(&:cusip) }.to_json
     perform_search(json_query, params[:report])
   end
 
   def recent_search
     authorize!(:perform, :full_search)    
-    @params_hash = JSON.parse(Search.find(params[:id]).json_query)
+    @params_hash = JSON.parse(Top5Search.find(params[:id]).json_query)
+
+    render "top_5_recent_search_log"
+  end
+
+  def search_log
+    @search = Search.find(params[:id])
   end
 
   private
@@ -64,20 +80,6 @@ class SearchController < ApplicationController
         path = Rails.application.config.backend_host + Rails.application.config.post_download_full_report_path
     end
 
-    RestClient::Request.execute(:method => :post, 
-        :url => path, 
-        :payload => json_query, 
-        :headers => {content_type: :json}, 
-        :timeout => -1) do |response, _|
-
-      if response.code == 200
-        send_data(response.body, filename: "report.xls")
-      elsif response.code == 404
-        render "results"
-      else
-        flash[:error] = "There was an error"
-        render "results"
-      end
-    end
+    report_request(path, json_query, "report.xls")
   end
 end

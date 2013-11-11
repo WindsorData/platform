@@ -12,14 +12,17 @@ import libt.spreadsheet._
 import libt.spreadsheet.reader._
 import model.ExecutivesBod._
 import model.mapping.bod._
+import output.mapping._
+import model.mapping._
+import model.PeerCompanies._
+import model.mapping.peers._
 import libt.TModel
-import libt.spreadsheet.reader.Area
 import scala.Some
+import libt.spreadsheet.reader.Area
 import libt.spreadsheet.reader.ColumnOrientedLayout
 import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
-import output.mapping._
-import model.mapping._
+import libt.spreadsheet.writer.{FullWriteStrategy, CustomWriteArea, CustomWriteSheetDefinition, WriteStrategy}
 
 trait OutputWriter {
   val schema: TModel
@@ -33,7 +36,7 @@ trait OutputWriter {
     flatteningPath: Path,
     writeStrategy: WriteStrategy) =
       FlattedArea(
-        PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
+        PK(Path('ticker), Path('name), Path('disclosureFiscalYearDate)),
         PK(flatteningPK),
         flatteningPath,
         schema,
@@ -51,6 +54,24 @@ trait OutputWriter {
       }
     }
   }
+}
+
+case class PeersWriter(reportBuilder: ReportBuilder) extends OutputWriter {
+  val schema = TPeers
+  val fileName = reportBuilder.fileName
+
+  def peersArea(writeStrategy: PeersWriteStrategy) =
+    CustomWriteArea(
+      schema= schema,
+      offset= Offset(1,0),
+      limit= None,
+      orientation= ColumnOrientedLayout(RawValueReader),
+      columns= peersMapping,
+      writeStrategy= writeStrategy)
+
+
+  def write(out: Workbook, models: Seq[Model], yearRange: Int = 0): Unit =
+    WorkbookMapping(reportBuilder.defineWriters(this)).write(models, out)
 }
 
 object BodWriter extends OutputWriter with StandardMapping{
@@ -240,7 +261,7 @@ class Top5Writer extends OutputWriter {
   }
 
   /**
-    * [[output.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
+    * [[libt.spreadsheet.writer.WriteStrategy]] that writes TCompanyFiscalYears for a given yearOffset
     * @param range
     * @param yearOffset the negative year offset (0 is last year, 1 is previous year, and so on)
     */
@@ -248,24 +269,24 @@ class Top5Writer extends OutputWriter {
     def modelsForCurrentYear(models: Seq[Seq[Model]], year: Int): Seq[Model] =
       models.flatMap(it => if(it.size > year) Some(it(year)) else None)
 
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) = {
+    def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) = {
       if (range >= 0) {
         val validModels = ModelGrouper(models).map(_._2)
         yearOffset match {
-          case Some(pos) => area.layout.write(modelsForCurrentYear(validModels, pos), sheet, area)
-        	case None => area.layout.write(validModels.flatten, sheet, area)
+          case Some(pos) => area.customWrite(modelsForCurrentYear(validModels, pos), sheet)
+        	case None => area.customWrite(validModels.flatten, sheet)
         }		
       }
     }
   }
 
   /**
-    * [[output.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
+    * [[libt.spreadsheet.writer.WriteStrategy]] that writes only TCompanyFiscalYears for the last year
     */
   object LastYearWriteStrategy extends WriteStrategy {
-    override def write(models: Seq[Model], area: FlattedArea, sheet: Sheet) {
+    def write(models: Seq[Model], area: CustomWriteSheetDefinition, sheet: Sheet) {
       val validModels = ModelGrouper(models).map(_._2.head)
-      area.layout.write(validModels, sheet, area)
+      area.customWrite(validModels, sheet)
     }
   }
 

@@ -92,4 +92,11 @@ case class TModel(elementTypes: (Symbol, TElement)*)
   }
   
   def keys = elementTypes.map(_._1)
+
+  def exampleWith(elements: (Symbol, Element)*) =
+    Model(
+      this.keys.diff(elements.map(_._1))
+        .map( _ -> Value()) ++ elements : _*)
+
 }
+
