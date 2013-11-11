@@ -191,15 +191,7 @@ case class Model(elements: Set[(Symbol, Element)])
 
   private val elementsMap = elements.toMap
 
-  def _get(key: Symbol) = elementsMap.get(key)
-
-  def get(key: Symbol): Option[Element] = _get(key) match {
-    case None if key == 'disclosureFiscalYearDate =>
-      Some((this / 'disclosureFiscalYear).asValue[Int].map{ year =>
-        new DateTime().withDayOfMonth(1).withMonthOfYear(1).withYear(year).toDate
-      })
-    case it => it
-  }
+  def get(key: Symbol) = elementsMap.get(key)
 
   def contains(key: Symbol) = elementsMap.contains(key)
 
