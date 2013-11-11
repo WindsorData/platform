@@ -28,14 +28,16 @@
       </div>
     </div>
   <% end %>
-  <div class="large-9 columns">
-    <h3>Peers</h3>
-    <ul class="square list-inside">
-      <% @search.peers.split(";").each do |s| %>
-        <li><%= s %></li>
-      <% end %>
-    </ul>
-  </div>
+  <% if @search.peers %>
+    <div class="large-9 columns">
+      <h3>Peers</h3>
+      <ul class="square list-inside">
+        <% @search.peers.split(";").each do |s| %>
+          <li><%= s %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
   <div class="large-12 columns">
     <hr>
     <%= link_to "Back", quick_search_path %>

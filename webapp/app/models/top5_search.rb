@@ -22,6 +22,6 @@ class Top5Search < Search
   before_create :set_report_type
 
   def set_report_type
-    self.report_type = Constants::INCOMING_PEERS_SEARCH
+    self.report_type = Constants::TOP5_REPORT
   end
 end
