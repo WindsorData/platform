@@ -10,6 +10,14 @@
       </p>
     </div>
   </div>
+  <% if @search.group_name %>
+    <div class="large-3 columns">
+      <div class="recent-search-container">
+        <h2 class="title">Group</h2>
+        <p><%= @search.group_name %></p>
+      </div>
+    </div>
+  <% end %>
   <div class="large-3 columns">
       <div class="recent-search-container">
         <h2 class="title">Tickers</h2>
@@ -20,14 +28,6 @@
         <% end %>
       </div>
   </div>
-  <% if @search.group_name %>
-    <div class="large-3 columns">
-      <div class="recent-search-container">
-        <h2 class="title">Group</h2>
-        <p><%= @search.group_name %></p>
-      </div>
-    </div>
-  <% end %>
   <% if @search.peers %>
     <div class="large-9 columns">
       <h3>Peers</h3>
