@@ -21,7 +21,6 @@ class UploadLogController < ApplicationController
               .created_since(since)
               .created_to(to)
               .order('created_at desc').paginated(params)
-
     respond_to do |format|
       format.js { render 'display_search'}
     end
