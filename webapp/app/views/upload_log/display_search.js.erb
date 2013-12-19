@@ -1,3 +1,8 @@
 $("#log-container").html(
   "<%= escape_javascript(render 'upload_log/logs_container', logs: @logs)%>"
 );
+
+$(".pagination a").click(function (elem) {
+	$.get($(this).attr("href"));
+  return false;
+});
