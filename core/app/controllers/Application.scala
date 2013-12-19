@@ -48,8 +48,9 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newPeersBatch = uploadBatchSpreadSheets(entryReadersPeers)(PeersDb)
 
   def uploadBatchSpreadSheets(readers: Seq[EntryReader])(db: Persistence) =
-    UploadAndReadAction(db) {
-      data => keyed.Validated.flatConcat(readZipFileEntries(data.file.getAbsolutePath, readers).toList)
+    UploadAndReadAction(db) { data => {
+        readZipFileEntries(data.file.getAbsolutePath, readers)
+      }
     }
 
   def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
@@ -64,34 +65,39 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
           tickerName = ticker(workbook)
         }
 
-        keyed.Validated.flatConcat(Seq((originalFilename -> tickerName, reader.readFile(file.getAbsolutePath))))
+        Seq((originalFilename -> tickerName, reader.readFile(file.getAbsolutePath)))
       }
     }
 
-  def UploadAndReadAction(db: Persistence)(readOp: UploadData => keyed.Validated[FileAndTicker, Model]) =
+  def UploadAndReadAction(db: Persistence)(readOp: UploadData => Seq[(FileAndTicker, error.Validated[Seq[Model]])]) =
     UploadSpreadsheetAction {
-      case data =>
-        safeReadOp(readOp, data) match {
-          case Invalid(errors@_*) =>
-            data.request match {
-              case Accepts.Html() => BadRequest(views.html.parsingError(errors))
-              case Accepts.Json() => BadRequest(toJson(messagesToJson(errors)))
-            }
-          case result => {
-            db.update(result.get: _*)
-            data.request match {
-              case Accepts.Html() => Ok(views.html.companyUploadSuccess(result.messages))
-              case Accepts.Json() => Ok(toJson(messagesToJson(result.messages)))
-            }
+      case data => {
+        implicit def results2MessagesResults(results: Seq[(FileAndTicker, error.Validated[Seq[Model]])]): Seq[(FileAndTicker, Seq[String])] =
+          results.map { case (id, validated) => (id, validated.messages) }
+
+        val results = safeReadOp(readOp, data)
+        if (results.exists(_._2.isInvalid)) {
+          data.request match {
+            case Accepts.Html() => BadRequest(views.html.parsingError(results))
+            case Accepts.Json() => BadRequest(toJson(messagesToJson(results)))
           }
         }
+        else {
+          db.update(results.map(_._2).flatMap(_.get): _*)
+          data.request match {
+            case Accepts.Html() => Ok(views.html.companyUploadSuccess(results))
+            case Accepts.Json() => Ok(toJson(messagesToJson(results)))
+          }
+        }
+      }
+
     }
 
-  def safeReadOp(readOp: UploadData => keyed.Validated[FileAndTicker, Model], data: UploadData) : keyed.Validated[FileAndTicker, Model] = {
+  def safeReadOp(readOp: UploadData => Seq[(FileAndTicker, error.Validated[Seq[Model]])], data: UploadData) = {
     try {
       readOp(data)
     } catch {
-      case e : Exception => Invalid((data.originalName -> "Unknown", Seq(e.getMessage)))
+      case e : Exception => Seq((data.originalName -> "Unknown", Invalid(e.getMessage)))
     }
   }
 
