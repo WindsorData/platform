@@ -1,13 +1,20 @@
 <h1>Upload new file</h1>
 <hr>
 <div class="row">
+  
+
   <div class="large-3 columns">
+    <%= form_tag(export_database_inventory_path(format: "xls")) do %>
+    <%= submit_tag 'Database Inventory', class: 'big-button' %>
+  <% end %>
+  <hr>
     <%= form_tag(send_file_path, multipart: true, class: "custom") do %>
       <%= select_tag :type, options_for_select(Constants::FILE_TYPES) %>  
       <%= file_field_tag 'file', required: :true %>
       <br>
       <%= submit_tag 'Upload', class: 'button postfix success margin-top-1em' %>
   </div>
+
   <div class="large-9 columns log-container">
       <% if @upload_log %>
         <%= render 'layouts/upload_results', results: @upload_log.detail_upload_files %>

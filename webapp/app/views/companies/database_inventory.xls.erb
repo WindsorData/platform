@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
+  xmlns:x="urn:schemas-microsoft-com:office:excel"
+  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+  xmlns:html="http://www.w3.org/TR/REC-html40">
+
+  <Styles>
+    <ss:Style ss:ID="1">
+      <ss:Font ss:Bold="1"/>
+      <ss:Alignment ss:Horizontal="Center"/>   
+    </ss:Style>
+  </Styles>
+  <Worksheet ss:Name="Database Inventory">
+    <Table>
+      <Column ss:Width="250"/>
+      <Column ss:Width="150"/>
+      <Row ss:StyleID="1">
+        <Cell><Data ss:Type="String">Ticker</Data></Cell>
+        <Cell><Data ss:Type="String">Company Name</Data></Cell>
+        <Cell><Data ss:Type="String">Disclosure Fiscal Year</Data></Cell>
+      </Row>
+      <% @data.each do |item| %>
+      <Row>
+        <Cell><Data ss:Type="String"><%= item['ticker'] %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= item['name']  %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= item['disclosureFiscalYear']  %></Data></Cell>
+      </Row>
+    <% end %>
+    </Table>
+  </Worksheet>
+</Workbook>

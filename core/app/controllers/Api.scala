@@ -77,6 +77,11 @@ object Api extends Controller with SpreadsheetDownloader {
     }
   }
 
+  def allCompanies = Action { request =>
+    val results = ExecutivesDb.findAllMap(_.intersect(Seq(Path('ticker), Path('name), Path('disclosureFiscalYear))))
+    Ok(toJson(results.sortBy(_ /!/ 'ticker).map(_.asJson)))
+  }
+
   def companiesSearch = Action { request =>
     val json : JsValue = request.body.asJson.get
     val query: QueryExecutives = QueryParser.query(json)
@@ -178,7 +183,6 @@ object Api extends Controller with SpreadsheetDownloader {
   def removePeersCompany(ticker: String) = Action { request =>
     PeersDb.removeCompany(ticker) match {
       case Left(model) => NotFound(toJson(model.asJson))
-      case Right(models) => Ok(toJson(models.map(_.asJson)))
     }
   }
 
