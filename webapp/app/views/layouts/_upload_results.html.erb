@@ -4,8 +4,16 @@
     <%= content_tag :div, "Ticker: " + element.ticker, class: "ticker-name" %>
   <% end %>
   <ul class="no-bullet">
-    <% JSON.parse(element['messages']).each do |message| %>
-        <%= content_tag :li, message %>
-    <% end %>
+  	<% if !JSON.parse(element['messages']).empty? %>
+	    <% JSON.parse(element['messages']).each do |message| %>
+				<%= content_tag :li, :class => "error" do %>
+				  <%= message %>
+				<% end -%>
+	    <% end %>
+	  <% else %>
+	  	<%= content_tag :li, :class => "success" do %>
+			  File successfully parsed.
+			<% end -%>
+	  <% end %>
   </ul>
 <% end %>

@@ -247,7 +247,7 @@ class Top5Writer extends OutputWriter {
     WorkbookMapping(
       Seq(
         execDBArea(executivesRange - 1, Some(0)), //ExecDB
-        execDBArea(executivesRange - 2, Some(1)), //ExecDB -1 
+        execDBArea(executivesRange - 2, Some(1)), //ExecDB -1
         execDBArea(executivesRange - 3, Some(2)), //ExecDB -2
         execMetadataArea(executivesRange),
         stBonusPlanArea,
