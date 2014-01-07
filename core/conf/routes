@@ -14,6 +14,7 @@ GET     /api/schema/values/roles/scope                   controllers.Api.scope
 GET     /api/schema/values/roles/bod                     controllers.Api.bod
 GET     /api/schema/values/cashCompensations             controllers.Api.cashCompensations
 GET     /api/schema/values/equityCompensations           controllers.Api.equityCompensations
+GET     /api/companies/inventory                         controllers.Api.allCompanies
 POST    /api/companies/search                            controllers.Api.companiesSearch
 POST    /api/companies/report                            controllers.Api.top5Report
 POST    /api/companies/report/bod                        controllers.Api.bodReport
