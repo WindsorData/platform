@@ -18,6 +18,7 @@ class CompaniesController < ApplicationController
   def database_inventory_file
 
     @data = JSON.parse(RestClient.get("http://localhost:9000/api/companies/inventory"))
+
     respond_to do |format|
       format.xls { render 'database_inventory'}
     end

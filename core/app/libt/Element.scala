@@ -181,6 +181,11 @@ trait ModelAlgebraOps {  this : Model =>
     Model(mask
       .filter(path => Try(this(path)).isSuccess )
       .map(path => (path.last.routeValue -> this(path))).toSet)
+
+  def modify(f: ((Symbol, Element)) => ((Symbol, Element))): Model =
+    Model(this.elements.map { entry =>
+      if(Try(f(entry)).isSuccess) f(entry) else entry
+    })
 }
 
 case class Model(elements: Set[(Symbol, Element)])

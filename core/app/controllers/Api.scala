@@ -78,7 +78,21 @@ object Api extends Controller with SpreadsheetDownloader {
   }
 
   def allCompanies = Action { request =>
-    val results = ExecutivesDb.findAllMap(_.intersect(Seq(Path('ticker), Path('name), Path('disclosureFiscalYear))))
+    val results =
+      ExecutivesDb.findAllMap { model =>
+        model.intersect(Seq(Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Top5"))
+      } ++
+      BodDb.findAllMap { model =>
+        model.intersect(Seq(Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Bod"))
+      } ++
+      PeersDb.findAllMap { model =>
+        model
+          .intersect(Seq(Path('ticker), Path('companyName), Path('fiscalYear)))
+          .modify {
+            case ('companyName, value) => 'name -> value
+            case ('fiscalYear, value) => 'disclosureFiscalYear -> value
+          } + ('type -> Value("Peers"))
+      }
     Ok(toJson(results.sortBy(_ /!/ 'ticker).map(_.asJson)))
   }
 

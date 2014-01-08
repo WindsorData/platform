@@ -19,12 +19,14 @@
         <Cell><Data ss:Type="String">Ticker</Data></Cell>
         <Cell><Data ss:Type="String">Company Name</Data></Cell>
         <Cell><Data ss:Type="String">Disclosure Fiscal Year</Data></Cell>
+        <Cell><Data ss:Type="String">Upload Type</Data></Cell>
       </Row>
       <% @data.each do |item| %>
       <Row>
         <Cell><Data ss:Type="String"><%= item['ticker'] %></Data></Cell>
         <Cell><Data ss:Type="String"><%= item['name']  %></Data></Cell>
         <Cell><Data ss:Type="String"><%= item['disclosureFiscalYear']  %></Data></Cell>
+        <Cell><Data ss:Type="String"><%= item['type']  %></Data></Cell>
       </Row>
     <% end %>
     </Table>
