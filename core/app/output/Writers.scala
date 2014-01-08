@@ -242,6 +242,19 @@ class Top5Writer extends OutputWriter {
       Path('grantTypes, *),
       LastYearWriteStrategy)
 
+  def docSrcArea =
+    Area(schema= schema,
+      offset= Offset(2,0),
+      limit= None,
+      orientation= ColumnOrientedLayout(WithPartialMetadataValueReader),
+      columns= Seq[Strip](
+        Path('ticker),
+        Path('name),
+        Path('disclosureFiscalYear),
+        Path('tenK),
+        Path('def14a))
+    ++ Multi(Path('otherDocs), 7, Path('type), Path('date)))
+
 
   def write(out: Workbook, companies: Seq[Model], executivesRange: Int): Unit = {
     WorkbookMapping(
@@ -257,7 +270,9 @@ class Top5Writer extends OutputWriter {
         companyDBArea,
         companyDBMetadataArea,
         grantTypesArea,
-        grantTypesMetadataArea)).write(companies, out)
+        grantTypesMetadataArea,
+        docSrcArea
+      )).write(companies, out)
   }
 
   /**
