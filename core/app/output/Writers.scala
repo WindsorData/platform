@@ -1,6 +1,6 @@
 package output
 
-import _root_.mapping.{GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
+import _root_.mapping.{DocSrcMappingComponent, GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Sheet
 import java.io.OutputStream
@@ -119,15 +119,19 @@ trait FullTop5WithTtdcMappingComponent extends FullTop5MappingComponent {
 object StandardTop5Writer extends Top5Writer with StandardMapping
 
 object FullTop5Writer extends Top5Writer
+  with DocSrcMappingComponent
   with FullDilutionMappingComponent
   with FullTop5WithTtdcMappingComponent
   with FullOutputGuidelinesMappingComponent {
 
   override val fileName = "EmptyFullOutputTemplate.xls"
+
+  val docSrcMapping = StandardTop5Writer.docSrcMapping
 }
 
 class Top5Writer extends OutputWriter {
   self : DilutionMappingComponent
+    with DocSrcMappingComponent
     with Top5MappingComponent
     with GuidelinesMappingComponent =>
 
@@ -246,14 +250,8 @@ class Top5Writer extends OutputWriter {
     Area(schema= schema,
       offset= Offset(2,0),
       limit= None,
-      orientation= ColumnOrientedLayout(WithPartialMetadataValueReader),
-      columns= Seq[Strip](
-        Path('ticker),
-        Path('name),
-        Path('disclosureFiscalYear),
-        Path('tenK),
-        Path('def14a))
-    ++ Multi(Path('otherDocs), 7, Path('type), Path('date)))
+      orientation= ColumnOrientedLayout(RawValueReader),
+      columns= docSrcMapping)
 
 
   def write(out: Workbook, companies: Seq[Model], executivesRange: Int): Unit = {

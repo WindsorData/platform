@@ -7,15 +7,24 @@ import model.mapping._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
 import model.ExecutivesTop5._
-import libt.spreadsheet.EnumCheck
 import libt.spreadsheet.ComplexEnumCheck
+import libt.spreadsheet.EnumCheck
 
 package object mapping {
 
   trait StandardMapping
     extends DilutionMappingComponent
+    with DocSrcMappingComponent
     with Top5MappingComponent
     with GuidelinesMappingComponent {
+
+  val docSrcMapping =
+    Seq[Strip](
+      Path('ticker),
+      Path('name),
+      Path('disclosureFiscalYear),
+      Path('tenK),
+      Path('def14a)) ++ Multi(Path('otherDocs), 7, Path('type), Path('date))
 
   def performanceVestingMapping(base: Symbol) =
     Seq[Strip](
