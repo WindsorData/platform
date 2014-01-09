@@ -1,10 +1,12 @@
 class QueryGenerator
 
   def self.json_query(params_hash)
-    query = {executives: []}
+    query = {year: params_hash[:year], executives: []}
+    params_hash.except!(:year)
     params_hash.each_with_index { |(key, value), index|
       build_role_query(index, key, params_hash, query)
     }
+
     
     # Clear values
     query.keys.each { |k|

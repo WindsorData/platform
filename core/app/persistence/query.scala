@@ -10,7 +10,7 @@ object query {
   type Filter = Seq[Condition]
   type Operator = (String, Any)
 
-  case class QueryExecutives(executives: Seq[Filter], advanced: Filter) {
+  case class QueryExecutives(year: Int, executives: Seq[Filter], advanced: Filter) {
     def exampleExecutives = {
       executives match {
         case Nil => Seq(filterLastYear.asMongoQuery)
@@ -22,7 +22,7 @@ object query {
     def apply(db: Persistence) = db.find(query)
     override def toString = query.toString
 
-    def filterLastYear = EqualCondition(Path('disclosureFiscalYear , 'value).joinWithDots, new DateTime().minusYears(1).getYear)
+    def filterLastYear = EqualCondition(Path('disclosureFiscalYear , 'value).joinWithDots, year)
   }
 
   trait Condition {
