@@ -55,14 +55,30 @@ trait DocSrcCombiner
 
     dateCellToValue(r.get(0).getCell(2)).map { date =>
       Model(
-        'disclosureFiscalYear -> Value(date.getYear),
+        'disclosureFiscalYear ->
+          Value(
+            Some(date.getYear),
+            blankToNone(_.getStringCellValue)(r.get(0).getCell(3)),
+            blankToNone(_.getStringCellValue)(r.get(0).getCell(4))),
         'disclosureFiscalYearDate -> Value(date.toDate),
-        'def14a -> Value(blankToNone(_.getDateCellValue)(r.get(1).getCell(2)), None, None),
-        'tenK -> Value(blankToNone(_.getDateCellValue)(r.get(2).getCell(2)), None, None),
+        'def14a ->
+          Value(
+            blankToNone(_.getDateCellValue)(r.get(1).getCell(2)),
+            blankToNone(_.getStringCellValue)(r.get(1).getCell(3)),
+            blankToNone(_.getStringCellValue)(r.get(1).getCell(4))),
+        'tenK ->
+          Value(
+            blankToNone(_.getDateCellValue)(r.get(2).getCell(2)),
+            blankToNone(_.getStringCellValue)(r.get(2).getCell(3)),
+            blankToNone(_.getStringCellValue)(r.get(2).getCell(4))),
         'otherDocs -> Col((4 to 12).filterNot(_ == 8).map { i =>
           Model(
             'type -> Value(blankToNone(_.getStringCellValue)(r.get(i).getCell(1)), None, None),
-            'date -> Value(blankToNone(_.getDateCellValue)(r.get(i).getCell(2)), None, None))
+            'date ->
+              Value(
+                blankToNone(_.getDateCellValue)(r.get(i).getCell(2)),
+                blankToNone(_.getStringCellValue)(r.get(i).getCell(3)),
+                blankToNone(_.getStringCellValue)(r.get(i).getCell(4))))
         }: _*))
     }
 

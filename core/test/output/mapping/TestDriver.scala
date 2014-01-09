@@ -11,6 +11,7 @@ import libt.error._
 import libt._
 import model._
 import org.scalatest.junit.JUnitRunner
+import java.io.FileOutputStream
 
 class TestDriver extends FunSpec {
 
@@ -158,6 +159,24 @@ class TestDriver extends FunSpec {
           ))))
     }
   }
+
+  /*describe("writer usage") {
+    it("should let write empty sheets using non-empty mappings ") {
+      val schema = TModel('foo -> TString)
+      val sheet: Sheet = WorkBookFactory.makeEmptyDataItem
+      val area =
+        Area(
+          schema,
+          Offset(0, 0),
+          None,
+          ColumnOrientedLayout(WithPartialMetadataValueReader),
+          Seq(Feature(Path('foo))))
+
+      val result = area.write(Seq(Model('foo -> Value(Some("some"), None, None, Some("note"), Some("link")))))(sheet)
+      //sheet.getWorkbook.write(new FileOutputStream("foo.xls"))
+      //TODO: check metadata
+    }
+  }*/
 
   def TestArea(schema: TModel, mapping: Seq[Strip]) =
     Area(schema, Offset(0, 0), None, ColumnOrientedLayout(WithMetadataValueReader), mapping)
