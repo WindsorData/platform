@@ -34,35 +34,24 @@
         <Cell><Data ss:Type="String">Messages</Data></Cell>
       </Row>
     <% @logs.each do |log| %>
-      <% detail_upload_file = log.detail_upload_files.first %>
-      <Row ss:StyleID="2">
-        <Cell><Data ss:Type="String"><%= log.user.email %></Data></Cell>
-        <Cell><Data ss:Type="String"><%= log.created_at %></Data></Cell>
-        <Cell><Data ss:Type="String"><%= log.upload_type %></Data></Cell>          
-        <Cell>
-          <Data ss:Type="String">
-          <% unless detail_upload_file.blank? %>
-            <%= detail_upload_file.file_name %>
-          <% end %>
-          </Data>
-        </Cell>
-        <Cell>
-          <Data ss:Type="String">
-          <% unless detail_upload_file.blank? %>
-            <%= detail_upload_file.ticker %>
-          <% end %>
-          </Data>
-        </Cell>
-        <Cell>
-          <Data ss:Type="String">
-          <% unless detail_upload_file.blank? %>
-            <% JSON.parse(detail_upload_file["messages"]).each do |message| %>
-              <%= message %>
-            <% end %>
-          <% end %>
-          </Data>
-        </Cell>
-      </Row>
+      <% log.detail_upload_files.each do |detail| %>
+        <% JSON.parse(detail["messages"]).each do |message| %>
+          <Row>
+            <Cell><Data ss:Type="String"><%= log.user.email %></Data></Cell>
+            <Cell><Data ss:Type="String"><%= log.created_at %></Data></Cell>
+            <Cell><Data ss:Type="String"><%= log.upload_type %></Data></Cell>          
+            <Cell>
+              <Data ss:Type="String"><% unless detail.blank? %><%= detail.file_name %><% end %></Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String"><% unless detail.blank? %><%= detail.ticker %><% end %></Data>
+            </Cell>
+            <Cell>
+              <Data ss:Type="String"><% unless detail.blank? %><%= message %><% end %></Data>
+            </Cell>
+          </Row>
+        <% end %>
+      <% end %>
     <% end %>
     </Table>
   </Worksheet>
