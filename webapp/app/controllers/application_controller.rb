@@ -14,14 +14,7 @@ class ApplicationController < ActionController::Base
 
   helper_method :user_root_path
   def user_root_path(user)
-    case user.role
-    when 'super'
-      quick_search_path
-    when 'admin'
-      file_upload_path
-    when 'client'
-      quick_search_path
-    end
+    quick_search_path
   end
 
   def report_request(path, payload, filename)
