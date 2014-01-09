@@ -24,6 +24,26 @@ class ModelSpec extends FunSpec {
     }
   }
 
+  describe("modify") {
+    it("should change entries from Model") {
+      val mappedModel =
+        Model('foo -> Value("bar"), 'bar -> Value("foo"))
+        .modify {
+          case ('foo, value) => 'something -> value
+          case ('bar, value) => 'bar -> Model('empty -> Value("empty"))
+        }
+      assert(mappedModel ===
+        Model(
+          'something -> Value("bar"),
+          'bar -> Model('empty -> Value("empty"))))
+    }
+
+    it("should map only if keys matches") {
+      val mappedModel = Model('foo -> Value("bar"), 'bar -> Value("foo")) modify { case ('foo, value) => 'f -> value }
+      assert(mappedModel === Model('f -> Value("bar"), 'bar -> Value("foo")))
+    }
+  }
+
   describe("get") {
     it("should return none for missing keys") {
       assert(Model().get('a) === None)
