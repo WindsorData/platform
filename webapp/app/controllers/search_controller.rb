@@ -24,6 +24,8 @@ class SearchController < ApplicationController
   
   def full_search
     authorize!(:perform, :full_search)
+    @start_year = 2010
+    @end_year = Time.now.year-1
   end
 
   def results

@@ -6,8 +6,15 @@
 <hr>
 <div class="span9">
   <%= form_tag(search_result_path, class: "main-form custom" ) do %>
-    <div class="form-container relative" id="forms-container">      
+    <div class="row">
+      <div class="large-6 columns">
+        <label>Filter by Year</label>
+        <%= select_tag '[year]', options_for_select((@start_year..@end_year).to_a.reverse) %>
+      </div>
+    </div>
+    <div class="form-container relative" id="forms-container">
       <div class="basic-group hidden">
+        <hr>
         <div class="role-selector row">
           <div class="large-6 columns">
             <label>Role</label>
