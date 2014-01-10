@@ -201,7 +201,6 @@ object Api extends Controller with SpreadsheetDownloader {
   }
 
   def removeSpecificPeer = Action { request =>
-
     request.body.asJson.map { json =>
       val fiscalYear = (json \ "fiscalYear").as[Int]
       val ticker = (json \ "from").as[String]

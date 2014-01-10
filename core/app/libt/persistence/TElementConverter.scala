@@ -70,8 +70,11 @@ class TValueConverter(v: TValue[_]) extends TElementConverter {
   def unmarshall(it: DBO): Element = {
 
     def convert(value: AnyRef): Option[AnyRef] = v match {
-      case TNumber => Option(value).map {
-        it => BigDecimal(it.asInstanceOf[Double])
+      case TNumber => Option(value).map { it =>
+        if(it.isInstanceOf[Integer])
+          BigDecimal(it.asInstanceOf[Integer])
+        else
+          BigDecimal(it.asInstanceOf[Double])
       }
       case _ => Option(value)
     }
