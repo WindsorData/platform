@@ -4,6 +4,24 @@ import org.scalatest.FunSpec
 
 class ElementSpec extends FunSpec {
 
+  describe("apply") {
+    describe("Value") {
+      it("should return an empty seq if no parameters are provided") {
+        assert(!Value().isComplete)
+        assert(!Value().hasMetadata)
+      }
+      it("should return a Value with just its value if there's one parameter") {
+        assert(Value("foo").contains("foo"))
+        assert(!Value().hasMetadata)
+      }
+    }
+    describe("Model") {
+      it("should return an empty Model when no parameters are provided") {
+        assert(Model().isEmpty)
+      }
+    }
+  }
+
   describe("applySeq") {
     it("should return an empty seq for a path with first part missing") {
       assert(Model().applySeq('a) === Seq())

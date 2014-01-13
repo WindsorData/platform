@@ -89,13 +89,13 @@ trait FullTop5MappingComponent extends Top5MappingComponent {
         Path('price),
         Path('value),
         Path('type)) ++
-      Multi(Path('performanceVestRS), 2,
+      Multi(Path('performanceVestRS), 5,
         Path('grantDate),
         Path('targetNumber),
         Path('grantDatePrice),
         Path('targetValue),
         Path('type)) ++
-      Multi(Path('performanceCash), 2,
+      Multi(Path('performanceCash), 5,
         Path('grantDate),
         Path('targetValue),
         Path('payout)) ++

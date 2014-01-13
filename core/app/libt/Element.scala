@@ -200,6 +200,8 @@ case class Model(elements: Set[(Symbol, Element)])
 
   def contains(key: Symbol) = elementsMap.contains(key)
 
+  def isEmpty = elements.isEmpty
+
   def mergeTypeSafe(other: Model): Model =
     Model((elements ++ other.elements).groupBy(key).mapValues {
       _.reduce((e1, e2) => (key(e1), value(e1).merge(value(e2))))
