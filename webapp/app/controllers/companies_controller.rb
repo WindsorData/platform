@@ -22,7 +22,7 @@ class CompaniesController < ApplicationController
   end
 
   def delete_db
-    path = Rails.application.config.backend_host + Rails.application.config.peers_path
+    path = Rails.application.config.backend_host + Rails.application.config.drop_all_peers_path
     authorize!(:perfom, :delete_info)    
     backend_delete(path)
   end

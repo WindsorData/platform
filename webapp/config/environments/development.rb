@@ -62,6 +62,7 @@ WindosorFrontend::Application.configure do
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
   config.peers_path = '/api/companies/peers'
+  config.drop_all_peers_path = '/api/companies/allPeers'
   config.post_bod_path = '/api/companies/bod'
   config.post_batch_companies_path = '/api/companies/batch/companies'
   config.post_batch_bod_path = '/api/companies/batch/bod'
