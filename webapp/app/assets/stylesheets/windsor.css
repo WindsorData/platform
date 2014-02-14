@@ -167,11 +167,17 @@ table {
 }
 
 .log-container li {
-  color: #CE0909;
   font-size: 14px;
   line-height: 1.5;
 }
 
+.log-container li.error {
+  color: #CE0909;
+}
+
+.log-container li.success {
+  color: #2E942E;
+}
 
 /* ---- search form ---- */
 .radio-button label {

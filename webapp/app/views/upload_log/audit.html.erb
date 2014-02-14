@@ -11,6 +11,10 @@
   </div>
 
   <div class="large-3 columns" id="forms-container">
+    <%= form_tag(export_database_inventory_path(format: "xls")) do %>
+      <%= submit_tag 'Database Inventory', class: 'button postfix success margin-top-1em' %>
+    <% end %>
+    <hr>
     <%= form_tag(search_upload_log_path, method: 'get', remote: true, class: "main-form custom") do %>
         <%= label_tag :user %>
         <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>

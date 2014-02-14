@@ -26,7 +26,7 @@ class FilesController < ApplicationController
         dataset: File.new(file.path, 'r')
     }
     headers = {accept: :json}
-
+ 
     RestClient::Request.execute(:method => :post, :url => url, :payload => payload, :headers => headers, :timeout => -1)  do |response, _|
       if response.code == 200
         flash[:notice] = "Upload successfully completed"

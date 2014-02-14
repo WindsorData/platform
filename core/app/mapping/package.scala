@@ -9,6 +9,10 @@ import libt.spreadsheet.Strip
  */
 package object mapping {
 
+  trait DocSrcMappingComponent {
+    val docSrcMapping : Seq[Strip]
+  }
+
   trait DilutionMappingComponent {
     val dilutionMapping : Seq[Strip]
     val bsInputsMapping : Seq[Strip]

@@ -20,6 +20,16 @@ class Ability
     when 'admin'
       can   :upload, :file
       can   :perform, :full_search
+      can   :manage, Company
+      can   :audit, :upload_log
+      can   [:read, :create], Group
+      can   :upload, :file
+      can   :read_multiple, Array do |arr|
+        arr.inject(true){|r, el| r && can?(:read, el)}
+      end
+      can   :perform, :quick_search
+      can   :perform, :full_search
+      can   :perform, :recent_search      
     when 'client'
       can   :create, Group
       can   :destroy, Group do |g|

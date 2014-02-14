@@ -15,6 +15,15 @@ class CompaniesController < ApplicationController
     authorize!(:perfom, :delete_info)
   end
 
+  def database_inventory_file
+
+    @data = JSON.parse(RestClient.get("http://localhost:9000/api/companies/inventory"))
+
+    respond_to do |format|
+      format.xls { render 'database_inventory'}
+    end
+  end
+
   def perform_info_deletion
     authorize!(:perfom, :delete_info)
     path = Rails.application.config.backend_host + "/api/companies/#{params[:ticker]}/year/#{params[:year]}"

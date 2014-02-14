@@ -23,6 +23,7 @@ class QueryParserSpec extends FunSuite {
   test ("can parse a query only basic filters ") {
     val json =
       """ {
+          "year": 2013,
           "executives": [
               {
                 "executivesFilters": [
@@ -42,6 +43,7 @@ class QueryParserSpec extends FunSuite {
   test("can parse a complete query") {
     val json =
       """ {
+          "year": 2013,
           "executives": [
               {
                 "executivesFilters": [

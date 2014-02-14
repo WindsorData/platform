@@ -11,7 +11,7 @@
 
   <%= form_tag(path) do %>
     <%= hidden_field_tag 'json_query', @json_query %>
-    <%= submit_tag 'Download XLS', class: 'big-button' %>
+    <%= submit_tag 'Download Report XLS', class: 'big-button' %>
   <% end %>
 
 
@@ -20,13 +20,13 @@
 
   <%= form_tag(raw_path) do %>
     <%= hidden_field_tag 'json_query', @json_query %>
-    <%= submit_tag 'Download Raw Data', class: 'big-button' %>
+    <%= submit_tag 'Download Research Inputs', class: 'big-button' %>
   <% end %>
 
   <div class="row">
     <div class="large-4 columns">
-      <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized
-      <input type="radio" name="secondary_type" value="Unnormalized">Unnormalized
+      <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized Score
+      <input type="radio" name="secondary_type" value="Unnormalized">Peers of Peers Total
     </div>
     <div class="large-4 columns">
       <%= select_tag :topAmount, options_for_select((5..50).step(5).push("All results"), "All results") %>

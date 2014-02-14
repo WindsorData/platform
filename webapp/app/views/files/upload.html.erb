@@ -7,12 +7,11 @@
       <%= file_field_tag 'file', required: :true %>
       <br>
       <%= submit_tag 'Upload', class: 'button postfix success margin-top-1em' %>
-  </div>
-  <div class="large-9 columns log-container">
-      <% if @upload_log %>
-        <%= render 'layouts/upload_results', results: @upload_log.detail_upload_files %>
-      <% end %>
-  </div>
+      </div>
+      <div class="large-9 columns log-container">
+          <% if @upload_log %>
+            <%= render 'layouts/upload_results', results: @upload_log.detail_upload_files %>
+          <% end %>
+      </div>
     <% end %>
-  </div>
 </div>

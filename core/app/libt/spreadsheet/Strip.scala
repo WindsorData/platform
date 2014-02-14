@@ -9,6 +9,7 @@ import libt.spreadsheet.reader._
 import libt.reduction.Reduction
 import libt.builder._
 import libt._
+import scala.util.Try
 
 /**
  * The declaration of the content of a column, that may be important - Feature  -, unimportant - Gap,
@@ -44,7 +45,7 @@ case class Feature(path: Path) extends Strip {
 
   override def writeOps(schema: TElement, model: Element) = new WriteOps {
     val mapping = TMapping[AnyRef](schema(path).asValue)
-    val element = model(path).asValue
+    val element = Try(model(path).asValue).getOrElse(Value())
     override def value = mapping.writeOp(element.value)
     override def metadata = element.metadataSeq.map(op.String(_)).toList
     override def hasMetadata = element.hasMetadata

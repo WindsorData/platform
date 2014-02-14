@@ -1,6 +1,6 @@
 package output
 
-import _root_.mapping.{GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
+import _root_.mapping.{DocSrcMappingComponent, GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.apache.poi.ss.usermodel.Sheet
 import java.io.OutputStream
@@ -119,15 +119,19 @@ trait FullTop5WithTtdcMappingComponent extends FullTop5MappingComponent {
 object StandardTop5Writer extends Top5Writer with StandardMapping
 
 object FullTop5Writer extends Top5Writer
+  with DocSrcMappingComponent
   with FullDilutionMappingComponent
   with FullTop5WithTtdcMappingComponent
   with FullOutputGuidelinesMappingComponent {
 
   override val fileName = "EmptyFullOutputTemplate.xls"
+
+  val docSrcMapping = StandardTop5Writer.docSrcMapping
 }
 
 class Top5Writer extends OutputWriter {
   self : DilutionMappingComponent
+    with DocSrcMappingComponent
     with Top5MappingComponent
     with GuidelinesMappingComponent =>
 
@@ -242,12 +246,19 @@ class Top5Writer extends OutputWriter {
       Path('grantTypes, *),
       LastYearWriteStrategy)
 
+  def docSrcArea =
+    Area(schema= schema,
+      offset= Offset(2,0),
+      limit= None,
+      orientation= ColumnOrientedLayout(RawValueReader),
+      columns= docSrcMapping)
+
 
   def write(out: Workbook, companies: Seq[Model], executivesRange: Int): Unit = {
     WorkbookMapping(
       Seq(
         execDBArea(executivesRange - 1, Some(0)), //ExecDB
-        execDBArea(executivesRange - 2, Some(1)), //ExecDB -1 
+        execDBArea(executivesRange - 2, Some(1)), //ExecDB -1
         execDBArea(executivesRange - 3, Some(2)), //ExecDB -2
         execMetadataArea(executivesRange),
         stBonusPlanArea,
@@ -257,7 +268,9 @@ class Top5Writer extends OutputWriter {
         companyDBArea,
         companyDBMetadataArea,
         grantTypesArea,
-        grantTypesMetadataArea)).write(companies, out)
+        grantTypesMetadataArea,
+        docSrcArea
+      )).write(companies, out)
   }
 
   /**

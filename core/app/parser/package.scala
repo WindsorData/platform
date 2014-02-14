@@ -9,7 +9,7 @@ package object parser {
     private val parsers = Stream(EqualParser, OperatorParser)
 
     def query(query: JsValue) : QueryExecutives =
-      QueryExecutives(executivesFilters(query), advancedFilters(query))
+      QueryExecutives((query \ "year").as[Int], executivesFilters(query), advancedFilters(query))
     def executivesFilters(json: JsValue) : Seq[Filter] =
       basicsFromJson(json).map(filtersFromJson(_).map(_.map(parseCondition))).getOrElse(Seq())
     def advancedFilters(json: JsValue) : Filter =
