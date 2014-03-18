@@ -20,8 +20,8 @@
 #
 
 class User < ActiveRecord::Base
-  ROLES = %w[super admin client]
-  
+  ROLES = %w[super admin client client_peer_peer]
+
   devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable
 

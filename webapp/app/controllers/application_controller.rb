@@ -14,15 +14,19 @@ class ApplicationController < ActionController::Base
 
   helper_method :user_root_path
   def user_root_path(user)
-    quick_search_path
+    if(can?(:perform, :quick_search))
+      quick_search_path
+    else
+      peers_peers_path
+    end
   end
 
   def report_request(path, payload, filename)
     RestClient::Request.execute(
-      :method => :post, 
-      :url => path, 
-      :payload => payload, 
-      :headers => {content_type: :json}, 
+      :method => :post,
+      :url => path,
+      :payload => payload,
+      :headers => {content_type: :json},
       :timeout => -1) do |response, _|
 
         if response.code == 200
@@ -43,7 +47,7 @@ class ApplicationController < ActionController::Base
   rescue_from RestClient::InternalServerError do
     render "#{Rails.root}/public/500"
   end
-  
+
   rescue_from Errno::EHOSTUNREACH do
     flash[:error] = "Unable to connect to backend host"
     redirect_to :back
