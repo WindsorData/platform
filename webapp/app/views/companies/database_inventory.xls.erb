@@ -16,6 +16,7 @@
       <Column ss:Width="250"/>
       <Column ss:Width="150"/>
       <Row ss:StyleID="1">
+        <Cell><Data ss:Type="String">Cusip</Data></Cell>
         <Cell><Data ss:Type="String">Ticker</Data></Cell>
         <Cell><Data ss:Type="String">Company Name</Data></Cell>
         <Cell><Data ss:Type="String">Disclosure Fiscal Year</Data></Cell>
@@ -23,6 +24,7 @@
       </Row>
       <% @data.each do |item| %>
       <Row>
+        <Cell><Data ss:Type="String"><%= item['cusip'].nil? ? "n/a" : item['cusip'] %></Data></Cell>
         <Cell><Data ss:Type="String"><%= item['ticker'] %></Data></Cell>
         <Cell><Data ss:Type="String"><%= item['name']  %></Data></Cell>
         <Cell><Data ss:Type="String"><%= item['disclosureFiscalYear']  %></Data></Cell>
