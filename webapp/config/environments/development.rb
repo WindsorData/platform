@@ -35,6 +35,28 @@ WindosorFrontend::Application.configure do
   # Expands the lines which load the assets
   config.assets.debug = true
 
+  # Don't care if the mailer can't send
+  config.action_mailer.raise_delivery_errors = false
+
+  # Print deprecation notices to the Rails logger
+  config.active_support.deprecation = :log
+
+  # Only use best-standards-support built into browsers
+  config.action_dispatch.best_standards_support = :builtin
+
+  MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('../../mailer.yml', __FILE__))))
+
+  #SMTP
+  config.action_mailer.default_url_options = { :host => 'localhost:3333' }  
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+  :address              => "smtp.gmail.com",
+  :port                 => 587,
+  :user_name            => "",
+  :password             => "",
+  :authentication       => 'plain',
+  :enable_starttls_auto => true  }
+
   # Backend params
   config.backend_host = 'http://localhost:9000'
   

@@ -65,6 +65,22 @@ WindosorFrontend::Application.configure do
   # with SQLite, MySQL, and PostgreSQL)
   # config.active_record.auto_explain_threshold_in_seconds = 0.5
 
+  # Only use best-standards-support built into browsers
+  config.action_dispatch.best_standards_support = :builtin
+
+  #SMTP
+  MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('../../mailer.yml', __FILE__))))
+
+  config.action_mailer.default_url_options = { :host => '54.203.246.78' }  
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+  :address              => "smtp.gmail.com",
+  :port                 => 587,
+  :user_name            => MAILER_CREDENTIALS[:email],
+  :password             => MAILER_CREDENTIALS[:password],
+  :authentication       => 'plain',
+  :enable_starttls_auto => true  }
+
   # Backend params
   config.backend_host = 'http://localhost:9000'
   

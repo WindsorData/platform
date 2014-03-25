@@ -29,7 +29,7 @@
   <body>
 
     <%= render 'layouts/messages' %>
-    <% if controller_name != 'sessions' %>
+    <% if controller_name != 'sessions' && !current_user.nil?%>
       <%= render 'layouts/navigation' %>
     <% end %>
     <div class="main" id="main" role="main">
