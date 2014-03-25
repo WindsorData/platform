@@ -9,9 +9,13 @@ class UsersController < ApplicationController
 
   def update_account
     @user = User.find(current_user.id)
-    @user.update_attributes(params[:user])
-    sign_in @user, :bypass => true
-    redirect_to root_path
+    if @user.update_attributes(params[:user])
+      flash[:notice] = 'Password successfully updated.'
+      sign_in @user, bypass: true
+      redirect_to quick_search_path
+    else 
+      render "edit_account"
+    end
   end
 
   def update

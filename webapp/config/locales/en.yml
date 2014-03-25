@@ -3,3 +3,7 @@
 
 en:
   hello: "Hello world"
+en:
+  devise:
+    failure:
+      already_authenticated: ""
