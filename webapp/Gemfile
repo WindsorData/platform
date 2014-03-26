@@ -12,7 +12,7 @@ gem 'inherited_resources'
 gem 'rest-client'
 gem 'kaminari'
 gem 'american_date'
-gem 'unicorn'
+gem 'unicorn-rails'
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -34,12 +34,13 @@ group :test, :development, :integration do
   gem 'pry-stack_explorer'
 end
 
-group :development do
+group :development, :integration do
   gem 'capistrano', '~> 3.1.0'
   gem 'capistrano-rails',   '~> 1.1'
   gem 'capistrano-bundler', '~> 1.1'
   gem 'capistrano-rbenv', '~> 2.0'
-  gem 'capistrano3-unicorn'
+  gem 'capistrano-unicorn-rails'
+  # gem 'capistrano3-unicorn'
 end
 
 group :test, :integration do

@@ -1,11 +1,13 @@
 #unicorn.rb Starts here 
 
-app_path = "/windsor" 
+home_path = ENV['HOME']
+app_path = "#{home_path}/windsor/current" 
 
 worker_processes 10
 working_directory app_path
 # needs to be the correct directory
 
+user 'ubuntu', 'ubuntu'
 
 # This loads the application in the master process before forking 
 # worker processes 

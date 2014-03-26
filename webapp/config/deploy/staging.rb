@@ -18,7 +18,7 @@
 
 set :env, "development"
 set :rails_env, "development"
-set :branch, "master"
+set :branch, "feature/deploy-with-capistrano"
 
 server "54.244.92.51", user: 'ubuntu', roles: %w{web app db}, primary: true
 

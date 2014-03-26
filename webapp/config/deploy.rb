@@ -35,7 +35,9 @@ set :default_env, {
   # 'RAILS_RELATIVE_URL_ROOT' => "/webapp"
 }
 
-set :unicorn_config_path, "config/unicorn.rb"
+set :unicorn_bin, "unicorn_rails"
+
+# set :unicorn_rails_env, ->{ fetch :rails_env, "production" }
 
 # set :bundle_gemfile, -> { release_path.join('/webapp/Gemfile') }
 
@@ -69,36 +71,33 @@ set :keep_releases, 2
 
 namespace :deploy do
 
-
   desc "Upload mailer credentials"
   task :upload_mailer_config do
-    on roles(:all), in: :sequence, wait: 5 do
+    on roles(%w{web app db}), in: :sequence, wait: 5 do
       upload! "config/mailer.yml", "#{release_path}/config/mailer.yml"
     end
   end
 
-  task :restart do
+  task :start_unicorn do
     invoke 'unicorn:restart'
   end
 
+  task :stop_unicorn do
+    invoke 'unicorn:stop'
+  end
+
+  task :create_pids_directory do
+    on roles(%w{web app db}), in: :sequence, wait: 5 do
+      execute "mkdir -p #{current_path}/tmp/pids"
+    end
+  end
+
   after :updating, :upload_mailer_config
-  after :publishing, :restart
 
-  # desc 'Restart application'
-  # task :restart do
-  #   on roles(:app), in: :sequence, wait: 5 do
-  #     # Your restart mechanism here, for example:
-  #     execute :touch, release_path.join('tmp/restart.txt')
-  #   end
-  # end
+  before :publishing, :create_pids_directory
+  before :publishing, :stop_unicorn
+  after :publishing, :cleanup
 
-  # after :restart, :clear_cache do
-  #   on roles(:web), in: :groups, limit: 3, wait: 10 do
-  #     # Here we can do anything such as:
-  #     # within release_path do
-  #     #   execute :rake, 'cache:clear'
-  #     # end
-  #   end
-  # end
+  after :published, :start_unicorn
 
 end
