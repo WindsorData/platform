@@ -10,7 +10,7 @@
 <% logs.each do |log| %>
   <div class="log-item">
     <%= content_tag :div, log.user.email, class: "user" %>
-    <%= content_tag :div, log.created_at, class: "date" %>
+    <%= content_tag :div, to_PST(log.created_at), class: "date" %>
     <%= content_tag :div, log.upload_type, class: "file-type" %>
     <%= render 'layouts/upload_results', results: log.detail_upload_files %>
   </div>
