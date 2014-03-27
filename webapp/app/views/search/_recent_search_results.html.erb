@@ -4,7 +4,7 @@
   <% searches.each{ |s| %>
     <div class="recent-search-item">
       <p class="username"><%= s.user.email %></p>
-      <p class="report"><%= s.created_at.strftime("%Y-%m-%d %H:%M:%S") %></p>
+      <p class="report"><%= to_PST(s.created_at) %></p>
       <p class="report"><%= s.report_type %></p>
       <a href="<%= log_search_path(s) %>" class="small button">View</a>
     </div>

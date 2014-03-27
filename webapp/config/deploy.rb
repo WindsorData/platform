@@ -67,7 +67,7 @@ set :unicorn_bin, "unicorn_rails"
 # Default value for default_env is {}
 
 # Default value for keep_releases is 5
-set :keep_releases, 2
+set :keep_releases, 5
 
 namespace :deploy do
 
