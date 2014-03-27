@@ -12,7 +12,8 @@ class UsersController < ApplicationController
     if @user.update_attributes(params[:user])
       flash[:notice] = 'Password successfully updated.'
       sign_in @user, bypass: true
-      redirect_to quick_search_path
+      # redirect_to quick_search_path
+      redirect_to root_path
     else 
       render "edit_account"
     end

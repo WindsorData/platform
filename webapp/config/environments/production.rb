@@ -9,13 +9,13 @@ WindosorFrontend::Application.configure do
   config.action_controller.perform_caching = true
 
   # Disable Rails's static asset server (Apache or nginx will already do this)
-  config.serve_static_assets = false
+  config.serve_static_assets = true
 
   # Compress JavaScripts and CSS
   config.assets.compress = true
 
   # Don't fallback to assets pipeline if a precompiled asset is missed
-  config.assets.compile = false
+  config.assets.compile = true
 
   # Generate digests for assets URLs
   config.assets.digest = true
@@ -47,6 +47,7 @@ WindosorFrontend::Application.configure do
 
   # Precompile additional assets (application.js, application.css, and all non-JS/CSS are already added)
   # config.assets.precompile += %w( search.js )
+  # config.assets.precompile += %w( *.js *.css )
 
   # Disable delivery errors, bad email addresses will be ignored
   # config.action_mailer.raise_delivery_errors = false
@@ -69,9 +70,9 @@ WindosorFrontend::Application.configure do
   config.action_dispatch.best_standards_support = :builtin
 
   #SMTP
-  MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('../../mailer.yml', __FILE__))))
+  MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('config/mailer.yml'))))
 
-  config.action_mailer.default_url_options = { :host => '54.203.246.78' }  
+  config.action_mailer.default_url_options = { :host => '54.244.92.51' }  
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
   :address              => "smtp.gmail.com",

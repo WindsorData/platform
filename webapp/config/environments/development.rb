@@ -47,13 +47,13 @@ WindosorFrontend::Application.configure do
   MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('config/mailer.yml'))))
 
   #SMTP
-  config.action_mailer.default_url_options = { :host => '54.203.246.78' }  
+  config.action_mailer.default_url_options = { :host => 'development' }  
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
   :address              => "smtp.gmail.com",
   :port                 => 587,
-  :user_name            => MAILER_CREDENTIALS[:email],
-  :password             => MAILER_CREDENTIALS[:password],
+  :user_name            => "",
+  :password             => "",
   :authentication       => 'plain',
   :enable_starttls_auto => true  }
 
