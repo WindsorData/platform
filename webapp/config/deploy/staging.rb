@@ -16,8 +16,8 @@
 # extended properties on the server.
 # server 'example.com', user: 'deploy', roles: %w{web app db}, primary: true
 
-set :env, "development"
-set :rails_env, "development"
+set :env, "production"
+set :rails_env, "production"
 set :branch, "feature/deploy-with-capistrano"
 
 server "54.244.92.51", user: 'ubuntu', roles: %w{web app db}, primary: true

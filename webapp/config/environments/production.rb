@@ -89,8 +89,10 @@ WindosorFrontend::Application.configure do
 
   config.get_company_peers_path ='/api/companies/report/peers/tickers'
   config.post_incoming_peers_path = '/api/companies/report/peers/incoming'
+  config.post_incoming_peers_raw_data_path = '/api/companies/report/peers/incoming/raw'
   config.post_peers_peers_single_ticker_path = '/api/companies/report/peers/peers'
   config.post_peers_peers_raw_data_path ="/api/companies/report/peers/peers/raw"
+  config.post_peers_peers_ticker_list_raw_data_path ="/api/companies/report/peers/peersFromPrimary/raw"
   config.post_peers_peers_ticker_list_path = '/api/companies/report/peers/peersFromPrimary'
 
   # Get search form values
@@ -107,6 +109,7 @@ WindosorFrontend::Application.configure do
   config.post_guidelines_path = '/api/companies/guidelines'
   config.post_dilution_path = '/api/companies/dilution'
   config.peers_path = '/api/companies/peers'
+  config.drop_all_peers_path = '/api/companies/allPeers'
   config.post_bod_path = '/api/companies/bod'
   config.post_batch_companies_path = '/api/companies/batch/companies'
   config.post_batch_bod_path = '/api/companies/batch/bod'
