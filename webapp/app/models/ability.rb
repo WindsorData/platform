@@ -32,7 +32,7 @@ class Ability
       end
       can   :perform, :quick_search
       can   :perform, :full_search
-      can   :perform, :recent_search      
+      # can   :perform, :recent_search      
     when 'client'
       can   :create, Group
       can   :destroy, Group do |g|
@@ -49,7 +49,7 @@ class Ability
       end
       can   :perform, :quick_search
       can   :perform, :full_search
-      can   :perform, :recent_search
+      # can   :perform, :recent_search
     when 'client_peer_peer'
       can [:update_account, :edit_account], User do |u|
         u == user
