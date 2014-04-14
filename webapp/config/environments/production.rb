@@ -72,7 +72,7 @@ WindosorFrontend::Application.configure do
   #SMTP
   MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('config/mailer.yml'))))
 
-  config.action_mailer.default_url_options = { :host => '54.244.92.51' }  
+  config.action_mailer.default_url_options = { :host => '54.203.246.78' }  
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
   :address              => "smtp.gmail.com",
