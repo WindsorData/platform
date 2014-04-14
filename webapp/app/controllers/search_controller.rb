@@ -8,7 +8,7 @@ class SearchController < ApplicationController
   end
 
   def filter_recent_search
-    authorize!(:perform, :quick_search)
+    authorize!(:perform, :recent_search)
     user_id =  params["user"].to_i unless params["user"].blank?
     n = params["results"].blank? ? 20 : params["results"].to_i
     if current_user.is_super?
@@ -55,7 +55,7 @@ class SearchController < ApplicationController
   end
 
   def recent_search
-    authorize!(:perform, :full_search)    
+    authorize!(:perform, :recent_search)    
     @params_hash = JSON.parse(Top5Search.find(params[:id]).json_query)
 
     render "top_5_recent_search_log"

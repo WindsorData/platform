@@ -4,26 +4,28 @@
     <hr>
   </div>
 
-  <div class="large-3 columns">
-    <!-- activity log -->
-    <div class="recent-search-container">
-      <h2 class="title">Recent Searches</h2>
-      <div id="forms-container">
-        <%= form_tag(filter_recent_search_path, method: 'get', remote: true, class: "main-form custom") do %>
-          <% unless current_user.is_client? %>
-            <%= label_tag "User" %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
-          <% end %> <%# Client users cannot search by user. The results are his company's searches %>
-            <%= label_tag "Results" %> <%= select_tag :results, options_for_select([5, 15, 25, 50]), {include_blank: true} %>
-            <button type="submit" class="button postfix success" name="display_search">Search</button>
-        <% end %>
-      </div>
-      <div id="recent-search-results">
-                
+  <% if can? :perform, :recent_search %>
+    <div class="large-3 columns">
+      <!-- activity log -->
+      <div class="recent-search-container">
+        <h2 class="title">Recent Searches</h2>
+        <div id="forms-container">
+          <%= form_tag(filter_recent_search_path, method: 'get', remote: true, class: "main-form custom") do %>
+            <% unless current_user.is_client? %>
+              <%= label_tag "User" %> <%= select_tag :user, options_from_collection_for_select(@users, "id", "email"), {include_blank: true} %>
+            <% end %> <%# Client users cannot search by user. The results are his company's searches %>
+              <%= label_tag "Results" %> <%= select_tag :results, options_for_select([5, 15, 25, 50]), {include_blank: true} %>
+              <button type="submit" class="button postfix success" name="display_search">Search</button>
+          <% end %>
+        </div>
+        <div id="recent-search-results">
+                  
+        </div>
       </div>
     </div>
-  </div>
+  <% end %>
 
-  <div class="large-9 columns">
+  <div class="large-<%= (can? :perform, :recent_search) ? 9 : 12 %> columns">
     <!-- quick launch -->
     <%= form_tag(group_search_path, class: "custom") do %>
       <div class="row">
