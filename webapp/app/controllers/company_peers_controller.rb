@@ -105,8 +105,9 @@ class CompanyPeersController < ApplicationController
     find_peers(path, json_query)
     @primary_peers = @companies_peers["primaryPeers"]
     @companies_peers = (@companies_peers["normalized"] + @companies_peers["unnormalized"]).group_by { |p| p["secondPeer"] }
+    @companies_peers = @companies_peers.sort {|a, b| [a[1][1]["weight"], a[1][0]["weight"]] <=> [b[1][1]["weight"], b[1][0]["weight"]]}
+    @companies_peers.reverse!
 
-    
     respond_to do |format|
       format.xls { render 'peers_peers_result'}
     end
