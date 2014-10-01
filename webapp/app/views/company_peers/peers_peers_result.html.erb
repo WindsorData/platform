@@ -25,8 +25,8 @@
 
   <div class="row">
     <div class="large-4 columns">
-      <input type="radio" name="secondary_type" value="Normalized" checked="checked">Normalized Score
-      <input type="radio" name="secondary_type" value="Unnormalized">Peers of Peers Total
+      <input type="radio" name="secondary_type" value="Unnormalized" checked="checked">Peers of Peers Total
+      <input type="radio" name="secondary_type" value="Normalized">Normalized Score
     </div>
     <div class="large-4 columns">
       <%= select_tag :topAmount, options_for_select((5..50).step(5).push("All results"), "All results") %>
@@ -41,7 +41,7 @@
   <div class="row">
     <div class="large-8 columns">
     
-      <div id="normalized">
+      <div id="normalized" class="hidden">
         <div class="section-container accordion" data-section="accordion">
           <% @companies_peers["normalized"].each{|secondary| %>
             <section>
@@ -62,7 +62,7 @@
         </div>
       </div>
 
-      <div id="unnormalized"  class="hidden">
+      <div id="unnormalized"  >
         <div class="section-container accordion" data-section="accordion">
           <% @companies_peers["unnormalized"].each{|secondary| %>
             <section>
