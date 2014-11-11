@@ -15,14 +15,22 @@ trait ElementValueOps { self : Element =>
   def isEmpty(route:PathPart) = (this / route).rawValue.isEmpty
   def nonEmpty(route:PathPart) = (this / route).rawValue.nonEmpty
 
+  /**Answers the optional int value of a route*/
   def /#(route:PathPart) = (this / route).rawValue[Int]
+  /**Answers the optional big decimal value of a route*/
   def /%(route:PathPart) = (this / route).rawValue[BigDecimal]
+  /**Answers the optional string value of a route*/
   def /!(route:PathPart) = (this / route).rawValue[String]
+  /**Answers the optional date value of a route*/
   def /@(route:PathPart) = (this / route).rawValue[Date]
 
+  /**Answers the int value of a route*/
   def /#/(route:PathPart) = get(route)(/#)
+  /**Answers the big decimal value of a route*/
   def /%/(route:PathPart) = get(route)(/%)
+  /**Answers the string value of a route*/
   def /!/(route:PathPart) = get(route)(/!)
+  /**Answers the date value of a route*/
   def /@/(route:PathPart) = get(route)(/@)
 
   private def get[A](route:PathPart)(accessor: PathPart => Option[A]) =
