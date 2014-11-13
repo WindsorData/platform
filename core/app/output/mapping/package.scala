@@ -81,10 +81,6 @@ package object mapping {
 
   val bsInputsMapping = {
     def Path(ps:PathPart*) = RelativeTo('bsInputs)(ps)
-    Seq[Strip](
-      Path('valuationModel, 'year1),
-      Path('valuationModel, 'year2),
-      Path('valuationModel, 'year3)) ++
       Years(
         Path('volatility),
         Path('expectedTerm),
