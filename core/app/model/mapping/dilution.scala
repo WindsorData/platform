@@ -13,7 +13,8 @@ import libt._
 
 trait FullDilutionMappingComponent extends DilutionMappingComponent {
 
-  val usageAndSVTDataMapping =
+  val usageAndSVTDataMapping = {
+    def Path(ps:PathPart*) = RelativeTo('usageAndSVTData)(ps)
     Years(
       Path('avgSharesOutstanding),
       Path('optionsSARs, 'granted),
@@ -24,6 +25,7 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
       Path('fullValue, 'sharesCancelled),
       Path('cashLTIP, 'grants),
       Path('cashLTIP, 'payouts))
+  }
 
   val bsInputsMapping =
     Years(
