@@ -13,7 +13,8 @@ import libt._
 
 trait FullDilutionMappingComponent extends DilutionMappingComponent {
 
-  val usageAndSVTDataMapping =
+  val usageAndSVTDataMapping = {
+    def Path(ps:PathPart*) = RelativeTo('usageAndSVTData)(ps)
     Years(
       Path('avgSharesOutstanding),
       Path('optionsSARs, 'granted),
@@ -24,8 +25,10 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
       Path('fullValue, 'sharesCancelled),
       Path('cashLTIP, 'grants),
       Path('cashLTIP, 'payouts))
+  }
 
-  val bsInputsMapping =
+  val bsInputsMapping = {
+    def Path(ps:PathPart*) = RelativeTo('bsInputs)(ps)
     Years(
       Path('valuationModel),
       Path('volatility),
@@ -33,17 +36,21 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
       Path('riskFreeRate),
       Path('dividendYield),
       Path('bs))
+  }
 
-  val dilutionMapping = Seq[Strip](
-    Path('awardsOutstandings, 'option),
-    Path('awardsOutstandings, 'fullValue),
-    Path('awardsOutstandings, 'total),
-    Path('sharesAvailable, 'current),
-    Path('sharesAvailable, 'new),
-    Path('sharesAvailable, 'everGreen, 'anual),
-    Path('sharesAvailable, 'everGreen, 'yearsLeft),
-    Path('sharesAvailable, 'fungible, 'ratio),
-    Path('sharesAvailable, 'fungible, 'fullValue))
+  val dilutionMapping = {
+    def Path(ps:PathPart*) = RelativeTo('dilution)(ps)
+    Seq[Strip](
+      Path('awardsOutstandings, 'option),
+      Path('awardsOutstandings, 'fullValue),
+      Path('awardsOutstandings, 'total),
+      Path('sharesAvailable, 'current),
+      Path('sharesAvailable, 'new),
+      Path('sharesAvailable, 'everGreen, 'anual),
+      Path('sharesAvailable, 'everGreen, 'yearsLeft),
+      Path('sharesAvailable, 'fungible, 'ratio),
+      Path('sharesAvailable, 'fungible, 'fullValue))
+  }
 
   def averageSharesValidation(model: Model) = {
     val results: Seq[Validated[Model]] =
