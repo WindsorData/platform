@@ -1,11 +1,11 @@
 import libt.spreadsheet.Strip
 
 /**
- * Created with IntelliJ IDEA.
- * User: matias
- * Date: 8/9/13
- * Time: 10:40 AM
- * To change this template use File | Settings | File Templates.
+ * Generic mapping components that are used across 
+ * the many tabs of the several Top5 reports.
+ * 
+ * Here only the interfaces of those components are described, following the 
+ * Cake Pattern for dependency injection. 
  */
 package object mapping {
 

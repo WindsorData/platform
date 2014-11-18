@@ -4,6 +4,10 @@ import com.mongodb.casbah.Imports._
 import libt.persistence._
 import libt._
 
+/**
+ * Trait that describes a DB
+ */
+//FIXME rename to DB
 trait Persistence {
   val TDBSchema: TModel
   protected val colName: String

@@ -5,6 +5,11 @@ import persistence._
 import org.joda.time.DateTime
 import libt.Path
 
+/**
+ * Both generic and domain specific queries 
+ * against a Windsor DB.
+ */
+//TODO Split generic and specific queries
 object query {
 
   type Filter = Seq[Condition]
