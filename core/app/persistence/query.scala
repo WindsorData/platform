@@ -24,7 +24,7 @@ object query {
     }
     def query = MongoDBObject("$or" -> exampleExecutives)
 
-    def apply(db: Persistence) = db.find(query)
+    def apply(db: Database) = db.find(query)
     override def toString = query.toString
 
     def filterLastYear = EqualCondition(Path('disclosureFiscalYear , 'value).joinWithDots, year)

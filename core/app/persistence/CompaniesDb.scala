@@ -5,7 +5,7 @@ import model._
 import libt._
 import com.mongodb.casbah.MongoClient
 
-case class CompaniesDb(db: MongoDB) extends Persistence {
+case class CompaniesDb(db: MongoDB) extends Database {
 
   override val TDBSchema = TCompanyFiscalYear
   protected override val colName = "companies"

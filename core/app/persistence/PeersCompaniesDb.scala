@@ -7,7 +7,7 @@ import org.joda.time.DateTime
 import com.mongodb.casbah.commons.conversions.scala._
 import java.util.Date
 
-case class PeersCompaniesDb(db: MongoDB) extends Persistence {
+case class PeersCompaniesDb(db: MongoDB) extends Database {
 
   val TDBSchema: TModel = TPeers
   protected val colName: String = "peers"
