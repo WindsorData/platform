@@ -4,8 +4,8 @@ import play.api.libs.json._
 import play.api.libs.json.Json._
 import play.api.mvc._
 
-import persistence.query._
-import persistence._
+import windsor.persistence.query._
+import windsor.persistence._
 
 import model.Commons._
 import model.PeerCompanies._

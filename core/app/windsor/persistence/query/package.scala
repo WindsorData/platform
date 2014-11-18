@@ -1,5 +1,4 @@
-package persistence
-
+package windsor.persistence
 
 import com.mongodb.casbah.Imports._
 
