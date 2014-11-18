@@ -2,7 +2,9 @@ package windsor.generic.persistence
 
 import com.mongodb.casbah.Imports._
 import com.mongodb.casbah.commons.MongoDBObject
-
+/**
+ * Package object with generic querying classes
+ */
 package object query {
 
   type Filter = Seq[Condition]

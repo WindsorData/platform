@@ -1,5 +1,6 @@
 package persistence
 
+
 import com.mongodb.casbah.Imports._
 
 import libt.Path
@@ -8,10 +9,9 @@ import windsor.generic.persistence.query._
 import windsor.generic.persistence._
 
 /**
- * Both generic and domain specific queries 
- * against a Windsor DB.
+ * Package object with specific Windsor queries.
  */
-object query {
+package object query {
 
   case class QueryExecutives(year: Int, executives: Seq[Filter], advanced: Filter) {
     def exampleExecutives = {
