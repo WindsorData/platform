@@ -6,6 +6,7 @@ import model.PeerCompanies._
 import org.joda.time.DateTime
 import com.mongodb.casbah.commons.conversions.scala._
 import java.util.Date
+import windsor.generic.persistence.Database
 
 case class PeersCompaniesDb(db: MongoDB) extends Database {
 

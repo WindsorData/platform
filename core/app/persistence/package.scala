@@ -5,8 +5,6 @@ import com.mongodb.casbah.MongoClient
  * Listing of the Windsor Data DB's
  */
 package object persistence {
-  type DBO = DBObject
-
   object ExecutivesDb extends CompaniesDb(MongoClient()("windsor"))
   object BodDb extends CompaniesDb(MongoClient()("windsor-bod"))
   object PeersDb extends PeersCompaniesDb(MongoClient()("windsor-peers"))

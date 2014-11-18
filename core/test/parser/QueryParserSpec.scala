@@ -1,5 +1,6 @@
 package parser
 
+import windsor.generic.persistence.query._
 import play.api.libs.json._
 import org.scalatest.FunSuite
 import persistence.query._

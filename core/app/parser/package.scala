@@ -1,4 +1,6 @@
 import libt.Path
+
+import windsor.generic.persistence.query._
 import persistence.query._
 import play.api.libs.json.JsValue
 

@@ -15,6 +15,7 @@ import libt._
 import controllers.generic._
 import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
 import output.{FullTop5Writer, StandardTop5Writer, BodWriter, OutputWriter}
+import windsor.generic.persistence.Database
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 

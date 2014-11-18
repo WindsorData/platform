@@ -1,6 +1,7 @@
 package persistence
 
 import org.scalatest.FunSuite
+import windsor.generic.persistence.query._
 import com.mongodb.casbah.commons.MongoDBObject
 import org.joda.time.DateTime
 import persistence.query._

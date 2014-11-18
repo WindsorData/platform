@@ -1,4 +1,4 @@
-package persistence
+package windsor.generic.persistence
 
 import com.mongodb.casbah.Imports._
 import libt.persistence._

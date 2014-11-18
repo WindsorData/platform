@@ -4,6 +4,7 @@ import com.mongodb.casbah.Imports._
 import model._
 import libt._
 import com.mongodb.casbah.MongoClient
+import windsor.generic.persistence.Database
 
 case class CompaniesDb(db: MongoDB) extends Database {
 
