@@ -4,7 +4,7 @@ import com.mongodb.casbah.MongoClient
 import org.joda.time.DateTime
 
 import org.scalatest.{FlatSpec, Tag}
-import persistence._
+import windsor.persistence._
 import libt._
 import test._
 

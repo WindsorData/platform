@@ -1,5 +1,7 @@
 import libt.Path
-import persistence.query._
+
+import windsor.generic.persistence.query._
+import windsor.persistence.query._
 import play.api.libs.json.JsValue
 
 package object parser {

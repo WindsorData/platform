@@ -1,4 +1,4 @@
-package persistence
+package windsor.generic.persistence
 
 import com.mongodb.casbah.Imports._
 import libt.persistence._
@@ -7,8 +7,7 @@ import libt._
 /**
  * Trait that describes a DB
  */
-//FIXME rename to DB
-trait Persistence {
+trait Database {
   val TDBSchema: TModel
   protected val colName: String
   protected val pk: Seq[Path]

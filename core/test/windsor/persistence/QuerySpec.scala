@@ -1,9 +1,10 @@
-package persistence
+package windsor.persistence
 
 import org.scalatest.FunSuite
+import windsor.generic.persistence.query._
 import com.mongodb.casbah.commons.MongoDBObject
 import org.joda.time.DateTime
-import persistence.query._
+import windsor.persistence.query._
 
 class QuerySpec extends FunSuite {
 

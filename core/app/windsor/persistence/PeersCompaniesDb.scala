@@ -1,4 +1,4 @@
-package persistence
+package windsor.persistence
 
 import com.mongodb.casbah.Imports._
 import libt._
@@ -6,8 +6,9 @@ import model.PeerCompanies._
 import org.joda.time.DateTime
 import com.mongodb.casbah.commons.conversions.scala._
 import java.util.Date
+import windsor.generic.persistence.Database
 
-case class PeersCompaniesDb(db: MongoDB) extends Persistence {
+case class PeersCompaniesDb(db: MongoDB) extends Database {
 
   val TDBSchema: TModel = TPeers
   protected val colName: String = "peers"

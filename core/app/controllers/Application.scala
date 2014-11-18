@@ -6,7 +6,7 @@ import play.api.libs.json.Json._
 import play.api.data.Forms._
 import play.api.data._
 import play.api.mvc._
-import persistence._
+import windsor.persistence._
 import model.mapping._
 import util.FileManager._
 import libt.spreadsheet.reader.workflow._
@@ -15,6 +15,7 @@ import libt._
 import controllers.generic._
 import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
 import output.{FullTop5Writer, StandardTop5Writer, BodWriter, OutputWriter}
+import windsor.generic.persistence.Database
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
 
@@ -47,13 +48,13 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newBodsBatch = uploadBatchSpreadSheets(entryReadersBod)(BodDb)
   def newPeersBatch = uploadBatchSpreadSheets(entryReadersPeers)(PeersDb)
 
-  def uploadBatchSpreadSheets(readers: Seq[EntryReader])(db: Persistence) =
+  def uploadBatchSpreadSheets(readers: Seq[EntryReader])(db: Database) =
     UploadAndReadAction(db) { data => {
         readZipFileEntries(data.file.getAbsolutePath, readers)
       }
     }
 
-  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Persistence) =
+  def uploadSingleSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Database) =
     UploadAndReadAction(db) {
       (uploadData : UploadData) => {
         val file = uploadData.file
@@ -69,7 +70,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
       }
     }
 
-  def UploadAndReadAction(db: Persistence)(readOp: UploadData => Seq[(FileAndTicker, error.Validated[Seq[Model]])]) =
+  def UploadAndReadAction(db: Database)(readOp: UploadData => Seq[(FileAndTicker, error.Validated[Seq[Model]])]) =
     UploadSpreadsheetAction {
       case data => {
         implicit def results2MessagesResults(results: Seq[(FileAndTicker, error.Validated[Seq[Model]])]): Seq[(FileAndTicker, Seq[String])] =

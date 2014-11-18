@@ -8,7 +8,7 @@ import output.OutputWriter
 import play.api.mvc.Result
 import play.api.mvc.Controller
 
-import persistence._
+import windsor.persistence._
 
 import libt._
 
