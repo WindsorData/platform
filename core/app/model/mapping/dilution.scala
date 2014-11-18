@@ -30,7 +30,6 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
   val bsInputsMapping = {
     def Path(ps:PathPart*) = RelativeTo('bsInputs)(ps)
     Years(
-      Path('valuationModel),
       Path('volatility),
       Path('expectedTerm),
       Path('riskFreeRate),
