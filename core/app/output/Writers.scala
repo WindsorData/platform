@@ -120,7 +120,7 @@ object StandardTop5Writer extends Top5Writer with StandardMapping
 
 object FullTop5Writer extends Top5Writer
   with DocSrcMappingComponent
-  with FullDilutionMappingComponent
+  with FullOutputDilutionMappingComponent
   with FullTop5WithTtdcMappingComponent
   with FullOutputGuidelinesMappingComponent {
 
