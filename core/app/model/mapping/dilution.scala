@@ -11,7 +11,7 @@ import libt.spreadsheet._
 import libt.error._
 import libt._
 
-trait FullDilutionMappingComponent extends DilutionMappingComponent {
+trait FullOutputDilutionMappingComponent extends DilutionMappingComponent {
 
   val usageAndSVTDataMapping = {
     def Path(ps:PathPart*) = RelativeTo('usageAndSVTData)(ps)
@@ -28,7 +28,7 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
   }
 
   val bsInputsMapping = {
-    def Path(ps:PathPart*) = RelativeTo('bsInputs)(ps)
+    def Path(ps: PathPart*) = RelativeTo('bsInputs)(ps)
     Years(
       Path('volatility),
       Path('expectedTerm),
@@ -50,6 +50,45 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
       Path('sharesAvailable, 'fungible, 'ratio),
       Path('sharesAvailable, 'fungible, 'fullValue))
   }
+}
+
+
+trait FullInputDilutionMappingComponent extends DilutionMappingComponent {
+
+  val usageAndSVTDataMapping =
+    Years(
+      Path('avgSharesOutstanding),
+      Path('optionsSARs, 'granted),
+      Path('optionsSARs, 'exPrice),
+      Path('optionsSARs, 'cancelled),
+      Path('fullValue, 'sharesGranted),
+      Path('fullValue, 'grantPrice),
+      Path('fullValue, 'sharesCancelled),
+      Path('cashLTIP, 'grants),
+      Path('cashLTIP, 'payouts))
+
+  val bsInputsMapping =
+    Years(
+      Path('valuationModel),
+      Path('volatility),
+      Path('expectedTerm),
+      Path('riskFreeRate),
+      Path('dividendYield),
+      Path('bs))
+
+  val dilutionMapping = Seq[Strip](
+    Path('awardsOutstandings, 'option),
+    Path('awardsOutstandings, 'fullValue),
+    Path('awardsOutstandings, 'total),
+    Path('sharesAvailable, 'current),
+    Path('sharesAvailable, 'new),
+    Path('sharesAvailable, 'everGreen, 'anual),
+    Path('sharesAvailable, 'everGreen, 'yearsLeft),
+    Path('sharesAvailable, 'fungible, 'ratio),
+    Path('sharesAvailable, 'fungible, 'fullValue))
+}
+
+trait DilutionValidations {
 
   def averageSharesValidation(model: Model) = {
     val results: Seq[Validated[Model]] =
@@ -120,7 +159,7 @@ trait FullDilutionMappingComponent extends DilutionMappingComponent {
 
 }
 
-package object dilution extends StandardWorkflowFactory with FullDilutionMappingComponent {
+package object dilution extends StandardWorkflowFactory with FullInputDilutionMappingComponent with DilutionValidations {
 
   trait DilutionDocSrcCombiner extends DocSrcModelCombiner {
     def combineModels(pointers: Seq[SheetPointer[Validated[Year]]], models: Seq[Seq[Model]], docSrcModel: Model) =
