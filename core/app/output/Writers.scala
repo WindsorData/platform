@@ -75,15 +75,15 @@ case class PeersWriter(reportBuilder: ReportBuilder) extends OutputWriter {
 }
 
 object BodWriter extends OutputWriter with StandardMapping{
-  self : Top5MappingComponent =>
-  val schema = TModel(
+  val schema = TCompanyFiscalYear
+  val schema2 = TModel(
     TBod.elementTypes ++
     TModel('ticker -> TString, 'name -> TString, 'disclosureFiscalYear -> TInt).elementTypes : _*)
 
   val fileName = "EmptyBodOutputTemplate.xls"
 
-  def bodArea(range: Int) =
-    Area(schema= schema,
+  def bodArea =
+    Area(schema= schema2,
       offset= Offset(4,0),
       limit= None,
       orientation= ColumnOrientedLayout(RawValueReader),
@@ -92,23 +92,23 @@ object BodWriter extends OutputWriter with StandardMapping{
                           Path('disclosureFiscalYear),
                           Gap, Gap, Gap, Gap, Gap) ++ bodMapping)
 
-  def metadataArea(range: Int) =
+  def metadataArea =
     outputArea(
       MetadataAreaLayout(Offset(1, 0)),
-      executiveMapping.filter(_ match {
-        case Gap => false
-        case _ => true
-      }),
-      Path(),
+      bodMapping,
+      Path('directorData, 'group),
       Path('bod, *),
       FullWriteStrategy)
 
-  def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit =
-    WorkbookMapping(Seq(bodArea(yearRange))).write(
+  def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit = {
+    WorkbookMapping(Seq(bodArea)).write(
       Model.flattenWith(
         models,
         PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
         Path('bod, *)), out)
+    WorkbookMapping(Seq(AreaGap, metadataArea)).write(models, out)
+     
+  }
 }
 
 trait FullTop5WithTtdcMappingComponent extends FullTop5MappingComponent {
