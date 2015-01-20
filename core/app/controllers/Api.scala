@@ -83,7 +83,7 @@ object Api extends Controller with SpreadsheetDownloader {
         model.intersect(Seq(Path('cusip), Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Top5"))
       } ++
       BodDb.findAllMap { model =>
-        model.intersect(Seq(Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Bod"))
+        model.intersect(Seq(Path('cusip), Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Bod"))
       } ++
       PeersDb.findAllMap { model =>
         model
