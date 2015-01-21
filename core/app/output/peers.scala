@@ -1,15 +1,15 @@
 package output
 
-import libt.util.math._
 import libt._
-import output.PeersWriter
-import model.PeerCompanies._
-import libt.spreadsheet.writer.{CustomWriteSheetDefinition, WriteStrategy, CustomWriteArea, FullWriteStrategy}
-import org.apache.poi.ss.usermodel.Sheet
 import libt.Col
-import output.PeersWriteStrategy
-import libt.spreadsheet.writer.CustomWriteArea
-import output.PeersWriter
+import libt.util.math._
+import libt.spreadsheet.writer._
+
+import model.PeerCompanies._
+
+import output.writers.PeersWriter
+
+import org.apache.poi.ss.usermodel.Sheet
 
 trait ScorePeersReport {
   implicit def models2RichModels(models: Seq[Model]) = new {

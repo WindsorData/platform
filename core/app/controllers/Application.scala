@@ -14,7 +14,9 @@ import libt.error._
 import libt._
 import controllers.generic._
 import controllers.generic.{WorkbookZipReader, SpreadsheetUploader, SpreadsheetDownloader}
-import output.{FullTop5Writer, StandardTop5Writer, BodWriter, OutputWriter}
+import output.writers._
+import output.writers.generic.OutputWriter
+
 import windsor.generic.persistence.Database
 
 object Application extends Controller with WorkbookZipReader with SpreadsheetUploader with SpreadsheetDownloader {
@@ -29,7 +31,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
 
   val entryReadersBod = Seq(EntryReader(bod.Workflow, "BOD.xlsx"))
   val entryReadersPeers = Seq(EntryReader(peers.Workflow, "Peer_Peer_research.xlsx"))
-        
+
   val companyForm = Form(
     tuple(
       "checkMe" -> seq(text),
@@ -37,7 +39,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def index = Action {
     Redirect(routes.Application.companies)
   }
-  
+
   def newCompany = uploadSingleSpreadsheet(top5.Workflow)(ExecutivesDb)
   def newExecGuideline = uploadSingleSpreadsheet(guidelines.Workflow)(ExecutivesDb)
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)(ExecutivesDb)

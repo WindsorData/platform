@@ -17,8 +17,9 @@ import libt.json._
 
 import output._
 import controllers.generic.SpreadsheetDownloader
-import output.PeersPeersReport
-import output.StandardTop5Writer
+import output.writers._
+import output.writers.generic.OutputWriter
+
 import java.text.SimpleDateFormat
 import org.joda.time.format.DateTimeFormat
 

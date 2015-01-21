@@ -1,22 +1,26 @@
-package output
+package output.writers.generic
 
-import _root_.mapping._
 import libt.spreadsheet._
 import libt._
+
+import libt.spreadsheet.ComplexEnumCheck
+import libt.spreadsheet.EnumCheck
+
 import model.mapping._
 import model.ExecutivesSTBonusPlan._
 import model.ExecutivesGuidelines._
 import model.ExecutivesTop5._
-import libt.spreadsheet.ComplexEnumCheck
-import libt.spreadsheet.EnumCheck
 
-package object mapping {
+import mapping.DilutionMappingComponent
+import mapping.DocSrcMappingComponent
+import mapping.Top5MappingComponent
+import mapping.GuidelinesMappingComponent
 
-  trait StandardMapping
-    extends DilutionMappingComponent
-    with DocSrcMappingComponent
-    with Top5MappingComponent
-    with GuidelinesMappingComponent {
+trait StandardMapping
+  extends DilutionMappingComponent
+  with DocSrcMappingComponent
+  with Top5MappingComponent
+  with GuidelinesMappingComponent {
 
   val docSrcMapping =
     Seq[Strip](
@@ -66,7 +70,7 @@ package object mapping {
         performanceVestingMapping('performanceCashVesting)
 
   val dilutionMapping = {
-    def Path(ps:PathPart*) = RelativeTo('dilution)(ps)
+    def Path(ps: PathPart*) = RelativeTo('dilution)(ps)
     Seq[Strip](
       Path('awardsOutstandings, 'option),
       Path('awardsOutstandings, 'fullValue),
@@ -80,17 +84,17 @@ package object mapping {
   }
 
   val bsInputsMapping = {
-    def Path(ps:PathPart*) = RelativeTo('bsInputs)(ps)
-      Years(
-        Path('volatility),
-        Path('expectedTerm),
-        Path('riskFreeRate),
-        Path('dividendYield),
-        Path('bs))
+    def Path(ps: PathPart*) = RelativeTo('bsInputs)(ps)
+    Years(
+      Path('volatility),
+      Path('expectedTerm),
+      Path('riskFreeRate),
+      Path('dividendYield),
+      Path('bs))
   }
 
   val usageAndSVTDataMapping = {
-    def Path(ps:PathPart*) = RelativeTo('usageAndSVTData)(ps)
+    def Path(ps: PathPart*) = RelativeTo('usageAndSVTData)(ps)
     Years(
       Path('avgSharesOutstanding),
       Path('optionsSARs, 'granted),
@@ -201,5 +205,4 @@ package object mapping {
     Feature('carriedInterest, 'outstandingEquityAwards, 'unvestedOptions),
     Feature('carriedInterest, 'outstandingEquityAwards, 'timeVestRS),
     Feature('carriedInterest, 'outstandingEquityAwards, 'perfVestRS))
-  }
 }

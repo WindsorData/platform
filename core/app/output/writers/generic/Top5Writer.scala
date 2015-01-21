@@ -1,135 +1,29 @@
-package output
+package output.writers.generic
 
-import _root_.mapping.{DocSrcMappingComponent, GuidelinesMappingComponent, Top5MappingComponent, DilutionMappingComponent}
-import org.apache.poi.ss.usermodel.WorkbookFactory
-import org.apache.poi.ss.usermodel.Sheet
-import java.io.OutputStream
-import org.apache.poi.ss.usermodel.Workbook
-import model._
-import util.FileManager
 import libt._
-import libt.spreadsheet._
-import libt.spreadsheet.reader._
-import model.ExecutivesBod._
-import model.mapping.bod._
-import output.mapping._
-import model.mapping._
-import model.PeerCompanies._
-import model.mapping.peers._
-import libt.TModel
-import scala.Some
+import libt.spreadsheet.Gap
 import libt.spreadsheet.reader.Area
-import libt.spreadsheet.reader.ColumnOrientedLayout
-import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
-import libt.spreadsheet.writer.{FullWriteStrategy, CustomWriteArea, CustomWriteSheetDefinition, WriteStrategy}
+import libt.spreadsheet.reader.WorkbookMapping
+import libt.spreadsheet.writer.CustomWriteSheetDefinition
+import libt.spreadsheet.writer.WriteStrategy
+import libt.spreadsheet.reader.ColumnOrientedLayout
+import libt.spreadsheet.reader.RawValueReader
 
-trait OutputWriter {
-  val schema: TModel
-  val fileName: String
-  def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit
+import model.TCompanyFiscalYear
 
-  def outputArea(
-    layout: FlattedAreaLayout,
-    outputMapping: Seq[Strip],
-    flatteningPK: Path,
-    flatteningPath: Path,
-    writeStrategy: WriteStrategy) =
-      FlattedArea(
-        PK(Path('ticker), Path('name), Path('disclosureFiscalYearDate)),
-        PK(flatteningPK),
-        flatteningPath,
-        schema,
-        layout,
-        outputMapping,
-        writeStrategy)
+import mapping.DilutionMappingComponent
+import mapping.DocSrcMappingComponent
+import mapping.Top5MappingComponent
+import mapping.GuidelinesMappingComponent
 
-  def write(out: OutputStream, companies: Seq[Model], range: Int): Unit = {
-    FileManager.loadResource(fileName) {
-      x =>
-      {
-        val wb = WorkbookFactory.create(x)
-        write(wb, companies, range)
-        wb.write(out)
-      }
-    }
-  }
-}
+import output.MetadataAreaLayout
+import output.ValueAreaLayout
 
-case class PeersWriter(reportBuilder: ReportBuilder) extends OutputWriter {
-  val schema = TPeers
-  val fileName = reportBuilder.fileName
+import org.apache.poi.ss.usermodel.Sheet
+import org.apache.poi.ss.usermodel.Workbook
 
-  def peersArea(writeStrategy: PeersWriteStrategy) =
-    CustomWriteArea(
-      schema= schema,
-      offset= Offset(1,0),
-      limit= None,
-      orientation= ColumnOrientedLayout(RawValueReader),
-      columns= peersMapping,
-      writeStrategy= writeStrategy)
-
-
-  def write(out: Workbook, models: Seq[Model], yearRange: Int = 0): Unit =
-    WorkbookMapping(reportBuilder.defineWriters(this)).write(models, out)
-}
-
-object BodWriter extends OutputWriter with StandardMapping{
-  val schema = TCompanyFiscalYear
-  val schema2 = TModel(
-    TBod.elementTypes ++
-    TModel('ticker -> TString, 'name -> TString, 'disclosureFiscalYear -> TInt).elementTypes : _*)
-
-  val fileName = "EmptyBodOutputTemplate.xls"
-
-  def bodArea =
-    Area(schema= schema2,
-      offset= Offset(4,0),
-      limit= None,
-      orientation= ColumnOrientedLayout(RawValueReader),
-      columns= Seq[Strip](Path('ticker),
-                          Path('name),
-                          Path('disclosureFiscalYear),
-                          Gap, Gap, Gap, Gap, Gap) ++ bodMapping)
-
-  def metadataArea =
-    outputArea(
-      MetadataAreaLayout(Offset(1, 0)),
-      bodMapping,
-      Path('directorData, 'group),
-      Path('bod, *),
-      FullWriteStrategy)
-
-  def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit = {
-    WorkbookMapping(Seq(bodArea)).write(
-      Model.flattenWith(
-        models,
-        PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
-        Path('bod, *)), out)
-    WorkbookMapping(Seq(AreaGap, metadataArea)).write(models, out)
-     
-  }
-}
-
-trait FullTop5WithTtdcMappingComponent extends FullTop5MappingComponent {
-  override def executiveMapping =
-    Seq[Strip](Gap, Path('calculated, 'ttdc), Path('calculated, 'ttdcPayRank)) ++ super.executiveMapping
-}
-
-object StandardTop5Writer extends Top5Writer with StandardMapping
-
-object FullTop5Writer extends Top5Writer
-  with DocSrcMappingComponent
-  with FullOutputDilutionMappingComponent
-  with FullTop5WithTtdcMappingComponent
-  with FullOutputGuidelinesMappingComponent {
-
-  override val fileName = "EmptyFullOutputTemplate.xls"
-
-  val docSrcMapping = StandardTop5Writer.docSrcMapping
-}
-
-class Top5Writer extends OutputWriter {
+abstract class Top5Writer extends OutputWriter {
   self : DilutionMappingComponent
     with DocSrcMappingComponent
     with Top5MappingComponent
@@ -288,7 +182,7 @@ class Top5Writer extends OutputWriter {
         yearOffset match {
           case Some(pos) => area.customWrite(modelsForCurrentYear(validModels, pos), sheet)
         	case None => area.customWrite(validModels.flatten, sheet)
-        }		
+        }
       }
     }
   }
