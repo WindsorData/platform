@@ -1,4 +1,4 @@
-package output
+package windsor.output
 import org.junit.runner.RunWith
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.ss.usermodel.Sheet
@@ -7,7 +7,7 @@ import libt.spreadsheet._
 import libt.spreadsheet.util._
 import libt._
 import org.scalatest.BeforeAndAfter
-import output._
+import windsor.output._
 import org.scalatest.FlatSpec
 import libt.spreadsheet.Offset
 import scala.math.BigDecimal.int2bigDecimal
@@ -99,7 +99,7 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
     offset = Offset(0, 0)
     writeModel
   }
-  
+
   it should "write keys" in {
     assert(sheet.cellAt(0, 0).getNumericCellValue() === 1000)
     assert(sheet.cellAt(0, 1).getStringCellValue() === "value1")
@@ -154,14 +154,14 @@ class WorkbookWriterWithFlattedAreaSpec extends FlatSpec with BeforeAndAfter {
     assert(sheet.cellAt(2, 2).getNumericCellValue() === 2000)
     assert(sheet.cellAt(3, 2).getNumericCellValue() === 2000)
   }
-  
+
   it should "write a single model as a flattened value" in {
     //First root model with its flattened model
     assert(sheet2.cellAt(0, 0).getNumericCellValue() === 1000)
     assert(sheet2.cellAt(0, 1).getStringCellValue() === "value1")
     assert(sheet2.cellAt(0, 2).getNumericCellValue() === 2)
     assert(sheet2.cellAt(0, 3).getStringCellValue() === "lala")
-    
+
     //Second root model with its flattened model
     assert(sheet2.cellAt(1, 0).getNumericCellValue() === 2000)
     assert(sheet2.cellAt(1, 1).getStringCellValue() === "value2")

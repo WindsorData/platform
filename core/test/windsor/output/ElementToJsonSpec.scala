@@ -1,4 +1,4 @@
-package output
+package windsor.output
 
 import org.scalatest.FlatSpec
 import play.api.libs.json._

@@ -1,8 +1,8 @@
-package output.peers
+package windsor.output.peers
 
 import org.scalatest.FlatSpec
 import libt._
-import output._
+import windsor.output._
 
 class PeersOfPeersSpec extends FlatSpec {
 

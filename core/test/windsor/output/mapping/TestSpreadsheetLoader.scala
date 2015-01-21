@@ -1,4 +1,4 @@
-package output.mapping
+package windsor.output.mapping
 import java.io.InputStream
 import util._
 

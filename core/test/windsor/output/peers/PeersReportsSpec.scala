@@ -1,8 +1,8 @@
-package output.peers
+package windsor.output.peers
 
 import org.scalatest.FlatSpec
 import libt.{Value, Model}
-import output.PeersPeersReport
+import windsor.output.PeersPeersReport
 
 class PeersReportsSpec extends FlatSpec {
   val primaryPeersModels =

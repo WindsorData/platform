@@ -1,4 +1,4 @@
-package output.mapping
+package windsor.output.mapping
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.scalatest.FunSpec
@@ -7,7 +7,7 @@ import libt.spreadsheet.writer._
 import libt.spreadsheet._
 import libt._
 
-import output._
+import windsor.output._
 
 class DilutionMetadataSpec extends FunSpec {
 
@@ -24,7 +24,7 @@ class DilutionMetadataSpec extends FunSpec {
         'bod -> Col(
           Model(),
           Model())))
-          
+
       val area = FlattedArea(
         PK(Path('ticker), Path('name), Path('disclosureFiscalYearDate)),
         PK(),
@@ -33,7 +33,7 @@ class DilutionMetadataSpec extends FunSpec {
         MetadataAreaLayout(Offset(0, 0)),
         model.mapping.bod.bodMapping,
         FullWriteStrategy)
-        
+
         assert(area.completePKSize === 3)
 
       area.write(models)(sheet)

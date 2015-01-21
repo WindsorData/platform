@@ -16,7 +16,7 @@ import java.util.Date
 import java.io.FileOutputStream
 import libt.error.Valid
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import output.mapping.TestSpreadsheetLoader
+import windsor.output.mapping.TestSpreadsheetLoader
 
 class ReadTElementSpec extends FunSpec with BeforeAndAfter with TestSpreadsheetLoader {
 

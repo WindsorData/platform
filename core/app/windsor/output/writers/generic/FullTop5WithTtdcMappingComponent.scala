@@ -1,4 +1,4 @@
-package output.writers.generic
+package windsor.output.writers.generic
 
 import libt.Path
 import libt.spreadsheet.Gap

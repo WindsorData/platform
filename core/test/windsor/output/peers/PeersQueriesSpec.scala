@@ -1,4 +1,4 @@
-package output.peers
+package windsor.output.peers
 
 import com.mongodb.casbah.MongoClient
 import org.joda.time.DateTime

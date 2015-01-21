@@ -1,12 +1,12 @@
-package output.writers
+package windsor.output.writers
 
 import model.mapping.FullOutputDilutionMappingComponent
 import model.mapping.FullOutputGuidelinesMappingComponent
 
 import mapping.DocSrcMappingComponent
 
-import output.writers.generic.FullTop5WithTtdcMappingComponent
-import output.writers.generic.Top5Writer
+import windsor.output.writers.generic.FullTop5WithTtdcMappingComponent
+import windsor.output.writers.generic.Top5Writer
 
 object FullTop5Writer extends Top5Writer
   with DocSrcMappingComponent

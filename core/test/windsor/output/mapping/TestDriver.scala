@@ -1,4 +1,4 @@
-package output.mapping
+package windsor.output.mapping
 
 import org.scalatest.FunSpec
 import org.junit.runner.RunWith

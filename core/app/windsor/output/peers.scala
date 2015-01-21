@@ -1,4 +1,4 @@
-package output
+package windsor.output
 
 import libt._
 import libt.Col
@@ -7,7 +7,7 @@ import libt.spreadsheet.writer._
 
 import model.PeerCompanies._
 
-import output.writers.PeersWriter
+import windsor.output.writers.PeersWriter
 
 import org.apache.poi.ss.usermodel.Sheet
 

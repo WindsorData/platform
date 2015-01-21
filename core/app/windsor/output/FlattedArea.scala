@@ -1,4 +1,4 @@
-package output
+package windsor.output
 
 import org.apache.poi.ss.usermodel.Sheet
 import libt.spreadsheet._

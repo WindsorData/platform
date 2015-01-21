@@ -1,4 +1,4 @@
-package output.writers.generic
+package windsor.output.writers.generic
 
 import libt._
 import libt.spreadsheet.Gap
@@ -17,8 +17,8 @@ import mapping.DocSrcMappingComponent
 import mapping.Top5MappingComponent
 import mapping.GuidelinesMappingComponent
 
-import output.MetadataAreaLayout
-import output.ValueAreaLayout
+import windsor.output.MetadataAreaLayout
+import windsor.output.ValueAreaLayout
 
 import org.apache.poi.ss.usermodel.Sheet
 import org.apache.poi.ss.usermodel.Workbook

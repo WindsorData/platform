@@ -1,18 +1,18 @@
-package output.writers.generic
+package windsor.output.writers.generic
 
 import libt.Path
 import libt.PK
 import libt.TModel
 import libt.Model
+import libt.symbol2Route
 import libt.spreadsheet.Strip
 import libt.spreadsheet.writer.WriteStrategy
 import util.FileManager
-import output.FlattedAreaLayout
-import output.FlattedArea
 import java.io.OutputStream
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.ss.usermodel.WorkbookFactory
-import libt.symbol2Route
+import windsor.output.FlattedAreaLayout
+import windsor.output.FlattedArea
 
 trait OutputWriter {
   val schema: TModel

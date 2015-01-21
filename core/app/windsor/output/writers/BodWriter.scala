@@ -1,13 +1,13 @@
-package output.writers
+package windsor.output.writers
 
 import libt._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.writer.FullWriteStrategy
 
-import output.MetadataAreaLayout
-import output.writers.generic.OutputWriter
-import output.writers.generic.StandardMapping
+import windsor.output.MetadataAreaLayout
+import windsor.output.writers.generic.OutputWriter
+import windsor.output.writers.generic.StandardMapping
 
 import model.TCompanyFiscalYear
 import model.ExecutivesBod.TBod

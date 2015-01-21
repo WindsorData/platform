@@ -1,13 +1,13 @@
-package output.writers
+package windsor.output.writers
 
 import libt._
 import libt.spreadsheet._
 import libt.spreadsheet.reader._
 import libt.spreadsheet.writer._
 
-import output.writers.generic.OutputWriter
-import output.ReportBuilder
-import output.PeersWriteStrategy
+import windsor.output.writers.generic.OutputWriter
+import windsor.output.ReportBuilder
+import windsor.output.PeersWriteStrategy
 
 import model.PeerCompanies._
 import model.mapping.peers._

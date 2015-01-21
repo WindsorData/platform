@@ -1,7 +1,7 @@
 package libt.spreadsheet.writer
 
 import org.scalatest._
-import output.writers.FullTop5Writer._
+import windsor.output.writers.FullTop5Writer._
 import libt._
 
 class GroupModelsSpec extends FunSpec with BeforeAndAfter {

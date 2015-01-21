@@ -1,7 +1,7 @@
 package libt.spreadsheet.writer
 
 import util.FileManager
-import output.mapping.TestSpreadsheetLoader
+import windsor.output.mapping.TestSpreadsheetLoader
 
 import org.junit.runner.RunWith
 import org.scalatest.FunSpec
