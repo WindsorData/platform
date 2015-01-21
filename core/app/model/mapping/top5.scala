@@ -226,8 +226,7 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
                     Path('carriedInterest, 'ownedShares),
                     Path('beneficialOwnership),
                     Path('options),
-                    Path('unvestedRestrictedStock),
-                    Path('disclaimBeneficialOwnership)).reduce(m)))
+                    Path('unvestedRestrictedStock)).reduce(m)))
 
                 val modelWithPartialCalcs = m.asModel ++ builder.build
 
