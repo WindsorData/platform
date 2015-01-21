@@ -1,10 +1,6 @@
-package util
-import org.junit.runner.RunWith
-import org.scalatest.junit.JUnitRunner
-import org.scalatest.fixture.FlatSpec
-import org.scalatest.path.FunSpec
+package libt.util
 import org.scalatest.FunSuite
-import IndexedTraversables._
+import libt.util.Lists._
 
 class IndexedTraversablesSpec extends FunSuite {
   test("can traverse with index") {

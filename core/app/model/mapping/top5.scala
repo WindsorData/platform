@@ -24,7 +24,7 @@ import libt.Col
 import libt.spreadsheet.reader.Area
 import libt.spreadsheet.reader.WorkbookMapping
 import libt.spreadsheet.Offset
-
+import libt.util.Lists._
 
 trait FullTop5MappingComponent extends Top5MappingComponent {
   def performanceVestingMapping(rootPath: Symbol) =
@@ -130,14 +130,7 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
       (40, 'executives, colWrapping),
       (55, 'executives, colWrapping))
 
-  def gzip(sheets: Seq[Seq[Validated[Model]]]): Seq[Seq[Validated[Model]]] = sheets match {
-    case m1 :: m2 :: Nil => m1.zip(m2).map {
-      case (x, y) => Seq(x, y)
-    }
-    case head :: tail => head.zip(gzip(tail)).map {
-      case (x, xs) => x +: xs
-    }
-  }
+  
   def execDbTimeVestValidation(models: Seq[Model]) = {
     val lastYear = models.maxBy(_ /#/ 'disclosureFiscalYear) /#/ 'disclosureFiscalYear
     models.map {
@@ -159,7 +152,7 @@ object top5 extends StandardWorkflowFactory with FullTop5MappingComponent {
         }
     }
   }
-
+ 
   def optionGrantsVsGrantType(models: Seq[Model]): Seq[Validated[Model]] = {
     def gap(eDate: Date, gDate: Date) =
       Math.abs(new DateTime(eDate).getYear() - new DateTime(gDate).getYear())

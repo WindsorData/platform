@@ -1,5 +1,5 @@
 package libt.spreadsheet.writer
-import util.IndexedTraversables._
+import libt.util.Lists._
 import libt.Value
 import java.util.Date
 import org.apache.poi.ss.usermodel.Row
