@@ -24,15 +24,17 @@ class CompaniesController < ApplicationController
     end
   end
 
-  def perform_info_deletion
-    authorize!(:perfom, :delete_info)
-    path = Rails.application.config.backend_host + "/api/companies/#{params[:ticker]}/year/#{params[:year]}"
-    backend_delete(path)    
+  def delete_top5
+    delete_company('top5')
+  end
+
+  def delete_bod
+    delete_company('bod')
   end
 
   def delete_db
     path = Rails.application.config.backend_host + Rails.application.config.drop_all_peers_path
-    authorize!(:perfom, :delete_info)    
+    authorize!(:perfom, :delete_info)
     backend_delete(path)
   end
 
@@ -76,6 +78,14 @@ class CompaniesController < ApplicationController
         flash[:errors] = JSON.parse(response)["error"]
       end
     end
-    render 'delete_info'    
+    render 'delete_info'
+  end
+
+  private
+
+  def delete_company(type)
+    authorize!(:perfom, :delete_info)
+    path = Rails.application.config.backend_host + "/api/companies/#{type}/#{params[:ticker]}/year/#{params[:year]}"
+    backend_delete(path)
   end
 end
