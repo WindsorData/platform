@@ -17,11 +17,12 @@ WindosorFrontend::Application.routes.draw do
       get :tickers
     end
   end
-  
+
   resources :companies do
     collection do
       get   :delete_info
-      post  :perform_info_deletion
+      post  :delete_top5
+      post  :delete_bod
       post  :delete_db
       post  :delete_peers
     end

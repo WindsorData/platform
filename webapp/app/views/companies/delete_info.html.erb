@@ -4,7 +4,7 @@
 
 <h1 class="title">Delete Ticker Info</h1>
 <hr>
-<%= form_tag(perform_info_deletion_companies_path) do %>
+<%= form_tag(delete_top5_companies_path) do %>
   <div class="row">
       <div class="large-4 columns">
         <%= text_field_tag :ticker %>
@@ -17,10 +17,31 @@
   </div>
   <div class="row">
       <div class="large-4 columns">
-        <%= submit_tag 'Delete', class: 'button postfix alert', data: { confirm: "Are you sure you want to delete information for this ticker and year?" } %>
+        <%= submit_tag 'Delete', class: 'button postfix alert', data: { confirm: "Are you sure you want to delete Top5 information for this ticker and year?" } %>
       </div>
   </div>
 <% end %>
+
+<h1 class="title">Delete BOD Info</h1>
+<hr>
+<%= form_tag(delete_bod_companies_path) do %>
+  <div class="row">
+      <div class="large-4 columns">
+        <%= text_field_tag :ticker %>
+      </div>
+  </div>
+  <div class="row">
+    <div class="large-4 columns padding-top-10">
+      <%= text_field_tag :year, nil, placeholder: "Year" %>
+    </div>
+  </div>
+  <div class="row">
+      <div class="large-4 columns">
+        <%= submit_tag 'Delete', class: 'button postfix alert', data: { confirm: "Are you sure you want to delete Bod information for this ticker and year?" } %>
+      </div>
+  </div>
+<% end %>
+
 
 <div class="row">
   <div class="large-12 columns">
