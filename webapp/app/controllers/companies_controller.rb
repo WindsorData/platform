@@ -15,14 +15,14 @@ class CompaniesController < ApplicationController
     authorize!(:perfom, :delete_info)
   end
 
-  def database_inventory_file
-
-    @data = JSON.parse(RestClient.get("http://localhost:9000/api/companies/inventory"))
-
-    respond_to do |format|
-      format.xls { render 'database_inventory'}
-    end
+  def companies_inventory_file
+    database_inventor_file('companies')
   end
+
+  def peers_inventory_file
+    database_inventor_file('peers')
+  end
+
 
   def delete_top5
     delete_company('top5')
@@ -87,5 +87,12 @@ class CompaniesController < ApplicationController
     authorize!(:perfom, :delete_info)
     path = Rails.application.config.backend_host + "/api/companies/#{type}/#{params[:ticker]}/year/#{params[:year]}"
     backend_delete(path)
+  end
+
+  def database_inventory_file(type)
+    @data = JSON.parse(RestClient.get("http://localhost:9000/api/companies/inventory/#{type}"))
+    respond_to do |format|
+      format.xls { render 'database_inventory'}
+    end
   end
 end
