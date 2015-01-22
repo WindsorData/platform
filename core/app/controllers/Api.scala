@@ -185,8 +185,13 @@ object Api extends Controller with SpreadsheetDownloader {
     Ok(toJson(PeersDb.allTickers.map(_.asJson).toSet))
   }
 
-  def removeCompanyFiscalYear(cusip: String, disclosureFiscalYear:Int) = Action {
+  def removeTop5Company(cusip: String, disclosureFiscalYear:Int) = Action {
     ExecutivesDb.remove(cusip, disclosureFiscalYear)
+    Ok
+  }
+
+  def removeBodCompany(cusip: String, disclosureFiscalYear:Int) = Action {
+    BodDb.remove(cusip, disclosureFiscalYear)
     Ok
   }
 

@@ -19,7 +19,8 @@ POST    /api/companies/search                            controllers.Api.compani
 POST    /api/companies/report                            controllers.Api.top5Report
 POST    /api/companies/report/bod                        controllers.Api.bodReport
 POST    /api/companies/report/full                       controllers.Api.fullReport
-DELETE  /api/companies/:cusip/year/:year                 controllers.Api.removeCompanyFiscalYear(cusip:String, year:Int)
+DELETE  /api/companies/top5/:cusip/year/:year            controllers.Api.removeTop5Company(cusip:String, year:Int)
+DELETE  /api/companies/bod/:cusip/year/:year             controllers.Api.removeTop5Company(cusip:String, year:Int)
 DELETE  /api/companies/peers                             controllers.Api.removeSpecificPeer
 DELETE  /api/companies/allPeers                          controllers.Api.removePeersData
 
