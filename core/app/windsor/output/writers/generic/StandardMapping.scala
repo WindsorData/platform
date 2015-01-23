@@ -18,17 +18,9 @@ import mapping.GuidelinesMappingComponent
 
 trait StandardMapping
   extends DilutionMappingComponent
-  with DocSrcMappingComponent
+  with StandardDocSrcMapping
   with Top5MappingComponent
   with GuidelinesMappingComponent {
-
-  val docSrcMapping =
-    Seq[Strip](
-      Path('ticker),
-      Path('name),
-      Path('disclosureFiscalYear),
-      Path('tenK),
-      Path('def14a)) ++ Multi(Path('otherDocs), 7, Path('type), Path('date))
 
   def performanceVestingMapping(base: Symbol) =
     Seq[Strip](
