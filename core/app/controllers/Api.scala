@@ -78,14 +78,15 @@ object Api extends Controller with SpreadsheetDownloader {
     }
   }
 
-  def allCompanies = Action { request =>
-    val results =
+  def allCompanies = allCompaniesAction(
       ExecutivesDb.findAllMap { model =>
         model.intersect(Seq(Path('cusip), Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Top5"))
       } ++
       BodDb.findAllMap { model =>
         model.intersect(Seq(Path('cusip), Path('ticker), Path('name), Path('disclosureFiscalYear))) + ('type -> Value("Bod"))
-      } ++
+      })
+
+   def allPeers = allCompaniesAction(
       PeersDb.findAllMap { model =>
         model
           .intersect(Seq(Path('ticker), Path('companyName), Path('fiscalYear)))
@@ -93,9 +94,7 @@ object Api extends Controller with SpreadsheetDownloader {
             case ('companyName, value) => 'name -> value
             case ('fiscalYear, value) => 'disclosureFiscalYear -> value
           } + ('type -> Value("Peers"))
-      }
-    Ok(toJson(results.sortBy(_ /!/ 'ticker).map(_.asJson)))
-  }
+      })
 
   def companiesSearch = Action { request =>
     val json : JsValue = request.body.asJson.get
@@ -224,6 +223,10 @@ object Api extends Controller with SpreadsheetDownloader {
       }
     }.getOrElse(BadRequest(toJson(Model('error -> Value("invalid json")).asJson)))
 
+  }
+
+  private def allCompaniesAction(results: Seq[Model]) =  Action { request =>
+    Ok(toJson(results.sortBy(_ /!/ 'ticker).map(_.asJson)))
   }
 
 }
