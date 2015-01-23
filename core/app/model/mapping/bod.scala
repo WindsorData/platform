@@ -10,10 +10,10 @@ import model.ExecutivesBod._
 import model._
 
 package object bod extends StandardWorkflowFactory {
-  
+
 	def relativeStrip(base: Path, relativeSchema: TModel) =
 	  Relative(base, relativeSchema.keys.map(Path(_)): _*).map(pathToFeature)
-  
+
     val bodMapping: Seq[Strip] =
     Seq[Strip](
       Path('directorData, 'group),
@@ -59,7 +59,7 @@ package object bod extends StandardWorkflowFactory {
           TAnnual) ++
       relativeStrip(
           Path('fullValuesPriorValues, 'initial),
-          TInitial)
+          TInitial) ++
       Seq[Strip](
           Path('other, 'cashDeferrals, 'toCash),
           Path('other, 'cashDeferrals, 'toStock),
@@ -75,9 +75,9 @@ package object bod extends StandardWorkflowFactory {
   override def Mapping = WorkbookMapping(
     Seq(Area(TCompanyFiscalYear, Offset(1, 2), None, DocSrcLayout, DocSrcMapping),
         Area(TBod, Offset(3, 1), Some(10), DataLayout, bodMapping)))
-          
+
   override def CombinerPhase = StandardDocSrcCombiner((10, 'bod, colWrapping))
-  
+
   override def SheetValidation = Valid(_)
 
 }
