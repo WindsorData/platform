@@ -54,7 +54,7 @@ WindosorFrontend::Application.routes.draw do
 
   # Export Files
   post 'companies/peers_inventory_file',     as: :export_peers_inventory
-  post 'companies/companies_inventory_file', as: :export_compamies_inventory
+  post 'companies/companies_inventory_file', as: :export_companies_inventory
 
   post 'company_peers/peers_peers_single_ticker_file', as: :export_peers_peers_single_ticker
   post 'company_peers/peers_peers_ticker_list_file', as: :export_peers_peers_ticker_list

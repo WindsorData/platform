@@ -16,11 +16,11 @@ class CompaniesController < ApplicationController
   end
 
   def companies_inventory_file
-    database_inventor_file('companies')
+    database_inventory_file('companies')
   end
 
   def peers_inventory_file
-    database_inventor_file('peers')
+    database_inventory_file('peers')
   end
 
 
