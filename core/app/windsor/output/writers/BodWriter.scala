@@ -40,13 +40,20 @@ object BodWriter extends OutputWriter with StandardMapping {
       Path('bod, *),
       FullWriteStrategy)
 
+  def docSrcArea =
+    Area(schema= schema,
+      offset= Offset(2,0),
+      limit= None,
+      orientation= ColumnOrientedLayout(RawValueReader),
+      columns= docSrcMapping)
+
   def write(out: Workbook, models: Seq[Model], yearRange: Int): Unit = {
     WorkbookMapping(Seq(bodArea)).write(
       Model.flattenWith(
         models,
         PK(Path('ticker), Path('name), Path('disclosureFiscalYear)),
         Path('bod, *)), out)
-    WorkbookMapping(Seq(AreaGap, metadataArea)).write(models, out)
+    WorkbookMapping(Seq(AreaGap, metadataArea, docSrcArea)).write(models, out)
 
   }
 }
