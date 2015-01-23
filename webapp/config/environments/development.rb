@@ -44,7 +44,7 @@ WindosorFrontend::Application.configure do
   # Only use best-standards-support built into browsers
   config.action_dispatch.best_standards_support = :builtin
 
-  MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('config/mailer.yml'))))
+  #MAILER_CREDENTIALS = HashWithIndifferentAccess.new(YAML.load(File.read(File.expand_path('config/mailer.yml'))))
 
   #SMTP
   config.action_mailer.default_url_options = { :host => 'development' }  
