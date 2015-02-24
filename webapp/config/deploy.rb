@@ -2,7 +2,7 @@
 lock '3.1.0'
 
 set :application, 'windsor'
-set :repo_url, 'git@github.com:zauberlabs/windsordata-windsordata.git'
+set :repo_url, 'git@github.com:WindsorData/platform.git'
 
 set :stages, ["staging", "production"]
 set :default_stage, "staging"
