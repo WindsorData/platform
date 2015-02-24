@@ -32,7 +32,8 @@ class Ability
       end
       can   :perform, :quick_search
       can   :perform, :full_search
-      # can   :perform, :recent_search      
+      can   :perfom,  :delete_info
+      # can   :perform, :recent_search
     when 'client'
       can   :create, Group
       can   :destroy, Group do |g|
