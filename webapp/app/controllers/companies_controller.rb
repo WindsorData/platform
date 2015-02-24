@@ -39,6 +39,7 @@ class CompaniesController < ApplicationController
     path = Rails.application.config.backend_host + Rails.application.config.drop_all_peers_path
     authorize!(:perfom, :delete_db)
     backend_delete(path)
+    render 'delete_db'
   end
 
   def destroy_peers
@@ -81,7 +82,6 @@ class CompaniesController < ApplicationController
         flash[:errors] = JSON.parse(response)["error"]
       end
     end
-    render 'delete_info'
   end
 
   private
@@ -90,6 +90,7 @@ class CompaniesController < ApplicationController
     authorize!(:perfom, :delete_info)
     path = Rails.application.config.backend_host + "/api/companies/#{type}/#{params[:ticker]}/year/#{params[:year]}"
     backend_delete(path)
+    render 'delete_info'
   end
 
   def database_inventory_file(type)
