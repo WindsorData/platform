@@ -52,6 +52,10 @@
         <li class="<%= request.fullpath == delete_info_companies_path ? 'active' : '' %>">        
           <%= link_to('delete info', delete_info_companies_path, class: 'nav-link') if can? :perfom, :delete_info %>
         </li>
+        <li class="divider"></li>
+        <li class="<%= request.fullpath == delete_db_companies_path ? 'active' : '' %>">
+          <%= link_to('delete db', delete_db_companies_path, class: 'nav-link') if can? :perfom, :delete_db %>
+        </li>
       <% end %>
       <li class="divider"></li>
     </ul>

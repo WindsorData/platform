@@ -15,6 +15,10 @@ class CompaniesController < ApplicationController
     authorize!(:perfom, :delete_info)
   end
 
+  def delete_db
+    authorize!(:perfom, :delete_db)
+  end
+
   def companies_inventory_file
     database_inventory_file('companies')
   end
@@ -23,22 +27,21 @@ class CompaniesController < ApplicationController
     database_inventory_file('peers')
   end
 
-
-  def delete_top5
+  def destroy_top5
     delete_company('top5')
   end
 
-  def delete_bod
+  def destroy_bod
     delete_company('bod')
   end
 
-  def delete_db
+  def destroy_db
     path = Rails.application.config.backend_host + Rails.application.config.drop_all_peers_path
-    authorize!(:perfom, :delete_info)
+    authorize!(:perfom, :delete_db)
     backend_delete(path)
   end
 
-  def delete_peers
+  def destroy_peers
     company_peer = params[:company_peer_ticker]
     peer = params[:peer_ticker]
     path = Rails.application.config.backend_host + "/api/companies/peers"

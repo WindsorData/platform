@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="large-12 columns">
+    <h1>Delete Peers database</h1>
+    <hr>
+  </div>
+  <div class="large-4 pull-8 columns">
+    <%= form_tag(destroy_db_companies_path) do %>
+      <%= submit_tag 'Delete Peers database', class: 'button postfix alert', data: { confirm: "Are you sure you want to delete companies database?" } %>
+    <% end %>
+  </div>
+</div>

@@ -15,8 +15,9 @@ class Ability
       end
       can   :perform, :quick_search
       can   :perform, :full_search
-      can   :perform, :recent_search      
+      can   :perform, :recent_search
       can   :perfom,  :delete_info
+      can   :perfom,  :delete_db
     when 'admin'
       can   :upload, :file
       can   :perform, :full_search

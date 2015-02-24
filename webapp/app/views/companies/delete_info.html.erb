@@ -4,7 +4,7 @@
 
 <h1 class="title">Delete Ticker Info</h1>
 <hr>
-<%= form_tag(delete_top5_companies_path) do %>
+<%= form_tag(destroy_top5_companies_path) do %>
   <div class="row">
       <div class="large-4 columns">
         <%= text_field_tag :ticker %>
@@ -24,7 +24,7 @@
 
 <h1 class="title">Delete BOD Info</h1>
 <hr>
-<%= form_tag(delete_bod_companies_path) do %>
+<%= form_tag(destroy_bod_companies_path) do %>
   <div class="row">
       <div class="large-4 columns">
         <%= text_field_tag :ticker %>
@@ -42,22 +42,9 @@
   </div>
 <% end %>
 
-
-<div class="row">
-  <div class="large-12 columns">
-    <h1>Delete Peers database</h1>
-    <hr>
-  </div>
-  <div class="large-4 pull-8 columns">
-    <%= form_tag(delete_db_companies_path) do %>
-      <%= submit_tag 'Delete Peers database', class: 'button postfix alert', data: { confirm: "Are you sure you want to delete companies database?" } %>
-    <% end %>
-  </div>
-</div>
-
 <h1 class="title">Delete Specific Peers Relationship</h1>
 <hr>
-  <%= form_tag(delete_peers_companies_path) do %>
+  <%= form_tag(destroy_peers_companies_path) do %>
     <div class="row">
       <div class="large-4 columns">
         <%= text_field_tag :company_peer_ticker, nil, class: "company-peer-ticker", required: true %>

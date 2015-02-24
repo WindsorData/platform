@@ -21,10 +21,11 @@ WindosorFrontend::Application.routes.draw do
   resources :companies do
     collection do
       get   :delete_info
-      post  :delete_top5
-      post  :delete_bod
-      post  :delete_db
-      post  :delete_peers
+      get   :delete_db
+      post  :destroy_top5
+      post  :destroy_bod
+      post  :destroy_db
+      post  :destroy_peers
     end
   end
 
