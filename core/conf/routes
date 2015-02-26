@@ -45,6 +45,8 @@ POST    /api/companies/batch/companies          controllers.Application.newCompa
 POST    /api/companies/batch/bod                controllers.Application.newBodsBatch
 POST    /api/companies/batch/peers              controllers.Application.newPeersBatch
 
+POST 	/api/indexes							controllers.Application.newIndex
+
 # ~~~~
 
 ##Main page
