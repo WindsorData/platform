@@ -66,6 +66,20 @@
             </p>
         }
     </div>
+    
+     <div>
+        @form(action = routes.Application.newIndex, 'enctype -> "multipart/form-data") {
+            <!--  -->
+            <div>
+                <p>Upload a single Company Index data set</p>
+            </div>
+            <input type="file" name="dataset">
+            <p>
+                <input type="submit">
+            </p>
+        }
+    </div>
+    
 
     <div>
         @form(action = routes.Application.newCompaniesBatch, 'enctype -> "multipart/form-data") {

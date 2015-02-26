@@ -45,6 +45,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)(ExecutivesDb)
   def newBod = uploadSingleSpreadsheet(bod.Workflow)(BodDb)
   def newPeers = uploadSingleSpreadsheet(peers.Workflow)(PeersDb)
+  def newIndex = uploadSingleSpreadsheet(companyIndex.Workflow)(PeersDb)
 
   def newCompaniesBatch = uploadBatchSpreadSheets(entryReadersCompanies)(ExecutivesDb)
   def newBodsBatch = uploadBatchSpreadSheets(entryReadersBod)(BodDb)
@@ -149,5 +150,4 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def companies = Action {
     Ok(views.html.companies(ExecutivesDb.findAll.toList))
   }
-
 }

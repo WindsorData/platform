@@ -12,7 +12,7 @@ import libt.spreadsheet.Offset
 import libt.spreadsheet.reader.ColumnOrientedLayout
 import libt.spreadsheet.reader.RawValueReader
 
-package object index {
+package object companyIndex {
 
   val indexMapping = Seq[Strip](
     Path('ticker),
@@ -22,7 +22,7 @@ package object index {
     MappingPhase(Mapping) >> CombinerPhase
 
   def Mapping = WorkbookMapping(
-      Seq(Area(TCompanyIndex, Offset(1, 1), None, ColumnOrientedLayout(RawValueReader), indexMapping)))
+      Seq(Area(TCompanyIndex, Offset(3, 0), None, ColumnOrientedLayout(RawValueReader), indexMapping)))
 
   def CombinerPhase: Phase[Seq[Seq[Model]], Seq[Model]] =
     (_, xs) => Validated(xs.head)
