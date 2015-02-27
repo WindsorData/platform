@@ -14,6 +14,8 @@ case class CompanyIndexDb(db: MongoDB) extends Database {
   protected val colName: String = "companyIndex"
   protected val pk: Seq[Path] = Seq(Path('ticker))
 
+  collection.ensureIndex("ticker.value")
+
   def nameForTicker(ticker: String) =
     find(MongoDBObject("ticker.value" -> ticker))
 
