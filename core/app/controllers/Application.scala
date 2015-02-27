@@ -45,7 +45,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)(ExecutivesDb)
   def newBod = uploadSingleSpreadsheet(bod.Workflow)(BodDb)
   def newPeers = uploadSingleSpreadsheet(peers.Workflow)(PeersDb)
-  def newIndex = uploadSingleSpreadsheet(companyIndex.Workflow)(PeersDb)
+  def newIndex = uploadSingleSheetSpreadsheet(companyIndex.Workflow)(IndexDb)
 
   def newCompaniesBatch = uploadBatchSpreadSheets(entryReadersCompanies)(ExecutivesDb)
   def newBodsBatch = uploadBatchSpreadSheets(entryReadersBod)(BodDb)
@@ -72,6 +72,16 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
         Seq((originalFilename -> tickerName, reader.readFile(file.getAbsolutePath)))
       }
     }
+
+    def uploadSingleSheetSpreadsheet(reader: FrontPhase[Seq[Model]])(db: Database) =
+    UploadAndReadAction(db) {
+      (uploadData : UploadData) => {
+        val file = uploadData.file
+        val originalFilename = uploadData.originalName
+        Seq((originalFilename -> "All", reader.readFile(file.getAbsolutePath)))
+      }
+    }
+
 
   def UploadAndReadAction(db: Database)(readOp: UploadData => Seq[(FileAndTicker, error.Validated[Seq[Model]])]) =
     UploadSpreadsheetAction {
