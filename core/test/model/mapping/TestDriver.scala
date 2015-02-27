@@ -14,6 +14,15 @@ class TestDriver extends FunSpec {
       assert(results === Seq())
     }
 
+    it("should be able to import company index") {
+      val results = companyIndex.Workflow.readFile("test/input/CompanyIndex.xlsx").get
+
+      assert(results.head('ticker) === Value("FLWS"))
+      assert(results.head('name) === Value("1-800-FLOWERS.COM Inc"))
+
+      assert(results.size === 6)
+    }
+
     it("should be able to import 1 company fiscal years with executives") {
       val results = top5.Workflow.readFile("test/input/FullValuesWithOneYear.xlsx").get
       assert(results.size === 2)

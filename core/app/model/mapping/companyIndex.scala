@@ -22,7 +22,7 @@ package object companyIndex {
     MappingPhase(Mapping) >> CombinerPhase
 
   def Mapping = WorkbookMapping(
-      Seq(Area(TCompanyIndex, Offset(3, 0), None, ColumnOrientedLayout(RawValueReader), indexMapping)))
+      Seq(Area(TCompanyIndex, Offset(2, 0), None, ColumnOrientedLayout(RawValueReader), indexMapping)))
 
   def CombinerPhase: Phase[Seq[Seq[Model]], Seq[Model]] =
     (_, xs) => Validated(xs.head)
