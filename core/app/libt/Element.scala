@@ -34,7 +34,7 @@ trait ElementValueOps { self : Element =>
   def /@/(route:PathPart) = get(route)(/@)
 
   private def get[A](route:PathPart)(accessor: PathPart => Option[A]) =
-    (accessor(route)).getOrElse { sys.error(s"no value for $route") }
+    (accessor(route)).getOrElse { sys.error(s"no value for $route in $self") }
 
   def getRawValue[A] : A = rawValue[A].get
 }
