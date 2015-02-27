@@ -114,6 +114,8 @@ WindosorFrontend::Application.configure do
   config.post_batch_companies_path = '/api/companies/batch/companies'
   config.post_batch_bod_path = '/api/companies/batch/bod'
   config.post_batch_peers_path = '/api/companies/batch/peers'
+  config.post_company_index_path = '/api/companies/indexes'
+
 
   # Search paths
   config.post_query_path = '/api/companies/search'
