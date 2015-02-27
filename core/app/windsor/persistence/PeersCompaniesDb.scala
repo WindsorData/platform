@@ -14,6 +14,8 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
   protected val colName: String = "peers"
   protected val pk: Seq[Path] = peerId
 
+  object IndexDb extends CompanyIndexDb(db)
+
   def indirectPeersOf(ticker: String) : Seq[Model] = {
     find(MongoDBObject("peerTicker.value" -> ticker, "filingDate.value" -> MongoDBObject("$gte" -> DateTime.now().minusMonths(18).toDate)))
   }
@@ -57,10 +59,11 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
     findWith(
       MongoDBObject("$or" -> tickers.map(it => MongoDBObject("peerTicker.value" -> it))),
       MongoDBObject("peerCoName.value" -> 1, "peerTicker.value" -> 1))
-    .groupBy(_ /!/ 'peerTicker).map { case (peerTicker, peerName) =>
+    .groupBy(_ /!/ 'peerTicker).map { case (ticker, peers) =>
       Model(
-        'peerTicker -> Value(peerTicker),
-        'peerCoName -> Value(peerName.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName))
+        'peerTicker -> Value(ticker),
+        'peerCoName -> Value(IndexDb.nameForTickerOrElse(
+            ticker, peers.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName)))
     }.toSeq
 
   def removePeers(query: MongoDBObject, projection: MongoDBObject, errorMsg: String) = {

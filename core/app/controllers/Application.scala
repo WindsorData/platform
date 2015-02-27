@@ -45,7 +45,7 @@ object Application extends Controller with WorkbookZipReader with SpreadsheetUpl
   def newSVTBSDilution = uploadSingleSpreadsheet(dilution.Workflow)(ExecutivesDb)
   def newBod = uploadSingleSpreadsheet(bod.Workflow)(BodDb)
   def newPeers = uploadSingleSpreadsheet(peers.Workflow)(PeersDb)
-  def newIndex = uploadSingleSheetSpreadsheet(companyIndex.Workflow)(IndexDb)
+  def newIndex = uploadSingleSheetSpreadsheet(companyIndex.Workflow)(PeersDb.IndexDb)
 
   def newCompaniesBatch = uploadBatchSpreadSheets(entryReadersCompanies)(ExecutivesDb)
   def newBodsBatch = uploadBatchSpreadSheets(entryReadersBod)(BodDb)

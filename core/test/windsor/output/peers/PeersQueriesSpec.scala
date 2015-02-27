@@ -16,7 +16,16 @@ class PeersQueriesSpec extends FlatSpec {
   val db = {
     val client = MongoClient()("windsor-peers-specs")
     client.dropDatabase()
-    PeersCompaniesDb(client)
+    val db = PeersCompaniesDb(client)
+    db.IndexDb.drop
+
+    db.IndexDb.insert(
+        Model('ticker -> Value("A"), 'name -> Value("The A")),
+        Model('ticker -> Value("B"), 'name -> Value("The B")),
+        Model('ticker -> Value("C"), 'name -> Value("The C")),
+        Model('ticker -> Value("D"), 'name -> Value("The D")))
+    db
+
   }
 
   val models = {
@@ -47,10 +56,10 @@ class PeersQueriesSpec extends FlatSpec {
     }
 
     it should "Get Direct Peers for a single target Company" in new Fixture {
-      assert(db.peersOf("B").toList.map(_ - 'peerCoName - 'filingDate - 'fiscalYear).toSet ===
+      assert(db.peersOf("B").toList.map(_ - 'filingDate - 'fiscalYear).toSet ===
         Set(
-          Model('peerTicker -> Value("A"),'ticker -> Value("B")),
-          Model('peerTicker -> Value("C"),'ticker -> Value("B"))))
+          Model('peerTicker -> Value("A"), 'ticker -> Value("B"), 'peerCoName -> Value("The A")),
+          Model('peerTicker -> Value("C"),'ticker -> Value("B"), 'peerCoName -> Value("The C"))))
     }
 
     it should "Get empty seq for a target company with no peers" in new Fixture {
@@ -63,23 +72,23 @@ class PeersQueriesSpec extends FlatSpec {
 
 
     it should "Get Direct Peers for target collection" in new Fixture {
-      assert(db.peersOf("A","B").toList.map(_ - 'peerCoName- 'filingDate - 'fiscalYear).toSet ===
-        Set(Model('ticker -> Value("A"),'peerTicker -> Value("B")),
-            Model('ticker -> Value("A"),'peerTicker -> Value("C")),
-            Model('ticker -> Value("B"),'peerTicker -> Value("A")),
-            Model('ticker -> Value("B"),'peerTicker -> Value("C"))))
+      assert(db.peersOf("A","B").toList.map(_ -  'filingDate - 'fiscalYear).toSet ===
+        Set(Model('ticker -> Value("A"),'peerTicker -> Value("B"), 'peerCoName -> Value("The A")),
+            Model('ticker -> Value("A"),'peerTicker -> Value("C"), 'peerCoName -> Value("The A")),
+            Model('ticker -> Value("B"),'peerTicker -> Value("A"), 'peerCoName -> Value("The B")),
+            Model('ticker -> Value("B"),'peerTicker -> Value("C"), 'peerCoName -> Value("The B"))))
     }
 
     it should "Get Peers of Peers collection for a target Company" in new Fixture {
-      assert(db.peersOfPeersOf("A")._2.map(_ - 'peerCoName- 'filingDate - 'fiscalYear).toSet ===
+      assert(db.peersOfPeersOf("A")._2.map(_ - 'filingDate - 'fiscalYear).toSet ===
         Set(
           // B peers
-          Model('ticker -> Value("B"),'peerTicker -> Value("A")),
-          Model('ticker -> Value("B"),'peerTicker -> Value("C")),
+          Model('ticker -> Value("B"),'peerTicker -> Value("A"), 'peerCoName -> Value("The B")),
+          Model('ticker -> Value("B"),'peerTicker -> Value("C"), 'peerCoName -> Value("The B")),
 
           // C peers
-          Model('ticker -> Value("C"),'peerTicker -> Value("A")),
-          Model('ticker -> Value("C"),'peerTicker -> Value("B"))))
+          Model('ticker -> Value("C"),'peerTicker -> Value("A"), 'peerCoName -> Value("The C")),
+          Model('ticker -> Value("C"),'peerTicker -> Value("B"), 'peerCoName -> Value("The C"))))
     }
 
 }

@@ -13,5 +13,4 @@ package object persistence {
   object ExecutivesDb extends CompaniesDb(MongoClient()("windsor"))
   object BodDb extends CompaniesDb(MongoClient()("windsor-bod"))
   object PeersDb extends PeersCompaniesDb(MongoClient()("windsor-peers"))
-  object IndexDb extends CompanyIndexDb(MongoClient()("windsor-index"))
 }

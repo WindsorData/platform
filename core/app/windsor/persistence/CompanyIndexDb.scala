@@ -16,7 +16,11 @@ case class CompanyIndexDb(db: MongoDB) extends Database {
 
   collection.ensureIndex("ticker.value")
 
-  def nameForTicker(ticker: String) =
-    find(MongoDBObject("ticker.value" -> ticker))
+  def nameForTicker(ticker: String) : Option[String] =
+    find(MongoDBObject("ticker.value" -> ticker)).head / 'ticker /! 'name
+
+   def nameForTickerOrElse(ticker: String, default : => String) =
+    nameForTicker(ticker).getOrElse(default)
+
 
 }
