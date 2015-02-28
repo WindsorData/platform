@@ -8,7 +8,8 @@ class FilesController < ApplicationController
                         Constants::BOD_FILE => Rails.application.config.post_bod_path,
                         Constants::BATCH_FILE_COMPANIES => Rails.application.config.post_batch_companies_path,
                         Constants::BATCH_FILE_BOD => Rails.application.config.post_batch_bod_path,
-                        Constants::BATCH_FILE_PEERS => Rails.application.config.post_batch_peers_path
+                        Constants::BATCH_FILE_PEERS => Rails.application.config.post_batch_peers_path,
+                        Constants::COMPANY_INDEX_FILE => Rails.application.config.post_company_index_path
                    }
 
   def send_file

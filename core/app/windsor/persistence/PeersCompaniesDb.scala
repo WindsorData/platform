@@ -14,6 +14,8 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
   protected val colName: String = "peers"
   protected val pk: Seq[Path] = peerId
 
+  object IndexDb extends CompanyIndexDb(db)
+
   def indirectPeersOf(ticker: String) : Seq[Model] = {
     find(MongoDBObject("peerTicker.value" -> ticker, "filingDate.value" -> MongoDBObject("$gte" -> DateTime.now().minusMonths(18).toDate)))
   }
@@ -38,12 +40,20 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
           xs
             .filter(_ /@/ 'filingDate == maxFilingDate)
             .filter(_ /#/ 'fiscalYear == maxFiscalYear)
+              .map(f => f.modify { entry => entry match {
+                case ('companyName, name) => ('companyName -> nameValueFromIndex(f /!/ 'ticker, name))
+                case ('peerCoName, name) =>  ('peerCoName -> nameValueFromIndex(f /!/ 'peerTicker, name))
+                case e => e
+              }} )
       }
       .toSeq
     }
     else
       Seq()
   }
+
+  def nameValueFromIndex(ticker: String, default: Element) =
+    Value(IndexDb.nameForTickerOrElse(ticker, default.getRawValue))
 
   def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) =
     peersOf(ticker) -> peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*)
@@ -57,10 +67,10 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
     findWith(
       MongoDBObject("$or" -> tickers.map(it => MongoDBObject("peerTicker.value" -> it))),
       MongoDBObject("peerCoName.value" -> 1, "peerTicker.value" -> 1))
-    .groupBy(_ /!/ 'peerTicker).map { case (peerTicker, peerName) =>
+    .groupBy(_ /!/ 'peerTicker).map { case (ticker, peers) =>
       Model(
-        'peerTicker -> Value(peerTicker),
-        'peerCoName -> Value(peerName.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName))
+        'peerTicker -> Value(ticker),
+        'peerCoName -> nameValueFromIndex(ticker, peers.sortBy(_ /!/ 'peerCoName).head / 'peerCoName))
     }.toSeq
 
   def removePeers(query: MongoDBObject, projection: MongoDBObject, errorMsg: String) = {
