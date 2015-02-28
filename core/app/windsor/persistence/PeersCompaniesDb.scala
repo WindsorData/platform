@@ -41,8 +41,8 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
             .filter(_ /@/ 'filingDate == maxFilingDate)
             .filter(_ /#/ 'fiscalYear == maxFiscalYear)
               .map(f => f.modify { entry => entry match {
-                case ('companyName, name) => ('companyName -> Value( IndexDb.nameForTickerOrElse(f /!/ 'ticker, name.getRawValue)  ))
-                case ('peerCoName, name) =>  ('peerCoName -> Value( IndexDb.nameForTickerOrElse(f /!/ 'peerTicker, name.getRawValue)  ))
+                case ('companyName, name) => ('companyName -> nameValueFromIndex(f /!/ 'ticker, name))
+                case ('peerCoName, name) =>  ('peerCoName -> nameValueFromIndex(f /!/ 'peerTicker, name))
                 case e => e
               }} )
       }
@@ -51,6 +51,9 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
     else
       Seq()
   }
+
+  def nameValueFromIndex(ticker: String, default: Element) =
+    Value(IndexDb.nameForTickerOrElse(ticker, default.getRawValue))
 
   def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) =
     peersOf(ticker) -> peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*)
@@ -67,8 +70,7 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
     .groupBy(_ /!/ 'peerTicker).map { case (ticker, peers) =>
       Model(
         'peerTicker -> Value(ticker),
-        'peerCoName -> Value(IndexDb.nameForTickerOrElse(
-            ticker, peers.sortBy(_ /!/ 'peerCoName).head /!/ 'peerCoName)))
+        'peerCoName -> nameValueFromIndex(ticker, peers.sortBy(_ /!/ 'peerCoName).head / 'peerCoName))
     }.toSeq
 
   def removePeers(query: MongoDBObject, projection: MongoDBObject, errorMsg: String) = {
