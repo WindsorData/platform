@@ -73,22 +73,35 @@ class PeersQueriesSpec extends FlatSpec {
 
     it should "Get Direct Peers for target collection" in new Fixture {
       assert(db.peersOf("A","B").toList.map(_ -  'filingDate - 'fiscalYear).toSet ===
-        Set(Model('ticker -> Value("A"),'peerTicker -> Value("B"), 'peerCoName -> Value("The A")),
-            Model('ticker -> Value("A"),'peerTicker -> Value("C"), 'peerCoName -> Value("The A")),
-            Model('ticker -> Value("B"),'peerTicker -> Value("A"), 'peerCoName -> Value("The B")),
-            Model('ticker -> Value("B"),'peerTicker -> Value("C"), 'peerCoName -> Value("The B"))))
+        Set(Model('ticker -> Value("A"),'peerTicker -> Value("B"), 'peerCoName -> Value("The B")),
+            Model('ticker -> Value("A"),'peerTicker -> Value("C"), 'peerCoName -> Value("The C")),
+            Model('ticker -> Value("B"),'peerTicker -> Value("A"), 'peerCoName -> Value("The A")),
+            Model('ticker -> Value("B"),'peerTicker -> Value("C"), 'peerCoName -> Value("The C"))))
     }
 
     it should "Get Peers of Peers collection for a target Company" in new Fixture {
       assert(db.peersOfPeersOf("A")._2.map(_ - 'filingDate - 'fiscalYear).toSet ===
         Set(
           // B peers
-          Model('ticker -> Value("B"),'peerTicker -> Value("A"), 'peerCoName -> Value("The B")),
-          Model('ticker -> Value("B"),'peerTicker -> Value("C"), 'peerCoName -> Value("The B")),
+          Model('ticker -> Value("B"),'peerTicker -> Value("A"), 'peerCoName -> Value("The A")),
+          Model('ticker -> Value("B"),'peerTicker -> Value("C"), 'peerCoName -> Value("The C")),
 
           // C peers
-          Model('ticker -> Value("C"),'peerTicker -> Value("A"), 'peerCoName -> Value("The C")),
-          Model('ticker -> Value("C"),'peerTicker -> Value("B"), 'peerCoName -> Value("The C"))))
+          Model('ticker -> Value("C"),'peerTicker -> Value("A"), 'peerCoName -> Value("The A")),
+          Model('ticker -> Value("C"),'peerTicker -> Value("B"), 'peerCoName -> Value("The B"))))
     }
 
+  it should "foo" in new Fixture {
+    assert(db.peersOfPeersFromPrimary("A")._2.map(_ - 'filingDate) ===
+      Seq(
+        Model('ticker -> Value("A"),
+          'peerTicker -> Value("B"),
+          'peerCoName -> Value("The B"),
+          'fiscalYear -> Value(2013)),
+
+        Model('ticker -> Value("A"),
+          'peerTicker -> Value("C"),
+          'peerCoName -> Value("The C"),
+          'fiscalYear -> Value(2013))))
+  }
 }

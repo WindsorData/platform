@@ -40,6 +40,11 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
           xs
             .filter(_ /@/ 'filingDate == maxFilingDate)
             .filter(_ /#/ 'fiscalYear == maxFiscalYear)
+              .map(f => f.modify { entry => entry match {
+                case ('companyName, name) => ('companyName -> Value( IndexDb.nameForTickerOrElse(f /!/ 'ticker, name.getRawValue)  ))
+                case ('peerCoName, name) =>  ('peerCoName -> Value( IndexDb.nameForTickerOrElse(f /!/ 'peerTicker, name.getRawValue)  ))
+                case e => e
+              }} )
       }
       .toSeq
     }
