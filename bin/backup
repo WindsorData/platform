@@ -1,0 +1,24 @@
+#!/bin/bash
+
+ENVIRONMENT=$1
+
+REGION=us-west-2
+DATE=$(date +%Y-%m-%d)
+
+case $ENVIRONMENT in 
+  production) 
+    MAIN_VOLUME_ID="vol-a4d959cd"
+    SECONDARY_VOLUME_ID="vol-da34b5b3"
+    PREFIX=Production
+    ;;
+  staging)
+    MAIN_VOLUME_ID="vol-8cc31aa5"
+    SECONDARY_VOLUME_ID="vol-c4c31aed"
+    PREFIX=Staging
+    ;;
+esac
+
+
+ec2-create-snapshot $MAIN_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
+ec2-create-snapshot $SECONDARY_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
+
