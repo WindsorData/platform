@@ -19,7 +19,7 @@ case class CompanyIndexDb(db: MongoDB) extends Database {
   def nameForTicker(ticker: String) : Option[String] =
     find(MongoDBObject("ticker.value" -> ticker)).headOption.map(m => m /!/ 'name)
 
-   def nameForTickerOrElse(ticker: String, default : => String) =
+   def nameForTickerOrElse(ticker: String, default : => String) : String =
     nameForTicker(ticker).getOrElse(default)
 
 

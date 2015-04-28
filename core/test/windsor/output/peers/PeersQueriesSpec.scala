@@ -91,6 +91,10 @@ class PeersQueriesSpec extends FlatSpec {
           Model('ticker -> Value("C"),'peerTicker -> Value("B"), 'peerCoName -> Value("The B"))))
     }
 
+    it should "nameValueFromIndex to return default value when not in index" in new Fixture {
+      assert(db.nameValueFromIndex("foo", Value("bar")) === Value("bar"))
+    }
+
   it should "foo" in new Fixture {
     assert(db.peersOfPeersFromPrimary("A")._2.map(_ - 'filingDate) ===
       Seq(

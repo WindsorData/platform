@@ -53,7 +53,7 @@ case class PeersCompaniesDb(db: MongoDB) extends Database {
   }
 
   def nameValueFromIndex(ticker: String, default: Element) =
-    Value(IndexDb.nameForTickerOrElse(ticker, default.getRawValue))
+    Value(IndexDb.nameForTickerOrElse(ticker, default.getRawValue[String]))
 
   def peersOfPeersOf(ticker: String) : (Seq[Model],Seq[Model]) =
     peersOf(ticker) -> peersOf(peersOf(ticker).flatMap(_ /! 'peerTicker): _*)

@@ -27,5 +27,9 @@ class CompanyIndexSpec extends FlatSpec with BeforeAndAfter {
   it should "get nothing when not present on db" in {
     assert(db.IndexDb.nameForTicker("foo").isEmpty)
   }
+
+  it should "get default when not present on db" in {
+    assert(db.IndexDb.nameForTickerOrElse("foo", "baz") === "baz")
+  }
 }
 
