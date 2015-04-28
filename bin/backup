@@ -19,6 +19,6 @@ case $ENVIRONMENT in
 esac
 
 
-ec2-create-snapshot $MAIN_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
-ec2-create-snapshot $SECONDARY_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
+$EC2_HOME/bin/ec2-create-snapshot $MAIN_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
+$EC2_HOME/bin/ec2-create-snapshot $SECONDARY_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
 
