@@ -1,12 +1,24 @@
 #!/bin/bash
-
+echo "AMI backup tool - $(date)"
 ENVIRONMENT=$1
 
 REGION=us-west-2
 DATE=$(date +%Y-%m-%d)
+ENV_VARS_FILE=$WINDSOR_HOME/bin/env
 
-case $ENVIRONMENT in 
-  production) 
+if [ -e $ENV_VARS_FILE ]
+  then
+    echo "...Reading $ENV_VARS_FILE"
+    source $ENV_VARS_FILE
+  else
+    echo "...$ENV_VARS_FILE not found"
+fi
+
+echo "---->EC2_HOME  is $EC2_HOME"
+echo "---->JAVA_HOME is $JAVA_HOME"
+
+case $ENVIRONMENT in
+  production)
     MAIN_VOLUME_ID="vol-a4d959cd"
     SECONDARY_VOLUME_ID="vol-da34b5b3"
     PREFIX=Production
@@ -18,11 +30,11 @@ case $ENVIRONMENT in
     ;;
 esac
 
-echo "Starting backup for date $DATE"
-echo "-->ENV is $ENVIRONMENT"
-echo "-->REGION is $REGION"
-echo "-->MAIN_VOLUME is $MAIN_VOLUME_ID"
-echo "-->SECONDARY_VOLUME is $SECONDARY_VOLUME_ID"
+echo "...Starting backup for date $DATE"
+echo "---->ENV is $ENVIRONMENT"
+echo "---->REGION is $REGION"
+echo "---->MAIN_VOLUME is $MAIN_VOLUME_ID"
+echo "---->SECONDARY_VOLUME is $SECONDARY_VOLUME_ID"
 $EC2_HOME/bin/ec2-create-snapshot $MAIN_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
 $EC2_HOME/bin/ec2-create-snapshot $SECONDARY_VOLUME_ID -d "$PREFIX $DATE" --region $REGION
 
