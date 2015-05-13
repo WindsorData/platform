@@ -1,0 +1,10 @@
+files:
+  - /vagrant/bin/out
+  - /vagrant/core/logs/application.log
+  - /home/ubuntu/windsor/current/log/production.log
+  - /home/ubuntu/windsor/current/log/unicorn.stderr.log
+destination:
+  host: logs2.papertrailapp.com
+  port: 18536
+  protocol: tls
+
